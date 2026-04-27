@@ -133,5 +133,150 @@ def load_oso_projects(mo, pyoso_db_conn):
     return (df_oso_projects,)
 
 
+@app.cell(hide_code=True)
+def source_summary(df_goodailist, df_ossinsights, df_gap_map, df_oso_projects, mo):
+    mo.hstack([
+        mo.stat(
+            value=len(df_goodailist),
+            label="GoodAI List",
+            caption=f"{df_goodailist['category'].nunique()} categories · {df_goodailist['primary_subcat'].nunique()} subcategories",
+        ),
+        mo.stat(
+            value=df_ossinsights["repo"].nunique(),
+            label="OSS Insights",
+            caption=f"{df_ossinsights['collection_id'].nunique()} collections",
+        ),
+        mo.stat(
+            value=len(df_gap_map),
+            label="OSAI Gap Map",
+            caption=f"{df_gap_map['layer'].nunique()} layers",
+        ),
+        mo.stat(
+            value=df_oso_projects["repo"].nunique(),
+            label="OSO Projects",
+            caption=f"{df_oso_projects['project_id'].nunique()} projects",
+        ),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def overlap_analysis(df_goodailist, df_ossinsights, df_oso_projects, mo, pd):
+    _goodai_repos = set(df_goodailist["repo"].dropna().unique())
+    _ossi_repos = set(df_ossinsights["repo"].dropna().unique())
+    _oso_repos = set(df_oso_projects["repo"].dropna().unique())
+
+    _pairs = [
+        ("GoodAI vs OSS Insights", _goodai_repos, _ossi_repos),
+        ("GoodAI vs OSO", _goodai_repos, _oso_repos),
+        ("OSS Insights vs OSO", _ossi_repos, _oso_repos),
+    ]
+
+    _overlap = pd.DataFrame([
+        {
+            "Source Pair": name,
+            "Overlap": len(left & right),
+            "Only Left": len(left - right),
+            "Only Right": len(right - left),
+        }
+        for name, left, right in _pairs
+    ])
+
+    _all_repos = _goodai_repos | _ossi_repos | _oso_repos
+    _in_two_plus = sum(
+        1 for r in _all_repos
+        if sum([r in _goodai_repos, r in _ossi_repos, r in _oso_repos]) >= 2
+    )
+    _in_all_three = len(_goodai_repos & _ossi_repos & _oso_repos)
+
+    mo.vstack([
+        mo.md(
+            f"### Repo-Level Overlap\n\n"
+            f"**{len(_all_repos):,}** unique repos across all sources · "
+            f"**{_in_two_plus:,}** in 2+ sources · "
+            f"**{_in_all_three:,}** in all 3"
+        ),
+        mo.ui.table(_overlap),
+    ])
+    return (_overlap,)
+
+
+@app.cell(hide_code=True)
+def coverage_by_category(df_goodailist, df_oso_projects, go, mo, pd):
+    _oso_repos = set(df_oso_projects["repo"].dropna().unique())
+
+    _totals = df_goodailist.groupby("category")["repo"].nunique().reset_index(name="total")
+    _in_oso = (
+        df_goodailist[df_goodailist["repo"].isin(_oso_repos)]
+        .groupby("category")["repo"]
+        .nunique()
+        .reset_index(name="in_oso")
+    )
+    _cov = _totals.merge(_in_oso, on="category", how="left").fillna(0)
+    _cov["in_oso"] = _cov["in_oso"].astype(int)
+    _cov = _cov.sort_values("total", ascending=True)
+
+    _fig = go.Figure()
+    _fig.add_trace(go.Bar(
+        y=_cov["category"], x=_cov["total"],
+        orientation="h", name="Total repos",
+        marker_color="#c9bfac",
+    ))
+    _fig.add_trace(go.Bar(
+        y=_cov["category"], x=_cov["in_oso"],
+        orientation="h", name="In OSO",
+        marker_color="#1b6b5e",
+    ))
+    _fig.update_layout(
+        barmode="overlay",
+        template="plotly_white",
+        title="GoodAI Category Coverage in OSO",
+        xaxis_title="Repos",
+        yaxis_title="",
+        margin=dict(l=200),
+    )
+    mo.ui.plotly(_fig)
+    return
+
+
+@app.cell(hide_code=True)
+def osai_gap_map_summary(df_gap_map, go, mo, pd):
+    _df = df_gap_map.copy()
+    _df["overall_score"] = pd.to_numeric(_df["overall_score"], errors="coerce")
+    _df = _df.dropna(subset=["overall_score"])
+
+    if _df.empty:
+        _result = mo.md("_No OSAI Gap Map data available._")
+    else:
+        _df["label"] = _df["layer"] + " · " + _df["subcategory"]
+        _df = _df.sort_values("overall_score", ascending=True)
+
+        _color_map = {1: "#c8341d", 2: "#d97c2a", 3: "#6b6253", 4: "#1b6b5e"}
+        _colors = [_color_map.get(int(s), "#6b6253") for s in _df["overall_score"]]
+
+        _dist = _df["overall_score"].astype(int).value_counts().sort_index()
+        _dist_str = " · ".join(f"Score {int(k)}: {v}" for k, v in _dist.items())
+
+        _fig = go.Figure(go.Bar(
+            y=_df["label"], x=_df["overall_score"],
+            orientation="h",
+            marker_color=_colors,
+        ))
+        _fig.update_layout(
+            template="plotly_white",
+            title="OSAI Gap Map — Overall Scores",
+            xaxis_title="Overall Score",
+            yaxis_title="",
+            margin=dict(l=300),
+        )
+
+        _result = mo.vstack([
+            mo.md(f"### OSAI Gap Map Scores\n\n{_dist_str}"),
+            mo.ui.plotly(_fig),
+        ])
+    _result
+    return
+
+
 if __name__ == "__main__":
     app.run()
