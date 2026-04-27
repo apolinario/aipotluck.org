@@ -5,3 +5,4 @@ dist/
 .env.local
 *.log
 .mcp.json
+.DS_Store
