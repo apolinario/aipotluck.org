@@ -24,6 +24,19 @@ uv run marimo edit notebooks/data_inventory.py
 
 Requires an [OSO API key](https://docs.oso.xyz) with access to the `currentai` org.
 
+### Query CLI
+
+```bash
+uv run scripts/query.py "top repos by stars"
+uv run scripts/query.py "trending"
+uv run scripts/query.py "categories"
+uv run scripts/query.py "gaps"
+uv run scripts/query.py "search vllm"
+uv run scripts/query.py "SELECT repo, stars FROM currentai.goodailist_repos.repos LIMIT 5"
+```
+
+Run `uv run scripts/query.py` with no arguments to see all available templates.
+
 ## Structure
 
 ```
