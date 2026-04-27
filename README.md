@@ -2,8 +2,6 @@
 
 An interactive visualization of the open-source AI ecosystem — mapping 7 stack layers from silicon to chat, colored by where the open ecosystem is healthy, fragile, or missing entirely.
 
-Built by [Open Source Observer](https://www.oso.xyz) for [Current AI](https://current.ai).
-
 ## Quick Start
 
 ### Website
