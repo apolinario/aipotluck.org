@@ -124,7 +124,10 @@ def load_oso_projects(mo, pyoso_db_conn):
         FROM oso.projects_v1 AS p
         JOIN oso.artifacts_by_project_v1 AS a
           ON p.project_id = a.project_id
-        WHERE a.artifact_source = 'GITHUB'
+        WHERE
+          a.artifact_source = 'GITHUB'
+          AND p.project_source = 'OSS_DIRECTORY'
+          AND p.project_namespace = 'oso'
         """,
         output=False,
         engine=pyoso_db_conn
