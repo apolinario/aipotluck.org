@@ -1,0 +1,44 @@
+Layer,Subcategory,Description,Subcategory ID,Breadth,Production Readiness,Ease of Adoption,Documentation,Community Activity,Performance vs Closed,Enterprise Readiness,Interoperability,Sustainability,Standardization,Criteria Avg,Overall Score,Maturity,Parity Verdict
+Stack category,Specific component,What this layer covers,,,Ready for real-world deployment?,How easy to get started?,Quality of docs and guides,Active contributors and maintainers?,How does it compare to proprietary?,"Security, compliance, support",Works well with other tools?,Long-term funding and governance,Common formats and APIs?,Mean of all criteria scores,,Overall ecosystem maturity,Open source vs. closed standing
+Infrastructure,Cloud Compute,GPU and CPU cloud services for training and inference,infrastructure.cloud_compute,4,4,3,4,4,3,3,3,4,2,3.4,3,"Viable, but fragmented",Competitive
+Infrastructure,Communication Libs,Libraries for distributed computing across machines,infrastructure.communication_libs,4,4,3,4,4,3,2,3,4,2,3.3,3,"Viable, but fragmented",Competitive
+Infrastructure,Compilers,Tools that optimize models for specific hardware,infrastructure.compilers,4,3,3,3,4,2,2,3,3,2,2.9,3,"Viable, but fragmented",Closed leads
+Infrastructure,Firmware Drivers,Low-level software that talks to accelerator hardware,infrastructure.firmware_drivers,4,3,3,4,4,2,3,3,4,3,3.3,3,"Viable, but fragmented",Closed leads
+Infrastructure,Hardware Chips,AI-specific chips and accelerators,infrastructure.hardware_chips,3,2,2,3,3,1,2,2,3,2,2.3,2,Early stage,Closed leads
+Infrastructure,Ml Frameworks,"Core frameworks like PyTorch, JAX, TensorFlow",infrastructure.ml_frameworks,5,5,4,5,5,4,4,3,5,3,4.3,4,Strong,Competitive
+Infrastructure,Storage,Data storage and retrieval for large-scale ML,infrastructure.storage,4,4,3,4,4,3,2,3,4,3,3.4,3,"Viable, but fragmented",Closed leads
+Model Components: Datasets,Benchmark Eval Data,Standard datasets for measuring model performance,model_datasets.benchmark_eval_data,5,4,4,4,5,4,3,3,4,3,3.9,4,Strong,Competitive
+Model Components: Datasets,Data Preprocessing,"Tools for cleaning, filtering, and preparing training data",model_datasets.data_preprocessing,4,4,3,4,4,3,3,3,4,2,3.4,3,"Viable, but fragmented",Competitive
+Model Components: Datasets,Preference Alignment Data,Human feedback data for RLHF and alignment,model_datasets.preference_alignment_data,5,4,4,3,5,5,3,4,4,3,4,4,Strong,Unique to open source
+Model Components: Datasets,Pretraining Data,Large-scale corpora used to train foundation models,model_datasets.pretraining_data,4,3,3,3,4,3,2,3,4,2,3.1,3,"Viable, but fragmented",Closed leads
+Model Components: Datasets,Synthetic Data,Machine-generated data for training augmentation,model_datasets.synthetic_data,4,3,3,4,3,3,2,2,3,2,2.9,3,"Viable, but fragmented",Closed leads
+Model Components: Code,Evaluation Code,Scripts and tools for benchmarking models,model_code.evaluation_code,4,3,3,3,4,3,2,3,3,2,3,3,"Viable, but fragmented",Competitive
+Model Components: Code,Finetuning Code,Code for adapting pretrained models to specific tasks,model_code.finetuning_code,4,3,3,3,4,3,2,3,4,2,3.1,3,"Viable, but fragmented",Competitive
+Model Components: Code,Inference Code,Code for running models in production,model_code.inference_code,5,4,4,4,5,4,3,3,4,3,3.9,4,Strong,Competitive
+Model Components: Code,Model Architecture,Neural network structure definitions,model_code.model_architecture,4,3,3,3,4,2,2,3,3,2,2.9,3,"Viable, but fragmented",Closed leads
+Model Components: Code,Supporting Libraries,"Utility libraries for tokenization, data loading, etc.",model_code.supporting_libraries,4,4,4,4,5,4,3,4,4,4,4,4,Strong,Competitive
+Model Components: Code,Training Code,End-to-end training pipelines and scripts,model_code.training_code,4,4,4,4,5,4,3,3,4,3,3.8,4,Strong,Competitive
+Model Components: Weights,Base Pretrained,Foundation model weights before finetuning,model_weights.base_pretrained,5,4,4,4,5,4,3,3,4,3,3.9,4,Strong,Competitive
+Model Components: Weights,Compressed Weights,Quantized or pruned models for efficiency,model_weights.compressed_weights,4,3,3,4,4,3,2,3,3,2,3.1,3,"Viable, but fragmented",Closed leads
+Model Components: Weights,Domain Weights,"Models finetuned for specific fields (medical, legal, etc.)",model_weights.domain_weights,4,3,3,3,4,3,2,3,3,2,3,3,"Viable, but fragmented",Closed leads
+Model Components: Weights,Finetuned Chat,Instruction-tuned and chat-optimized model weights,model_weights.finetuned_chat,4,3,3,3,4,3,2,3,3,2,3,3,"Viable, but fragmented",Closed leads
+Model Components: Weights,Multimodal Weights,"Models handling text, images, audio, or video",model_weights.multimodal_weights,4,4,3,3,4,3,2,3,4,2,3.2,3,"Viable, but fragmented",Competitive
+Product / UX,Deployment,Tools for serving and scaling models in production,product_ux.deployment,4,4,4,4,4,4,3,4,4,3,3.8,4,Strong,Competitive
+Product / UX,Orchestration Agents,Frameworks for chaining LLM calls and tool use,product_ux.orchestration_agents,4,3,3,3,4,3,2,2,4,2,3,3,"Viable, but fragmented",Competitive
+Product / UX,Output Settings,"Controls for temperature, tokens, response format",product_ux.output_settings,4,3,3,4,4,3,2,2,3,2,3,3,"Viable, but fragmented",Closed leads
+Product / UX,System Prompt,System-level prompt configuration and management,product_ux.system_prompt,4,3,3,3,4,3,2,3,3,2,3,3,"Viable, but fragmented",Closed leads
+Product / UX,Telemetry Observability,"Monitoring, logging, and debugging for LLM apps",product_ux.telemetry_observability,4,4,3,4,4,3,2,3,4,3,3.4,3,"Viable, but fragmented",Closed leads
+Product / UX,Ui Api,User-facing interfaces and API endpoints,product_ux.ui_api,4,3,3,3,4,2,2,3,3,2,2.9,3,"Viable, but fragmented",Closed leads
+Documentation,Data Documentation,"Data cards, provenance, and lineage docs",documentation.data_documentation,4,4,3,3,4,3,2,3,3,2,3.1,3,"Viable, but fragmented",Closed leads
+Documentation,Eval Results,Published benchmark results and comparisons,documentation.eval_results,4,3,3,3,4,3,2,3,3,2,3,3,"Viable, but fragmented",Closed leads
+Documentation,Model Cards,"Standardized model documentation (capabilities, limits)",documentation.model_cards,3,3,3,3,4,2,2,2,3,2,2.7,3,"Viable, but fragmented",Closed leads
+Documentation,Sample Outputs Demos,Example outputs and interactive demos,documentation.sample_outputs_demos,5,4,4,4,5,4,3,3,4,3,3.9,4,Strong,Competitive
+Licensing,Code Licenses,License terms for source code,licensing.code_licenses,3,3,4,4,3,2,2,3,3,3,3,3,"Viable, but fragmented",Closed leads
+Licensing,Dataset Licenses,License terms for training data,licensing.dataset_licenses,4,5,4,4,4,3,3,4,4,4,3.9,4,Strong,Competitive
+Licensing,Terms Of Service,Usage policies and acceptable use terms,licensing.terms_of_service,2,2,3,2,2,2,1,2,2,1,1.9,2,Early stage,Closed leads
+Licensing,Weight Licenses,License terms for model weights,licensing.weight_licenses,4,4,3,3,3,3,3,2,4,2,3.1,3,"Viable, but fragmented",Competitive
+Safeguards,Access Release,How models are distributed and access-controlled,safeguards.access_release,4,4,4,4,5,3,2,3,4,2,3.5,3,"Viable, but fragmented",Closed leads
+Safeguards,Auditing Reporting,Third-party audits and transparency reports,safeguards.auditing_reporting,4,3,3,3,4,3,2,3,3,2,3,3,"Viable, but fragmented",Closed leads
+Safeguards,Governance,Decision-making structures and oversight,safeguards.governance,4,3,3,4,4,3,2,3,4,2,3.2,3,"Viable, but fragmented",Closed leads
+Safeguards,Moderation,Content filtering and safety guardrails,safeguards.moderation,3,3,3,3,3,2,2,2,3,2,2.6,3,"Viable, but fragmented",Closed leads
+Safeguards,Safety Alignment,Techniques to align model behavior with human values,safeguards.safety_alignment,4,3,3,3,4,3,2,3,3,2,3,3,"Viable, but fragmented",Closed leads

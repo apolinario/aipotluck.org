@@ -1,0 +1,443 @@
+import marimo
+
+__generated_with = "unknown"
+app = marimo.App()
+
+
+@app.cell(hide_code=True)
+def header_title(mo):
+    mo.md(
+        """
+    # Open-Source AI Ecosystem · Trends
+
+    Developer activity, momentum, and growth signals across the open-source AI landscape.
+    Data sourced from OSO / OpenDevData metrics.
+
+    **Created:** 2026-04-13 · **Data:** OSO · GitHub Archive
+    """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def imports():
+    import plotly.graph_objects as go
+    return (go,)
+
+
+@app.cell(hide_code=True)
+def setup_pyoso():
+    import pyoso
+    import marimo as mo
+    pyoso_db_conn = pyoso.Client().dbapi_connection()
+    return mo, pyoso_db_conn
+
+
+@app.cell(hide_code=True)
+def load_oss_ai_repos(mo, pyoso_db_conn):
+    df_gl = mo.sql(
+        f"""
+        WITH ranked AS (
+          SELECT
+            LOWER(repo)                        AS repo,
+            LOWER(SPLIT_PART(repo, '/', 1))    AS owner,
+            category,
+            TRIM(SPLIT_PART(subcat, ',', 1))   AS primary_subcat,
+            CAST(stars        AS DOUBLE)        AS stars,
+            CAST(contributors AS DOUBLE)        AS contributors,
+            CAST(star_7d      AS DOUBLE)        AS star_7d,
+            ROW_NUMBER() OVER (
+              PARTITION BY LOWER(repo)
+              ORDER BY updated_at DESC NULLS LAST
+            ) AS _rn
+          FROM currentai.goodailist_repos.repos
+        )
+        SELECT repo, owner, category, primary_subcat, stars, contributors, star_7d
+        FROM ranked
+        WHERE _rn = 1
+        """,
+        output=False,
+        engine=pyoso_db_conn
+    )
+    return (df_gl,)
+
+
+@app.cell(hide_code=True)
+def compute_subcat_health(df_gl):
+    df_subcat = df_gl.groupby(['category', 'primary_subcat']).agg(
+        repos=('repo', 'count'),
+        total_stars=('stars', 'sum'),
+        median_stars=('stars', 'median'),
+        median_contributors=('contributors', 'median'),
+        weekly_stars=('star_7d', 'sum'),
+    ).reset_index()
+    return (df_subcat,)
+
+
+@app.cell(hide_code=True)
+def load_ddp_stars_forks(mo, pyoso_db_conn):
+    df_stars_forks = mo.sql(
+        f"""
+        WITH gl_repos AS (
+          SELECT
+            LOWER(repo)                     AS repo,
+            LOWER(SPLIT_PART(repo, '/', 1)) AS owner,
+            LOWER(SPLIT_PART(repo, '/', 2)) AS name
+          FROM currentai.goodailist_repos.repos
+        )
+        SELECT
+          gl.repo,
+          COUNT(CASE WHEN ev.event_type = 'STARRED' THEN 1 END) AS stars_3m,
+          COUNT(CASE WHEN ev.event_type = 'FORKED'  THEN 1 END) AS forks_3m
+        FROM gl_repos gl
+        JOIN oso.int_events__github_unified ev
+          ON LOWER(ev.to_artifact_namespace) = gl.owner
+          AND LOWER(ev.to_artifact_name)     = gl.name
+        WHERE ev.event_type IN ('STARRED', 'FORKED')
+          AND ev.time >= CURRENT_DATE - INTERVAL '90' DAY
+        GROUP BY gl.repo
+        ORDER BY stars_3m DESC
+        """,
+        output=False,
+        engine=pyoso_db_conn
+    )
+    return (df_stars_forks,)
+
+
+@app.cell(hide_code=True)
+def load_ddp_contributors(mo, pyoso_db_conn):
+    df_contributors = mo.sql(
+        f"""
+        WITH gl_repos AS (
+          SELECT LOWER(repo) AS repo
+          FROM currentai.goodailist_repos.repos
+        ),
+        mapped AS (
+          SELECT gl.repo, r.opendevdata_id AS repo_id
+          FROM gl_repos gl
+          JOIN oso.int_opendevdata__repositories_with_repo_id r
+            ON LOWER(r.repo_name) = gl.repo
+        )
+        SELECT
+          m.repo,
+          COUNT(DISTINCT rda.canonical_developer_id)                                                     AS total_contributors,
+          COUNT(DISTINCT CASE WHEN rda.l28_days >= 10     THEN rda.canonical_developer_id END)           AS full_time,
+          COUNT(DISTINCT CASE WHEN rda.l28_days BETWEEN 1 AND 9 THEN rda.canonical_developer_id END)    AS part_time
+        FROM mapped m
+        JOIN oso.stg_opendevdata__repo_developer_28d_activities rda ON rda.repo_id = m.repo_id
+        WHERE rda.day >= CURRENT_DATE - INTERVAL '90' DAY
+        GROUP BY m.repo
+        ORDER BY total_contributors DESC
+        """,
+        output=False,
+        engine=pyoso_db_conn
+    )
+    return (df_contributors,)
+
+
+@app.cell(hide_code=True)
+def load_ddp_monthly(mo, pyoso_db_conn):
+    df_monthly = mo.sql(
+        f"""
+        WITH gl_repos AS (
+          SELECT LOWER(repo) AS repo, TRIM(category) AS category
+          FROM currentai.goodailist_repos.repos
+        ),
+        mapped AS (
+          SELECT gl.repo, gl.category, r.opendevdata_id AS repo_id
+          FROM gl_repos gl
+          JOIN oso.int_opendevdata__repositories_with_repo_id r
+            ON LOWER(r.repo_name) = gl.repo
+        )
+        SELECT
+          m.category,
+          DATE_TRUNC('month', CAST(rda.day AS DATE))                                                     AS month,
+          COUNT(DISTINCT rda.canonical_developer_id)                                                     AS active_devs,
+          COUNT(DISTINCT CASE WHEN rda.l28_days >= 10     THEN rda.canonical_developer_id END)           AS full_time,
+          COUNT(DISTINCT CASE WHEN rda.l28_days BETWEEN 1 AND 9 THEN rda.canonical_developer_id END)    AS part_time
+        FROM mapped m
+        JOIN oso.stg_opendevdata__repo_developer_28d_activities rda ON rda.repo_id = m.repo_id
+        WHERE rda.day >= CURRENT_DATE - INTERVAL '90' DAY
+        GROUP BY m.category, DATE_TRUNC('month', CAST(rda.day AS DATE))
+        ORDER BY month, category
+        """,
+        output=False,
+        engine=pyoso_db_conn
+    )
+    return (df_monthly,)
+
+
+@app.cell(hide_code=True)
+def source_stats(df_contributors, df_gl, df_stars_forks, mo):
+    mo.hstack([
+        mo.stat(label="Repos",        value=f"{len(df_gl):,}",                                              bordered=True, caption="OSS AI repos"),
+        mo.stat(label="Unique orgs",  value=f"{df_gl['owner'].nunique():,}",                                bordered=True, caption="GitHub organizations"),
+        mo.stat(label="Categories",   value=str(df_gl['category'].nunique()),                               bordered=True, caption="top-level taxonomy"),
+        mo.stat(label="Stars (3mo)",  value=f"{df_stars_forks['stars_3m'].sum()/1e3:.0f}K",                bordered=True, caption="new stars · last 90 days"),
+        mo.stat(label="Forks (3mo)",  value=f"{df_stars_forks['forks_3m'].sum()/1e3:.0f}K",                bordered=True, caption="new forks · last 90 days"),
+        mo.stat(label="Contributors", value=f"{df_contributors['total_contributors'].sum()/1e3:.0f}K",      bordered=True, caption="active devs · last 90 days"),
+    ], widths="equal", gap=1)
+    return
+
+
+@app.cell(hide_code=True)
+def monthly_active_chart(df_monthly, go, mo):
+    import json as _json
+    import html as _html
+    import pandas as _pd
+
+    df_monthly['month'] = _pd.to_datetime(df_monthly['month'])
+
+    _categories = sorted(df_monthly['category'].dropna().unique().tolist())
+
+    _cat_colors = {
+        'Infrastructure':    '#1A5276',
+        'AI Engineering':    '#196F3D',
+        'Model Development': '#922B21',
+        'Applications':      '#6C3483',
+        'Models':            '#117A65',
+        'Tutorials':         '#784212',
+        'Lists':             '#17202A',
+        'Misc':              '#717D7E',
+    }
+
+    _states = {}
+    for _cat in _categories:
+        _df = df_monthly[df_monthly['category'] == _cat].sort_values('month')
+        if _df.empty:
+            continue
+
+        _latest   = _df['month'].max()
+        _latest_r = _df[_df['month'] == _latest].iloc[0]
+        _active   = int(_latest_r['active_devs'])
+        _ft       = int(_latest_r['full_time'])
+        _pt       = int(_latest_r['part_time'])
+
+        def _stat(value, label, caption=''):
+            return (
+                f'<div class="ddp-stat-box">'
+                f'<div class="ddp-stat-value">{value}</div>'
+                f'<div class="ddp-stat-label">{label}</div>'
+                + (f'<div class="ddp-stat-caption">{caption}</div>' if caption else '')
+                + '</div>'
+            )
+
+        _stats_html = (
+            '<div class="ddp-stat-row">'
+            + _stat(f'{_active:,}',  'Active Developers',  f'Latest month ({str(_latest)[:7]})')
+            + _stat(f'{_ft:,}',      'Full-Time',          '≥ 10 active days/month')
+            + _stat(f'{_pt:,}',      'Part-Time',          '1–9 active days/month')
+            + _stat(f'{_active-_ft-_pt:,}', 'Other Active', 'Counted but unclassified')
+            + '</div>'
+        )
+
+        _color = _cat_colors.get(_cat, '#4C78A8')
+        _fig = go.Figure()
+        _fig.add_trace(go.Bar(
+            x=_df['month'], y=_df['full_time'],
+            name='Full-Time', marker_color=_color,
+            hovertemplate='<b>Full-Time</b><br>%{x|%b %Y}: %{y:,}<extra></extra>',
+        ))
+        _fig.add_trace(go.Bar(
+            x=_df['month'], y=_df['part_time'],
+            name='Part-Time', marker_color=_color, marker_opacity=0.5,
+            hovertemplate='<b>Part-Time</b><br>%{x|%b %Y}: %{y:,}<extra></extra>',
+        ))
+        _fig.update_layout(
+            barmode='stack',
+            height=420,
+            template='plotly_white',
+            margin=dict(t=40, l=60, r=40, b=50),
+            hovermode='x unified',
+            showlegend=True,
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1, bgcolor='rgba(255,255,255,0.8)'),
+            xaxis=dict(showgrid=False, showline=True, linecolor='#1F2937', linewidth=1,
+                       tickfont=dict(size=11, color='#666'), tickformat='%b %Y'),
+            yaxis=dict(showgrid=True, gridcolor='#E5E7EB', showline=True, linecolor='#1F2937',
+                       linewidth=1, tickfont=dict(size=11, color='#666'), title='Active developers', tickformat=',d'),
+        )
+        _states[_cat] = {'stats': _stats_html, 'chart': _json.loads(_fig.to_json())}
+
+    _opts     = [c for c in _categories if c in _states]
+    _djs_safe = _json.dumps(_states).replace('</', '<\\/')
+    _opts_js  = _json.dumps(_opts)
+    _sel_html = (
+        '<div style="margin-bottom:8px">'
+        '<span class="ddp-select-label">Category</span>'
+        '<select id="sel" class="ddp-select">'
+        + ''.join(f'<option value="{i}">{o}</option>' for i, o in enumerate(_opts))
+        + '</select></div>'
+    )
+
+    _inner = (
+        '<!DOCTYPE html><html><head><meta charset="utf-8">'
+        '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
+        '<style>'
+        '*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}'
+        'body{font-size:14px;color:#0f172a;padding:4px}'
+        '.ddp-select{padding:4px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.8125em;color:#0f172a;background:#fff;cursor:pointer;outline:none}'
+        '.ddp-select-label{font-size:0.6875em;color:#64748b;display:block;margin-bottom:2px}'
+        '.ddp-stat-row{display:flex;gap:12px;margin:12px 0}'
+        '.ddp-stat-box{border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;flex:1;min-width:100px}'
+        '.ddp-stat-value{font-size:1.5em;font-weight:600;letter-spacing:-0.02em;color:#0f172a;line-height:1.2}'
+        '.ddp-stat-label{font-size:0.6875em;font-weight:500;color:#64748b;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px}'
+        '.ddp-stat-caption{font-size:0.75em;color:#64748b;margin-top:4px}'
+        '</style></head><body>'
+        f'{_sel_html}'
+        '<div id="stats" style="margin-bottom:4px"></div>'
+        '<div id="chart"></div>'
+        f'<script>var D={_djs_safe};var O={_opts_js};'
+        'var sel=document.getElementById("sel");'
+        'function show(i){'
+        'document.getElementById("stats").innerHTML=D[O[i]].stats||"";'
+        'Plotly.react("chart",D[O[i]].chart.data,D[O[i]].chart.layout,{responsive:true,displayModeBar:false});}'
+        'sel.addEventListener("change",function(){show(parseInt(this.value))});'
+        'show(0);'
+        '</script></body></html>'
+    )
+    _src = _html.escape(_inner, quote=True)
+
+    mo.vstack([
+        mo.md("## Monthly Active Developers by Category · last 90 days"),
+        mo.Html(f'<iframe srcdoc="{_src}" style="width:100%;height:560px;border:none;" scrolling="no"></iframe>'),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def momentum_bar(df_subcat, go, mo):
+    _data = df_subcat[
+        df_subcat['category'].isin(['Infrastructure', 'AI Engineering', 'Model Development', 'Applications', 'Models'])
+        & (df_subcat['repos'] >= 10)
+        & (df_subcat['weekly_stars'] > 0)
+    ].copy()
+    _data = _data.sort_values('weekly_stars', ascending=False).head(25)
+    _data = _data.sort_values('weekly_stars', ascending=True)
+
+    _cat_colors = {
+        'Infrastructure':    '#1A5276',
+        'AI Engineering':    '#196F3D',
+        'Model Development': '#922B21',
+        'Applications':      '#6C3483',
+        'Models':            '#117A65',
+    }
+    _fig = go.Figure(go.Bar(
+        x=_data['weekly_stars'], y=_data['primary_subcat'], orientation='h',
+        marker_color=[_cat_colors.get(_c, '#999') for _c in _data['category']],
+        customdata=list(zip(_data['category'], _data['repos'], _data['total_stars'])),
+        hovertemplate=(
+            "<b>%{y}</b><br>Category: %{customdata[0]}<br>"
+            "7-day stars: %{x:,.0f}<br>Repos: %{customdata[1]}<br>"
+            "Total stars: %{customdata[2]:,.0f}<extra></extra>"
+        ),
+    ))
+    _fig.update_layout(
+        template='plotly_white', margin=dict(t=10, l=0, r=30, b=40), height=500,
+        xaxis=dict(title='7-day new stars', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+    )
+    mo.vstack([
+        mo.md("""
+        ## Momentum · 7-Day Star Velocity
+
+        Weekly star growth reveals where developer attention is flowing *right now*.
+        """),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def ddp_header(mo):
+    mo.md(
+        """
+    ## Developer Activity · last 90 days
+
+    Repo-scoped metrics from OpenDevData — only the tracked repos, no project inflation.
+    Full-time: ≥ 10 active days in the last 28-day window. Part-time: 1–9 active days.
+    """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def stars_bar(df_stars_forks, go, mo):
+    _df = df_stars_forks.sort_values('stars_3m', ascending=True).tail(20).copy()
+    _df['short_name'] = _df['repo'].apply(lambda r: r.split('/')[-1])
+    _fig = go.Figure(go.Bar(
+        x=_df['stars_3m'], y=_df['short_name'], orientation='h',
+        marker_color='#4C78A8',
+        customdata=list(zip(_df['repo'], _df['forks_3m'])),
+        hovertemplate="<b>%{customdata[0]}</b><br>Stars (3mo): %{x:,.0f}<br>Forks (3mo): %{customdata[1]:,.0f}<extra></extra>",
+    ))
+    _fig.update_layout(
+        template='plotly_white', margin=dict(t=10, l=0, r=20, b=40), height=520,
+        xaxis=dict(title='New stars · last 90 days', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+    )
+    mo.vstack([
+        mo.md("### Top 20 repos by stars · last 90 days"),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def contributors_bar(df_contributors, go, mo):
+    _df = df_contributors.nlargest(20, 'full_time').sort_values('full_time', ascending=True).copy()
+    _df['short_name'] = _df['repo'].apply(lambda r: r.split('/')[-1])
+    _fig = go.Figure()
+    _fig.add_trace(go.Bar(
+        x=_df['full_time'], y=_df['short_name'], orientation='h',
+        name='Full-time (≥10 active days)',
+        marker_color='#1A5276',
+        customdata=_df['repo'],
+        hovertemplate="<b>%{customdata}</b><br>Full-time: %{x:,}<extra></extra>",
+    ))
+    _fig.add_trace(go.Bar(
+        x=_df['part_time'], y=_df['short_name'], orientation='h',
+        name='Part-time (1–9 active days)',
+        marker_color='#AED6F1',
+        customdata=_df['repo'],
+        hovertemplate="<b>%{customdata}</b><br>Part-time: %{x:,}<extra></extra>",
+    ))
+    _fig.update_layout(
+        template='plotly_white', margin=dict(t=10, l=0, r=20, b=40), height=520,
+        barmode='stack',
+        xaxis=dict(title='Active contributors · last 90 days', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+        legend=dict(orientation='h', yanchor='bottom', y=1.01, xanchor='left', x=0, title_text=''),
+    )
+    mo.vstack([
+        mo.md("### Full-Time vs Part-Time Contributors · Top 20 repos (last 90 days)"),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def fulltime_ratio_bar(df_contributors, go, mo):
+    _df = df_contributors[df_contributors['total_contributors'] >= 5].copy()
+    _df['ft_ratio'] = _df['full_time'] / _df['total_contributors'] * 100
+    _df = _df.nlargest(20, 'ft_ratio').sort_values('ft_ratio', ascending=True)
+    _df['short_name'] = _df['repo'].apply(lambda r: r.split('/')[-1])
+    _fig = go.Figure(go.Bar(
+        x=_df['ft_ratio'], y=_df['short_name'], orientation='h',
+        marker_color='#196F3D',
+        customdata=list(zip(_df['repo'], _df['full_time'], _df['total_contributors'])),
+        hovertemplate="<b>%{customdata[0]}</b><br>FT ratio: %{x:.1f}%<br>FT: %{customdata[1]:,} / Total: %{customdata[2]:,}<extra></extra>",
+    ))
+    _fig.update_layout(
+        template='plotly_white', margin=dict(t=10, l=0, r=20, b=40), height=520,
+        xaxis=dict(title='Full-time contributor ratio (%)', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+    )
+    mo.vstack([
+        mo.md("### Full-Time Depth · Top 20 repos by FT ratio (last 90 days, min 5 contributors)"),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+if __name__ == "__main__":
+    app.run()

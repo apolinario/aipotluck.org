@@ -1,0 +1,530 @@
+import marimo
+
+__generated_with = "unknown"
+app = marimo.App()
+
+
+@app.cell(hide_code=True)
+def header_title(mo):
+    mo.md(
+        """
+    # Open-Source AI Ecosystem · Gap Analysis
+
+    Mapping open-source AI ecosystem health against Current AI's 10 program areas for 2025
+    to surface where public investment has the least community to build on. Data: OSO developer metrics.
+
+    **Created:** 2026-04-13 · **Data:** OSO · GitHub Archive
+    """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def imports():
+    import plotly.graph_objects as go
+    return (go,)
+
+
+@app.cell(hide_code=True)
+def setup_pyoso():
+    import pyoso
+    import marimo as mo
+    pyoso_db_conn = pyoso.Client().dbapi_connection()
+    return mo, pyoso_db_conn
+
+
+@app.cell(hide_code=True)
+def load_oss_ai_repos(mo, pyoso_db_conn):
+    df_gl = mo.sql(
+        f"""
+        WITH ranked AS (
+          SELECT
+            LOWER(repo)                        AS repo,
+            LOWER(SPLIT_PART(repo, '/', 1))    AS owner,
+            category,
+            TRIM(SPLIT_PART(subcat, ',', 1))   AS primary_subcat,
+            CAST(stars        AS DOUBLE)        AS stars,
+            CAST(contributors AS DOUBLE)        AS contributors,
+            CAST(star_7d      AS DOUBLE)        AS star_7d,
+            ROW_NUMBER() OVER (
+              PARTITION BY LOWER(repo)
+              ORDER BY updated_at DESC NULLS LAST
+            ) AS _rn
+          FROM currentai.goodailist_repos.repos
+        )
+        SELECT repo, owner, category, primary_subcat, stars, contributors, star_7d
+        FROM ranked
+        WHERE _rn = 1
+        """,
+        output=False,
+        engine=pyoso_db_conn
+    )
+    return (df_gl,)
+
+
+@app.cell(hide_code=True)
+def compute_subcat_health(df_gl):
+    df_subcat = df_gl.groupby(['category', 'primary_subcat']).agg(
+        repos=('repo', 'count'),
+        total_stars=('stars', 'sum'),
+        median_stars=('stars', 'median'),
+        median_contributors=('contributors', 'median'),
+        weekly_stars=('star_7d', 'sum'),
+    ).reset_index()
+    return (df_subcat,)
+
+
+@app.cell(hide_code=True)
+def currentai_mapping():
+    FOCUS_MAPPING = {
+        ("AI Engineering", "Give agent tools"):              "Enabling Infrastructure",
+        ("AI Engineering", "Give agent knowledge"):          "Enabling Infrastructure",
+        ("AI Engineering", "Test & guard"):                  "Trust & Safety Infrastructure",
+        ("AI Engineering", "Prompt & Scaffold"):             "Enabling Infrastructure",
+        ("AI Engineering", "Build agent workflow (SDK)"):    "Enabling Infrastructure",
+        ("AI Engineering", "Make agent see hear talk"):      "Linguistic Diversity",
+        ("AI Engineering", "Access models"):                 "Enabling Infrastructure",
+        ("AI Engineering", "Build agent workflow (visual)"): "Enabling Infrastructure",
+        ("AI Engineering", "Bring agent to users"):          "Enabling Infrastructure",
+        ("AI Engineering", "Build agent UI"):                "Enabling Infrastructure",
+        ("AI Engineering", "Protocols"):                     "Audit & Accountability",
+        ("AI Engineering", "Coding"):                        "Enabling Infrastructure",
+        ("AI Engineering", "Orchestration"):                 "Enabling Infrastructure",
+        ("AI Engineering", "Wrappers"):                      "Enabling Infrastructure",
+        ("AI Engineering", "Gateway"):                       "Enabling Infrastructure",
+        ("AI Engineering", "Prompt collections"):            "Enabling Infrastructure",
+        ("AI Engineering", "Other"):                         "Enabling Infrastructure",
+        ("Applications", "Content creation"):                "Public Interest Media",
+        ("Applications", "Coding"):                          "Enabling Infrastructure",
+        ("Applications", "Personal"):                        "People & Participation",
+        ("Applications", "Specialists"):                     "Health & Human Welfare",
+        ("Applications", "Productivity"):                    "Enabling Infrastructure",
+        ("Applications", "Research & knowledge"):            "Science Data",
+        ("Applications", "Wrappers"):                        "Enabling Infrastructure",
+        ("Applications", "Other"):                           "Enabling Infrastructure",
+        ("Applications", "Object detection"):                "Enabling Infrastructure",
+        ("Applications", "Data organization"):               "Data Provenance",
+        ("Applications", "Domain-specific"):                 "Enabling Infrastructure",
+        ("Applications", "Audio detection"):                 "Enabling Infrastructure",
+        ("Applications", "Give agent tools"):                "Enabling Infrastructure",
+        ("Infrastructure", "Deploy & Serve"):                "Enabling Infrastructure",
+        ("Infrastructure", "Inference service optimization"): "Enabling Infrastructure",
+        ("Infrastructure", "Model optimization"):            "Enabling Infrastructure",
+        ("Infrastructure", "Gateway"):                       "Enabling Infrastructure",
+        ("Infrastructure", "Orchestration"):                 "Enabling Infrastructure",
+        ("Infrastructure", "Observability"):                 "Trust & Safety Infrastructure",
+        ("Infrastructure", "Kernels"):                       "Enabling Infrastructure",
+        ("Infrastructure", "Data systems"):                  "Data Provenance",
+        ("Infrastructure", "Model Hub"):                     "Enabling Infrastructure",
+        ("Infrastructure", "Make world agent-ready"):        "Enabling Infrastructure",
+        ("Infrastructure", "Index & Search"):                "Enabling Infrastructure",
+        ("Infrastructure", "Toolings"):                      "Enabling Infrastructure",
+        ("Infrastructure", "Protocols"):                     "Audit & Accountability",
+        ("Infrastructure", "Give agent knowledge"):          "Enabling Infrastructure",
+        ("Infrastructure", "Other"):                         "Enabling Infrastructure",
+        ("Lists", "Paper collections"):                      "Science Data",
+        ("Lists", "Tool collections"):                       "Enabling Infrastructure",
+        ("Lists", "Prompt collections"):                     "Enabling Infrastructure",
+        ("Lists", "Use cases"):                              "Enabling Infrastructure",
+        ("Lists", "Domain-specific"):                        "Enabling Infrastructure",
+        ("Lists", "Model collections"):                      "Enabling Infrastructure",
+        ("Lists", "Dataset collections"):                    "Data Provenance",
+        ("Lists", "Other"):                                  "Enabling Infrastructure",
+        ("Lists", "ML/AI fundamentals"):                     "Enabling Infrastructure",
+        ("Lists", "Tool-specific tutorials"):                "Enabling Infrastructure",
+        ("Lists", "Getting started"):                        "Enabling Infrastructure",
+        ("Misc", "Coding"):                                  "Enabling Infrastructure",
+        ("Misc", "Other"):                                   "Enabling Infrastructure",
+        ("Model Development", "Architecture"):               "Enabling Infrastructure",
+        ("Model Development", "Classical ML"):               "Enabling Infrastructure",
+        ("Model Development", "Dataset engineering"):        "Data Provenance",
+        ("Model Development", "Deep Learning Frameworks"):   "Enabling Infrastructure",
+        ("Model Development", "Domain-specific training"):   "Health & Human Welfare",
+        ("Model Development", "Environments"):               "Enabling Infrastructure",
+        ("Model Development", "Fine-tuning"):                "Enabling Infrastructure",
+        ("Model Development", "Reinforcement Learning"):     "Enabling Infrastructure",
+        ("Model Development", "Training toolkits"):          "Enabling Infrastructure",
+        ("Model Development", "Interpretability"):           "Trust & Safety Infrastructure",
+        ("Model Development", "LLM training"):               "Enabling Infrastructure",
+        ("Model Development", "Physical AI"):                "Enabling Infrastructure",
+        ("Model Development", "Toolings"):                   "Enabling Infrastructure",
+        ("Model Development", "Vision models"):              "Enabling Infrastructure",
+        ("Model Development", "Model optimization"):         "Enabling Infrastructure",
+        ("Model Development", "Object detection"):           "Enabling Infrastructure",
+        ("Model Development", "Test & guard"):               "Trust & Safety Infrastructure",
+        ("Model Development", "Audio/Speech models"):        "Linguistic Diversity",
+        ("Model Development", "Dataset collections"):        "Data Provenance",
+        ("Model Development", "Access models"):              "Enabling Infrastructure",
+        ("Model Development", "Other"):                      "Enabling Infrastructure",
+        ("Models", "Vision models"):                         "Enabling Infrastructure",
+        ("Models", "Foundation models"):                     "Enabling Infrastructure",
+        ("Models", "Domain-specific models"):                "Health & Human Welfare",
+        ("Models", "Audio/Speech models"):                   "Linguistic Diversity",
+        ("Models", "Language-specific models"):              "Linguistic Diversity",
+        ("Models", "Embedding Models"):                      "Enabling Infrastructure",
+        ("Models", "Embedding models"):                      "Enabling Infrastructure",
+        ("Models", "On-device models"):                      "Enabling Infrastructure",
+        ("Models", "Object detection"):                      "Enabling Infrastructure",
+        ("Models", "Architecture"):                          "Enabling Infrastructure",
+        ("Tutorials", "ML/AI fundamentals"):                 "Enabling Infrastructure",
+        ("Tutorials", "Tool-specific tutorials"):            "Enabling Infrastructure",
+        ("Tutorials", "AIE roadmap"):                        "Enabling Infrastructure",
+        ("Tutorials", "Getting started"):                    "Enabling Infrastructure",
+        ("Tutorials", "MLE roadmap"):                        "Enabling Infrastructure",
+        ("Tutorials", "Interview guide"):                    "Enabling Infrastructure",
+    }
+    FOCUS_DEFAULT = "Enabling Infrastructure"
+    return FOCUS_DEFAULT, FOCUS_MAPPING
+
+
+@app.cell(hide_code=True)
+def market_map_stats(df_subcat, mo):
+    _cats = ['Infrastructure', 'AI Engineering', 'Model Development', 'Applications', 'Models']
+    _sub  = df_subcat[df_subcat['category'].isin(_cats)]
+    mo.hstack([
+        mo.stat(label="Repos",         value=f"{_sub['repos'].sum():,}",              bordered=True, caption="across active categories"),
+        mo.stat(label="Total stars",   value=f"{_sub['total_stars'].sum()/1e6:.1f}M", bordered=True, caption="community adoption signal"),
+        mo.stat(label="Subcategories", value=str(_sub['primary_subcat'].nunique()),    bordered=True, caption="top-level taxonomy"),
+    ], widths="equal", gap=1)
+    return
+
+
+@app.cell(hide_code=True)
+def market_map(df_subcat, go, mo):
+    _treemap_data = df_subcat[df_subcat['category'].isin([
+        'Infrastructure', 'AI Engineering', 'Model Development', 'Applications', 'Models'
+    ])].copy()
+    _treemap_data = _treemap_data[_treemap_data['repos'] >= 5]
+
+    _ids, _labels, _parents, _values, _colors, _texts = [], [], [], [], [], []
+
+    for _cat, _grp in _treemap_data.groupby('category'):
+        _cat_repos = _grp['repos'].sum()
+        _cat_med   = _grp['median_contributors'].median()
+        _ids.append(_cat)
+        _labels.append(f"<b>{_cat}</b><br>{_cat_repos:,} repos")
+        _parents.append('')
+        _values.append(int(_cat_repos))
+        _colors.append(float(_cat_med))
+        _texts.append(f"{_cat_repos:,} repos<br>med contributors: {_cat_med:.0f}")
+
+    for _, _row in _treemap_data.iterrows():
+        _uid = f"{_row['category']}|{_row['primary_subcat']}"
+        _ids.append(_uid)
+        _labels.append(f"{_row['primary_subcat']}<br>{_row['repos']} repos")
+        _parents.append(_row['category'])
+        _values.append(int(_row['repos']))
+        _colors.append(float(_row['median_contributors']))
+        _texts.append(
+            f"<b>{_row['primary_subcat']}</b><br>"
+            f"Repos: {_row['repos']:,}<br>"
+            f"Total stars: {_row['total_stars']:,.0f}<br>"
+            f"Median stars: {_row['median_stars']:,.0f}<br>"
+            f"Median contributors: {_row['median_contributors']:.0f}"
+        )
+
+    _fig = go.Figure(go.Treemap(
+        ids=_ids, labels=_labels, parents=_parents, values=_values,
+        customdata=_texts, hovertemplate='%{customdata}<extra></extra>',
+        marker=dict(
+            colors=_colors,
+            colorscale=[[0, '#d6eaf8'], [0.3, '#5dade2'], [0.7, '#1a5276'], [1, '#0b2641']],
+            cmin=0, cmax=40,
+            colorbar=dict(title='Median<br>Contributors', thickness=14, len=0.6, tickfont=dict(size=10)),
+            line=dict(width=1.5, color='white'),
+        ),
+        textfont=dict(size=11),
+        branchvalues='total',
+    ))
+    _fig.update_layout(template='plotly_white', margin=dict(t=10, l=0, r=0, b=0), height=520)
+    mo.vstack([
+        mo.md("""
+        ## Market Map
+
+        The treemap shows **how much exists** in each layer of the AI stack;
+        color encodes **contributor depth** (median contributors per repo in that subcategory).
+
+        > Thin color = few contributors per repo → higher need for public investment
+        """),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def health_scatter(df_subcat, go, mo):
+    _data = df_subcat[
+        df_subcat['category'].isin(['Infrastructure', 'AI Engineering', 'Model Development', 'Applications', 'Models'])
+        & (df_subcat['repos'] >= 10)
+    ].copy()
+
+    _x_thresh = _data['median_stars'].median()
+    _y_thresh  = _data['median_contributors'].median()
+
+    _cat_colors = {
+        'Infrastructure':    '#1A5276',
+        'AI Engineering':    '#196F3D',
+        'Model Development': '#922B21',
+        'Applications':      '#6C3483',
+        'Models':            '#117A65',
+    }
+
+    _traces = []
+    for _cat, _grp in _data.groupby('category'):
+        _traces.append(go.Scatter(
+            x=_grp['median_stars'],
+            y=_grp['median_contributors'],
+            mode='markers',
+            name=_cat,
+            marker=dict(
+                size=10,
+                color=_cat_colors.get(_cat, '#999'),
+                opacity=0.8,
+                line=dict(width=1, color='white'),
+            ),
+            text=_grp['primary_subcat'],
+            customdata=list(zip(_grp['repos'], _grp['total_stars'], _grp['median_stars'], _grp['median_contributors'])),
+            hovertemplate=(
+                "<b>%{text}</b><br>"
+                "Category: " + _cat + "<br>"
+                "Repos: %{customdata[0]}<br>"
+                "Total stars: %{customdata[1]:,.0f}<br>"
+                "Median stars: %{customdata[2]:,.0f}<br>"
+                "Median contributors: %{customdata[3]:.0f}"
+                "<extra></extra>"
+            ),
+        ))
+
+    _fig = go.Figure(data=_traces)
+    _fig.update_layout(
+        template='plotly_white',
+        margin=dict(t=10, l=60, r=80, b=50), height=480,
+        xaxis=dict(title='Median stars per repo (log scale)', type='log', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        yaxis=dict(title='Median contributors per repo', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        legend=dict(orientation='h', yanchor='bottom', y=1.01, xanchor='left', x=0, title_text=''),
+        hovermode='closest',
+    )
+    _fig.add_vline(x=_x_thresh, line=dict(color='#999', width=1, dash='dash'))
+    _fig.add_hline(y=_y_thresh, line=dict(color='#999', width=1, dash='dash'))
+
+    _quadrants = [
+        (0.02, 0.02, 'P1', '#C0392B', 'bottom', 'left'),
+        (0.98, 0.02, 'P2', '#E67E22', 'bottom', 'right'),
+        (0.02, 0.98, 'P3', '#2980B9', 'top',    'left'),
+        (0.98, 0.98, 'P4', '#27AE60', 'top',    'right'),
+    ]
+    for _px, _py, _label, _color, _yanchor, _xanchor in _quadrants:
+        _fig.add_annotation(
+            x=_px, y=_py, xref='paper', yref='paper',
+            text=f'<b>{_label}</b>',
+            showarrow=False,
+            font=dict(size=13, color=_color),
+            xanchor=_xanchor, yanchor=_yanchor,
+            bgcolor='rgba(255,255,255,0.7)',
+            borderpad=3,
+        )
+
+    health_scatter_plot = mo.ui.plotly(_fig)
+    mo.vstack([
+        mo.md(f"""
+        ## Ecosystem Health · Coverage vs. Depth
+
+        Stars proxy **adoption**. Contributors proxy **sustainability**.
+        Thresholds are the median of medians across subcategories
+        (stars: {_x_thresh:,.0f} · contributors: {_y_thresh:.0f}).
+
+        **P1** low adoption + low contributors — highest gap priority ·
+        **P2** popular but few contributors — sustainability risk ·
+        **P3** deep contributors, low visibility — hidden gems ·
+        **P4** healthy · _Box-select to inspect subcategories below._
+        """),
+        health_scatter_plot,
+    ])
+    return (health_scatter_plot,)
+
+
+@app.cell(hide_code=True)
+def health_scatter_selection(df_subcat, health_scatter_plot, mo):
+    _points = health_scatter_plot.value or []
+
+    if not _points:
+        _out = mo.md("_Select subcategories on the chart above._")
+    else:
+        _xs = {p['x'] for p in _points}
+        _ys = {p['y'] for p in _points}
+        _df = df_subcat[
+            df_subcat['median_stars'].isin(_xs) & df_subcat['median_contributors'].isin(_ys)
+        ][['category', 'primary_subcat', 'repos', 'total_stars',
+           'median_stars', 'median_contributors', 'weekly_stars']].copy()
+        _df.columns = ['Category', 'Subcategory', 'Repos', 'Total Stars',
+                       'Median Stars', 'Median Contributors', '7d Stars']
+        _df['Total Stars']  = _df['Total Stars'].apply(lambda x: f"{x:,.0f}")
+        _df['Median Stars'] = _df['Median Stars'].apply(lambda x: f"{x:,.0f}")
+        _df = _df.reset_index(drop=True)
+        _out = mo.ui.table(_df, show_column_summaries=False, show_data_types=False)
+    _out
+    return
+
+
+@app.cell(hide_code=True)
+def red_spots_table(df_subcat, mo):
+    _target_cats = ['Infrastructure', 'AI Engineering', 'Model Development', 'Models']
+    _gaps = df_subcat[
+        df_subcat['category'].isin(_target_cats)
+        & (df_subcat['repos'] >= 5)
+        & (
+            (df_subcat['median_contributors'] < 8)
+            | (df_subcat['median_stars'] < 800)
+            | (df_subcat['repos'] < 60)
+        )
+    ].copy()
+    _gaps['gap_score'] = (
+        (8   - _gaps['median_contributors'].clip(upper=8))   / 8   * 40 +
+        (800 - _gaps['median_stars'].clip(upper=800))         / 800 * 30 +
+        (60  - _gaps['repos'].clip(upper=60))                 / 60  * 30
+    ).round(1)
+    _gaps = _gaps.sort_values('gap_score', ascending=False)
+    _display = _gaps[['category', 'primary_subcat', 'repos', 'total_stars', 'median_stars', 'median_contributors', 'weekly_stars', 'gap_score']].copy()
+    _display.columns = ['Category', 'Subcategory', 'Repos', 'Total Stars', 'Median Stars', 'Median Contributors', '7d Stars', 'Gap Score']
+    _display['Total Stars']  = _display['Total Stars'].apply(lambda x: f"{x:,.0f}")
+    _display['Median Stars'] = _display['Median Stars'].apply(lambda x: f"{x:,.0f}")
+    _display['7d Stars']     = _display['7d Stars'].apply(lambda x: f"{max(0,x):,.0f}")
+    _display = _display.reset_index(drop=True)
+    mo.vstack([
+        mo.md(f"""
+        ## Red Spots — Where Are the Gaps?
+
+        Subcategories that are present but thin: few repos, low contributor depth, or low adoption.
+        Criteria: ≥ 5 repos + at least one of median contributors < 8, median stars < 800, or repos < 60.
+
+        **{len(_display)} subcategories** flagged:
+        """),
+        mo.ui.table(_display, show_column_summaries=False, show_data_types=False),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def gap_analysis_intro(mo):
+    mo.md(
+        """
+    ## Gap Analysis — Current AI 2025 Focus Areas
+
+    [Current AI](https://current.ai) has identified 10 focus areas for its 2025 grantmaking.
+    The charts below map the open-source AI ecosystem against these areas to surface where
+    public investment has the least existing community to build on.
+
+    | # | Focus Area |
+    |---|-----------|
+    | 1 | Linguistic Diversity |
+    | 2 | Health & Human Welfare |
+    | 3 | Audit & Accountability |
+    | 4 | Trust & Safety Infrastructure |
+    | 5 | Data Provenance |
+    | 6 | Public Interest Media |
+    | 7 | Science Data |
+    | 8 | Climate & Sustainability |
+    | 9 | People & Participation |
+    | 10 | AI & Children |
+    """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def focus_area_coverage(FOCUS_DEFAULT, FOCUS_MAPPING, df_gl, go, mo):
+    _ALL_AREAS = [
+        "Trust & Safety Infrastructure",
+        "Data Provenance",
+        "Public Interest Media",
+        "Linguistic Diversity",
+        "Health & Human Welfare",
+        "Science Data",
+        "Audit & Accountability",
+        "Climate & Sustainability",
+        "People & Participation",
+        "AI & Children",
+        "Enabling Infrastructure",
+    ]
+
+    _df = df_gl.copy()
+    _df['focus'] = _df.apply(
+        lambda r: FOCUS_MAPPING.get((r['category'], r['primary_subcat']), FOCUS_DEFAULT),
+        axis=1,
+    )
+
+    _counts = _df.groupby('focus')['repo'].count().to_dict()
+    _repos  = [_counts.get(fa, 0) for fa in _ALL_AREAS]
+    _colors = [
+        '#C0392B' if r == 0 else
+        '#BDC3C7' if fa == 'Enabling Infrastructure' else
+        '#2980B9'
+        for fa, r in zip(_ALL_AREAS, _repos)
+    ]
+
+    _fig = go.Figure(go.Bar(
+        y=_ALL_AREAS,
+        x=_repos,
+        orientation='h',
+        marker_color=_colors,
+        customdata=[[fa, r] for fa, r in zip(_ALL_AREAS, _repos)],
+        hovertemplate="<b>%{customdata[0]}</b><br>Repos: %{customdata[1]:,}<extra></extra>",
+    ))
+    _fig.update_layout(
+        template='plotly_white',
+        height=420,
+        margin=dict(t=10, l=0, r=30, b=40),
+        xaxis=dict(title='Repos tracked', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1, autorange='reversed'),
+    )
+
+    _gap_areas = [fa for fa, r in zip(_ALL_AREAS, _repos) if r == 0 and fa != 'Enabling Infrastructure']
+    _covered   = sum(1 for fa, r in zip(_ALL_AREAS, _repos) if r > 0 and fa != 'Enabling Infrastructure')
+
+    mo.vstack([
+        mo.md(f"""
+        ## Current AI Program Area Coverage
+
+        Each repo is assigned a focus area via a hand-curated mapping from OSO subcategory →
+        Current AI program area (defined in the `currentai_mapping` cell above).
+        **Red bars** = 0 repos — no existing open-source community to anchor public investment.
+
+        **{_covered}/10** areas have open-source coverage ·
+        **{len(_gap_areas)} gap(s) with no repos:** {', '.join(f'**{a}**' for a in _gap_areas)}
+        """),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def focus_area_breakdown(FOCUS_DEFAULT, FOCUS_MAPPING, df_subcat, mo):
+    _df = df_subcat.copy()
+    _df['currentai_focus'] = _df.apply(
+        lambda r: FOCUS_MAPPING.get((r['category'], r['primary_subcat']), FOCUS_DEFAULT),
+        axis=1,
+    )
+    _grouped = (
+        _df[_df['currentai_focus'] != 'Enabling Infrastructure']
+        .groupby('currentai_focus')
+        .agg(
+            subcategories=('primary_subcat', 'count'),
+            repos=('repos', 'sum'),
+            total_stars=('total_stars', 'sum'),
+        )
+        .reset_index()
+        .sort_values('repos', ascending=False)
+        .rename(columns={'currentai_focus': 'Focus Area', 'subcategories': 'Subcategories',
+                         'repos': 'Repos', 'total_stars': 'Total Stars'})
+        .reset_index(drop=True)
+    )
+    _grouped['Total Stars'] = _grouped['Total Stars'].apply(lambda x: f"{x:,.0f}")
+    mo.vstack([
+        mo.md("### Breakdown by Focus Area (excl. Enabling Infrastructure)"),
+        mo.ui.table(_grouped, show_column_summaries=False, show_data_types=False),
+    ])
+    return
+
+
+if __name__ == "__main__":
+    app.run()
