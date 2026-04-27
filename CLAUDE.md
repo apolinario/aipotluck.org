@@ -13,36 +13,50 @@ Three phases:
 
 ## Tech Stack
 
-- **Website**: Vanilla JS + CSS, built with Vite (pnpm for package management)
-- **Data (future)**: pyoso client → OSO data warehouse (Trino SQL)
-- **Notebooks**: marimo (`.py` files) for data analysis
+- **Website** (`app/`): Vanilla JS + CSS, built with Vite (pnpm for package management)
+- **Data**: pyoso client → OSO data warehouse (Trino SQL)
+- **Notebooks** (`notebooks/`): marimo (`.py` files) for data analysis
+- **Scripts** (`scripts/`): Python CLI tools for publishing and export
 - **Fonts**: Fraunces (serif display), Inter (UI), JetBrains Mono (data)
 
 ## Commands
 
 ```bash
-pnpm dev                         # start dev server (port 5173)
-pnpm build                       # production build → dist/
-pnpm preview                     # preview production build
+# Website
+cd app && pnpm dev               # start dev server (port 5173)
+cd app && pnpm build             # production build → app/dist/
+cd app && pnpm preview           # preview production build
+
+# Notebooks
+uv run marimo edit notebooks/data_inventory.py   # edit interactively
+uv run marimo run notebooks/oss_ai_trends.py     # run as app
+
+# Scripts
+uv run scripts/export_notebooks.py               # export all notebooks to HTML
 ```
 
 ## Architecture
 
-- `index.html` — single-page app shell (topbar, masthead, toolbar, sections, drawer)
-- `src/data.js` — curated dataset: 7 layers × ~4 categories each, ~80 projects, health scores, suggestions
-- `src/app.js` — all rendering and interaction (stack/workflow/matrix views, drawer, search, voting, form)
-- `src/style.css` — full design system with CSS custom properties (paper/ink palette, editorial typography)
+- `app/` — self-contained Vite website (own package.json, pnpm)
+  - `app/src/data.js` — curated dataset: 7 layers × ~4 categories each, ~80 projects, health scores
+  - `app/src/app.js` — all rendering and interaction (stack/workflow/matrix views, drawer, search, voting)
+  - `app/src/style.css` — design system with CSS custom properties (paper/ink palette, editorial typography)
+- `notebooks/` — marimo notebooks for analysis (query OSO + local CSVs)
+- `scripts/` — Python CLI tools (notebook export, data publishing)
+- `data/` — raw external CSVs (OSAI gap map, etc.)
+- `docs/` — specs and methodology
 
 ### Design System
 
 Palette uses CSS custom properties: `--paper` (warm off-white), `--ink` (deep brown-black), `--signal` (gap red), `--healthy` (teal), `--warm` (amber). Health thresholds: ≥70 = healthy, 45-69 = medium/fragile, <45 = gap.
 
-### Views
+### Data Sources
 
-Three switchable views via segmented control:
-- **Stack** — 7 horizontal layer rows, each with category cells
-- **Workflow** — sequential pipeline phases with step selector
-- **Matrix** — 5-dimension openness scores per layer
+Notebooks query from multiple sources:
+- `currentai.goodailist_repos.repos` — 14.7K AI repos (GoodAI List, OSO static model)
+- `currentai.ossinsights_ai_collections.ossinsights_ai_collections` — 616 repos, 53 collections
+- `data/*.csv` — OSAI gap map qualitative scores (41 subcategories × 10 dimensions)
+- `oso.*` — public tables (projects, artifacts, developer metrics)
 
 ## Environment
 
