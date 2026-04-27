@@ -125,7 +125,6 @@ def load_oso_projects(mo, pyoso_db_conn):
         JOIN oso.artifacts_by_project_v1 AS a
           ON p.project_id = a.project_id
         WHERE a.artifact_source = 'GITHUB'
-          AND a.artifact_type = 'REPOSITORY'
         """,
         output=False,
         engine=pyoso_db_conn
