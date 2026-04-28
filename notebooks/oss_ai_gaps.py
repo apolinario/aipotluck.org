@@ -315,6 +315,7 @@ def market_map(C, df_subcat, go, mo):
         ),
         textfont=dict(size=11),
         branchvalues='total',
+        pathbar=dict(visible=False),
     ))
     _fig.update_layout(
         plot_bgcolor='white', paper_bgcolor='white',
