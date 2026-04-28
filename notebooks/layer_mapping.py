@@ -472,7 +472,7 @@ def methodology(C, F, mo):
         f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["ink_3"]}; '
         f'letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Methodology</div>'
         f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; '
-        f'line-height:1.5; max-width:72ch;">'
+        f'line-height:1.5;">'
         f'OSAI gap map scores (1–4) are qualitative expert assessments across 10 dimensions. '
         f'GoodAI List repos are matched via a manual mapping from OSAI subcategories to '
         f'GoodAI (category, subcategory) pairs. Repos ranked by star count as a proxy for adoption. '
