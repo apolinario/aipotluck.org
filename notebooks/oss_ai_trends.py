@@ -263,15 +263,16 @@ def monthly_active_chart(CAT_COLORS, C, F, df_monthly, go, mo):
 
         _color = CAT_COLORS.get(_cat, C['accent'])
         _fig = go.Figure()
+        _month_labels = [str(m)[:7] for m in _df['month']]
         _fig.add_trace(go.Bar(
-            x=_df['month'], y=_df['full_time'],
+            x=_month_labels, y=_df['full_time'],
             name='Full-Time', marker_color=_color,
-            hovertemplate='<b>Full-Time</b><br>%{x|%b %Y}: %{y:,}<extra></extra>',
+            hovertemplate='<b>Full-Time</b><br>%{x}: %{y:,}<extra></extra>',
         ))
         _fig.add_trace(go.Bar(
-            x=_df['month'], y=_df['part_time'],
+            x=_month_labels, y=_df['part_time'],
             name='Part-Time', marker_color=_color, marker_opacity=0.5,
-            hovertemplate='<b>Part-Time</b><br>%{x|%b %Y}: %{y:,}<extra></extra>',
+            hovertemplate='<b>Part-Time</b><br>%{x}: %{y:,}<extra></extra>',
         ))
         _fig.update_layout(
             barmode='stack',
@@ -282,8 +283,8 @@ def monthly_active_chart(CAT_COLORS, C, F, df_monthly, go, mo):
             hovermode='x unified',
             showlegend=True,
             legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1, bgcolor='rgba(255,255,255,0.8)'),
-            xaxis=dict(showgrid=False, showline=True, linecolor=C['ink'], linewidth=1,
-                       tickfont=dict(size=11, color=C['ink_3']), tickformat='%b %Y'),
+            xaxis=dict(type='category', showgrid=False, showline=True, linecolor=C['ink'], linewidth=1,
+                       tickfont=dict(size=11, color=C['ink_3'])),
             yaxis=dict(showgrid=True, gridcolor=C['rule'], showline=True, linecolor=C['ink'],
                        linewidth=1, tickfont=dict(size=11, color=C['ink_3']), title='Active developers', tickformat=',d'),
         )
