@@ -15,9 +15,11 @@ from pathlib import Path
 
 from huggingface_hub import list_models, list_datasets
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-MODELS_CSV = DATA_DIR / "huggingface_models.csv"
-DATASETS_CSV = DATA_DIR / "huggingface_datasets.csv"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "huggingface"
+MODELS_CSV = DATA_DIR / "tracked_models.csv"
+DATASETS_CSV = DATA_DIR / "tracked_datasets.csv"
+TOP_MODELS_CSV = DATA_DIR / "top_models.csv"
+TOP_DATASETS_CSV = DATA_DIR / "top_datasets.csv"
 
 MODEL_FIELDS = [
     "model_id", "author", "downloads", "likes",
@@ -162,36 +164,40 @@ def dedup_datasets(rows: list[dict]) -> list[dict]:
 
 
 def main():
-    authors = get_tracked_authors()
+    import argparse
+    parser = argparse.ArgumentParser(description="Fetch Hugging Face models and datasets.")
+    parser.add_argument("--top-only", action="store_true", help="Only fetch top 1K global (skip author scan)")
+    parser.add_argument("--tracked-only", action="store_true", help="Only fetch tracked authors (skip top 1K)")
+    args = parser.parse_args()
 
-    if authors:
-        print(f"\nFetching HF models for {len(authors)} tracked authors...")
-        models = fetch_models_by_authors(authors)
-        print(f"  Found {len(models)} models from tracked authors")
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-        print(f"\nFetching HF datasets for {len(authors)} tracked authors...")
-        datasets = fetch_datasets_by_authors(authors)
-        print(f"  Found {len(datasets)} datasets from tracked authors")
-    else:
-        models, datasets = [], []
+    if not args.top_only:
+        authors = get_tracked_authors()
+        if authors:
+            print(f"\nFetching HF models for {len(authors)} tracked authors...")
+            tracked_models = fetch_models_by_authors(authors)
+            print(f"  Found {len(tracked_models)} models from tracked authors")
 
-    print("\nFetching top 1000 global models and datasets...")
-    try:
-        top_models, top_datasets = fetch_top(limit=1000)
-        print(f"  Found {len(top_models)} top models, {len(top_datasets)} top datasets")
-        models = dedup_models(models + top_models)
-        datasets = dedup_datasets(datasets + top_datasets)
-    except Exception as e:
-        print(f"  Warning: global top fetch failed ({e})")
-        print("  Saving tracked-author results only. Re-run later for global top.")
+            print(f"\nFetching HF datasets for {len(authors)} tracked authors...")
+            tracked_datasets = fetch_datasets_by_authors(authors)
+            print(f"  Found {len(tracked_datasets)} datasets from tracked authors")
 
-    models.sort(key=lambda r: r["downloads"], reverse=True)
-    datasets.sort(key=lambda r: r["downloads"], reverse=True)
+            write_csv(MODELS_CSV, tracked_models, MODEL_FIELDS)
+            write_csv(DATASETS_CSV, tracked_datasets, DATASET_FIELDS)
 
-    write_csv(MODELS_CSV, models, MODEL_FIELDS)
-    write_csv(DATASETS_CSV, datasets, DATASET_FIELDS)
+    if not args.tracked_only:
+        print("\nFetching top 1000 global models and datasets...")
+        try:
+            top_models, top_datasets = fetch_top(limit=1000)
+            print(f"  Found {len(top_models)} top models, {len(top_datasets)} top datasets")
+            write_csv(TOP_MODELS_CSV, top_models, MODEL_FIELDS)
+            write_csv(TOP_DATASETS_CSV, top_datasets, DATASET_FIELDS)
+        except Exception as e:
+            print(f"  Warning: global top fetch failed ({e})")
+            print("  Re-run with --top-only later.")
 
-    print(f"\nDone. Models: {len(models)}, Datasets: {len(datasets)}")
+    print("\nDone.")
 
 
 if __name__ == "__main__":

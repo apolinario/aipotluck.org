@@ -90,8 +90,7 @@ def load_osai_gap_map(pd):
     from pathlib import Path
 
     _data_dir = Path(__file__).parent.parent / "data"
-    _csv_files = list(_data_dir.glob("*OSAI gap map*scores_spreadsheet*.csv"))
-    _csv_path = _csv_files[0]
+    _csv_path = _data_dir / "osai-gap-map" / "scores.csv"
 
     _col_names = [
         "layer", "subcategory", "description", "subcategory_id",

@@ -182,8 +182,7 @@ The OSAI gap map (`data/*.csv`) provides qualitative maturity scores. It is NOT 
 import pandas as pd
 from pathlib import Path
 
-data_dir = Path("data")
-csv_path = next(data_dir.glob("*OSAI*gap*map*.csv"))
+csv_path = Path("data/osai-gap-map/scores.csv")
 df = pd.read_csv(csv_path, skiprows=1)
 ```
 
