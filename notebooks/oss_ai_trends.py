@@ -138,27 +138,14 @@ def compute_subcat_health(df_gl):
 
 
 @app.cell(hide_code=True)
-def load_ddp_stars_forks(mo, pyoso_db_conn):
+def load_repo_activity(mo, pyoso_db_conn):
     df_stars_forks = mo.sql(
         f"""
-        WITH gl_repos AS (
-          SELECT
-            LOWER(repo)                     AS repo,
-            LOWER(SPLIT_PART(repo, '/', 1)) AS owner,
-            LOWER(SPLIT_PART(repo, '/', 2)) AS name
-          FROM currentai.goodailist_repos.repos
-        )
         SELECT
-          gl.repo,
-          COUNT(CASE WHEN ev.event_type = 'STARRED' THEN 1 END) AS stars_3m,
-          COUNT(CASE WHEN ev.event_type = 'FORKED'  THEN 1 END) AS forks_3m
-        FROM gl_repos gl
-        JOIN oso.int_events__github_unified ev
-          ON LOWER(ev.to_artifact_namespace) = gl.owner
-          AND LOWER(ev.to_artifact_name)     = gl.name
-        WHERE ev.event_type IN ('STARRED', 'FORKED')
-          AND ev.time >= CURRENT_DATE - INTERVAL '90' DAY
-        GROUP BY gl.repo
+          repo,
+          stars_90d AS stars_3m,
+          forks_90d AS forks_3m
+        FROM currentai.ai_repo_activity.ai_repo_activity
         ORDER BY stars_3m DESC
         """,
         output=False,
@@ -168,28 +155,16 @@ def load_ddp_stars_forks(mo, pyoso_db_conn):
 
 
 @app.cell(hide_code=True)
-def load_ddp_contributors(mo, pyoso_db_conn):
+def load_contributors(mo, pyoso_db_conn):
     df_contributors = mo.sql(
         f"""
-        WITH gl_repos AS (
-          SELECT LOWER(repo) AS repo
-          FROM currentai.goodailist_repos.repos
-        ),
-        mapped AS (
-          SELECT gl.repo, r.opendevdata_id AS repo_id
-          FROM gl_repos gl
-          JOIN oso.int_opendevdata__repositories_with_repo_id r
-            ON LOWER(r.repo_name) = gl.repo
-        )
         SELECT
-          m.repo,
-          COUNT(DISTINCT rda.canonical_developer_id)                                                     AS total_contributors,
-          COUNT(DISTINCT CASE WHEN rda.l28_days >= 10     THEN rda.canonical_developer_id END)           AS full_time,
-          COUNT(DISTINCT CASE WHEN rda.l28_days BETWEEN 1 AND 9 THEN rda.canonical_developer_id END)    AS part_time
-        FROM mapped m
-        JOIN oso.stg_opendevdata__repo_developer_28d_activities rda ON rda.repo_id = m.repo_id
-        WHERE rda.day >= CURRENT_DATE - INTERVAL '90' DAY
-        GROUP BY m.repo
+          repo,
+          total_contributors,
+          full_time,
+          part_time
+        FROM currentai.ai_repo_activity.ai_repo_activity
+        WHERE total_contributors > 0
         ORDER BY total_contributors DESC
         """,
         output=False,
@@ -199,29 +174,16 @@ def load_ddp_contributors(mo, pyoso_db_conn):
 
 
 @app.cell(hide_code=True)
-def load_ddp_monthly(mo, pyoso_db_conn):
+def load_monthly(mo, pyoso_db_conn):
     df_monthly = mo.sql(
         f"""
-        WITH gl_repos AS (
-          SELECT LOWER(repo) AS repo, TRIM(category) AS category
-          FROM currentai.goodailist_repos.repos
-        ),
-        mapped AS (
-          SELECT gl.repo, gl.category, r.opendevdata_id AS repo_id
-          FROM gl_repos gl
-          JOIN oso.int_opendevdata__repositories_with_repo_id r
-            ON LOWER(r.repo_name) = gl.repo
-        )
         SELECT
-          m.category,
-          DATE_TRUNC('month', CAST(rda.day AS DATE))                                                     AS month,
-          COUNT(DISTINCT rda.canonical_developer_id)                                                     AS active_devs,
-          COUNT(DISTINCT CASE WHEN rda.l28_days >= 10     THEN rda.canonical_developer_id END)           AS full_time,
-          COUNT(DISTINCT CASE WHEN rda.l28_days BETWEEN 1 AND 9 THEN rda.canonical_developer_id END)    AS part_time
-        FROM mapped m
-        JOIN oso.stg_opendevdata__repo_developer_28d_activities rda ON rda.repo_id = m.repo_id
-        WHERE rda.day >= CURRENT_DATE - INTERVAL '90' DAY
-        GROUP BY m.category, DATE_TRUNC('month', CAST(rda.day AS DATE))
+          category,
+          month,
+          active_devs,
+          full_time,
+          part_time
+        FROM currentai.ai_monthly_devs.ai_monthly_devs
         ORDER BY month, category
         """,
         output=False,
