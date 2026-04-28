@@ -239,7 +239,7 @@ def france_momentum(df_france, go, mo):
     _data = df_france[df_france['star_7d'] > 0].nlargest(15, 'star_7d').sort_values('star_7d', ascending=True)
 
     if _data.empty:
-        mo.md("_No repos with 7-day star growth data._")
+        _output = mo.md("_No repos with 7-day star growth data._")
     else:
         _fig = go.Figure(go.Bar(
             y=_data['repo'],
@@ -256,10 +256,11 @@ def france_momentum(df_france, go, mo):
             xaxis=dict(title='Stars gained (last 7 days)', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
             yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
         )
-        mo.vstack([
+        _output = mo.vstack([
             mo.md("## Momentum — French Repos Trending Now"),
             mo.ui.plotly(_fig),
         ])
+    _output
     return
 
 
