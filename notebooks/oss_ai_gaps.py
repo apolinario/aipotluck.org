@@ -253,7 +253,24 @@ def market_map_stats(df_subcat, mo):
 
 
 @app.cell(hide_code=True)
-def market_map(df_subcat, go, mo):
+def section_market_map(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'01 / Market Map</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">How much exists at each layer?</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Size = repo count. Color = contributor depth (darker = more contributors per repo).</p>'
+        f'</div>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def market_map(C, df_subcat, go, mo):
     _treemap_data = df_subcat[df_subcat['category'].isin([
         'Infrastructure', 'AI Engineering', 'Model Development', 'Applications', 'Models'
     ])].copy()
@@ -291,7 +308,7 @@ def market_map(df_subcat, go, mo):
         customdata=_texts, hovertemplate='%{customdata}<extra></extra>',
         marker=dict(
             colors=_colors,
-            colorscale=[[0, '#d6eaf8'], [0.3, '#5dade2'], [0.7, '#1a5276'], [1, '#0b2641']],
+            colorscale=[[0, C['paper_2']], [0.3, '#6ba99a'], [0.7, C['healthy']], [1, '#0b2641']],
             cmin=0, cmax=40,
             colorbar=dict(title='Median<br>Contributors', thickness=14, len=0.6, tickfont=dict(size=10)),
             line=dict(width=1.5, color='white'),
@@ -299,23 +316,35 @@ def market_map(df_subcat, go, mo):
         textfont=dict(size=11),
         branchvalues='total',
     ))
-    _fig.update_layout(template='plotly_white', margin=dict(t=10, l=0, r=0, b=0), height=520)
-    mo.vstack([
-        mo.md("""
-        ## Market Map
-
-        The treemap shows **how much exists** in each layer of the AI stack;
-        color encodes **contributor depth** (median contributors per repo in that subcategory).
-
-        > Thin color = few contributors per repo → higher need for public investment
-        """),
-        mo.ui.plotly(_fig, config={"displayModeBar": False}),
-    ])
+    _fig.update_layout(
+        plot_bgcolor='white', paper_bgcolor='white',
+        font=dict(family='Inter, sans-serif', size=11, color=C['ink']),
+        margin=dict(t=10, l=0, r=0, b=0), height=520,
+    )
+    mo.ui.plotly(_fig, config={"displayModeBar": False})
     return
 
 
 @app.cell(hide_code=True)
-def health_scatter(df_subcat, go, mo):
+def section_health(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'02 / Ecosystem Health</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Coverage vs. depth</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Stars proxy adoption. Contributors proxy sustainability. '
+        f'Box-select to inspect subcategories in the table below.</p>'
+        f'</div>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def health_scatter(C, CAT_COLORS, df_subcat, go, mo):
     _data = df_subcat[
         df_subcat['category'].isin(['Infrastructure', 'AI Engineering', 'Model Development', 'Applications', 'Models'])
         & (df_subcat['repos'] >= 10)
@@ -323,14 +352,6 @@ def health_scatter(df_subcat, go, mo):
 
     _x_thresh = _data['median_stars'].median()
     _y_thresh  = _data['median_contributors'].median()
-
-    _cat_colors = {
-        'Infrastructure':    '#1A5276',
-        'AI Engineering':    '#196F3D',
-        'Model Development': '#922B21',
-        'Applications':      '#6C3483',
-        'Models':            '#117A65',
-    }
 
     _traces = []
     for _cat, _grp in _data.groupby('category'):
@@ -341,7 +362,7 @@ def health_scatter(df_subcat, go, mo):
             name=_cat,
             marker=dict(
                 size=10,
-                color=_cat_colors.get(_cat, '#999'),
+                color=CAT_COLORS.get(_cat, C['ink_3']),
                 opacity=0.8,
                 line=dict(width=1, color='white'),
             ),
@@ -360,21 +381,22 @@ def health_scatter(df_subcat, go, mo):
 
     _fig = go.Figure(data=_traces)
     _fig.update_layout(
-        template='plotly_white',
+        plot_bgcolor='white', paper_bgcolor='white',
+        font=dict(family='Inter, sans-serif', size=12, color=C['ink']),
         margin=dict(t=10, l=60, r=80, b=50), height=480,
-        xaxis=dict(title='Median stars per repo (log scale)', type='log', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        yaxis=dict(title='Median contributors per repo', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        legend=dict(orientation='h', yanchor='bottom', y=1.01, xanchor='left', x=0, title_text=''),
+        xaxis=dict(title='Median stars per repo (log scale)', type='log', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='Median contributors per repo', showgrid=True, gridcolor=C['rule']),
+        legend=dict(orientation='h', yanchor='bottom', y=1.01, xanchor='left', x=0, title_text='', bgcolor='rgba(0,0,0,0)'),
         hovermode='closest',
     )
-    _fig.add_vline(x=_x_thresh, line=dict(color='#999', width=1, dash='dash'))
-    _fig.add_hline(y=_y_thresh, line=dict(color='#999', width=1, dash='dash'))
+    _fig.add_vline(x=_x_thresh, line=dict(color=C['rule'], width=1, dash='dash'))
+    _fig.add_hline(y=_y_thresh, line=dict(color=C['rule'], width=1, dash='dash'))
 
     _quadrants = [
-        (0.02, 0.02, 'P1', '#C0392B', 'bottom', 'left'),
-        (0.98, 0.02, 'P2', '#E67E22', 'bottom', 'right'),
-        (0.02, 0.98, 'P3', '#2980B9', 'top',    'left'),
-        (0.98, 0.98, 'P4', '#27AE60', 'top',    'right'),
+        (0.02, 0.02, 'GAP', C['signal'], 'bottom', 'left'),
+        (0.98, 0.02, 'AT RISK', C['warm'], 'bottom', 'right'),
+        (0.02, 0.98, 'HIDDEN', C['accent'], 'top', 'left'),
+        (0.98, 0.98, 'HEALTHY', C['healthy'], 'top', 'right'),
     ]
     for _px, _py, _label, _color, _yanchor, _xanchor in _quadrants:
         _fig.add_annotation(
@@ -388,21 +410,7 @@ def health_scatter(df_subcat, go, mo):
         )
 
     health_scatter_plot = mo.ui.plotly(_fig, config={"displayModeBar": False})
-    mo.vstack([
-        mo.md(f"""
-        ## Ecosystem Health · Coverage vs. Depth
-
-        Stars proxy **adoption**. Contributors proxy **sustainability**.
-        Thresholds are the median of medians across subcategories
-        (stars: {_x_thresh:,.0f} · contributors: {_y_thresh:.0f}).
-
-        **P1** low adoption + low contributors — highest gap priority ·
-        **P2** popular but few contributors — sustainability risk ·
-        **P3** deep contributors, low visibility — hidden gems ·
-        **P4** healthy · _Box-select to inspect subcategories below._
-        """),
-        health_scatter_plot,
-    ])
+    health_scatter_plot
     return (health_scatter_plot,)
 
 
@@ -426,6 +434,23 @@ def health_scatter_selection(df_subcat, health_scatter_plot, mo):
         _df = _df.reset_index(drop=True)
         _out = mo.ui.table(_df, show_column_summaries=False, show_data_types=False)
     _out
+    return
+
+
+@app.cell(hide_code=True)
+def section_red_spots(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["signal"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'03 / Red Spots</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Where are the gaps?</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Subcategories that are present but thin: few repos, low contributor depth, or low adoption.</p>'
+        f'</div>'
+    )
     return
 
 
@@ -454,48 +479,32 @@ def red_spots_table(df_subcat, mo):
     _display['7d Stars']     = _display['7d Stars'].apply(lambda x: f"{max(0,x):,.0f}")
     _display = _display.reset_index(drop=True)
     mo.vstack([
-        mo.md(f"""
-        ## Red Spots — Where Are the Gaps?
-
-        Subcategories that are present but thin: few repos, low contributor depth, or low adoption.
-        Criteria: ≥ 5 repos + at least one of median contributors < 8, median stars < 800, or repos < 60.
-
-        **{len(_display)} subcategories** flagged:
-        """),
+        mo.md(f'**{len(_display)} subcategories** flagged (≥5 repos + median contributors <8, median stars <800, or repos <60):'),
         mo.ui.table(_display, show_column_summaries=False, show_data_types=False),
     ])
     return
 
 
 @app.cell(hide_code=True)
-def gap_analysis_intro(mo):
-    mo.md(
-        """
-    ## Gap Analysis — Current AI 2025 Focus Areas
-
-    [Current AI](https://current.ai) has identified 10 focus areas for its 2025 grantmaking.
-    The charts below map the open-source AI ecosystem against these areas to surface where
-    public investment has the least existing community to build on.
-
-    | # | Focus Area |
-    |---|-----------|
-    | 1 | Linguistic Diversity |
-    | 2 | Health & Human Welfare |
-    | 3 | Audit & Accountability |
-    | 4 | Trust & Safety Infrastructure |
-    | 5 | Data Provenance |
-    | 6 | Public Interest Media |
-    | 7 | Science Data |
-    | 8 | Climate & Sustainability |
-    | 9 | People & Participation |
-    | 10 | AI & Children |
-    """
+def section_focus_areas(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'04 / Program Areas</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Current AI 2025 focus areas</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Each repo is assigned a focus area via a hand-curated mapping. '
+        f'Red bars = zero repos — no existing open-source community to anchor public investment.</p>'
+        f'</div>'
     )
     return
 
 
 @app.cell(hide_code=True)
-def focus_area_coverage(FOCUS_DEFAULT, FOCUS_MAPPING, df_gl, go, mo):
+def focus_area_coverage(C, FOCUS_DEFAULT, FOCUS_MAPPING, df_gl, go, mo):
     _ALL_AREAS = [
         "Trust & Safety Infrastructure",
         "Data Provenance",
@@ -519,9 +528,9 @@ def focus_area_coverage(FOCUS_DEFAULT, FOCUS_MAPPING, df_gl, go, mo):
     _counts = _df.groupby('focus')['repo'].count().to_dict()
     _repos  = [_counts.get(fa, 0) for fa in _ALL_AREAS]
     _colors = [
-        '#C0392B' if r == 0 else
-        '#BDC3C7' if fa == 'Enabling Infrastructure' else
-        '#2980B9'
+        C['signal'] if r == 0 else
+        C['rule'] if fa == 'Enabling Infrastructure' else
+        C['accent']
         for fa, r in zip(_ALL_AREAS, _repos)
     ]
 
@@ -534,27 +543,23 @@ def focus_area_coverage(FOCUS_DEFAULT, FOCUS_MAPPING, df_gl, go, mo):
         hovertemplate="<b>%{customdata[0]}</b><br>Repos: %{customdata[1]:,}<extra></extra>",
     ))
     _fig.update_layout(
-        template='plotly_white',
+        plot_bgcolor='white', paper_bgcolor='white',
+        font=dict(family='Inter, sans-serif', size=12, color=C['ink']),
         height=420,
         margin=dict(t=10, l=0, r=30, b=40),
-        xaxis=dict(title='Repos tracked', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1, autorange='reversed'),
+        xaxis=dict(title='Repos tracked', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False, autorange='reversed'),
     )
 
     _gap_areas = [fa for fa, r in zip(_ALL_AREAS, _repos) if r == 0 and fa != 'Enabling Infrastructure']
     _covered   = sum(1 for fa, r in zip(_ALL_AREAS, _repos) if r > 0 and fa != 'Enabling Infrastructure')
 
     mo.vstack([
-        mo.md(f"""
-        ## Current AI Program Area Coverage
-
-        Each repo is assigned a focus area via a hand-curated mapping from OSO subcategory →
-        Current AI program area (defined in the `currentai_mapping` cell above).
-        **Red bars** = 0 repos — no existing open-source community to anchor public investment.
-
-        **{_covered}/10** areas have open-source coverage ·
-        **{len(_gap_areas)} gap(s) with no repos:** {', '.join(f'**{a}**' for a in _gap_areas)}
-        """),
+        mo.md(
+            f'**{_covered}/10** areas have open-source coverage · '
+            f'**{len(_gap_areas)} gap(s) with no repos:** '
+            + ', '.join(f'**{a}**' for a in _gap_areas)
+        ),
         mo.ui.plotly(_fig, config={"displayModeBar": False}),
     ])
     return
@@ -586,6 +591,25 @@ def focus_area_breakdown(FOCUS_DEFAULT, FOCUS_MAPPING, df_subcat, mo):
         mo.md("### Breakdown by Focus Area (excl. Enabling Infrastructure)"),
         mo.ui.table(_grouped, show_column_summaries=False, show_data_types=False),
     ])
+    return
+
+
+@app.cell(hide_code=True)
+def methodology(C, F, mo):
+    mo.Html(
+        f'<div style="margin-top:44px; padding-top:20px; border-top:1px solid {C["rule"]};">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Methodology</div>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; line-height:1.5;">'
+        f'Repo catalog from GoodAI List (goodailist.com). Gap scores are composite: '
+        f'median contributors (<8), median stars (<800), and repo count (<60), weighted 40/30/30. '
+        f'Focus area mapping is hand-curated from GoodAI subcategories to Current AI program areas.</p>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; margin-top:8px;">'
+        f'<strong>Source:</strong> '
+        f'<a href="https://www.oso.xyz" style="color:{C["accent"]}">Open Source Observer</a> · '
+        f'<a href="https://goodailist.com" style="color:{C["accent"]}">GoodAI List</a></p>'
+        f'</div>'
+    )
     return
 
 
