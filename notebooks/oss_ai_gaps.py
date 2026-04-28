@@ -1,20 +1,81 @@
 import marimo
 
 __generated_with = "unknown"
-app = marimo.App()
+app = marimo.App(width="full")
 
 
 @app.cell(hide_code=True)
-def header_title(mo):
-    mo.md(
-        """
-    # Open-Source AI Ecosystem · Gap Analysis
+def style():
+    F = {
+        "headline": "Fraunces, Georgia, serif",
+        "body": "Inter, -apple-system, system-ui, sans-serif",
+        "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
+    }
+    C = {
+        "ink": "#1a1814",
+        "ink_2": "#3a342b",
+        "ink_3": "#6b6253",
+        "paper": "#f5f1ea",
+        "paper_2": "#ede7dc",
+        "rule": "#c9bfac",
+        "signal": "#c8341d",
+        "healthy": "#1b6b5e",
+        "warm": "#d97c2a",
+        "accent": "#2a3d8f",
+    }
+    LAYOUT = dict(
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        font=dict(family=F["body"], size=12, color=C["ink"]),
+        margin=dict(t=20, l=60, r=20, b=50),
+        legend=dict(
+            bgcolor="rgba(0,0,0,0)",
+            font=dict(size=11),
+            orientation="h",
+            yanchor="bottom", y=1.02,
+            xanchor="left", x=0,
+        ),
+        hovermode="closest",
+    )
+    CHART_LAYOUT = LAYOUT
+    CAT_COLORS = {
+        "Infrastructure": "#1A5276",
+        "AI Engineering": "#196F3D",
+        "Model Development": "#922B21",
+        "Applications": "#6C3483",
+        "Models": "#117A65",
+        "Tutorials": "#784212",
+        "Lists": "#17202A",
+        "Misc": "#717D7E",
+    }
+    return C, CAT_COLORS, CHART_LAYOUT, F, LAYOUT
 
-    Mapping open-source AI ecosystem health against Current AI's 10 program areas for 2025
-    to surface where public investment has the least community to build on. Data: OSO developer metrics.
 
-    **Created:** 2026-04-13 · **Data:** OSO · GitHub Archive
-    """
+@app.cell(hide_code=True)
+def fonts(mo):
+    mo.Html(
+        '<style>'
+        '@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");'
+        '</style>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def header_title(C, F, mo):
+    mo.Html(
+        f'<div style="padding:40px 0 28px; border-bottom:2px solid {C["accent"]}; margin-bottom:36px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:11px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px;">'
+        f'Current AI \u00b7 Ecosystem Mapping \u00b7 Gap Analysis</div>'
+        f'<h1 style="font-family:{F["headline"]}; font-size:2.2rem; font-weight:400; '
+        f'color:{C["ink"]}; margin:0 0 14px; line-height:1.05; letter-spacing:-0.025em;">'
+        f'Where Are the Gaps?</h1>'
+        f'<p style="font-family:{F["body"]}; font-size:1rem; color:{C["ink_2"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Mapping open-source AI ecosystem health against Current AI\u2019s 10 program areas '
+        f'to surface where public investment has the least community to build on.</p>'
+        f'</div>'
     )
     return
 
@@ -248,7 +309,7 @@ def market_map(df_subcat, go, mo):
 
         > Thin color = few contributors per repo → higher need for public investment
         """),
-        mo.ui.plotly(_fig),
+        mo.ui.plotly(_fig, config={"displayModeBar": False}),
     ])
     return
 
@@ -326,7 +387,7 @@ def health_scatter(df_subcat, go, mo):
             borderpad=3,
         )
 
-    health_scatter_plot = mo.ui.plotly(_fig)
+    health_scatter_plot = mo.ui.plotly(_fig, config={"displayModeBar": False})
     mo.vstack([
         mo.md(f"""
         ## Ecosystem Health · Coverage vs. Depth
@@ -494,7 +555,7 @@ def focus_area_coverage(FOCUS_DEFAULT, FOCUS_MAPPING, df_gl, go, mo):
         **{_covered}/10** areas have open-source coverage ·
         **{len(_gap_areas)} gap(s) with no repos:** {', '.join(f'**{a}**' for a in _gap_areas)}
         """),
-        mo.ui.plotly(_fig),
+        mo.ui.plotly(_fig, config={"displayModeBar": False}),
     ])
     return
 

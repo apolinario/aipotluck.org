@@ -1,28 +1,7 @@
 import marimo
 
 __generated_with = "unknown"
-app = marimo.App()
-
-
-@app.cell(hide_code=True)
-def header_title(mo):
-    mo.md(
-        """
-    # Open-Source AI Ecosystem · Trends
-
-    Developer activity, momentum, and growth signals across the open-source AI landscape.
-    Data sourced from OSO / OpenDevData metrics.
-
-    **Created:** 2026-04-13 · **Data:** OSO · GitHub Archive
-    """
-    )
-    return
-
-
-@app.cell(hide_code=True)
-def imports():
-    import plotly.graph_objects as go
-    return (go,)
+app = marimo.App(width="full")
 
 
 @app.cell(hide_code=True)
@@ -33,6 +12,88 @@ def setup_pyoso():
     import marimo as mo
     pyoso_db_conn = pyoso.Client().dbapi_connection()
     return mo, pyoso_db_conn
+
+
+@app.cell(hide_code=True)
+def imports():
+    import plotly.graph_objects as go
+    return (go,)
+
+
+@app.cell(hide_code=True)
+def style():
+    F = {
+        "headline": "Fraunces, Georgia, serif",
+        "body": "Inter, -apple-system, system-ui, sans-serif",
+        "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
+    }
+    C = {
+        "ink": "#1a1814",
+        "ink_2": "#3a342b",
+        "ink_3": "#6b6253",
+        "paper": "#f5f1ea",
+        "paper_2": "#ede7dc",
+        "rule": "#c9bfac",
+        "signal": "#c8341d",
+        "healthy": "#1b6b5e",
+        "warm": "#d97c2a",
+        "accent": "#2a3d8f",
+    }
+    LAYOUT = dict(
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        font=dict(family=F["body"], size=12, color=C["ink"]),
+        margin=dict(t=20, l=60, r=20, b=50),
+        legend=dict(
+            bgcolor="rgba(0,0,0,0)",
+            font=dict(size=11),
+            orientation="h",
+            yanchor="bottom", y=1.02,
+            xanchor="left", x=0,
+        ),
+        hovermode="closest",
+    )
+    CHART_LAYOUT = LAYOUT
+    CAT_COLORS = {
+        "Infrastructure": "#1A5276",
+        "AI Engineering": "#196F3D",
+        "Model Development": "#922B21",
+        "Applications": "#6C3483",
+        "Models": "#117A65",
+        "Tutorials": "#784212",
+        "Lists": "#17202A",
+        "Misc": "#717D7E",
+    }
+    return C, CAT_COLORS, CHART_LAYOUT, F, LAYOUT
+
+
+@app.cell(hide_code=True)
+def fonts(mo):
+    mo.Html(
+        '<style>'
+        '@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");'
+        '</style>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def header(C, F, mo):
+    mo.Html(
+        f'<div style="padding:40px 0 28px; border-bottom:2px solid {C["accent"]}; margin-bottom:36px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:11px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px;">'
+        f'Current AI · Ecosystem Mapping · Trends</div>'
+        f'<h1 style="font-family:{F["headline"]}; font-size:2.2rem; font-weight:400; '
+        f'color:{C["ink"]}; margin:0 0 14px; line-height:1.05; letter-spacing:-0.025em;">'
+        f'Developer Activity & Momentum</h1>'
+        f'<p style="font-family:{F["body"]}; font-size:1rem; color:{C["ink_2"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Growth signals across the open-source AI landscape. '
+        f'Data sourced from OSO and OpenDevData metrics.</p>'
+        f'</div>'
+    )
+    return
 
 
 @app.cell(hide_code=True)
@@ -172,36 +233,41 @@ def load_ddp_monthly(mo, pyoso_db_conn):
 @app.cell(hide_code=True)
 def source_stats(df_contributors, df_gl, df_stars_forks, mo):
     mo.hstack([
-        mo.stat(label="Repos",        value=f"{len(df_gl):,}",                                              bordered=True, caption="OSS AI repos"),
-        mo.stat(label="Unique orgs",  value=f"{df_gl['owner'].nunique():,}",                                bordered=True, caption="GitHub organizations"),
-        mo.stat(label="Categories",   value=str(df_gl['category'].nunique()),                               bordered=True, caption="top-level taxonomy"),
-        mo.stat(label="Stars (3mo)",  value=f"{df_stars_forks['stars_3m'].sum()/1e3:.0f}K",                bordered=True, caption="new stars · last 90 days"),
-        mo.stat(label="Forks (3mo)",  value=f"{df_stars_forks['forks_3m'].sum()/1e3:.0f}K",                bordered=True, caption="new forks · last 90 days"),
-        mo.stat(label="Contributors", value=f"{df_contributors['total_contributors'].sum()/1e3:.0f}K",      bordered=True, caption="active devs · last 90 days"),
+        mo.stat(label="Repos", value=f"{len(df_gl):,}", bordered=True, caption="OSS AI repos"),
+        mo.stat(label="Unique orgs", value=f"{df_gl['owner'].nunique():,}", bordered=True, caption="GitHub organizations"),
+        mo.stat(label="Categories", value=str(df_gl['category'].nunique()), bordered=True, caption="top-level taxonomy"),
+        mo.stat(label="Stars (3mo)", value=f"{df_stars_forks['stars_3m'].sum()/1e3:.0f}K", bordered=True, caption="new stars · last 90 days"),
+        mo.stat(label="Forks (3mo)", value=f"{df_stars_forks['forks_3m'].sum()/1e3:.0f}K", bordered=True, caption="new forks · last 90 days"),
+        mo.stat(label="Contributors", value=f"{df_contributors['total_contributors'].sum()/1e3:.0f}K", bordered=True, caption="active devs · last 90 days"),
     ], widths="equal", gap=1)
     return
 
 
 @app.cell(hide_code=True)
-def monthly_active_chart(df_monthly, go, mo):
+def section_monthly(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'01 / Developer Activity</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Monthly active developers by category</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Select a category to see full-time vs part-time developer breakdown over the last 90 days.</p>'
+        f'</div>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def monthly_active_chart(CAT_COLORS, C, F, df_monthly, go, mo):
     import json as _json
     import html as _html
     import pandas as _pd
 
     df_monthly['month'] = _pd.to_datetime(df_monthly['month'])
-
     _categories = sorted(df_monthly['category'].dropna().unique().tolist())
-
-    _cat_colors = {
-        'Infrastructure':    '#1A5276',
-        'AI Engineering':    '#196F3D',
-        'Model Development': '#922B21',
-        'Applications':      '#6C3483',
-        'Models':            '#117A65',
-        'Tutorials':         '#784212',
-        'Lists':             '#17202A',
-        'Misc':              '#717D7E',
-    }
 
     _states = {}
     for _cat in _categories:
@@ -209,31 +275,31 @@ def monthly_active_chart(df_monthly, go, mo):
         if _df.empty:
             continue
 
-        _latest   = _df['month'].max()
+        _latest = _df['month'].max()
         _latest_r = _df[_df['month'] == _latest].iloc[0]
-        _active   = int(_latest_r['active_devs'])
-        _ft       = int(_latest_r['full_time'])
-        _pt       = int(_latest_r['part_time'])
+        _active = int(_latest_r['active_devs'])
+        _ft = int(_latest_r['full_time'])
+        _pt = int(_latest_r['part_time'])
 
         def _stat(value, label, caption=''):
             return (
-                f'<div class="ddp-stat-box">'
-                f'<div class="ddp-stat-value">{value}</div>'
-                f'<div class="ddp-stat-label">{label}</div>'
-                + (f'<div class="ddp-stat-caption">{caption}</div>' if caption else '')
+                f'<div style="border:1px solid {C["rule"]};border-radius:6px;padding:12px 16px;flex:1;min-width:100px;">'
+                f'<div style="font-family:{F["mono"]};font-size:1.5em;font-weight:600;color:{C["ink"]};line-height:1.2;">{value}</div>'
+                f'<div style="font-family:{F["body"]};font-size:0.6875em;font-weight:500;color:{C["ink_3"]};text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px;">{label}</div>'
+                + (f'<div style="font-family:{F["body"]};font-size:0.75em;color:{C["ink_3"]};margin-top:4px;">{caption}</div>' if caption else '')
                 + '</div>'
             )
 
         _stats_html = (
-            '<div class="ddp-stat-row">'
-            + _stat(f'{_active:,}',  'Active Developers',  f'Latest month ({str(_latest)[:7]})')
-            + _stat(f'{_ft:,}',      'Full-Time',          '≥ 10 active days/month')
-            + _stat(f'{_pt:,}',      'Part-Time',          '1–9 active days/month')
+            f'<div style="display:flex;gap:12px;margin:12px 0;">'
+            + _stat(f'{_active:,}', 'Active Developers', f'Latest month ({str(_latest)[:7]})')
+            + _stat(f'{_ft:,}', 'Full-Time', '≥ 10 active days/month')
+            + _stat(f'{_pt:,}', 'Part-Time', '1–9 active days/month')
             + _stat(f'{_active-_ft-_pt:,}', 'Other Active', 'Counted but unclassified')
             + '</div>'
         )
 
-        _color = _cat_colors.get(_cat, '#4C78A8')
+        _color = CAT_COLORS.get(_cat, C['accent'])
         _fig = go.Figure()
         _fig.add_trace(go.Bar(
             x=_df['month'], y=_df['full_time'],
@@ -248,25 +314,27 @@ def monthly_active_chart(df_monthly, go, mo):
         _fig.update_layout(
             barmode='stack',
             height=420,
-            template='plotly_white',
+            plot_bgcolor='white', paper_bgcolor='white',
+            font=dict(family=F['body'], size=12, color=C['ink']),
             margin=dict(t=40, l=60, r=40, b=50),
             hovermode='x unified',
             showlegend=True,
             legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1, bgcolor='rgba(255,255,255,0.8)'),
-            xaxis=dict(showgrid=False, showline=True, linecolor='#1F2937', linewidth=1,
-                       tickfont=dict(size=11, color='#666'), tickformat='%b %Y'),
-            yaxis=dict(showgrid=True, gridcolor='#E5E7EB', showline=True, linecolor='#1F2937',
-                       linewidth=1, tickfont=dict(size=11, color='#666'), title='Active developers', tickformat=',d'),
+            xaxis=dict(showgrid=False, showline=True, linecolor=C['ink'], linewidth=1,
+                       tickfont=dict(size=11, color=C['ink_3']), tickformat='%b %Y'),
+            yaxis=dict(showgrid=True, gridcolor=C['rule'], showline=True, linecolor=C['ink'],
+                       linewidth=1, tickfont=dict(size=11, color=C['ink_3']), title='Active developers', tickformat=',d'),
         )
         _states[_cat] = {'stats': _stats_html, 'chart': _json.loads(_fig.to_json())}
 
-    _opts     = [c for c in _categories if c in _states]
+    _opts = [c for c in _categories if c in _states]
     _djs_safe = _json.dumps(_states).replace('</', '<\\/')
-    _opts_js  = _json.dumps(_opts)
+    _opts_js = _json.dumps(_opts)
     _sel_html = (
-        '<div style="margin-bottom:8px">'
-        '<span class="ddp-select-label">Category</span>'
-        '<select id="sel" class="ddp-select">'
+        f'<div style="margin-bottom:8px">'
+        f'<span style="font-family:{F["mono"]};font-size:0.6875em;color:{C["ink_3"]};display:block;margin-bottom:2px;">Category</span>'
+        f'<select id="sel" style="padding:4px 8px;border:1px solid {C["rule"]};border-radius:4px;'
+        f'font-family:{F["body"]};font-size:0.8125em;color:{C["ink"]};background:white;cursor:pointer;outline:none;">'
         + ''.join(f'<option value="{i}">{o}</option>' for i, o in enumerate(_opts))
         + '</select></div>'
     )
@@ -274,17 +342,10 @@ def monthly_active_chart(df_monthly, go, mo):
     _inner = (
         '<!DOCTYPE html><html><head><meta charset="utf-8">'
         '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
-        '<style>'
-        '*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}'
-        'body{font-size:14px;color:#0f172a;padding:4px}'
-        '.ddp-select{padding:4px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:0.8125em;color:#0f172a;background:#fff;cursor:pointer;outline:none}'
-        '.ddp-select-label{font-size:0.6875em;color:#64748b;display:block;margin-bottom:2px}'
-        '.ddp-stat-row{display:flex;gap:12px;margin:12px 0}'
-        '.ddp-stat-box{border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;flex:1;min-width:100px}'
-        '.ddp-stat-value{font-size:1.5em;font-weight:600;letter-spacing:-0.02em;color:#0f172a;line-height:1.2}'
-        '.ddp-stat-label{font-size:0.6875em;font-weight:500;color:#64748b;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px}'
-        '.ddp-stat-caption{font-size:0.75em;color:#64748b;margin-top:4px}'
-        '</style></head><body>'
+        f'<style>*{{box-sizing:border-box;margin:0;padding:0;'
+        f'font-family:{F["body"]}!important}}'
+        f'body{{font-size:14px;color:{C["ink"]};padding:4px}}'
+        f'</style></head><body>'
         f'{_sel_html}'
         '<div id="stats" style="margin-bottom:4px"></div>'
         '<div id="chart"></div>'
@@ -299,15 +360,30 @@ def monthly_active_chart(df_monthly, go, mo):
     )
     _src = _html.escape(_inner, quote=True)
 
-    mo.vstack([
-        mo.md("## Monthly Active Developers by Category · last 90 days"),
-        mo.Html(f'<iframe srcdoc="{_src}" style="width:100%;height:560px;border:none;" scrolling="no"></iframe>'),
-    ])
+    mo.Html(f'<iframe srcdoc="{_src}" style="width:100%;height:560px;border:none;" scrolling="no"></iframe>')
     return
 
 
 @app.cell(hide_code=True)
-def momentum_bar(df_subcat, go, mo):
+def section_momentum(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'02 / Momentum</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">7-day star velocity</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Weekly star growth reveals where developer attention is flowing right now. '
+        f'Top 25 subcategories with ≥10 repos.</p>'
+        f'</div>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def momentum_bar(CAT_COLORS, C, LAYOUT, df_subcat, go, mo):
     _data = df_subcat[
         df_subcat['category'].isin(['Infrastructure', 'AI Engineering', 'Model Development', 'Applications', 'Models'])
         & (df_subcat['repos'] >= 10)
@@ -316,128 +392,141 @@ def momentum_bar(df_subcat, go, mo):
     _data = _data.sort_values('weekly_stars', ascending=False).head(25)
     _data = _data.sort_values('weekly_stars', ascending=True)
 
-    _cat_colors = {
-        'Infrastructure':    '#1A5276',
-        'AI Engineering':    '#196F3D',
-        'Model Development': '#922B21',
-        'Applications':      '#6C3483',
-        'Models':            '#117A65',
-    }
     _fig = go.Figure(go.Bar(
         x=_data['weekly_stars'], y=_data['primary_subcat'], orientation='h',
-        marker_color=[_cat_colors.get(_c, '#999') for _c in _data['category']],
+        marker_color=[CAT_COLORS.get(_c, C['ink_3']) for _c in _data['category']],
         customdata=list(zip(_data['category'], _data['repos'], _data['total_stars'])),
         hovertemplate=(
-            "<b>%{y}</b><br>Category: %{customdata[0]}<br>"
-            "7-day stars: %{x:,.0f}<br>Repos: %{customdata[1]}<br>"
-            "Total stars: %{customdata[2]:,.0f}<extra></extra>"
+            '<b>%{y}</b><br>Category: %{customdata[0]}<br>'
+            '7-day stars: %{x:,.0f}<br>Repos: %{customdata[1]}<br>'
+            'Total stars: %{customdata[2]:,.0f}<extra></extra>'
         ),
     ))
     _fig.update_layout(
-        template='plotly_white', margin=dict(t=10, l=0, r=30, b=40), height=500,
-        xaxis=dict(title='7-day new stars', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+        **LAYOUT,
+        height=500,
+        xaxis=dict(title='7-day new stars', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False),
     )
-    mo.vstack([
-        mo.md("""
-        ## Momentum · 7-Day Star Velocity
-
-        Weekly star growth reveals where developer attention is flowing *right now*.
-        """),
-        mo.ui.plotly(_fig),
-    ])
+    mo.ui.plotly(_fig, config={"displayModeBar": False})
     return
 
 
 @app.cell(hide_code=True)
-def ddp_header(mo):
-    mo.md(
-        """
-    ## Developer Activity · last 90 days
-
-    Repo-scoped metrics from OpenDevData — only the tracked repos, no project inflation.
-    Full-time: ≥ 10 active days in the last 28-day window. Part-time: 1–9 active days.
-    """
+def section_devactivity(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'03 / Developer Depth</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Who’s building?</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Repo-scoped metrics from OpenDevData — only tracked repos, no project inflation. '
+        f'Full-time: ≥10 active days in the last 28-day window. Part-time: 1–9 active days.</p>'
+        f'</div>'
     )
     return
 
 
 @app.cell(hide_code=True)
-def stars_bar(df_stars_forks, go, mo):
+def stars_bar(C, LAYOUT, df_stars_forks, go, mo):
     _df = df_stars_forks.sort_values('stars_3m', ascending=True).tail(20).copy()
     _df['short_name'] = _df['repo'].apply(lambda r: r.split('/')[-1])
     _fig = go.Figure(go.Bar(
         x=_df['stars_3m'], y=_df['short_name'], orientation='h',
-        marker_color='#4C78A8',
+        marker_color=C['accent'],
         customdata=list(zip(_df['repo'], _df['forks_3m'])),
-        hovertemplate="<b>%{customdata[0]}</b><br>Stars (3mo): %{x:,.0f}<br>Forks (3mo): %{customdata[1]:,.0f}<extra></extra>",
+        hovertemplate='<b>%{customdata[0]}</b><br>Stars (3mo): %{x:,.0f}<br>Forks (3mo): %{customdata[1]:,.0f}<extra></extra>',
     ))
     _fig.update_layout(
-        template='plotly_white', margin=dict(t=10, l=0, r=20, b=40), height=520,
-        xaxis=dict(title='New stars · last 90 days', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+        **LAYOUT,
+        height=520,
+        xaxis=dict(title='New stars · last 90 days', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False),
     )
     mo.vstack([
         mo.md("### Top 20 repos by stars · last 90 days"),
-        mo.ui.plotly(_fig),
+        mo.ui.plotly(_fig, config={"displayModeBar": False}),
     ])
     return
 
 
 @app.cell(hide_code=True)
-def contributors_bar(df_contributors, go, mo):
+def contributors_bar(C, LAYOUT, df_contributors, go, mo):
     _df = df_contributors.nlargest(20, 'full_time').sort_values('full_time', ascending=True).copy()
     _df['short_name'] = _df['repo'].apply(lambda r: r.split('/')[-1])
     _fig = go.Figure()
     _fig.add_trace(go.Bar(
         x=_df['full_time'], y=_df['short_name'], orientation='h',
         name='Full-time (≥10 active days)',
-        marker_color='#1A5276',
+        marker_color=C['healthy'],
         customdata=_df['repo'],
-        hovertemplate="<b>%{customdata}</b><br>Full-time: %{x:,}<extra></extra>",
+        hovertemplate='<b>%{customdata}</b><br>Full-time: %{x:,}<extra></extra>',
     ))
     _fig.add_trace(go.Bar(
         x=_df['part_time'], y=_df['short_name'], orientation='h',
         name='Part-time (1–9 active days)',
-        marker_color='#AED6F1',
+        marker_color=C['rule'],
         customdata=_df['repo'],
-        hovertemplate="<b>%{customdata}</b><br>Part-time: %{x:,}<extra></extra>",
+        hovertemplate='<b>%{customdata}</b><br>Part-time: %{x:,}<extra></extra>',
     ))
     _fig.update_layout(
-        template='plotly_white', margin=dict(t=10, l=0, r=20, b=40), height=520,
+        **LAYOUT,
+        height=520,
         barmode='stack',
-        xaxis=dict(title='Active contributors · last 90 days', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
-        legend=dict(orientation='h', yanchor='bottom', y=1.01, xanchor='left', x=0, title_text=''),
+        xaxis=dict(title='Active contributors · last 90 days', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False),
     )
     mo.vstack([
-        mo.md("### Full-Time vs Part-Time Contributors · Top 20 repos (last 90 days)"),
-        mo.ui.plotly(_fig),
+        mo.md("### Full-time vs part-time contributors · top 20 repos"),
+        mo.ui.plotly(_fig, config={"displayModeBar": False}),
     ])
     return
 
 
 @app.cell(hide_code=True)
-def fulltime_ratio_bar(df_contributors, go, mo):
+def fulltime_ratio_bar(C, LAYOUT, df_contributors, go, mo):
     _df = df_contributors[df_contributors['total_contributors'] >= 5].copy()
     _df['ft_ratio'] = _df['full_time'] / _df['total_contributors'] * 100
     _df = _df.nlargest(20, 'ft_ratio').sort_values('ft_ratio', ascending=True)
     _df['short_name'] = _df['repo'].apply(lambda r: r.split('/')[-1])
     _fig = go.Figure(go.Bar(
         x=_df['ft_ratio'], y=_df['short_name'], orientation='h',
-        marker_color='#196F3D',
+        marker_color=C['healthy'],
         customdata=list(zip(_df['repo'], _df['full_time'], _df['total_contributors'])),
-        hovertemplate="<b>%{customdata[0]}</b><br>FT ratio: %{x:.1f}%<br>FT: %{customdata[1]:,} / Total: %{customdata[2]:,}<extra></extra>",
+        hovertemplate='<b>%{customdata[0]}</b><br>FT ratio: %{x:.1f}%<br>FT: %{customdata[1]:,} / Total: %{customdata[2]:,}<extra></extra>',
     ))
     _fig.update_layout(
-        template='plotly_white', margin=dict(t=10, l=0, r=20, b=40), height=520,
-        xaxis=dict(title='Full-time contributor ratio (%)', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+        **LAYOUT,
+        height=520,
+        xaxis=dict(title='Full-time contributor ratio (%)', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False),
     )
     mo.vstack([
-        mo.md("### Full-Time Depth · Top 20 repos by FT ratio (last 90 days, min 5 contributors)"),
-        mo.ui.plotly(_fig),
+        mo.md("### Full-time depth · top 20 repos by FT ratio (min 5 contributors)"),
+        mo.ui.plotly(_fig, config={"displayModeBar": False}),
     ])
+    return
+
+
+@app.cell(hide_code=True)
+def methodology(C, F, mo):
+    mo.Html(
+        f'<div style="margin-top:44px; padding-top:20px; border-top:1px solid {C["rule"]};">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Methodology</div>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; line-height:1.5;">'
+        f'Repo catalog from GoodAI List (goodailist.com). Developer activity from OSO via OpenDevData — '
+        f'28-day rolling activity windows. Star and fork events from GitHub Archive (last 90 days). '
+        f'Full-time: ≥10 active days in the 28-day window. Part-time: 1–9 active days.</p>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; margin-top:8px;">'
+        f'<strong>Source:</strong> '
+        f'<a href="https://www.oso.xyz" style="color:{C["accent"]}">Open Source Observer</a> · '
+        f'<a href="https://goodailist.com" style="color:{C["accent"]}">GoodAI List</a></p>'
+        f'</div>'
+    )
     return
 
 
