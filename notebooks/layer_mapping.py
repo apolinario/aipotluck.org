@@ -1,25 +1,7 @@
 import marimo
 
 __generated_with = "unknown"
-app = marimo.App()
-
-
-@app.cell(hide_code=True)
-def header(mo):
-    mo.md(
-        """
-        # Layer Mapping — Projects to OSAI Stack
-
-        For each OSAI gap map subcategory, find the best-matching repos from the
-        GoodAI List. This builds the curated shortlist that powers the website's
-        stack view.
-
-        **Approach:** Manual keyword mapping from OSAI subcategories → GoodAI
-        (category, subcategory) pairs, then rank repos within each match by
-        stars and contributor depth.
-        """
-    )
-    return
+app = marimo.App(width="full")
 
 
 @app.cell(hide_code=True)
@@ -37,6 +19,83 @@ def imports():
     import pandas as pd
     import plotly.graph_objects as go
     return go, pd
+
+
+@app.cell(hide_code=True)
+def style():
+    F = {
+        "headline": "Fraunces, Georgia, serif",
+        "body": "Inter, -apple-system, system-ui, sans-serif",
+        "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
+    }
+    C = {
+        "ink": "#1a1814",
+        "ink_2": "#3a342b",
+        "ink_3": "#6b6253",
+        "paper": "#f5f1ea",
+        "paper_2": "#ede7dc",
+        "rule": "#c9bfac",
+        "signal": "#c8341d",
+        "healthy": "#1b6b5e",
+        "healthy_soft": "#6ba99a",
+        "warm": "#d97c2a",
+        "accent": "#2a3d8f",
+    }
+    LAYOUT = dict(
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        font=dict(family=F["body"], size=12, color=C["ink"]),
+        margin=dict(t=20, l=60, r=20, b=50),
+        legend=dict(
+            bgcolor="rgba(0,0,0,0)",
+            font=dict(size=11),
+            orientation="h",
+            yanchor="bottom", y=1.02,
+            xanchor="left", x=0,
+        ),
+        hovermode="closest",
+    )
+    CHART_LAYOUT = LAYOUT
+    CAT_COLORS = {
+        "Infrastructure": "#1A5276",
+        "AI Engineering": "#196F3D",
+        "Model Development": "#922B21",
+        "Applications": "#6C3483",
+        "Models": "#117A65",
+        "Tutorials": "#784212",
+        "Lists": "#17202A",
+        "Misc": "#717D7E",
+    }
+    return C, CAT_COLORS, CHART_LAYOUT, F, LAYOUT
+
+
+@app.cell(hide_code=True)
+def fonts(mo):
+    mo.Html(
+        '<style>'
+        '@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");'
+        '</style>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def header(C, F, mo):
+    mo.Html(
+        f'<div style="padding:40px 0 28px; border-bottom:2px solid {C["accent"]}; margin-bottom:36px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:11px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px;">'
+        f'Current AI · Ecosystem Mapping · Layer Explorer</div>'
+        f'<h1 style="font-family:{F["headline"]}; font-size:2.2rem; font-weight:400; '
+        f'color:{C["ink"]}; margin:0 0 14px; line-height:1.05; letter-spacing:-0.025em;">'
+        f'Projects by OSAI Stack Layer</h1>'
+        f'<p style="font-family:{F["body"]}; font-size:1rem; color:{C["ink_2"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'For each OSAI gap map subcategory, find the best-matching repos from the '
+        f'GoodAI List. Select a layer and subcategory to explore top projects.</p>'
+        f'</div>'
+    )
+    return
 
 
 @app.cell(hide_code=True)
@@ -91,7 +150,7 @@ def load_repos(mo, pyoso_db_conn):
 
 
 @app.cell(hide_code=True)
-def layer_mapping():
+def osai_to_goodai_mapping():
     OSAI_TO_GOODAI = {
         ("Infrastructure", "Cloud Compute"): [
             ("Infrastructure", "Deploy & Serve"),
@@ -230,34 +289,75 @@ def layer_mapping():
 
 
 @app.cell(hide_code=True)
-def mapping_coverage(OSAI_TO_GOODAI, df_osai, mo, pd):
+def health_color_fn(C):
+    def health_color(score):
+        try:
+            _s = float(score)
+        except (ValueError, TypeError):
+            return C["ink_3"]
+        if _s >= 4:
+            return C["healthy"]
+        elif _s >= 3:
+            return C["warm"]
+        return C["signal"]
+    return (health_color,)
+
+
+@app.cell(hide_code=True)
+def mapping_coverage(C, F, OSAI_TO_GOODAI, df_osai, go, health_color, mo, pd):
     _rows = []
-    for _, osai_row in df_osai.iterrows():
-        _key = (osai_row['layer'], osai_row['subcategory'])
+    for _, _osai_row in df_osai.iterrows():
+        _key = (_osai_row['layer'], _osai_row['subcategory'])
         _goodai_matches = OSAI_TO_GOODAI.get(_key, [])
         _rows.append({
-            'OSAI Layer': osai_row['layer'],
-            'OSAI Subcategory': osai_row['subcategory'],
-            'Score': osai_row['overall_score'],
-            'Maturity': osai_row['maturity'],
-            'GoodAI Matches': len(_goodai_matches),
-            'GoodAI Mapping': '; '.join(f'{c} / {s}' for c, s in _goodai_matches) if _goodai_matches else '(unmapped)',
+            'layer': _osai_row['layer'],
+            'subcategory': _osai_row['subcategory'],
+            'score': _osai_row['overall_score'],
+            'maturity': _osai_row['maturity'],
+            'n_matches': len(_goodai_matches),
         })
 
-    df_coverage = pd.DataFrame(_rows)
-    _mapped = (df_coverage['GoodAI Matches'] > 0).sum()
-    _total = len(df_coverage)
+    _df = pd.DataFrame(_rows)
+    _df = _df.sort_values('score', ascending=True)
 
+    _fig = go.Figure(go.Bar(
+        y=_df['layer'] + ' · ' + _df['subcategory'],
+        x=_df['score'],
+        orientation='h',
+        marker_color=[health_color(s) for s in _df['score']],
+        customdata=list(zip(_df['maturity'], _df['n_matches'])),
+        hovertemplate=(
+            '<b>%{y}</b><br>'
+            'Score: %{x}<br>'
+            'Maturity: %{customdata[0]}<br>'
+            'GoodAI mappings: %{customdata[1]}'
+            '<extra></extra>'
+        ),
+    ))
+    _fig.update_layout(
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(family=F['body'], size=11, color=C['ink']),
+        margin=dict(t=10, l=0, r=30, b=40),
+        height=max(400, len(_df) * 24),
+        xaxis=dict(title='Overall Score (1–4)', dtick=1, range=[0, 5],
+                   showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False),
+    )
+
+    _mapped = (_df['n_matches'] > 0).sum()
     mo.vstack([
         mo.md(
-            f"## Mapping Coverage\n\n"
-            f"**{_mapped}/{_total}** OSAI subcategories mapped to GoodAI. "
-            f"Unmapped ones are cross-cutting (Licensing, Safeguards) that don't map "
-            f"directly to repo categories."
+            f'## Mapping Coverage\n\n'
+            f'**{_mapped}/{len(_df)}** OSAI subcategories mapped to GoodAI repos. '
+            f'Health color: '
+            f'<span style="color:{C["healthy"]}">■</span> strong (4), '
+            f'<span style="color:{C["warm"]}">■</span> viable (3), '
+            f'<span style="color:{C["signal"]}">■</span> early/gap (≤2).'
         ),
-        mo.ui.table(df_coverage, show_column_summaries=False, show_data_types=False),
+        mo.ui.plotly(_fig),
     ])
-    return (df_coverage,)
+    return
 
 
 @app.cell(hide_code=True)
@@ -285,7 +385,7 @@ def subcat_selector(df_osai, layer_dropdown, mo):
 
 
 @app.cell(hide_code=True)
-def selected_projects(OSAI_TO_GOODAI, df_osai, df_repos, layer_dropdown, mo, pd, subcat_dropdown):
+def selected_projects(C, CAT_COLORS, F, LAYOUT, OSAI_TO_GOODAI, df_osai, df_repos, go, health_color, layer_dropdown, mo, pd, subcat_dropdown):
     _key = (layer_dropdown.value, subcat_dropdown.value)
     _osai_row = df_osai[(df_osai['layer'] == _key[0]) & (df_osai['subcategory'] == _key[1])]
     _goodai_matches = OSAI_TO_GOODAI.get(_key, [])
@@ -294,19 +394,29 @@ def selected_projects(OSAI_TO_GOODAI, df_osai, df_repos, layer_dropdown, mo, pd,
     _score = _osai_row.iloc[0]['overall_score'] if len(_osai_row) > 0 else ''
     _maturity = _osai_row.iloc[0]['maturity'] if len(_osai_row) > 0 else ''
     _parity = _osai_row.iloc[0]['parity_verdict'] if len(_osai_row) > 0 else ''
+    _score_color = health_color(_score)
 
-    _header = [
-        mo.md(f"## {_key[0]} · {_key[1]}"),
-        mo.md(f"_{_desc}_"),
-        mo.hstack([
-            mo.stat(value=_score, label="Score", bordered=True),
-            mo.stat(value=_maturity, label="Maturity", bordered=True),
-            mo.stat(value=_parity, label="vs Closed", bordered=True),
-        ]),
-    ]
+    _header = mo.Html(
+        f'<div style="margin:20px 0 24px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'{_key[0]}</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.5rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px; letter-spacing:-0.015em;">{_key[1]}</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.95rem; color:{C["ink_2"]}; '
+        f'margin:0; line-height:1.5;">{_desc}</p>'
+        f'</div>'
+    )
+
+    _stats = mo.hstack([
+        mo.stat(value=str(_score), label="Score", bordered=True, caption=f'<span style="color:{_score_color}">●</span> {_maturity}'),
+        mo.stat(value=str(_parity), label="vs Closed Source", bordered=True),
+    ], widths="equal", gap=1)
 
     if not _goodai_matches:
-        _output = mo.vstack(_header + [
+        _output = mo.vstack([
+            _header,
+            _stats,
             mo.md("_No GoodAI mapping — this is a cross-cutting category (Licensing, Safeguards)._"),
         ])
     else:
@@ -314,20 +424,66 @@ def selected_projects(OSAI_TO_GOODAI, df_osai, df_repos, layer_dropdown, mo, pd,
         for _cat, _sub in _goodai_matches:
             _mask = _mask | ((df_repos['category'] == _cat) & (df_repos['subcategory'] == _sub))
 
-        _matched = df_repos[_mask].nlargest(30, 'stars')[
-            ['repo', 'category', 'subcategory', 'stars', 'contributors', 'language', 'country']
-        ].copy()
-        _matched['stars'] = _matched['stars'].apply(lambda x: f"{x:,}")
-        _matched.columns = ['Repository', 'GoodAI Category', 'GoodAI Subcategory', 'Stars', 'Contributors', 'Language', 'Country']
-        _matched = _matched.reset_index(drop=True)
+        _total_repos = int(_mask.sum())
+        _top = df_repos[_mask].nlargest(30, 'stars').copy()
 
-        _output = mo.vstack(_header + [
-            mo.stat(value=len(df_repos[_mask]), label="Total Repos", bordered=True),
-            mo.md(f"**Mapped from:** {', '.join(f'{c} / {s}' for c, s in _goodai_matches)}"),
-            mo.md("### Top 30 Projects"),
-            mo.ui.table(_matched, show_column_summaries=False, show_data_types=False),
+        _fig = go.Figure(go.Bar(
+            y=_top['repo'],
+            x=_top['stars'],
+            orientation='h',
+            marker_color=[CAT_COLORS.get(c, C['ink_3']) for c in _top['category']],
+            customdata=list(zip(_top['category'], _top['contributors'], _top['language'], _top['country'].fillna(''))),
+            hovertemplate=(
+                '<b>%{y}</b><br>'
+                'Stars: %{x:,}<br>'
+                'Category: %{customdata[0]}<br>'
+                'Contributors: %{customdata[1]}<br>'
+                'Language: %{customdata[2]}<br>'
+                'Country: %{customdata[3]}'
+                '<extra></extra>'
+            ),
+        ))
+        _fig.update_layout(
+            **LAYOUT,
+            height=max(300, len(_top) * 28),
+            xaxis=dict(title='Stars', showgrid=True, gridcolor=C['rule']),
+            yaxis=dict(title='', showgrid=False),
+        )
+
+        _mapped_label = ', '.join(f'{c} / {s}' for c, s in _goodai_matches)
+
+        _output = mo.vstack([
+            _header,
+            mo.hstack([
+                mo.stat(value=str(_score), label="Score", bordered=True, caption=f'{_maturity}'),
+                mo.stat(value=str(_parity), label="vs Closed", bordered=True),
+                mo.stat(value=f"{_total_repos:,}", label="Total Repos", bordered=True),
+            ], widths="equal", gap=1),
+            mo.md(f'**Mapped from:** {_mapped_label}'),
+            mo.ui.plotly(_fig),
         ])
     _output
+
+
+@app.cell(hide_code=True)
+def methodology(C, F, mo):
+    mo.Html(
+        f'<div style="margin-top:44px; padding-top:20px; border-top:1px solid {C["rule"]};">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Methodology</div>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; '
+        f'line-height:1.5; max-width:72ch;">'
+        f'OSAI gap map scores (1–4) are qualitative expert assessments across 10 dimensions. '
+        f'GoodAI List repos are matched via a manual mapping from OSAI subcategories to '
+        f'GoodAI (category, subcategory) pairs. Repos ranked by star count as a proxy for adoption. '
+        f'Licensing and Safeguards layers are cross-cutting and do not map to specific repos.</p>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; margin-top:8px;">'
+        f'<strong>Source:</strong> '
+        f'<a href="https://www.oso.xyz" style="color:{C["accent"]}">Open Source Observer</a> · '
+        f'<a href="https://goodailist.com" style="color:{C["accent"]}">GoodAI List</a></p>'
+        f'</div>'
+    )
+    return
 
 
 if __name__ == "__main__":
