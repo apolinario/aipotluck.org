@@ -1,158 +1,237 @@
 # Ecosystem Mapping — Architecture & Design
 
-## Overview
+## Purpose
 
-Open Source AI Market Map for Current AI — an interactive visualization of the open-source AI ecosystem with gap analysis and a crowdsourced roadmap. Built as a data platform with three layers: notebooks for analysis, a data model backed by OSO, and a static website for presentation.
+Drive Current AI's technical roadmap. The roadmap is the headline output. Everything else is the data foundation that makes the roadmap defensible and lets others build on it.
 
-**Workstream priority:** Notebooks (C) → Data model (A) → Website (B), with documentation/skills growing alongside.
+**Design principle:** Every query in the framework below is a function over the data model. If we can't answer it from the underlying data, the data model is incomplete.
 
-**Architecture:** Monorepo, dual-export. Notebooks query OSO + local CSVs, produce two outputs: (1) static JSON for the website at build time, (2) UDMs/static models pushed back to OSO for warehouse consumers.
+## Query Framework
+
+### Tier 0 — Roadmap queries (the headline)
+
+Directly produce or justify Current AI's technical roadmap.
+
+| ID | Query | Status |
+|----|-------|--------|
+| 0.1 | **What would it take to ship?** Given a target product spec, return: minimum viable composition of open components, integration gaps, missing components, maintenance risks. The potluck thesis as a query. | Not started — requires Tier 1 composition data |
+| 0.2 | **Where should Current AI invest next?** Rank candidates by: distance-to-closing-a-gap, leverage (downstream products), fragility reduction, dollar efficiency. Output: ranked, dated roadmap with traceable rationale. | Partially started — OSAI gap map scores + focus area mapping provide qualitative input |
+| 0.3 | **Smallest credible end-to-end open stack for use case Y?** For a given use case (consumer assistant, sovereign deployment, scientific workflow): shoppable list of components, costs, integration work, named maintainers to fund. | Not started — requires Tier 1 |
+
+### Tier 1 — Composition & substitutability (the hard part)
+
+The market-map-of-logos problem. Repos are not products.
+
+| ID | Query | Status |
+|----|-------|--------|
+| 1.1 | **Dependency graph, whitebox.** Actual code-level dependencies, transitively. | Partial — `ai_repo_packages` gives package-level. OSO `sboms_v0` may have more. |
+| 1.2 | **Dependency graph, blackbox / spec-level.** For a closed product: inferred functional dependencies. The "Kakashi" approach. | Not started |
+| 1.3 | **Substitutability.** For any node X: viable alternatives, and for which use cases each wins. | Started — `layer_mapping` notebook maps OSAI subcategories → repos, but category-level not functional-equivalence. |
+| 1.4 | **Interoperability / integration cost.** For any two nodes: do they compose? Glue code required? Quantified where possible. The seam visibility existing maps miss. | Not started |
+| 1.5 | **Off-the-shelf ceiling.** Best-of-breed open components assembled: how close to GPT-5/Claude/Gemini per capability? | Qualitative only — OSAI gap map parity verdicts ("Competitive", "Closed leads", etc.) |
+
+### Tier 2 — Gap & state-of-play (the diagnostic)
+
+| ID | Query | Status |
+|----|-------|--------|
+| 2.1 | **Per-layer competitiveness.** Where is open source ahead, at parity, or behind — by stack layer and capability. | Done — gaps notebook health scatter, red spots, focus area coverage |
+| 2.2 | **Openness depth.** Per node: weights/code/training data/methodology/evals — which are actually open, under what license, with what governance? Surfaces "open-washing." | Partial — OSAI gap map has 10 dimensions. GoodAI has license field. Not structured for per-repo openness audit. |
+| 2.3 | **License & governance posture.** Apache vs AGPL vs source-available vs open-weights-closed-data. Critical for commercial and sovereign use. | Data exists (license field in GoodAI, HF tags) but not analyzed |
+
+### Tier 3 — Fragility & people (what the map alone can't see)
+
+| ID | Query | Status |
+|----|-------|--------|
+| 3.1 | **Maintainer health / bus factor.** Per node: active maintainers, funding sources, commit cadence, truck factor. The Log4Shell question. | Partial — `ai_repo_activity` has FT/PT contributors. Missing: funding sources, truck factor computation. |
+| 3.2 | **Adversarial / fragility analysis.** Which 3–10 repos, if acquired-and-shuttered, would most damage the open AI stack? Names what to harden, fork, or duplicate. | Not started — requires Tier 1 dependency graph + maintainer data |
+| 3.3 | **People graph.** Core researchers and devs by area: where they've been, where they are now, what they're shipping. Talent flow as leading indicator. | Started — 7,910 GitHub orgs/users with location and metadata. Missing: researcher-level, career flow. |
+
+### Tier 4 — Onboarding (the on-ramp)
+
+| ID | Query | Status |
+|----|-------|--------|
+| 4.1 | **Builder pathways.** For a dev: where to learn, build reputation, earn money. Hackathons, repos, labs, programs. | Not started |
+
+---
+
+## Data Model
+
+### What we have
+
+#### OSO Warehouse (queryable via SQL)
+
+| Source | Table | Records | Refresh | Serves |
+|--------|-------|---------|---------|--------|
+| GoodAI List | `currentai.goodailist_repos.repos` | 15,396 repos | Manual upload | Base repo catalog |
+| OSS Insights | `currentai.ossinsights_ai_collections.ossinsights_ai_collections` | 616 repos, 53 collections | Manual upload | Collection taxonomy |
+| AI Repo Activity (UDM) | `currentai.ai_repo_activity.ai_repo_activity` | 15,375 repos | Daily | Stars, forks, contributors — single source of truth for notebooks |
+| AI Monthly Devs (UDM) | `currentai.ai_monthly_devs.ai_monthly_devs` | ~24 rows | Daily | Monthly developer counts by category |
+| AI Repo Packages (UDM) | `currentai.ai_repo_packages.ai_repo_packages` | 718K packages | Weekly | Package-level dependencies (Tier 1.1) |
+| OSO Public | `oso.*` | Projects, artifacts, dev metrics, events | Continuous | GitHub events, OpenDevData, funding |
+
+#### Local CSVs (`data/`)
+
+| Source | Path | Records | Serves |
+|--------|------|---------|--------|
+| OSAI Gap Map | `data/osai-gap-map/scores.csv` | 41 subcats × 10 dimensions | Tier 2 qualitative scores |
+| Hugging Face | `data/huggingface/top_models.csv` | 1K models | Model catalog |
+| Hugging Face | `data/huggingface/top_datasets.csv` | 1K datasets | Dataset catalog |
+| Hugging Face | `data/huggingface/tracked_models.csv` | 973 models | Models linked to tracked repos |
+| Hugging Face | `data/huggingface/tracked_datasets.csv` | 98 datasets | Datasets linked to tracked repos |
+| AI Incidents | `data/ai-incidents/incidents.csv` | 1,460 incidents | Safety/safeguards (Tier 2) |
+| GitHub Orgs | `data/github-orgs/orgs.csv` | 7,910 orgs/users | Geography, org metadata (Tier 3.3) |
+| GoodAI Enrichment | `data/goodailist/repos_tags.csv` | 46K tag assignments | Functional tagging |
+| GoodAI Enrichment | `data/goodailist/repos_descriptions.csv` | 14K descriptions | Project understanding |
+| GoodAI Enrichment | `data/goodailist/subcategory_breakdown.csv` | 105 subcats | Taxonomy structure |
+
+### What's missing (by tier)
+
+**Tier 0 — Roadmap:**
+- Product spec decomposition framework (what components does a "Claude-equivalent" require?)
+- Cost/effort estimation model for integration work
+- Dollar efficiency model for grant allocation
+
+**Tier 1 — Composition:**
+- Transitive dependency graphs (beyond packages → need SBOMs, import analysis)
+- Functional decomposition of closed products (the "Kakashi" spec-level graph)
+- Substitutability matrix (which repos can replace which, under what constraints)
+- Integration cost data (hours/lines/forks between components)
+
+**Tier 2 — Gaps:**
+- Per-repo openness audit (weights open? training data open? methodology open?)
+- Structured license analysis (beyond the raw license string)
+- Governance structure data (foundation-backed? corporate-controlled? community?)
+
+**Tier 3 — Fragility:**
+- Funding source data per project (who funds the maintainers?)
+- Truck factor computation (how many people leaving would kill the project?)
+- Researcher/developer career flow data (where did they come from, where are they going?)
+- Acquisition history (hyperscaler acquisitions of AI teams/companies)
+
+**Tier 4 — Onboarding:**
+- Hackathon/program database
+- Learning pathway curation
+- Reputation/contribution pathway mapping
+
+---
+
+## Two Taxonomies
+
+The ecosystem has two classification systems that remain separate lenses:
+
+**GoodAI taxonomy** (quantitative lens)
+- 8 top-level categories: Infrastructure, AI Engineering, Model Development, Applications, Models, Tutorials, Lists, Misc
+- 284 subcategories with repo-level data
+- Powers: repo counts, star velocity, contributor depth, geographic filtering
+
+**OSAI gap map taxonomy** (qualitative lens, editorial backbone)
+- 7 layers: Infrastructure, Model Components (Datasets/Code/Weights), Product/UX, Documentation, Licensing, Safeguards
+- 41 subcategories scored on 10 dimensions (1-5)
+- Powers: the website's stack view, health scores, parity verdicts, roadmap prioritization
+
+The `layer_mapping` notebook contains the manual mapping between them. The website uses OSAI layers as the editorial structure, with GoodAI data powering discovery and drill-downs behind each subcategory.
+
+---
 
 ## Project Structure
 
 ```
 ecosystem-mapping/
-├── app/                           # Website (Vite project, pnpm)
+├── app/                           # Website (Vite + vanilla JS, pnpm)
 │   ├── index.html
 │   ├── package.json
-│   ├── public/                    # Static assets, exported notebook HTML
+│   ├── public/
 │   └── src/
-│       ├── app.js                 # Rendering + interaction
-│       ├── data.js                # Hand-curated (replaced by data.generated.js over time)
-│       └── style.css              # Design system (CSS custom properties)
-├── data/                          # Raw external CSVs
-│   └── *.csv                      # e.g. OSAI gap map (41 subcats × 10 dimensions)
-├── notebooks/                     # Marimo notebooks (analysis + publish)
-│   ├── oss_ai_trends.py           # Developer activity, momentum, star velocity
-│   ├── oss_ai_gaps.py             # Gap analysis, Current AI focus area mapping
-│   └── data_inventory.py          # Reconcile all sources, coverage stats (new)
+│       ├── app.js
+│       ├── data.js                # Hand-curated → eventually data.generated.js
+│       └── style.css
+├── data/                          # Raw external CSVs, per-source subdirectories
+│   ├── huggingface/
+│   ├── osai-gap-map/
+│   ├── ai-incidents/
+│   ├── github-orgs/
+│   └── goodailist/
+├── models/                        # UDM SQL source (deployed to currentai org)
+│   ├── ai_repo_activity.sql
+│   ├── ai_monthly_devs.sql
+│   └── ai_repo_packages.sql
+├── notebooks/                     # Marimo notebooks
+│   ├── oss_ai_trends.py           # Developer activity & momentum
+│   ├── oss_ai_gaps.py             # Gap analysis & focus areas
+│   ├── france_ecosystem.py        # Geographic filter (France)
+│   ├── layer_mapping.py           # OSAI → GoodAI taxonomy mapping
+│   ├── taxonomy_mapping.py        # Taxonomy overlap exploration
+│   └── data_inventory.py          # Source coverage & overlap
 ├── scripts/                       # Python CLI tools
-│   ├── export_notebooks.py        # marimo export html → app/public/notebooks/
-│   └── publish_data.py            # Notebook outputs → app/src/data.generated.js (future)
-├── docs/                          # Specs, methodology
-├── pyproject.toml                 # Python/uv (notebooks + scripts)
-└── CLAUDE.md
+│   ├── query.py                   # Ad-hoc SQL queries
+│   ├── export_notebooks.py        # Notebook → HTML export
+│   ├── fetch_goodailist.py        # Scrape GoodAI List API
+│   ├── fetch_github_ai_repos.py   # GitHub Search for AI repos
+│   ├── fetch_github_orgs.py       # GitHub org/user metadata
+│   ├── fetch_huggingface.py       # HF models & datasets
+│   └── fetch_incidents.py         # AI Incident Database
+├── docs/
+│   ├── specs/                     # Design specs
+│   ├── plans/                     # Implementation plans
+│   ├── styles/                    # Notebook style guides
+│   └── agents.md                  # Agent guide for querying OSO
+├── pyproject.toml
+├── CLAUDE.md
+└── README.md
 ```
 
-Two package managers coexist: `pnpm` for `app/`, `uv` for everything else. They don't depend on each other.
-
-## Data Sources
-
-Four sources today, designed to grow:
-
-| Source | Location | Type | Records |
-|--------|----------|------|---------|
-| GoodAI List (Chip) | `currentai.goodailist_repos.repos` | OSO static model | 14,729 repos, 8 categories, 284 subcategories |
-| OSS Insights AI | `currentai.ossinsights_ai_collections.ossinsights_ai_collections` | OSO static model | 616 repos, 53 collections |
-| OSAI gap map | `data/*.csv` | Local CSV | 41 subcategories, 10-dimension scores (1-5) |
-| OSO public tables | `oso.*` | OSO warehouse | Projects, artifacts, developer metrics, events |
-
-### Adding new data sources
-
-Each new dataset follows one of two paths:
-
-- **CSV**: Drop in `data/`, add a load cell in the relevant notebook, add an entry in the data inventory
-- **OSO static model**: Ingest via OSO platform into `currentai.*`, query with three-part table name (`currentai.<dataset>.<table>`)
-
-No shared Python library is needed. Notebooks are self-contained. If patterns repeat across 3+ notebooks, extract to a `scripts/` utility.
-
-## Two Taxonomies
-
-The ecosystem has two classification systems that remain separate lenses, not merged:
-
-**GoodAI taxonomy** (quantitative lens)
-- 8 top-level categories: Infrastructure, AI Engineering, Model Development, Applications, Models, Tutorials, Lists, Misc
-- 284 subcategories with repo-level data (stars, forks, contributors, trends)
-- Used by `oss_ai_trends.py` and `oss_ai_gaps.py` for quantitative analysis
-
-**OSAI gap map taxonomy** (qualitative lens)
-- 7 layers: Infrastructure, Model Components (Datasets/Code/Weights), Product/UX, Documentation, Licensing, Safeguards
-- 41 subcategories scored on 10 dimensions: Breadth, Production Readiness, Ease of Adoption, Documentation, Community Activity, Performance vs Closed, Enterprise Readiness, Interoperability, Sustainability, Standardization
-- Overall scores (1-4), maturity labels, parity verdicts
-
-They join at the repo level where possible but category structures are not reconciled.
-
-## Notebooks
-
-### `data_inventory.py` (new — build first)
-
-Reconcile all data sources into a unified view:
-- Load every available source (goodailist, ossinsights, OSAI gap map scores, future CSVs and static models)
-- For each repo: which sources mention it, what metadata is available, what's missing
-- Output: coverage stats, overlap matrix, unmatched repos per source
-- A sources registry cell at the top lists all known sources with type and location
-
-### `oss_ai_trends.py` (existing)
-
-Quantitative analysis of developer activity and momentum:
-- Queries goodailist repos joined against OSO developer metrics (stars, forks, contributors via OpenDevData)
-- Monthly active devs by category, 7-day star velocity, top repos, FT/PT contributor breakdown
-- No changes needed now
-
-### `oss_ai_gaps.py` (existing)
-
-Gap analysis against Current AI's 10 program areas:
-- Health scatter (4 quadrants: gap priority, sustainability risk, hidden gems, healthy)
-- Red spots table with composite gap score
-- Hand-curated `FOCUS_MAPPING` from (category, subcat) → Current AI focus area
-- Future: incorporate OSAI gap map qualitative scores as a second assessment lens
-
-## Website
-
-### Current state
-
-Working prototype in `app/` — vanilla JS + CSS, built with Vite. Three views (Stack, Workflow, Matrix), gap heatmap, detail drawer, crowdsourced roadmap section. Hand-curated data in `src/data.js`.
-
-### Design system
-
-CSS custom properties: `--paper` (warm off-white), `--ink` (deep brown-black), `--signal` (gap red), `--healthy` (teal), `--warm` (amber). Fonts: Fraunces (serif display), Inter (UI), JetBrains Mono (data). Health thresholds: ≥70 healthy, 45-69 fragile, <45 gap.
-
-### Evolution path
-
-1. **Now:** Website stays as-is with hand-curated data. Useful for demos.
-2. **After data inventory:** `scripts/publish_data.py` generates `app/src/data.generated.js` from notebook outputs, matching the existing `MARKET_MAP_DATA` shape. Health scores blend OSAI gap map qualitative + GoodAI/OSO quantitative.
-3. **Later:** Switchable taxonomy lenses on the website, exported notebook HTML served at `app/public/notebooks/`, crowdsource section connected to real backend.
-
-The website remains a static Vite build throughout — no server runtime, no live API calls. Editorial choices (layer structure, framing, copy) stay in website code.
+---
 
 ## Data Flow
 
 ```
-External CSVs (data/)     OSO Warehouse (currentai.*, oso.*)
+External sources              OSO Warehouse (currentai.*, oso.*)
+(APIs, CSVs, scraping)        (static models, UDMs, public tables)
         │                              │
-        └──────────┐  ┌────────────────┘
-                   ▼  ▼
-              notebooks/
-              (query, join, score, analyze)
-                   │
-          ┌────────┼────────┐
-          ▼        ▼        ▼
-     app/src/   UDMs back   docs/
-     data.js    to OSO      methodology
-     (JSON)     (optional)
+        ▼                              ▼
+    data/ CSVs                   notebooks/
+    scripts/fetch_*         (query UDMs, load CSVs, analyze)
+        │                              │
+        ▼                         ┌────┼────┐
+    models/ SQL ──────────▶  UDMs back  │  app/src/
+    (deployed via MCP)       to OSO     │  data.generated.js
+                                        │
+                                   docs/ methodology
 ```
 
-One-way flow: raw data → notebooks → website + OSO. Notebooks are the single authoritative source for all computed data.
+Notebooks are the authoritative source for all computed data. UDMs pre-compute expensive joins so notebooks load fast. The website reads either hand-curated or generated data.
 
-## Commands
+---
 
-```bash
-# Website
-cd app && pnpm dev              # dev server (port 5173)
-cd app && pnpm build            # production build → app/dist/
+## Notebook Style
 
-# Notebooks
-uv run marimo edit notebooks/data_inventory.py    # interactive editing
-uv run marimo run notebooks/oss_ai_trends.py      # run as app
+All notebooks follow `docs/styles/currentai.md`:
+- F/C/LAYOUT constants (Fraunces, Inter, JetBrains Mono; paper/ink/signal/healthy/warm palette)
+- Numbered section headers with styled eyebrows
+- Health color encoding (≥70 healthy, 45-69 fragile, <45 gap)
+- `displayModeBar: False` on all charts
+- Explorer card pattern for interactive sections (dropdowns + results as connected card)
+- Methodology footer with source links
+- Must pass both `check_notebook.py` and `marimo check`
 
-# Scripts
-uv run scripts/export_notebooks.py                # export all to HTML
-uv run scripts/export_notebooks.py oss_ai_gaps.py # export one
-```
+---
 
 ## What's Next
 
-1. Restructure repo to match this design (move website into `app/`, add `pyproject.toml`, `scripts/`)
-2. Build `data_inventory.py` notebook — reconcile all four sources
-3. Iterate on existing notebooks with richer data
-4. Build `publish_data.py` to bridge notebooks → website
+### Immediate
+1. Exploratory analysis per tier — determine what we have, what we need, what to supplement
+2. Update hosted notebooks (deploy restyled trends + gaps to oso.xyz)
+3. Build `publish_data.py` to bridge notebooks → website
+
+### Medium-term
+4. Tier 1 composition data — SBOMs, functional decomposition, substitutability matrix
+5. Tier 2 structured openness audit — per-repo license/governance analysis
+6. Tier 3 funding + fragility — integrate OSO funding data, compute truck factor
+7. Geographic filtering on the website (any country, not just France)
+8. Acquisition history dataset
+
+### Long-term
+9. Tier 0 roadmap engine — product spec decomposition, investment ranking, shoppable lists
+10. Crowdsource section connected to real backend
+11. Builder pathway curation (Tier 4)
+12. Continuously-updated live map replacing the static prototype
