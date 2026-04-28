@@ -141,19 +141,52 @@ def write_csv(path: Path, rows: list[dict], fields: list[str]) -> None:
     print(f"  Wrote {len(rows)} rows to {path.name}")
 
 
+def dedup_models(rows: list[dict]) -> list[dict]:
+    seen = set()
+    out = []
+    for r in rows:
+        if r["model_id"] not in seen:
+            seen.add(r["model_id"])
+            out.append(r)
+    return out
+
+
+def dedup_datasets(rows: list[dict]) -> list[dict]:
+    seen = set()
+    out = []
+    for r in rows:
+        if r["dataset_id"] not in seen:
+            seen.add(r["dataset_id"])
+            out.append(r)
+    return out
+
+
 def main():
     authors = get_tracked_authors()
 
     if authors:
         print(f"\nFetching HF models for {len(authors)} tracked authors...")
         models = fetch_models_by_authors(authors)
-        print(f"  Found {len(models)} models")
+        print(f"  Found {len(models)} models from tracked authors")
 
         print(f"\nFetching HF datasets for {len(authors)} tracked authors...")
         datasets = fetch_datasets_by_authors(authors)
-        print(f"  Found {len(datasets)} datasets")
+        print(f"  Found {len(datasets)} datasets from tracked authors")
     else:
-        models, datasets = fetch_top()
+        models, datasets = [], []
+
+    print("\nFetching top 1000 global models and datasets...")
+    try:
+        top_models, top_datasets = fetch_top(limit=1000)
+        print(f"  Found {len(top_models)} top models, {len(top_datasets)} top datasets")
+        models = dedup_models(models + top_models)
+        datasets = dedup_datasets(datasets + top_datasets)
+    except Exception as e:
+        print(f"  Warning: global top fetch failed ({e})")
+        print("  Saving tracked-author results only. Re-run later for global top.")
+
+    models.sort(key=lambda r: r["downloads"], reverse=True)
+    datasets.sort(key=lambda r: r["downloads"], reverse=True)
 
     write_csv(MODELS_CSV, models, MODEL_FIELDS)
     write_csv(DATASETS_CSV, datasets, DATASET_FIELDS)
