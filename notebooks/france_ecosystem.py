@@ -1,22 +1,7 @@
 import marimo
 
 __generated_with = "unknown"
-app = marimo.App()
-
-
-@app.cell(hide_code=True)
-def header(mo):
-    mo.md(
-        """
-        # Open-Source AI in France
-
-        Surveying **15,000+ active repositories** (156K+ developers) across the open-source AI stack.
-        This view filters to France-based projects — potential grantees for Pionniers de l'IA.
-
-        **Data:** OSO · GoodAI List · GitHub Archive
-        """
-    )
-    return
+app = marimo.App(width="full")
 
 
 @app.cell(hide_code=True)
@@ -34,6 +19,82 @@ def imports():
     import pandas as pd
     import plotly.graph_objects as go
     return go, pd
+
+
+@app.cell(hide_code=True)
+def style():
+    F = {
+        "headline": "Fraunces, Georgia, serif",
+        "body": "Inter, -apple-system, system-ui, sans-serif",
+        "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
+    }
+    C = {
+        "ink": "#1a1814",
+        "ink_2": "#3a342b",
+        "ink_3": "#6b6253",
+        "paper": "#f5f1ea",
+        "paper_2": "#ede7dc",
+        "rule": "#c9bfac",
+        "signal": "#c8341d",
+        "healthy": "#1b6b5e",
+        "warm": "#d97c2a",
+        "accent": "#2a3d8f",
+    }
+    LAYOUT = dict(
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        font=dict(family=F["body"], size=12, color=C["ink"]),
+        margin=dict(t=20, l=60, r=20, b=50),
+        legend=dict(
+            bgcolor="rgba(0,0,0,0)",
+            font=dict(size=11),
+            orientation="h",
+            yanchor="bottom", y=1.02,
+            xanchor="left", x=0,
+        ),
+        hovermode="closest",
+    )
+    CHART_LAYOUT = LAYOUT
+    CAT_COLORS = {
+        "Infrastructure": "#1A5276",
+        "AI Engineering": "#196F3D",
+        "Model Development": "#922B21",
+        "Applications": "#6C3483",
+        "Models": "#117A65",
+        "Tutorials": "#784212",
+        "Lists": "#17202A",
+        "Misc": "#717D7E",
+    }
+    return C, CAT_COLORS, CHART_LAYOUT, F, LAYOUT
+
+
+@app.cell(hide_code=True)
+def fonts(mo):
+    mo.Html(
+        '<style>'
+        '@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");'
+        '</style>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def header(C, F, mo):
+    mo.Html(
+        f'<div style="padding:40px 0 28px; border-bottom:2px solid {C["accent"]}; margin-bottom:36px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:11px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px;">'
+        f'Current AI · Ecosystem Mapping · Geographic View</div>'
+        f'<h1 style="font-family:{F["headline"]}; font-size:2.2rem; font-weight:400; '
+        f'color:{C["ink"]}; margin:0 0 14px; line-height:1.05; letter-spacing:-0.025em;">'
+        f'Open-Source AI in France</h1>'
+        f'<p style="font-family:{F["body"]}; font-size:1rem; color:{C["ink_2"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Surveying 15,000+ active repositories (156K+ developers) across the open-source AI stack. '
+        f'This view filters to France-based projects — potential grantees for Pionniers de l’IA.</p>'
+        f'</div>'
+    )
+    return
 
 
 @app.cell(hide_code=True)
@@ -96,17 +157,19 @@ def load_global_stats(mo, pyoso_db_conn):
 
 
 @app.cell(hide_code=True)
-def headline_stats(df_france, df_global, mo):
+def headline_stats(C, F, df_france, df_global, mo):
     _total_repos = int(df_global['total_repos'].iloc[0])
     _total_devs = int(df_global['total_contributors'].iloc[0])
     mo.vstack([
-        mo.md(
-            f"Across the full survey of **{_total_repos:,} repos** "
-            f"and **{_total_devs:,} developers**, "
-            f"**{len(df_france)} repositories** are based in France "
-            f"spanning **{df_france['category'].nunique()} categories** "
-            f"and **{df_france['subcategory'].nunique()} subcategories** "
-            f"of the AI stack."
+        mo.Html(
+            f'<p style="font-family:{F["body"]}; font-size:0.95rem; color:{C["ink_2"]}; '
+            f'line-height:1.5; margin:0 0 16px;">'
+            f'Across the full survey of <strong>{_total_repos:,} repos</strong> '
+            f'and <strong>{_total_devs:,} developers</strong>, '
+            f'<strong>{len(df_france)} repositories</strong> are based in France '
+            f'spanning <strong>{df_france["category"].nunique()} categories</strong> '
+            f'and <strong>{df_france["subcategory"].nunique()} subcategories</strong> '
+            f'of the AI stack.</p>'
         ),
         mo.hstack([
             mo.stat(value=len(df_france), label="French Repos", bordered=True, caption="across the AI stack"),
@@ -114,88 +177,111 @@ def headline_stats(df_france, df_global, mo):
             mo.stat(value=f"{df_france['contributors'].sum():,}", label="Contributors", bordered=True, caption="active developers"),
             mo.stat(value=df_france['owner'].nunique(), label="Organizations", bordered=True, caption="unique maintainers"),
             mo.stat(value=df_france['category'].nunique(), label="Stack Layers", bordered=True, caption="of 8 categories covered"),
-        ]),
+        ], widths="equal", gap=1),
     ])
     return
 
 
 @app.cell(hide_code=True)
-def france_by_category(df_france, go, mo):
+def section_by_category(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'01 / Stack Coverage</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Where does France show up in the AI stack?</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Repository count by GoodAI List category. Color encodes stack layer.</p>'
+        f'</div>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def france_by_category(CAT_COLORS, LAYOUT, C, df_france, go, mo):
     _by_cat = df_france.groupby('category').agg(
         repos=('repo', 'nunique'),
         total_stars=('stars', 'sum'),
         total_contributors=('contributors', 'sum'),
     ).reset_index().sort_values('repos', ascending=True)
 
-    _cat_colors = {
-        'Infrastructure': '#1A5276',
-        'AI Engineering': '#196F3D',
-        'Model Development': '#922B21',
-        'Applications': '#6C3483',
-        'Models': '#117A65',
-        'Tutorials': '#784212',
-        'Lists': '#17202A',
-    }
-
     _fig = go.Figure(go.Bar(
         y=_by_cat['category'],
         x=_by_cat['repos'],
         orientation='h',
-        marker_color=[_cat_colors.get(c, '#999') for c in _by_cat['category']],
+        marker_color=[CAT_COLORS.get(c, C['ink_3']) for c in _by_cat['category']],
         customdata=list(zip(_by_cat['total_stars'], _by_cat['total_contributors'])),
         hovertemplate="<b>%{y}</b><br>Repos: %{x}<br>Stars: %{customdata[0]:,}<br>Contributors: %{customdata[1]:,}<extra></extra>",
     ))
     _fig.update_layout(
-        template='plotly_white',
+        **LAYOUT,
         height=350,
-        margin=dict(t=10, l=0, r=30, b=40),
-        xaxis=dict(title='Repositories', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+        xaxis=dict(title='Repositories', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False),
     )
-    mo.vstack([
-        mo.md("## French AI Repos by Stack Layer"),
-        mo.ui.plotly(_fig),
-    ])
+    mo.ui.plotly(_fig, config={"displayModeBar": False})
     return
 
 
 @app.cell(hide_code=True)
-def france_by_subcategory(df_france, go, mo):
+def section_subcategories(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'02 / Subcategory Depth</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Which niches are strongest?</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Top 20 subcategories with at least 2 French repos.</p>'
+        f'</div>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def france_by_subcategory(CAT_COLORS, LAYOUT, C, df_france, go, mo):
     _by_sub = df_france.groupby(['category', 'subcategory']).agg(
         repos=('repo', 'nunique'),
         total_stars=('stars', 'sum'),
     ).reset_index()
     _by_sub = _by_sub[_by_sub['repos'] >= 2].sort_values('repos', ascending=True).tail(20)
 
-    _cat_colors = {
-        'Infrastructure': '#1A5276',
-        'AI Engineering': '#196F3D',
-        'Model Development': '#922B21',
-        'Applications': '#6C3483',
-        'Models': '#117A65',
-        'Tutorials': '#784212',
-        'Lists': '#17202A',
-    }
-
     _fig = go.Figure(go.Bar(
         y=_by_sub['subcategory'],
         x=_by_sub['repos'],
         orientation='h',
-        marker_color=[_cat_colors.get(c, '#999') for c in _by_sub['category']],
+        marker_color=[CAT_COLORS.get(c, C['ink_3']) for c in _by_sub['category']],
         customdata=list(zip(_by_sub['category'], _by_sub['total_stars'])),
         hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Repos: %{x}<br>Stars: %{customdata[1]:,}<extra></extra>",
     ))
     _fig.update_layout(
-        template='plotly_white',
+        **LAYOUT,
         height=500,
-        margin=dict(t=10, l=0, r=30, b=40),
-        xaxis=dict(title='Repositories', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+        xaxis=dict(title='Repositories', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False),
     )
-    mo.vstack([
-        mo.md("## Top Subcategories in France"),
-        mo.ui.plotly(_fig),
-    ])
+    mo.ui.plotly(_fig, config={"displayModeBar": False})
+    return
+
+
+@app.cell(hide_code=True)
+def section_projects(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'03 / Top Projects</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Leading French AI repositories</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Top 30 by star count — includes Mistral, Hugging Face contributors, Pathway, and more.</p>'
+        f'</div>'
+    )
     return
 
 
@@ -207,10 +293,24 @@ def top_french_projects(df_france, mo):
     _top['stars'] = _top['stars'].apply(lambda x: f"{x:,}")
     _top.columns = ['Repository', 'Category', 'Subcategory', 'Stars', 'Contributors', 'Language']
     _top = _top.reset_index(drop=True)
-    mo.vstack([
-        mo.md("## Top French AI Projects by Stars"),
-        mo.ui.table(_top, show_column_summaries=False, show_data_types=False),
-    ])
+    mo.ui.table(_top, show_column_summaries=False, show_data_types=False)
+    return
+
+
+@app.cell(hide_code=True)
+def section_orgs(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'04 / Organizations</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Potential grantees</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Organizations with the most active AI repositories based in France.</p>'
+        f'</div>'
+    )
     return
 
 
@@ -226,16 +326,29 @@ def top_french_orgs(df_france, mo, pd):
     _by_org['total_stars'] = _by_org['total_stars'].apply(lambda x: f"{x:,}")
     _by_org.columns = ['Organization', 'Repos', 'Stars', 'Contributors', 'Categories']
     _by_org = _by_org.reset_index(drop=True)
-    mo.vstack([
-        mo.md("## Top French Organizations"),
-        mo.md("Potential grantees — organizations with the most active AI repositories."),
-        mo.ui.table(_by_org, show_column_summaries=False, show_data_types=False),
-    ])
+    mo.ui.table(_by_org, show_column_summaries=False, show_data_types=False)
     return
 
 
 @app.cell(hide_code=True)
-def france_momentum(df_france, go, mo):
+def section_momentum(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'05 / Momentum</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">What’s trending in France right now?</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'French repos with the most stars gained in the last 7 days.</p>'
+        f'</div>'
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def france_momentum(C, LAYOUT, df_france, go, mo):
     _data = df_france[df_france['star_7d'] > 0].nlargest(15, 'star_7d').sort_values('star_7d', ascending=True)
 
     if _data.empty:
@@ -245,68 +358,82 @@ def france_momentum(df_france, go, mo):
             y=_data['repo'],
             x=_data['star_7d'],
             orientation='h',
-            marker_color='#196F3D',
+            marker_color=C['healthy'],
             customdata=list(zip(_data['category'], _data['stars'])),
             hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>7d stars: %{x:,}<br>Total stars: %{customdata[1]:,}<extra></extra>",
         ))
         _fig.update_layout(
-            template='plotly_white',
+            **LAYOUT,
             height=420,
-            margin=dict(t=10, l=0, r=30, b=40),
-            xaxis=dict(title='Stars gained (last 7 days)', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
-            yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+            xaxis=dict(title='Stars gained (last 7 days)', showgrid=True, gridcolor=C['rule']),
+            yaxis=dict(title='', showgrid=False),
         )
-        _output = mo.vstack([
-            mo.md("## Momentum — French Repos Trending Now"),
-            mo.ui.plotly(_fig),
-        ])
+        _output = mo.ui.plotly(_fig, config={"displayModeBar": False})
     _output
     return
 
 
 @app.cell(hide_code=True)
-def france_language_breakdown(df_france, go, mo):
-    _by_lang = df_france.groupby('language').agg(
-        repos=('repo', 'nunique'),
-    ).reset_index()
-    _by_lang = _by_lang[_by_lang['language'].notna()].nlargest(10, 'repos')
-
-    _fig = go.Figure(go.Pie(
-        labels=_by_lang['language'],
-        values=_by_lang['repos'],
-        hole=0.4,
-        textinfo='label+value',
-        marker=dict(colors=['#1A5276', '#196F3D', '#922B21', '#6C3483', '#117A65',
-                            '#784212', '#17202A', '#D4AC0D', '#5D6D7E', '#A93226']),
-    ))
-    _fig.update_layout(
-        template='plotly_white',
-        height=350,
-        margin=dict(t=10, l=0, r=0, b=10),
-        showlegend=True,
-        legend=dict(orientation='h', yanchor='top', y=-0.05, xanchor='center', x=0.5),
+def section_languages(C, F, mo):
+    mo.Html(
+        f'<div style="margin:44px 0 20px;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
+        f'06 / Tech Stack</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 8px;">Primary languages</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_3"]}; '
+        f'margin:0; line-height:1.5;">'
+        f'Distribution of primary programming languages across French AI repos.</p>'
+        f'</div>'
     )
-    mo.vstack([
-        mo.md("## Primary Languages"),
-        mo.ui.plotly(_fig),
-    ])
     return
 
 
 @app.cell(hide_code=True)
-def methodology_note(mo):
-    mo.md(
-        """
-        ---
+def france_language_breakdown(CAT_COLORS, C, LAYOUT, df_france, go, mo):
+    _by_lang = df_france.groupby('language').agg(
+        repos=('repo', 'nunique'),
+    ).reset_index()
+    _by_lang = _by_lang[_by_lang['language'].notna()].nlargest(10, 'repos')
+    _by_lang = _by_lang.sort_values('repos', ascending=True)
 
-        **Methodology:** Repos are tagged as "France" by GoodAI List based on the primary
-        maintainer's GitHub profile location. This is a floor — it undercounts French projects
-        where the maintainer lists no location or lists a different country (eg, a French org
-        with a US-based GitHub profile). The full survey covers 15,000+ active AI repositories
-        across 8 categories of the open-source AI stack.
+    _lang_colors = ['#1A5276', '#196F3D', '#922B21', '#6C3483', '#117A65',
+                    '#784212', '#17202A', '#D4AC0D', '#5D6D7E', '#A93226']
 
-        **Source:** [Open Source Observer](https://www.oso.xyz) · [GoodAI List](https://goodailist.com)
-        """
+    _fig = go.Figure(go.Bar(
+        y=_by_lang['language'],
+        x=_by_lang['repos'],
+        orientation='h',
+        marker_color=_lang_colors[:len(_by_lang)],
+        hovertemplate="<b>%{y}</b><br>Repos: %{x}<extra></extra>",
+    ))
+    _fig.update_layout(
+        **LAYOUT,
+        height=350,
+        xaxis=dict(title='Repositories', showgrid=True, gridcolor=C['rule']),
+        yaxis=dict(title='', showgrid=False),
+    )
+    mo.ui.plotly(_fig, config={"displayModeBar": False})
+    return
+
+
+@app.cell(hide_code=True)
+def methodology(C, F, mo):
+    mo.Html(
+        f'<div style="margin-top:44px; padding-top:20px; border-top:1px solid {C["rule"]};">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["ink_3"]}; '
+        f'letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Methodology</div>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; line-height:1.5;">'
+        f'Repos are tagged as "France" by GoodAI List based on the primary maintainer’s '
+        f'GitHub profile location. This is a floor — it undercounts French projects where '
+        f'the maintainer lists no location or lists a different country. The full survey covers '
+        f'15,000+ active AI repositories across 8 categories of the open-source AI stack.</p>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; margin-top:8px;">'
+        f'<strong>Source:</strong> '
+        f'<a href="https://www.oso.xyz" style="color:{C["accent"]}">Open Source Observer</a> · '
+        f'<a href="https://goodailist.com" style="color:{C["accent"]}">GoodAI List</a></p>'
+        f'</div>'
     )
     return
 
