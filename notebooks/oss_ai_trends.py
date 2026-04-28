@@ -86,7 +86,7 @@ def header(C, F, mo):
         f'Current AI · Ecosystem Mapping · Trends</div>'
         f'<h1 style="font-family:{F["headline"]}; font-size:2.2rem; font-weight:400; '
         f'color:{C["ink"]}; margin:0 0 14px; line-height:1.05; letter-spacing:-0.025em;">'
-        f'Developer Activity & Momentum</h1>'
+        f'Open-Source AI Ecosystem · Trends</h1>'
         f'<p style="font-family:{F["body"]}; font-size:1rem; color:{C["ink_2"]}; '
         f'margin:0; line-height:1.5;">'
         f'Growth signals across the open-source AI landscape. '
@@ -236,7 +236,7 @@ def source_stats(df_contributors, df_gl, df_stars_forks, mo):
         mo.stat(label="Repos", value=f"{len(df_gl):,}", bordered=True, caption="OSS AI repos"),
         mo.stat(label="Unique orgs", value=f"{df_gl['owner'].nunique():,}", bordered=True, caption="GitHub organizations"),
         mo.stat(label="Categories", value=str(df_gl['category'].nunique()), bordered=True, caption="top-level taxonomy"),
-        mo.stat(label="Stars (3mo)", value=f"{df_stars_forks['stars_3m'].sum()/1e3:.0f}K", bordered=True, caption="new stars · last 90 days"),
+        mo.stat(label="Stars (3mo)", value=f"{df_stars_forks['stars_3m'].sum()/1e6:.1f}M", bordered=True, caption="new stars · last 90 days"),
         mo.stat(label="Forks (3mo)", value=f"{df_stars_forks['forks_3m'].sum()/1e3:.0f}K", bordered=True, caption="new forks · last 90 days"),
         mo.stat(label="Contributors", value=f"{df_contributors['total_contributors'].sum()/1e3:.0f}K", bordered=True, caption="active devs · last 90 days"),
     ], widths="equal", gap=1)

@@ -70,7 +70,7 @@ def header_title(C, F, mo):
         f'Current AI \u00b7 Ecosystem Mapping \u00b7 Gap Analysis</div>'
         f'<h1 style="font-family:{F["headline"]}; font-size:2.2rem; font-weight:400; '
         f'color:{C["ink"]}; margin:0 0 14px; line-height:1.05; letter-spacing:-0.025em;">'
-        f'Where Are the Gaps?</h1>'
+        f'Open-Source AI Ecosystem · Gap Analysis</h1>'
         f'<p style="font-family:{F["body"]}; font-size:1rem; color:{C["ink_2"]}; '
         f'margin:0; line-height:1.5;">'
         f'Mapping open-source AI ecosystem health against Current AI\u2019s 10 program areas '
