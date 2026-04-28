@@ -361,27 +361,46 @@ def mapping_coverage(C, F, OSAI_TO_GOODAI, df_osai, go, health_color, mo, pd):
 
 
 @app.cell(hide_code=True)
-def layer_selector(df_osai, mo):
+def explorer_controls(C, F, df_osai, mo):
     _layers = sorted(df_osai['layer'].unique().tolist())
     layer_dropdown = mo.ui.dropdown(
         options=_layers,
         value=_layers[0],
-        label="Select OSAI Layer",
+        label="Layer",
     )
-    layer_dropdown
     return (layer_dropdown,)
 
 
 @app.cell(hide_code=True)
-def subcat_selector(df_osai, layer_dropdown, mo):
+def explorer_subcat(df_osai, layer_dropdown, mo):
     _subcats = df_osai[df_osai['layer'] == layer_dropdown.value]['subcategory'].tolist()
     subcat_dropdown = mo.ui.dropdown(
         options=_subcats,
         value=_subcats[0] if _subcats else None,
-        label="Select Subcategory",
+        label="Subcategory",
     )
-    subcat_dropdown
     return (subcat_dropdown,)
+
+
+@app.cell(hide_code=True)
+def explorer_header(C, F, layer_dropdown, mo, subcat_dropdown):
+    mo.Html(
+        f'<div style="margin:44px 0 0; padding:24px; background:{C["paper_2"]}; '
+        f'border:1px solid {C["rule"]}; border-radius:8px 8px 0 0; border-bottom:none;">'
+        f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["accent"]}; '
+        f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">'
+        f'Layer Explorer</div>'
+        f'<h2 style="font-family:{F["headline"]}; font-size:1.4rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 6px;">Browse projects by stack layer</h2>'
+        f'<p style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; '
+        f'margin:0 0 16px;">Select a layer and subcategory to see matching open-source projects.</p>'
+        f'<div style="display:flex; gap:12px; align-items:end;">'
+        f'{layer_dropdown}'
+        f'{subcat_dropdown}'
+        f'</div>'
+        f'</div>'
+    )
+    return
 
 
 @app.cell(hide_code=True)
@@ -394,28 +413,27 @@ def selected_projects(C, CAT_COLORS, F, LAYOUT, OSAI_TO_GOODAI, df_osai, df_repo
     _score = _osai_row.iloc[0]['overall_score'] if len(_osai_row) > 0 else ''
     _maturity = _osai_row.iloc[0]['maturity'] if len(_osai_row) > 0 else ''
     _parity = _osai_row.iloc[0]['parity_verdict'] if len(_osai_row) > 0 else ''
-    _score_color = health_color(_score)
 
-    _header = mo.Html(
-        f'<div style="margin:20px 0 24px;">'
+    _result_header = mo.Html(
+        f'<div style="margin:0 0 16px;">'
         f'<div style="font-family:{F["mono"]}; font-size:10px; color:{C["ink_3"]}; '
         f'letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;">'
         f'{_key[0]}</div>'
-        f'<h2 style="font-family:{F["headline"]}; font-size:1.5rem; font-weight:500; '
-        f'color:{C["ink"]}; margin:0 0 8px; letter-spacing:-0.015em;">{_key[1]}</h2>'
-        f'<p style="font-family:{F["body"]}; font-size:0.95rem; color:{C["ink_2"]}; '
+        f'<h3 style="font-family:{F["headline"]}; font-size:1.3rem; font-weight:500; '
+        f'color:{C["ink"]}; margin:0 0 6px; letter-spacing:-0.015em;">{_key[1]}</h3>'
+        f'<p style="font-family:{F["body"]}; font-size:0.9rem; color:{C["ink_2"]}; '
         f'margin:0; line-height:1.5;">{_desc}</p>'
         f'</div>'
     )
 
     _stats = mo.hstack([
-        mo.stat(value=str(_score), label="Score", bordered=True, caption=f'<span style="color:{_score_color}">●</span> {_maturity}'),
-        mo.stat(value=str(_parity), label="vs Closed Source", bordered=True),
+        mo.stat(value=str(_score), label="Score", bordered=True, caption=_maturity),
+        mo.stat(value=str(_parity), label="vs Closed", bordered=True),
     ], widths="equal", gap=1)
 
     if not _goodai_matches:
-        _output = mo.vstack([
-            _header,
+        _inner = mo.vstack([
+            _result_header,
             _stats,
             mo.md("_No GoodAI mapping — this is a cross-cutting category (Licensing, Safeguards)._"),
         ])
@@ -452,17 +470,23 @@ def selected_projects(C, CAT_COLORS, F, LAYOUT, OSAI_TO_GOODAI, df_osai, df_repo
 
         _mapped_label = ', '.join(f'{c} / {s}' for c, s in _goodai_matches)
 
-        _output = mo.vstack([
-            _header,
+        _inner = mo.vstack([
+            _result_header,
             mo.hstack([
-                mo.stat(value=str(_score), label="Score", bordered=True, caption=f'{_maturity}'),
+                mo.stat(value=str(_score), label="Score", bordered=True, caption=_maturity),
                 mo.stat(value=str(_parity), label="vs Closed", bordered=True),
                 mo.stat(value=f"{_total_repos:,}", label="Total Repos", bordered=True),
             ], widths="equal", gap=1),
             mo.md(f'**Mapped from:** {_mapped_label}'),
             mo.ui.plotly(_fig, config={"displayModeBar": False}),
         ])
-    _output
+
+    mo.Html(
+        f'<div style="padding:24px; border:1px solid {C["rule"]}; '
+        f'border-radius:0 0 8px 8px; background:white;">'
+        f'{_inner.text}'
+        f'</div>'
+    )
 
 
 @app.cell(hide_code=True)
