@@ -1,0 +1,312 @@
+import marimo
+
+__generated_with = "unknown"
+app = marimo.App()
+
+
+@app.cell(hide_code=True)
+def header(mo):
+    mo.md(
+        """
+# Open-Source AI in France
+
+Surveying **15,000+ active repositories** (156K+ developers) across the open-source AI stack.
+This view filters to France-based projects — potential grantees for Pionniers de l'IA.
+
+**Data:** OSO · GoodAI List · GitHub Archive
+"""
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def setup_pyoso():
+    import pyoso
+    import marimo as mo
+    pyoso_db_conn = pyoso.Client().dbapi_connection()
+    return mo, pyoso_db_conn
+
+
+@app.cell(hide_code=True)
+def imports():
+    import pandas as pd
+    import plotly.graph_objects as go
+    return go, pd
+
+
+@app.cell(hide_code=True)
+def load_france_repos(mo, pyoso_db_conn):
+    df_france = mo.sql(
+        f"""
+        WITH ranked AS (
+          SELECT
+            LOWER(repo) AS repo,
+            LOWER(SPLIT_PART(repo, '/', 1)) AS owner,
+            SPLIT_PART(repo, '/', 2) AS name,
+            category,
+            TRIM(SPLIT_PART(subcat, ',', 1)) AS subcategory,
+            CAST(stars AS BIGINT) AS stars,
+            CAST(contributors AS BIGINT) AS contributors,
+            CAST(star_7d AS BIGINT) AS star_7d,
+            language,
+            country,
+            ROW_NUMBER() OVER (
+              PARTITION BY LOWER(repo)
+              ORDER BY updated_at DESC NULLS LAST
+            ) AS _rn
+          FROM currentai.goodailist_repos.repos
+          WHERE LOWER(country) = 'france'
+        )
+        SELECT repo, owner, name, category, subcategory, stars, contributors, star_7d, language
+        FROM ranked
+        WHERE _rn = 1
+        """,
+        output=False,
+        engine=pyoso_db_conn
+    )
+    return (df_france,)
+
+
+@app.cell(hide_code=True)
+def load_global_stats(mo, pyoso_db_conn):
+    df_global = mo.sql(
+        f"""
+        WITH ranked AS (
+          SELECT
+            LOWER(repo) AS repo,
+            category,
+            CAST(stars AS BIGINT) AS stars,
+            CAST(contributors AS BIGINT) AS contributors,
+            ROW_NUMBER() OVER (
+              PARTITION BY LOWER(repo)
+              ORDER BY updated_at DESC NULLS LAST
+            ) AS _rn
+          FROM currentai.goodailist_repos.repos
+        )
+        SELECT COUNT(*) AS total_repos, SUM(contributors) AS total_contributors
+        FROM ranked
+        WHERE _rn = 1
+        """,
+        output=False,
+        engine=pyoso_db_conn
+    )
+    return (df_global,)
+
+
+@app.cell(hide_code=True)
+def headline_stats(df_france, df_global, mo):
+    _total_repos = int(df_global['total_repos'].iloc[0])
+    _total_devs = int(df_global['total_contributors'].iloc[0])
+    mo.vstack([
+        mo.md(
+            f"Across the full survey of **{_total_repos:,} repos** "
+            f"and **{_total_devs:,} developers**, "
+            f"**{len(df_france)} repositories** are based in France "
+            f"spanning **{df_france['category'].nunique()} categories** "
+            f"and **{df_france['subcategory'].nunique()} subcategories** "
+            f"of the AI stack."
+        ),
+        mo.hstack([
+            mo.stat(value=len(df_france), label="French Repos", bordered=True, caption="across the AI stack"),
+            mo.stat(value=f"{df_france['stars'].sum():,}", label="Total Stars", bordered=True, caption="community adoption"),
+            mo.stat(value=f"{df_france['contributors'].sum():,}", label="Contributors", bordered=True, caption="active developers"),
+            mo.stat(value=df_france['owner'].nunique(), label="Organizations", bordered=True, caption="unique maintainers"),
+            mo.stat(value=df_france['category'].nunique(), label="Stack Layers", bordered=True, caption="of 8 categories covered"),
+        ]),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def france_by_category(df_france, go, mo):
+    _by_cat = df_france.groupby('category').agg(
+        repos=('repo', 'nunique'),
+        total_stars=('stars', 'sum'),
+        total_contributors=('contributors', 'sum'),
+    ).reset_index().sort_values('repos', ascending=True)
+
+    _cat_colors = {
+        'Infrastructure': '#1A5276',
+        'AI Engineering': '#196F3D',
+        'Model Development': '#922B21',
+        'Applications': '#6C3483',
+        'Models': '#117A65',
+        'Tutorials': '#784212',
+        'Lists': '#17202A',
+    }
+
+    _fig = go.Figure(go.Bar(
+        y=_by_cat['category'],
+        x=_by_cat['repos'],
+        orientation='h',
+        marker_color=[_cat_colors.get(c, '#999') for c in _by_cat['category']],
+        customdata=list(zip(_by_cat['total_stars'], _by_cat['total_contributors'])),
+        hovertemplate="<b>%{y}</b><br>Repos: %{x}<br>Stars: %{customdata[0]:,}<br>Contributors: %{customdata[1]:,}<extra></extra>",
+    ))
+    _fig.update_layout(
+        template='plotly_white',
+        height=350,
+        margin=dict(t=10, l=0, r=30, b=40),
+        xaxis=dict(title='Repositories', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+    )
+    mo.vstack([
+        mo.md("## French AI Repos by Stack Layer"),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def france_by_subcategory(df_france, go, mo):
+    _by_sub = df_france.groupby(['category', 'subcategory']).agg(
+        repos=('repo', 'nunique'),
+        total_stars=('stars', 'sum'),
+    ).reset_index()
+    _by_sub = _by_sub[_by_sub['repos'] >= 2].sort_values('repos', ascending=True).tail(20)
+
+    _cat_colors = {
+        'Infrastructure': '#1A5276',
+        'AI Engineering': '#196F3D',
+        'Model Development': '#922B21',
+        'Applications': '#6C3483',
+        'Models': '#117A65',
+        'Tutorials': '#784212',
+        'Lists': '#17202A',
+    }
+
+    _fig = go.Figure(go.Bar(
+        y=_by_sub['subcategory'],
+        x=_by_sub['repos'],
+        orientation='h',
+        marker_color=[_cat_colors.get(c, '#999') for c in _by_sub['category']],
+        customdata=list(zip(_by_sub['category'], _by_sub['total_stars'])),
+        hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Repos: %{x}<br>Stars: %{customdata[1]:,}<extra></extra>",
+    ))
+    _fig.update_layout(
+        template='plotly_white',
+        height=500,
+        margin=dict(t=10, l=0, r=30, b=40),
+        xaxis=dict(title='Repositories', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+        yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+    )
+    mo.vstack([
+        mo.md("## Top Subcategories in France"),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def top_french_projects(df_france, mo):
+    _top = df_france.nlargest(30, 'stars')[
+        ['repo', 'category', 'subcategory', 'stars', 'contributors', 'language']
+    ].copy()
+    _top['stars'] = _top['stars'].apply(lambda x: f"{x:,}")
+    _top.columns = ['Repository', 'Category', 'Subcategory', 'Stars', 'Contributors', 'Language']
+    _top = _top.reset_index(drop=True)
+    mo.vstack([
+        mo.md("## Top French AI Projects by Stars"),
+        mo.ui.table(_top, show_column_summaries=False, show_data_types=False),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def top_french_orgs(df_france, mo, pd):
+    _by_org = df_france.groupby('owner').agg(
+        repos=('repo', 'nunique'),
+        total_stars=('stars', 'sum'),
+        total_contributors=('contributors', 'sum'),
+        categories=('category', 'nunique'),
+    ).reset_index()
+    _by_org = _by_org.nlargest(20, 'total_stars')
+    _by_org['total_stars'] = _by_org['total_stars'].apply(lambda x: f"{x:,}")
+    _by_org.columns = ['Organization', 'Repos', 'Stars', 'Contributors', 'Categories']
+    _by_org = _by_org.reset_index(drop=True)
+    mo.vstack([
+        mo.md("## Top French Organizations"),
+        mo.md("Potential grantees — organizations with the most active AI repositories."),
+        mo.ui.table(_by_org, show_column_summaries=False, show_data_types=False),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def france_momentum(df_france, go, mo):
+    _data = df_france[df_france['star_7d'] > 0].nlargest(15, 'star_7d').sort_values('star_7d', ascending=True)
+
+    if _data.empty:
+        mo.md("_No repos with 7-day star growth data._")
+    else:
+        _fig = go.Figure(go.Bar(
+            y=_data['repo'],
+            x=_data['star_7d'],
+            orientation='h',
+            marker_color='#196F3D',
+            customdata=list(zip(_data['category'], _data['stars'])),
+            hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>7d stars: %{x:,}<br>Total stars: %{customdata[1]:,}<extra></extra>",
+        ))
+        _fig.update_layout(
+            template='plotly_white',
+            height=420,
+            margin=dict(t=10, l=0, r=30, b=40),
+            xaxis=dict(title='Stars gained (last 7 days)', showgrid=True, gridcolor='#E5E5E5', linecolor='#000', linewidth=1),
+            yaxis=dict(title='', showgrid=False, linecolor='#000', linewidth=1),
+        )
+        mo.vstack([
+            mo.md("## Momentum — French Repos Trending Now"),
+            mo.ui.plotly(_fig),
+        ])
+    return
+
+
+@app.cell(hide_code=True)
+def france_language_breakdown(df_france, go, mo):
+    _by_lang = df_france.groupby('language').agg(
+        repos=('repo', 'nunique'),
+    ).reset_index()
+    _by_lang = _by_lang[_by_lang['language'].notna()].nlargest(10, 'repos')
+
+    _fig = go.Figure(go.Pie(
+        labels=_by_lang['language'],
+        values=_by_lang['repos'],
+        hole=0.4,
+        textinfo='label+value',
+        marker=dict(colors=['#1A5276', '#196F3D', '#922B21', '#6C3483', '#117A65',
+                            '#784212', '#17202A', '#D4AC0D', '#5D6D7E', '#A93226']),
+    ))
+    _fig.update_layout(
+        template='plotly_white',
+        height=350,
+        margin=dict(t=10, l=0, r=0, b=10),
+        showlegend=True,
+        legend=dict(orientation='h', yanchor='top', y=-0.05, xanchor='center', x=0.5),
+    )
+    mo.vstack([
+        mo.md("## Primary Languages"),
+        mo.ui.plotly(_fig),
+    ])
+    return
+
+
+@app.cell(hide_code=True)
+def methodology_note(mo):
+    mo.md(
+        """
+---
+
+**Methodology:** Repos are tagged as "France" by GoodAI List based on the primary
+maintainer's GitHub profile location. This is a floor — it undercounts French projects
+where the maintainer lists no location or lists a different country (eg, a French org
+with a US-based GitHub profile). The full survey covers 15,000+ active AI repositories
+across 8 categories of the open-source AI stack.
+
+**Source:** [Open Source Observer](https://www.oso.xyz) · [GoodAI List](https://goodailist.com)
+"""
+    )
+    return
+
+
+if __name__ == "__main__":
+    app.run()
