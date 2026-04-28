@@ -90,7 +90,7 @@ def header(C, F, mo):
         f'<p style="font-family:{F["body"]}; font-size:1rem; color:{C["ink_2"]}; '
         f'margin:0; line-height:1.5;">'
         f'Growth signals across the open-source AI landscape. '
-        f'Data sourced from OSO and OpenDevData metrics.</p>'
+        f'Data sourced from OSO and Good AI List.</p>'
         f'</div>'
     )
     return
