@@ -101,28 +101,18 @@ def header(C, F, mo):
 def load_france_repos(mo, pyoso_db_conn):
     df_france = mo.sql(
         f"""
-        WITH ranked AS (
-          SELECT
-            LOWER(repo) AS repo,
-            LOWER(SPLIT_PART(repo, '/', 1)) AS owner,
-            SPLIT_PART(repo, '/', 2) AS name,
-            category,
-            TRIM(SPLIT_PART(subcat, ',', 1)) AS subcategory,
-            CAST(stars AS BIGINT) AS stars,
-            CAST(contributors AS BIGINT) AS contributors,
-            CAST(star_7d AS BIGINT) AS star_7d,
-            language,
-            country,
-            ROW_NUMBER() OVER (
-              PARTITION BY LOWER(repo)
-              ORDER BY updated_at DESC NULLS LAST
-            ) AS _rn
-          FROM currentai.goodailist_repos.repos
-          WHERE LOWER(country) = 'france'
-        )
-        SELECT repo, owner, name, category, subcategory, stars, contributors, star_7d, language
-        FROM ranked
-        WHERE _rn = 1
+        SELECT
+          repo,
+          SPLIT_PART(repo, '/', 1) AS owner,
+          SPLIT_PART(repo, '/', 2) AS name,
+          category,
+          subcategory,
+          CAST(total_stars AS BIGINT) AS stars,
+          CAST(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END AS BIGINT) AS contributors,
+          CAST(star_7d AS BIGINT) AS star_7d,
+          language
+        FROM currentai.ai_repo_activity.ai_repo_activity
+        WHERE LOWER(country) = 'france'
         """,
         output=False,
         engine=pyoso_db_conn
@@ -134,21 +124,10 @@ def load_france_repos(mo, pyoso_db_conn):
 def load_global_stats(mo, pyoso_db_conn):
     df_global = mo.sql(
         f"""
-        WITH ranked AS (
-          SELECT
-            LOWER(repo) AS repo,
-            category,
-            CAST(stars AS BIGINT) AS stars,
-            CAST(contributors AS BIGINT) AS contributors,
-            ROW_NUMBER() OVER (
-              PARTITION BY LOWER(repo)
-              ORDER BY updated_at DESC NULLS LAST
-            ) AS _rn
-          FROM currentai.goodailist_repos.repos
-        )
-        SELECT COUNT(*) AS total_repos, SUM(contributors) AS total_contributors
-        FROM ranked
-        WHERE _rn = 1
+        SELECT
+          COUNT(*) AS total_repos,
+          SUM(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END) AS total_contributors
+        FROM currentai.ai_repo_activity.ai_repo_activity
         """,
         output=False,
         engine=pyoso_db_conn
