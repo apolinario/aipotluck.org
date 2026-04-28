@@ -100,24 +100,15 @@ def header(C, F, mo):
 def load_oss_ai_repos(mo, pyoso_db_conn):
     df_gl = mo.sql(
         f"""
-        WITH ranked AS (
-          SELECT
-            LOWER(repo)                        AS repo,
-            LOWER(SPLIT_PART(repo, '/', 1))    AS owner,
-            category,
-            TRIM(SPLIT_PART(subcat, ',', 1))   AS primary_subcat,
-            CAST(stars        AS DOUBLE)        AS stars,
-            CAST(contributors AS DOUBLE)        AS contributors,
-            CAST(star_7d      AS DOUBLE)        AS star_7d,
-            ROW_NUMBER() OVER (
-              PARTITION BY LOWER(repo)
-              ORDER BY updated_at DESC NULLS LAST
-            ) AS _rn
-          FROM currentai.goodailist_repos.repos
-        )
-        SELECT repo, owner, category, primary_subcat, stars, contributors, star_7d
-        FROM ranked
-        WHERE _rn = 1
+        SELECT
+          repo,
+          SPLIT_PART(repo, '/', 1) AS owner,
+          category,
+          subcategory AS primary_subcat,
+          CAST(total_stars AS DOUBLE) AS stars,
+          CAST(goodai_contributors AS DOUBLE) AS contributors,
+          CAST(star_7d AS DOUBLE) AS star_7d
+        FROM currentai.ai_repo_activity.ai_repo_activity
         """,
         output=False,
         engine=pyoso_db_conn

@@ -3,19 +3,22 @@
 -- Table: currentai.ai_repo_activity.ai_repo_activity
 -- Kind: FULL (daily cron)
 --
--- Per-repo activity metrics: 90-day stars/forks from GitHub Archive +
--- FT/PT contributors from OpenDevData. Joined against GoodAI List repos.
+-- Per-repo activity metrics: total stars, 7-day stars, 90-day stars/forks
+-- from GitHub Archive, GoodAI contributor count, FT/PT contributors from
+-- OpenDevData. Single source of truth for all notebook repo-level queries.
 --
 -- Columns:
 --   repo                — GitHub owner/name (lowercased)
 --   category            — GoodAI List category
 --   subcategory         — GoodAI List primary subcategory
 --   total_stars         — Current total star count
+--   star_7d             — Stars gained in last 7 days (from GoodAI)
+--   goodai_contributors — Contributor count from GoodAI List
 --   language            — Primary programming language
 --   country             — Maintainer country
---   stars_90d           — New stars in last 90 days
---   forks_90d           — New forks in last 90 days
---   total_contributors  — Active contributors (last 90 days)
+--   stars_90d           — New stars in last 90 days (GitHub Archive events)
+--   forks_90d           — New forks in last 90 days (GitHub Archive events)
+--   total_contributors  — Active contributors last 90 days (OpenDevData)
 --   full_time           — Full-time contributors (>=10 active days/28d)
 --   part_time           — Part-time contributors (1-9 active days/28d)
 
@@ -27,6 +30,8 @@ WITH ai_repos AS (
     category,
     TRIM(SPLIT_PART(subcat, ',', 1)) AS subcategory,
     CAST(stars AS BIGINT) AS total_stars,
+    CAST(star_7d AS BIGINT) AS star_7d,
+    CAST(contributors AS BIGINT) AS goodai_contributors,
     language,
     country,
     ROW_NUMBER() OVER (
@@ -36,7 +41,7 @@ WITH ai_repos AS (
   FROM currentai.goodailist_repos.repos
 ),
 deduped AS (
-  SELECT repo, owner, name, category, subcategory, total_stars, language, country
+  SELECT repo, owner, name, category, subcategory, total_stars, star_7d, goodai_contributors, language, country
   FROM ai_repos WHERE _rn = 1
 ),
 star_fork_events AS (
@@ -71,6 +76,8 @@ SELECT
   d.category,
   d.subcategory,
   d.total_stars,
+  d.star_7d,
+  d.goodai_contributors,
   d.language,
   d.country,
   COALESCE(sf.stars_90d, 0) AS stars_90d,
