@@ -297,3 +297,9 @@ They can be joined at the repo level where a GoodAI subcategory maps to an OSAI 
 - **`oso.artifacts_by_project_v1` is large** (477M rows). Filter by `artifact_source = 'GITHUB'` and consider joining against a known repo list rather than scanning the full table.
 - **`currentai.*` tables require a currentai-scoped API key.** `oso.*` tables are publicly accessible.
 - **Use `SPLIT_PART(subcat, ',', 1)`** to extract primary subcategory from the GoodAI List — the `subcat` field is sometimes comma-separated.
+- **Contributor counts differ by source and methodology:**
+  - `goodai_contributors` (GoodAI List): capped at 100. Undercounts popular projects but reasonable for most repos.
+  - `total_contributors` (OpenDevData via `ai_repo_activity` UDM): counts distinct developers with commit activity across the **entire fork network**, not just the upstream repo. A project with 75K forks (eg openclaw) will show thousands of "contributors" even if only 30 people committed to the main branch. This measures ecosystem engagement, not direct contribution.
+  - `full_time` / `part_time` (OpenDevData): same fork-network scope, filtered by activity level (≥10 or 1-9 active days per 28-day window).
+  - GitHub's `/contributors` API: counts only people who committed to the default branch of the upstream repo. Most accurate for "who built this" but not available as a data source yet.
+  - The `ai_repo_activity` UDM uses OpenDevData when available, falling back to GoodAI. Interpret contributor numbers as fork-network activity for popular repos.
