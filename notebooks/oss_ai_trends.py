@@ -248,7 +248,6 @@ def monthly_active_chart(CAT_COLORS, C, F, df_monthly, go, mo):
             + _stat(f'{_active:,}', 'Active Developers', f'Latest month ({str(_latest)[:7]})')
             + _stat(f'{_ft:,}', 'Full-Time', '≥ 10 active days/month')
             + _stat(f'{_pt:,}', 'Part-Time', '1–9 active days/month')
-            + _stat(f'{_active-_ft-_pt:,}', 'Other Active', 'Counted but unclassified')
             + '</div>'
         )
 
