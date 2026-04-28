@@ -232,14 +232,21 @@ def currentai_mapping():
 
 
 @app.cell(hide_code=True)
-def market_map_stats(df_subcat, mo):
+def market_map_stats(C, F, df_gl, df_subcat, mo):
     _cats = ['Infrastructure', 'AI Engineering', 'Model Development', 'Applications', 'Models']
-    _sub  = df_subcat[df_subcat['category'].isin(_cats)]
-    mo.hstack([
-        mo.stat(label="Repos",         value=f"{_sub['repos'].sum():,}",              bordered=True, caption="across active categories"),
-        mo.stat(label="Total stars",   value=f"{_sub['total_stars'].sum()/1e6:.1f}M", bordered=True, caption="community adoption signal"),
-        mo.stat(label="Subcategories", value=str(_sub['primary_subcat'].nunique()),    bordered=True, caption="top-level taxonomy"),
-    ], widths="equal", gap=1)
+    _sub = df_subcat[df_subcat['category'].isin(_cats)]
+    mo.vstack([
+        mo.hstack([
+            mo.stat(label="Repos", value=f"{_sub['repos'].sum():,}", bordered=True, caption="5 core categories"),
+            mo.stat(label="Total stars", value=f"{_sub['total_stars'].sum()/1e6:.1f}M", bordered=True, caption="community adoption signal"),
+            mo.stat(label="Subcategories", value=str(_sub['primary_subcat'].nunique()), bordered=True, caption="top-level taxonomy"),
+        ], widths="equal", gap=1),
+        mo.Html(
+            f'<p style="font-family:{F["body"]}; font-size:0.8rem; color:{C["ink_3"]}; margin-top:8px;">'
+            f'Filtered to 5 core categories: Infrastructure, AI Engineering, Model Development, Applications, Models. '
+            f'Full survey tracks <strong>{len(df_gl):,}</strong> repos across all 8 categories.</p>'
+        ),
+    ])
     return
 
 
