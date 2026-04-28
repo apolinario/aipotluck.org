@@ -9,6 +9,8 @@ Each `.sql` file is the source of truth for a deployed UDM. Edits here should be
 | Model | Table | Schedule | Description |
 |-------|-------|----------|-------------|
 | [ai_repo_packages](ai_repo_packages.sql) | `currentai.ai_repo_packages.ai_repo_packages` | Weekly | Links AI repos to published packages (NPM, PIP, Go, Maven, NuGet, Rust) |
+| [ai_repo_activity](ai_repo_activity.sql) | `currentai.ai_repo_activity.ai_repo_activity` | Daily | Per-repo 90-day stars, forks, FT/PT contributors |
+| [ai_monthly_devs](ai_monthly_devs.sql) | `currentai.ai_monthly_devs.ai_monthly_devs` | Daily | Monthly active developer counts by category |
 
 ## Static Models (CSV uploads)
 
