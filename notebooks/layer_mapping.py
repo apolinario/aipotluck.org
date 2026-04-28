@@ -355,7 +355,7 @@ def mapping_coverage(C, F, OSAI_TO_GOODAI, df_osai, go, health_color, mo, pd):
             f'<span style="color:{C["warm"]}">■</span> viable (3), '
             f'<span style="color:{C["signal"]}">■</span> early/gap (≤2).'
         ),
-        mo.ui.plotly(_fig),
+        mo.ui.plotly(_fig, config={"displayModeBar": False}),
     ])
     return
 
@@ -460,7 +460,7 @@ def selected_projects(C, CAT_COLORS, F, LAYOUT, OSAI_TO_GOODAI, df_osai, df_repo
                 mo.stat(value=f"{_total_repos:,}", label="Total Repos", bordered=True),
             ], widths="equal", gap=1),
             mo.md(f'**Mapped from:** {_mapped_label}'),
-            mo.ui.plotly(_fig),
+            mo.ui.plotly(_fig, config={"displayModeBar": False}),
         ])
     _output
 

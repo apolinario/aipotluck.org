@@ -169,6 +169,12 @@ mo.hstack([
 
 ## Charts
 
+**Always** disable the Plotly mode bar:
+
+```python
+mo.ui.plotly(_fig, config={"displayModeBar": False})
+```
+
 ### Horizontal bar charts (primary chart type)
 
 Most ecosystem data is categorical — subcategories, organizations, projects ranked by a metric. Horizontal bars are the default.
