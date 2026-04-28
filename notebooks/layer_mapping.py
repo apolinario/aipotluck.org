@@ -290,44 +290,44 @@ def selected_projects(OSAI_TO_GOODAI, df_osai, df_repos, layer_dropdown, mo, pd,
     _osai_row = df_osai[(df_osai['layer'] == _key[0]) & (df_osai['subcategory'] == _key[1])]
     _goodai_matches = OSAI_TO_GOODAI.get(_key, [])
 
-    if not _goodai_matches:
-        mo.vstack([
-            mo.md(f"## {_key[0]} · {_key[1]}"),
-            mo.md(f"**Score:** {_osai_row.iloc[0]['overall_score']} · **Maturity:** {_osai_row.iloc[0]['maturity']}" if len(_osai_row) > 0 else ""),
-            mo.md("_No GoodAI mapping — this is a cross-cutting category (Licensing, Safeguards, Documentation)._"),
-        ])
-        return
-
-    _mask = pd.Series(False, index=df_repos.index)
-    for _cat, _sub in _goodai_matches:
-        _mask = _mask | ((df_repos['category'] == _cat) & (df_repos['subcategory'] == _sub))
-
-    _matched = df_repos[_mask].nlargest(30, 'stars')[
-        ['repo', 'category', 'subcategory', 'stars', 'contributors', 'language', 'country']
-    ].copy()
-    _matched['stars'] = _matched['stars'].apply(lambda x: f"{x:,}")
-    _matched.columns = ['Repository', 'GoodAI Category', 'GoodAI Subcategory', 'Stars', 'Contributors', 'Language', 'Country']
-    _matched = _matched.reset_index(drop=True)
-
     _desc = _osai_row.iloc[0]['description'] if len(_osai_row) > 0 else ''
     _score = _osai_row.iloc[0]['overall_score'] if len(_osai_row) > 0 else ''
     _maturity = _osai_row.iloc[0]['maturity'] if len(_osai_row) > 0 else ''
     _parity = _osai_row.iloc[0]['parity_verdict'] if len(_osai_row) > 0 else ''
 
-    mo.vstack([
+    _header = [
         mo.md(f"## {_key[0]} · {_key[1]}"),
         mo.md(f"_{_desc}_"),
         mo.hstack([
             mo.stat(value=_score, label="Score", bordered=True),
             mo.stat(value=_maturity, label="Maturity", bordered=True),
             mo.stat(value=_parity, label="vs Closed", bordered=True),
-            mo.stat(value=len(df_repos[_mask]), label="Total Repos", bordered=True),
         ]),
-        mo.md(f"**Mapped from:** {', '.join(f'{c} / {s}' for c, s in _goodai_matches)}"),
-        mo.md("### Top 30 Projects"),
-        mo.ui.table(_matched, show_column_summaries=False, show_data_types=False),
-    ])
-    return
+    ]
+
+    if not _goodai_matches:
+        _output = mo.vstack(_header + [
+            mo.md("_No GoodAI mapping — this is a cross-cutting category (Licensing, Safeguards)._"),
+        ])
+    else:
+        _mask = pd.Series(False, index=df_repos.index)
+        for _cat, _sub in _goodai_matches:
+            _mask = _mask | ((df_repos['category'] == _cat) & (df_repos['subcategory'] == _sub))
+
+        _matched = df_repos[_mask].nlargest(30, 'stars')[
+            ['repo', 'category', 'subcategory', 'stars', 'contributors', 'language', 'country']
+        ].copy()
+        _matched['stars'] = _matched['stars'].apply(lambda x: f"{x:,}")
+        _matched.columns = ['Repository', 'GoodAI Category', 'GoodAI Subcategory', 'Stars', 'Contributors', 'Language', 'Country']
+        _matched = _matched.reset_index(drop=True)
+
+        _output = mo.vstack(_header + [
+            mo.stat(value=len(df_repos[_mask]), label="Total Repos", bordered=True),
+            mo.md(f"**Mapped from:** {', '.join(f'{c} / {s}' for c, s in _goodai_matches)}"),
+            mo.md("### Top 30 Projects"),
+            mo.ui.table(_matched, show_column_summaries=False, show_data_types=False),
+        ])
+    _output
 
 
 if __name__ == "__main__":
