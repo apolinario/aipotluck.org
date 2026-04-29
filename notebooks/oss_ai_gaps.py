@@ -108,7 +108,7 @@ def load_oss_ai_repos(mo, pyoso_db_conn):
           CAST(stars AS DOUBLE) AS stars,
           CAST(contributors AS DOUBLE) AS contributors,
           CAST(star_7d AS DOUBLE) AS star_7d
-        FROM currentai.catalog.goodailist_repos
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn

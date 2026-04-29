@@ -110,7 +110,7 @@ def load_base_catalog(mo, pyoso_db_conn):
           category,
           CAST(stars AS DOUBLE) AS stars,
           CAST(contributors AS DOUBLE) AS contributors
-        FROM currentai.catalog.goodailist_repos
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn,
@@ -126,7 +126,7 @@ def load_sbom_coverage(mo, pyoso_db_conn):
           COUNT(DISTINCT s.dependent_artifact_namespace || '/' || s.dependent_artifact_name)
             AS ai_repos_with_sboms
         FROM oso.sboms_v0 s
-        INNER JOIN currentai.catalog.goodailist_repos a
+        INNER JOIN currentai.scores.repos_summary a
           ON s.dependent_artifact_namespace || '/' || s.dependent_artifact_name = a.repo
         """,
         output=False,
@@ -294,7 +294,7 @@ def load_sbom_by_ecosystem(mo, pyoso_db_conn):
             WHEN a.repo IS NOT NULL THEN s.dependent_artifact_name
           END) AS ai_repos
         FROM oso.sboms_v0 s
-        LEFT JOIN currentai.catalog.goodailist_repos a
+        LEFT JOIN currentai.scores.repos_summary a
           ON s.dependent_artifact_namespace || '/' || s.dependent_artifact_name = a.repo
         GROUP BY s.package_artifact_source
         ORDER BY total_edges DESC
@@ -713,7 +713,7 @@ def load_license_data(mo, pyoso_db_conn):
         SELECT
           r.license,
           COUNT(*) AS repo_count
-        FROM currentai.catalog.goodailist_repos r
+        FROM currentai.scores.repos_summary r
         WHERE r.license IS NOT NULL AND r.license != ''
         GROUP BY r.license
         ORDER BY repo_count DESC
@@ -733,7 +733,7 @@ def load_license_coverage(mo, pyoso_db_conn):
           COUNT(*) AS total_repos,
           COUNT(CASE WHEN license IS NOT NULL AND license != '' THEN 1 END)
             AS has_license
-        FROM currentai.catalog.goodailist_repos
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn,
@@ -873,7 +873,7 @@ def load_absence_ai_coverage(mo, pyoso_db_conn):
         FROM oso.contributor_absence_factor_to_artifact_yearly caf
         LEFT JOIN oso.artifacts_by_project_v1 abp
           ON caf.to_artifact_id = abp.artifact_id
-        LEFT JOIN currentai.catalog.goodailist_repos a
+        LEFT JOIN currentai.scores.repos_summary a
           ON abp.artifact_namespace || '/' || abp.artifact_name = a.repo
         WHERE caf.metrics_sample_date >= DATE('2025-01-01')
         """,

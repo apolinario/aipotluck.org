@@ -111,7 +111,7 @@ def load_france_repos(mo, pyoso_db_conn):
           CAST(contributors AS BIGINT) AS contributors,
           CAST(star_7d AS BIGINT) AS star_7d,
           language
-        FROM currentai.catalog.goodailist_repos
+        FROM currentai.scores.repos_summary
         WHERE LOWER(country) = 'france'
         """,
         output=False,
@@ -127,7 +127,7 @@ def load_global_stats(mo, pyoso_db_conn):
         SELECT
           COUNT(*) AS total_repos,
           SUM(CAST(contributors AS BIGINT)) AS total_contributors
-        FROM currentai.catalog.goodailist_repos
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn

@@ -108,7 +108,7 @@ def load_oss_ai_repos(mo, pyoso_db_conn):
           CAST(stars AS DOUBLE) AS stars,
           CAST(contributors AS DOUBLE) AS contributors,
           CAST(star_7d AS DOUBLE) AS star_7d
-        FROM currentai.catalog.goodailist_repos
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn
@@ -134,12 +134,9 @@ def load_repo_activity(mo, pyoso_db_conn):
         f"""
         SELECT
           repo,
-          SUM(CASE WHEN metric = 'stars' THEN value ELSE 0 END) AS stars_3m,
-          SUM(CASE WHEN metric = 'forks' THEN value ELSE 0 END) AS forks_3m
-        FROM currentai.metrics.daily
-        WHERE day >= CURRENT_DATE - INTERVAL '90' DAY
-          AND metric IN ('stars', 'forks')
-        GROUP BY repo
+          stars_90d AS stars_3m,
+          forks_90d AS forks_3m
+        FROM currentai.scores.repos_summary
         ORDER BY stars_3m DESC
         """,
         output=False,
@@ -153,15 +150,12 @@ def load_contributors(mo, pyoso_db_conn):
     df_contributors = mo.sql(
         f"""
         SELECT
-          m.repo,
-          MAX(CASE WHEN m.metric = 'contributors' THEN CAST(m.value AS INTEGER) END) AS total_contributors,
-          MAX(CASE WHEN m.metric = 'full_time' THEN CAST(m.value AS INTEGER) END) AS full_time,
-          MAX(CASE WHEN m.metric = 'part_time' THEN CAST(m.value AS INTEGER) END) AS part_time
-        FROM currentai.metrics.daily m
-        WHERE m.metric IN ('contributors', 'full_time', 'part_time')
-          AND m.day = (SELECT MAX(day) FROM currentai.metrics.daily WHERE metric = 'contributors')
-        GROUP BY m.repo
-        HAVING MAX(CASE WHEN m.metric = 'contributors' THEN m.value END) > 0
+          repo,
+          total_contributors,
+          full_time,
+          part_time
+        FROM currentai.scores.repos_summary
+        WHERE total_contributors > 0
         ORDER BY total_contributors DESC
         """,
         output=False,
@@ -181,7 +175,7 @@ def load_monthly(mo, pyoso_db_conn):
           MAX(CASE WHEN m.metric = 'full_time' THEN CAST(m.value AS INTEGER) ELSE 0 END) AS full_time,
           MAX(CASE WHEN m.metric = 'part_time' THEN CAST(m.value AS INTEGER) ELSE 0 END) AS part_time
         FROM currentai.metrics.daily m
-        JOIN currentai.catalog.goodailist_repos r ON m.repo = r.repo
+        JOIN currentai.scores.repos_summary r ON m.repo = r.repo
         WHERE m.metric IN ('contributors', 'full_time', 'part_time')
         GROUP BY r.category, DATE_TRUNC('month', m.day)
         ORDER BY month, r.category

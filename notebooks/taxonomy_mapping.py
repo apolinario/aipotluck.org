@@ -72,7 +72,7 @@ def load_goodai_subcats(mo, pyoso_db_conn):
               PARTITION BY LOWER(repo)
               ORDER BY updated_at DESC NULLS LAST
             ) AS _rn
-          FROM currentai.catalog.goodailist_repos
+          FROM currentai.scores.repos_summary
         )
         SELECT
           category,
