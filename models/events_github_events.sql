@@ -11,14 +11,14 @@
 -- 12-month rolling window.
 
 WITH known_ids AS (
-  SELECT repo, github_id
+  SELECT repo, CAST(github_id AS VARCHAR) AS github_id
   FROM currentai.entities.repos
   WHERE github_id IS NOT NULL
 ),
 resolved_ids AS (
   SELECT
     r.repo,
-    CAST(ev.to_artifact_source_id AS BIGINT) AS github_id
+    ev.to_artifact_source_id AS github_id
   FROM currentai.entities.repos r
   JOIN oso.int_events__github_unified ev
     ON LOWER(ev.to_artifact_namespace) = LOWER(SPLIT_PART(r.repo, '/', 1))
@@ -33,11 +33,11 @@ all_ids AS (
   SELECT repo, github_id FROM resolved_ids
 )
 SELECT
-  r.github_id,
+  CAST(r.github_id AS BIGINT) AS github_id,
   r.repo,
   ev.event_type,
   ev.time
 FROM all_ids r
 JOIN oso.int_events__github_unified ev
-  ON CAST(ev.to_artifact_source_id AS BIGINT) = r.github_id
+  ON ev.to_artifact_source_id = r.github_id
 WHERE ev.time >= CURRENT_DATE - INTERVAL '365' DAY
