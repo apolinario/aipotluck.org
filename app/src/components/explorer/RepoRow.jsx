@@ -2,7 +2,7 @@ import { Sparkline } from './Sparkline.jsx';
 import { HealthBadge } from './HealthBadge.jsx';
 import { formatStars, formatCount } from '../../utils/format.js';
 
-const GRID = '2fr 1.2fr 72px 100px 80px 72px 36px';
+const GRID = '1.4fr 1fr 60px 92px 72px 72px 32px';
 
 const cellStyle = {
   padding: '0 10px',

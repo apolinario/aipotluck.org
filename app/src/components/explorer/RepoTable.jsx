@@ -7,7 +7,7 @@ const COLUMNS = [
   { key: 'subcategory', label: 'Subcategory', sortable: true },
   { key: 'stars', label: 'Stars', sortable: true },
   { key: 'sparkline', label: '90d Activity', sortable: false },
-  { key: 'total_contributors', label: 'Contributors', sortable: true },
+  { key: 'total_contributors', label: 'Contribs', sortable: true },
   { key: 'country', label: 'Country', sortable: true },
   { key: 'health', label: '', sortable: false },
 ];

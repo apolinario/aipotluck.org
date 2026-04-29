@@ -60,10 +60,10 @@ export function LayerCards({ layers, activeLayer, onLayerClick }) {
               flexWrap: 'wrap',
               gap: 4,
             }}>
-              {layer.subcategories
-                .slice(0, 3)
-                .flatMap((s) => s.top_projects?.slice(0, 1) || [])
-                .slice(0, 3)
+              {[...new Set(
+                layer.subcategories
+                  .flatMap((s) => s.top_projects || [])
+              )].slice(0, 3)
                 .map((name) => (
                   <span key={name} style={{
                     fontSize: 10,
