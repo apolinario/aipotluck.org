@@ -316,6 +316,69 @@ The `explorer-data.json` is gitignored (generated artifact). CI/CD would run the
 
 ---
 
+## Validation & Sanity Checks
+
+### Export Script Validation
+
+The export script runs sanity checks after assembling the bundle and fails with a nonzero exit code if any check fails. This prevents deploying a broken data bundle.
+
+**Structural checks:**
+
+- Every OSAI layer (8 expected) has at least 1 subcategory
+- Every subcategory has at least 2 projects with `total_stars > 100` (the "recognizable projects" threshold)
+- Total repo count is within expected range (10K–20K)
+- Total project count is within expected range (8K–18K)
+- Sparklines object has entries for at least 50% of repos
+- No layer has zero repos after taxonomy join
+
+**Data quality checks:**
+
+- No repo appears with negative stars or contributor counts
+- Every repo has a non-empty `category` field
+- Country field is present on at least 30% of repos (known coverage floor from GoodAI data)
+- At least 1,000 repos have nonzero `commits_90d` (confirms events pipeline is flowing)
+- Package and model counts are within expected ranges (packages: 1K–5K, models: 3K–10K)
+
+**Known-good spot checks** — a hardcoded list of recognizable projects that must appear in specific layers:
+
+```python
+SPOT_CHECKS = {
+    "Infrastructure": ["pytorch", "ray"],
+    "Model Components: Code": ["transformers", "deepspeed"],
+    "Model Components: Datasets": ["huggingface/datasets", "common-crawl"],
+    "Model Components: Weights": ["llama", "mistral"],
+    "Product/UX": ["langchain", "open-webui"],
+    "Documentation": [],  # sparser, skip spot check
+    "Licensing": [],       # sparser, skip spot check
+    "Safeguards": ["guardrails"],
+}
+```
+
+Each listed project must resolve to at least one repo in its layer via the taxonomy join. If a spot check fails, the script prints a warning with the missing project and layer — this catches taxonomy bridge gaps or upstream data issues.
+
+### Runtime Checks (in-app)
+
+The `useExplorerData` hook validates the loaded bundle on mount:
+
+- If any layer has fewer than 2 projects, show a warning banner: "Some categories may have incomplete data"
+- If the `generated` date is more than 7 days old, show a subtle staleness indicator in the nav
+- If the bundle fails to parse or is missing expected top-level keys, show an error state instead of a broken UI
+
+### Development Workflow
+
+```bash
+# Export with validation (default)
+uv run scripts/export_website_data.py --output app/src/data/explorer-data.json
+
+# Export skipping validation (for debugging partial data)
+uv run scripts/export_website_data.py --output app/src/data/explorer-data.json --skip-validation
+
+# Run validation only (no export)
+uv run scripts/export_website_data.py --validate-only app/src/data/explorer-data.json
+```
+
+---
+
 ## Open Questions (to resolve during implementation)
 
 1. **Taxonomy deduplication in table**: a project can appear in multiple subcategories (57K taxonomy rows for 14K projects). Table shows one row per repo — which subcategory to display? Answer: show primary (first by gap_score), expose full list in drawer.
