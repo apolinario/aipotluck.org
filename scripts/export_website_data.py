@@ -196,8 +196,19 @@ def query_models(client):
 
 
 def query_sparklines(client):
-    print("  Querying sparklines — stars+forks (weekly, 91 days)...")
-    events_df = client.to_pandas("""
+    # Only fetch sparklines for repos with recent activity
+    active_filter = """
+        AND repo IN (
+          SELECT repo FROM currentai.metrics.daily
+          WHERE day >= CURRENT_DATE - INTERVAL '91' DAY
+            AND metric = 'commits'
+            AND value > 0
+          GROUP BY repo
+        )
+    """
+
+    print("  Querying sparklines — stars+forks for active repos (weekly, 91 days)...")
+    events_df = client.to_pandas(f"""
         SELECT
           repo,
           DATE_TRUNC('week', day) AS week,
@@ -206,12 +217,13 @@ def query_sparklines(client):
         FROM currentai.metrics.daily
         WHERE day >= CURRENT_DATE - INTERVAL '91' DAY
           AND metric IN ('stars', 'forks')
+          {active_filter}
         GROUP BY repo, DATE_TRUNC('week', day), metric
         ORDER BY repo, week
     """)
 
-    print("  Querying sparklines — contributors (weekly, 91 days)...")
-    contrib_df = client.to_pandas("""
+    print("  Querying sparklines — contributors for active repos (weekly, 91 days)...")
+    contrib_df = client.to_pandas(f"""
         SELECT
           repo,
           DATE_TRUNC('week', day) AS week,
@@ -219,6 +231,7 @@ def query_sparklines(client):
         FROM currentai.metrics.daily
         WHERE day >= CURRENT_DATE - INTERVAL '91' DAY
           AND metric = 'contributors'
+          {active_filter}
         GROUP BY repo, DATE_TRUNC('week', day)
         ORDER BY repo, week
     """)
