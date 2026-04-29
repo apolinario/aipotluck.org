@@ -118,3 +118,43 @@ button:focus-visible {
   outline: 2px solid rgba(232, 121, 106, 0.7);
   outline-offset: 2px;
 }
+
+/* ---------- Explorer ---------- */
+.explorer-sidebar::-webkit-scrollbar {
+  width: 3px;
+}
+.explorer-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+.explorer-table::-webkit-scrollbar {
+  width: 4px;
+}
+.explorer-table::-webkit-scrollbar-track {
+  background: transparent;
+}
+.explorer-table::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.drawer-body::-webkit-scrollbar {
+  width: 3px;
+}
+.drawer-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+.layer-cards-row::-webkit-scrollbar {
+  display: none;
+}
+.layer-cards-row {
+  scrollbar-width: none;
+}
+
+.explorer-sidebar select option {
+  background: #0a0c12;
+  color: #fff;
+}

@@ -1,0 +1,62 @@
+{
+  "generated": "2026-04-29",
+  "layers": [
+    {
+      "layer": "Infrastructure",
+      "subcategories": [
+        { "subcategory": "Training Frameworks", "subcategory_id": "training_frameworks", "gap_score": 4.2, "parity_verdict": "Near parity", "investment_ranking": { "gap_urgency": 20.0, "composite_score": 35.2 }, "project_count": 8, "top_projects": ["PyTorch", "JAX", "TensorFlow"] },
+        { "subcategory": "Accelerator Runtimes", "subcategory_id": "accelerator_runtimes", "gap_score": 1.8, "parity_verdict": "Significant gap", "investment_ranking": { "gap_urgency": 80.0, "composite_score": 72.1 }, "project_count": 3, "top_projects": ["ROCm", "OpenXLA"] }
+      ]
+    },
+    {
+      "layer": "Model Components: Code",
+      "subcategories": [
+        { "subcategory": "Fine-tuning Tools", "subcategory_id": "finetuning_tools", "gap_score": 3.5, "parity_verdict": "Partial parity", "investment_ranking": { "gap_urgency": 37.5, "composite_score": 45.0 }, "project_count": 5, "top_projects": ["Transformers", "PEFT", "Axolotl"] },
+        { "subcategory": "Inference Engines", "subcategory_id": "inference_engines", "gap_score": 4.5, "parity_verdict": "Near parity", "investment_ranking": { "gap_urgency": 12.5, "composite_score": 22.3 }, "project_count": 6, "top_projects": ["vLLM", "llama.cpp", "Ollama"] }
+      ]
+    }
+  ],
+  "repos": [
+    { "repo": "pytorch/pytorch", "category": "Machine Learning", "subcategory": "ML Frameworks", "stars": 82000, "star_7d": 320, "contributors": 4200, "language": "Python", "license": "BSD-3-Clause", "country": "US", "description": "Tensors and dynamic neural networks in Python", "stars_90d": 2400, "forks_90d": 180, "commits_90d": 890, "total_contributors": 4200, "full_time": 120, "part_time": 340 },
+    { "repo": "google/jax", "category": "Machine Learning", "subcategory": "ML Frameworks", "stars": 30000, "star_7d": 110, "contributors": 890, "language": "Python", "license": "Apache-2.0", "country": "US", "description": "Composable transformations of Python+NumPy programs", "stars_90d": 980, "forks_90d": 45, "commits_90d": 420, "total_contributors": 890, "full_time": 45, "part_time": 120 },
+    { "repo": "huggingface/transformers", "category": "Machine Learning", "subcategory": "Transformers", "stars": 134000, "star_7d": 580, "contributors": 2800, "language": "Python", "license": "Apache-2.0", "country": "France", "description": "State-of-the-art ML for PyTorch, TensorFlow, and JAX", "stars_90d": 4200, "forks_90d": 310, "commits_90d": 1200, "total_contributors": 2800, "full_time": 85, "part_time": 280 },
+    { "repo": "vllm-project/vllm", "category": "Machine Learning", "subcategory": "Inference", "stars": 30000, "star_7d": 250, "contributors": 620, "language": "Python", "license": "Apache-2.0", "country": "US", "description": "High-throughput LLM serving engine", "stars_90d": 3100, "forks_90d": 120, "commits_90d": 560, "total_contributors": 620, "full_time": 28, "part_time": 95 },
+    { "repo": "ggerganov/llama.cpp", "category": "Machine Learning", "subcategory": "Inference", "stars": 67000, "star_7d": 180, "contributors": 780, "language": "C++", "license": "MIT", "country": "Bulgaria", "description": "LLM inference in C/C++", "stars_90d": 1800, "forks_90d": 200, "commits_90d": 340, "total_contributors": 780, "full_time": 8, "part_time": 145 },
+    { "repo": "ollama/ollama", "category": "Machine Learning", "subcategory": "Inference", "stars": 92000, "star_7d": 420, "contributors": 450, "language": "Go", "license": "MIT", "country": "US", "description": "Get up and running with large language models", "stars_90d": 5800, "forks_90d": 280, "commits_90d": 210, "total_contributors": 450, "full_time": 12, "part_time": 85 },
+    { "repo": "microsoft/deepspeed", "category": "Machine Learning", "subcategory": "Training", "stars": 35000, "star_7d": 90, "contributors": 520, "language": "Python", "license": "Apache-2.0", "country": "US", "description": "Deep learning optimization library", "stars_90d": 800, "forks_90d": 60, "commits_90d": 180, "total_contributors": 520, "full_time": 22, "part_time": 88 },
+    { "repo": "huggingface/peft", "category": "Machine Learning", "subcategory": "Fine-tuning", "stars": 16000, "star_7d": 45, "contributors": 210, "language": "Python", "license": "Apache-2.0", "country": "France", "description": "Parameter-Efficient Fine-Tuning", "stars_90d": 420, "forks_90d": 35, "commits_90d": 95, "total_contributors": 210, "full_time": 8, "part_time": 42 },
+    { "repo": "ROCm/ROCm", "category": "Hardware", "subcategory": "GPU Runtimes", "stars": 5000, "star_7d": 12, "contributors": 180, "language": "C++", "license": "MIT", "country": "US", "description": "AMD ROCm platform", "stars_90d": 120, "forks_90d": 15, "commits_90d": 280, "total_contributors": 180, "full_time": 35, "part_time": 22 },
+    { "repo": "openxla/xla", "category": "Hardware", "subcategory": "Compilers", "stars": 3000, "star_7d": 8, "contributors": 140, "language": "C++", "license": "Apache-2.0", "country": "US", "description": "ML compiler framework", "stars_90d": 80, "forks_90d": 10, "commits_90d": 190, "total_contributors": 140, "full_time": 28, "part_time": 18 }
+  ],
+  "projects": [
+    { "project_slug": "pytorch", "display_name": "PyTorch", "total_stars": 82000, "stars_28d": 1200, "contributors_28d": 320, "full_time_28d": 120, "repo_count": 12, "package_count": 4, "model_count": 0, "direct_dependents": 1800, "total_dependents": 4200, "max_fragility_score": 0.12, "best_benchmark_avg": null, "primary_gap_score": 4.2, "investment_priority": 35.2 },
+    { "project_slug": "transformers", "display_name": "Transformers", "total_stars": 134000, "stars_28d": 2100, "contributors_28d": 280, "full_time_28d": 85, "repo_count": 8, "package_count": 3, "model_count": 4200, "direct_dependents": 2400, "total_dependents": 5800, "max_fragility_score": 0.08, "best_benchmark_avg": null, "primary_gap_score": 3.5, "investment_priority": 45.0 },
+    { "project_slug": "vllm", "display_name": "vLLM", "total_stars": 30000, "stars_28d": 1500, "contributors_28d": 95, "full_time_28d": 28, "repo_count": 3, "package_count": 1, "model_count": 0, "direct_dependents": 320, "total_dependents": 580, "max_fragility_score": 0.35, "best_benchmark_avg": null, "primary_gap_score": 4.5, "investment_priority": 22.3 },
+    { "project_slug": "llama-cpp", "display_name": "llama.cpp", "total_stars": 67000, "stars_28d": 900, "contributors_28d": 145, "full_time_28d": 8, "repo_count": 2, "package_count": 2, "model_count": 0, "direct_dependents": 850, "total_dependents": 1200, "max_fragility_score": 0.62, "best_benchmark_avg": null, "primary_gap_score": 4.5, "investment_priority": 22.3 }
+  ],
+  "packages": [
+    { "repo": "pytorch/pytorch", "project_slug": "pytorch", "package_source": "PIP", "package_name": "torch", "url": "https://pypi.org/project/torch" },
+    { "repo": "huggingface/transformers", "project_slug": "transformers", "package_source": "PIP", "package_name": "transformers", "url": "https://pypi.org/project/transformers" },
+    { "repo": "huggingface/peft", "project_slug": "transformers", "package_source": "PIP", "package_name": "peft", "url": "https://pypi.org/project/peft" },
+    { "repo": "vllm-project/vllm", "project_slug": "vllm", "package_source": "PIP", "package_name": "vllm", "url": "https://pypi.org/project/vllm" }
+  ],
+  "models": [
+    { "model_id": "meta-llama/Llama-3-8B", "url": "https://huggingface.co/meta-llama/Llama-3-8B", "repo": "meta-llama/llama3", "project_slug": "llama", "pipeline_tag": "text-generation", "library_name": "transformers", "downloads": 4500000, "likes": 2800, "model_family": "LLaMA", "benchmark_avg": 68.2, "architecture": "LlamaForCausalLM" },
+    { "model_id": "mistralai/Mistral-7B-v0.3", "url": "https://huggingface.co/mistralai/Mistral-7B-v0.3", "repo": "mistralai/mistral-src", "project_slug": "mistral", "pipeline_tag": "text-generation", "library_name": "transformers", "downloads": 2200000, "likes": 1500, "model_family": "Mistral", "benchmark_avg": 65.8, "architecture": "MistralForCausalLM" }
+  ],
+  "sparklines": {
+    "pytorch/pytorch": { "stars": [280, 310, 290, 320, 340, 300, 280, 310, 330, 290, 320, 340, 310], "forks": [22, 18, 25, 20, 23, 19, 21, 24, 20, 22, 18, 25, 21], "contributors": [310, 315, 320, 318, 322, 325, 320, 318, 324, 328, 330, 325, 320] },
+    "huggingface/transformers": { "stars": [480, 520, 510, 540, 560, 530, 490, 520, 550, 530, 560, 580, 540], "forks": [35, 30, 38, 32, 36, 28, 34, 31, 37, 33, 35, 30, 32], "contributors": [270, 275, 280, 278, 282, 285, 280, 278, 284, 288, 290, 285, 280] },
+    "vllm-project/vllm": { "stars": [320, 350, 380, 340, 360, 390, 350, 370, 400, 380, 360, 390, 370], "forks": [12, 14, 11, 15, 13, 12, 14, 11, 16, 13, 14, 12, 15], "contributors": [88, 90, 92, 91, 93, 95, 92, 90, 94, 96, 95, 93, 95] },
+    "ggerganov/llama.cpp": { "stars": [180, 200, 190, 210, 195, 185, 205, 195, 210, 200, 190, 205, 195], "forks": [25, 22, 28, 24, 26, 20, 23, 27, 22, 25, 21, 26, 24], "contributors": [140, 142, 145, 143, 146, 148, 145, 143, 147, 150, 148, 146, 145] }
+  },
+  "taxonomy": [
+    { "project_slug": "pytorch", "osai_layer": "Infrastructure", "osai_subcategory": "Training Frameworks", "osai_subcategory_id": "training_frameworks", "gap_score": 4.2, "parity_verdict": "Near parity" },
+    { "project_slug": "jax", "osai_layer": "Infrastructure", "osai_subcategory": "Training Frameworks", "osai_subcategory_id": "training_frameworks", "gap_score": 4.2, "parity_verdict": "Near parity" },
+    { "project_slug": "transformers", "osai_layer": "Model Components: Code", "osai_subcategory": "Fine-tuning Tools", "osai_subcategory_id": "finetuning_tools", "gap_score": 3.5, "parity_verdict": "Partial parity" },
+    { "project_slug": "vllm", "osai_layer": "Model Components: Code", "osai_subcategory": "Inference Engines", "osai_subcategory_id": "inference_engines", "gap_score": 4.5, "parity_verdict": "Near parity" },
+    { "project_slug": "llama-cpp", "osai_layer": "Model Components: Code", "osai_subcategory": "Inference Engines", "osai_subcategory_id": "inference_engines", "gap_score": 4.5, "parity_verdict": "Near parity" },
+    { "project_slug": "rocm", "osai_layer": "Infrastructure", "osai_subcategory": "Accelerator Runtimes", "osai_subcategory_id": "accelerator_runtimes", "gap_score": 1.8, "parity_verdict": "Significant gap" },
+    { "project_slug": "openxla", "osai_layer": "Infrastructure", "osai_subcategory": "Accelerator Runtimes", "osai_subcategory_id": "accelerator_runtimes", "gap_score": 1.8, "parity_verdict": "Significant gap" }
+  ]
+}
