@@ -108,7 +108,7 @@ def load_oss_ai_repos(mo, pyoso_db_conn):
           CAST(total_stars AS DOUBLE) AS stars,
           CAST(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END AS DOUBLE) AS contributors,
           CAST(star_7d AS DOUBLE) AS star_7d
-        FROM currentai.ai_repo_activity.ai_repo_activity
+        FROM currentai.entities.repos
         """,
         output=False,
         engine=pyoso_db_conn
@@ -136,7 +136,7 @@ def load_repo_activity(mo, pyoso_db_conn):
           repo,
           stars_90d AS stars_3m,
           forks_90d AS forks_3m
-        FROM currentai.ai_repo_activity.ai_repo_activity
+        FROM currentai.entities.repos
         ORDER BY stars_3m DESC
         """,
         output=False,
@@ -154,7 +154,7 @@ def load_contributors(mo, pyoso_db_conn):
           total_contributors,
           full_time,
           part_time
-        FROM currentai.ai_repo_activity.ai_repo_activity
+        FROM currentai.entities.repos
         WHERE total_contributors > 0
         ORDER BY total_contributors DESC
         """,
@@ -169,13 +169,16 @@ def load_monthly(mo, pyoso_db_conn):
     df_monthly = mo.sql(
         f"""
         SELECT
-          category,
-          month,
-          active_devs,
-          full_time,
-          part_time
-        FROM currentai.ai_monthly_devs.ai_monthly_devs
-        ORDER BY month, category
+          r.category,
+          DATE_TRUNC('month', m.day) AS month,
+          MAX(CASE WHEN m.metric = 'contributors' THEN CAST(m.value AS INTEGER) ELSE 0 END) AS active_devs,
+          MAX(CASE WHEN m.metric = 'full_time' THEN CAST(m.value AS INTEGER) ELSE 0 END) AS full_time,
+          MAX(CASE WHEN m.metric = 'part_time' THEN CAST(m.value AS INTEGER) ELSE 0 END) AS part_time
+        FROM currentai.metrics.daily m
+        JOIN currentai.entities.repos r ON m.repo = r.repo
+        WHERE m.metric IN ('contributors', 'full_time', 'part_time')
+        GROUP BY r.category, DATE_TRUNC('month', m.day)
+        ORDER BY month, r.category
         """,
         output=False,
         engine=pyoso_db_conn

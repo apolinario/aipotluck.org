@@ -57,7 +57,7 @@ def load_goodailist(mo, pyoso_db_conn):
               PARTITION BY LOWER(repo)
               ORDER BY updated_at DESC NULLS LAST
             ) AS _rn
-          FROM currentai.goodailist_repos.repos
+          FROM currentai.catalog.goodailist_repos
         )
         SELECT repo, owner, name, category, primary_subcat, stars, contributors, language
         FROM ranked
@@ -74,12 +74,16 @@ def load_ossinsights(mo, pyoso_db_conn):
     df_ossinsights = mo.sql(
         f"""
         SELECT
-          collection_id,
-          collection_name,
-          repo_id,
-          LOWER(repo_name) AS repo,
-          github_url
-        FROM currentai.ossinsights_ai_collections.ossinsights_ai_collections
+          pc.collection_name,
+          c.display_name AS collection_display_name,
+          LOWER(a.artifact_namespace || '/' || a.artifact_name) AS repo
+        FROM oso.oss_directory.projects_by_collection pc
+        JOIN oso.oss_directory.collections c
+          ON pc.collection_id = c.collection_id
+        JOIN oso.oss_directory.artifacts_by_project a
+          ON pc.project_id = a.project_id
+          AND a.artifact_source = 'GITHUB'
+        WHERE pc.collection_name LIKE 'ossinsight-%'
         """,
         output=False,
         engine=pyoso_db_conn

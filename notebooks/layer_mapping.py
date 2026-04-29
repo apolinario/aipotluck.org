@@ -137,7 +137,7 @@ def load_repos(mo, pyoso_db_conn):
               PARTITION BY LOWER(repo)
               ORDER BY updated_at DESC NULLS LAST
             ) AS _rn
-          FROM currentai.goodailist_repos.repos
+          FROM currentai.catalog.goodailist_repos
         )
         SELECT repo, owner, category, subcategory, stars, contributors, language, country, description
         FROM ranked

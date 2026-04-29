@@ -108,7 +108,7 @@ def load_oss_ai_repos(mo, pyoso_db_conn):
           CAST(total_stars AS DOUBLE) AS stars,
           CAST(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END AS DOUBLE) AS contributors,
           CAST(star_7d AS DOUBLE) AS star_7d
-        FROM currentai.ai_repo_activity.ai_repo_activity
+        FROM currentai.entities.repos
         """,
         output=False,
         engine=pyoso_db_conn
