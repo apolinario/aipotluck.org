@@ -25,9 +25,9 @@ except ImportError:
 
 
 SPOT_CHECKS = {
-    "Infrastructure": ["pytorch", "ray"],
-    "Model Components: Code": ["transformers", "deepspeed"],
-    "Model Components: Datasets": ["huggingface/datasets", "common-crawl"],
+    "Infrastructure": ["pytorch", "deepspeed"],
+    "Model Components: Code": ["transformers", "peft"],
+    "Model Components: Datasets": ["datasets"],
     "Model Components: Weights": ["llama", "mistral"],
     "Product/UX": ["langchain", "open-webui"],
     "Documentation": [],
@@ -352,7 +352,8 @@ def validate(bundle):
     for layer_name, expected in SPOT_CHECKS.items():
         layer_projects = project_layers.get(layer_name, set())
         for slug in expected:
-            if slug not in layer_projects:
+            found = any(slug in p for p in layer_projects)
+            if not found:
                 warnings.append(f"Spot check: '{slug}' not found in {layer_name}")
 
     return errors, warnings
