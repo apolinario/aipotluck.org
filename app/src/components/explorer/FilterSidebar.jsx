@@ -52,9 +52,9 @@ export function FilterSidebar({ filters, setFilter, clearFilters, activeCount, f
 
   return (
     <div className="explorer-sidebar" style={{
-      width: 200,
+      width: 180,
       flexShrink: 0,
-      padding: '16px 20px',
+      padding: '14px 16px',
       borderRight: '1px solid rgba(255,255,255,.06)',
       overflowY: 'auto',
       height: '100%',

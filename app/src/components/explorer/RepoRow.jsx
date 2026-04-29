@@ -2,12 +2,12 @@ import { Sparkline } from './Sparkline.jsx';
 import { HealthBadge } from './HealthBadge.jsx';
 import { formatStars, formatCount } from '../../utils/format.js';
 
-const GRID = '1.4fr 1fr 60px 92px 72px 72px 32px';
+const GRID = '2.4fr 72px 100px 80px 72px 32px';
 
 const cellStyle = {
-  padding: '0 10px',
+  padding: '0 12px',
   fontFamily: "'DM Sans', sans-serif",
-  fontSize: 12.5,
+  fontSize: 13,
   color: 'rgba(255,255,255,.7)',
   whiteSpace: 'nowrap',
   overflow: 'hidden',
@@ -17,7 +17,7 @@ const cellStyle = {
 const monoStyle = {
   ...cellStyle,
   fontFamily: "'DM Mono', monospace",
-  fontSize: 11.5,
+  fontSize: 12,
 };
 
 export { GRID };
@@ -30,7 +30,7 @@ export function RepoRow({ repo, sparkline, healthScore, onClick, style }) {
         display: 'grid',
         gridTemplateColumns: GRID,
         alignItems: 'center',
-        height: 42,
+        height: 44,
         borderBottom: '1px solid rgba(255,255,255,.04)',
         cursor: 'pointer',
         transition: 'background 120ms ease',
@@ -42,23 +42,25 @@ export function RepoRow({ repo, sparkline, healthScore, onClick, style }) {
       <div style={{ ...cellStyle, fontWeight: 500, color: 'rgba(255,255,255,.88)' }}>
         {repo.repo.includes('/') ? (
           <>
-            <span style={{ color: 'rgba(255,255,255,.35)', fontWeight: 400 }}>{repo.repo.split('/')[0]}/</span>
+            <span style={{ color: 'rgba(255,255,255,.3)', fontWeight: 400, fontSize: 12 }}>{repo.repo.split('/')[0]}/</span>
             {repo.repo.split('/')[1]}
           </>
         ) : repo.repo}
+        {repo.subcategory && (
+          <span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(255,255,255,.25)' }}>
+            {repo.subcategory}
+          </span>
+        )}
       </div>
-      <div style={{ ...cellStyle, fontSize: 11.5, color: 'rgba(255,255,255,.5)' }}>
-        {repo.subcategory || repo.category || '—'}
+      <div style={{ ...monoStyle, textAlign: 'right' }}>{formatStars(repo.stars)}</div>
+      <div style={{ padding: '0 8px' }}>
+        <Sparkline data={sparkline?.stars} width={84} height={24} color="#1b9e8a" />
       </div>
-      <div style={monoStyle}>{formatStars(repo.stars)}</div>
-      <div style={{ padding: '0 6px' }}>
-        <Sparkline data={sparkline?.stars} width={88} height={22} color="#1b9e8a" />
-      </div>
-      <div style={monoStyle}>{formatCount(repo.total_contributors)}</div>
-      <div style={{ ...cellStyle, fontSize: 11.5, color: 'rgba(255,255,255,.5)' }}>
+      <div style={{ ...monoStyle, textAlign: 'right' }}>{formatCount(repo.total_contributors)}</div>
+      <div style={{ ...cellStyle, fontSize: 12, color: 'rgba(255,255,255,.45)' }}>
         {repo.country || '—'}
       </div>
-      <div style={{ padding: '0 10px', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ padding: '0 8px', display: 'flex', justifyContent: 'center' }}>
         {healthScore != null && <HealthBadge score={healthScore} />}
       </div>
     </div>

@@ -84,8 +84,8 @@ export function Explorer() {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 12,
-        padding: '12px 24px',
+        gap: 10,
+        padding: '10px 20px',
         borderBottom: '1px solid rgba(255,255,255,.06)',
         flexShrink: 0,
       }}>
@@ -135,7 +135,7 @@ export function Explorer() {
         )}
       </div>
 
-      <div style={{ padding: '12px 0', flexShrink: 0 }}>
+      <div style={{ padding: '8px 0', flexShrink: 0 }}>
         <LayerCards
           layers={data.layers}
           activeLayer={filters.layer}

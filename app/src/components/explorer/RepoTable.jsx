@@ -4,23 +4,21 @@ import { RepoRow, GRID } from './RepoRow.jsx';
 
 const COLUMNS = [
   { key: 'repo', label: 'Repository', sortable: true },
-  { key: 'subcategory', label: 'Subcategory', sortable: true },
   { key: 'stars', label: 'Stars', sortable: true },
-  { key: 'sparkline', label: '90d Activity', sortable: false },
+  { key: 'sparkline', label: 'Activity', sortable: false },
   { key: 'total_contributors', label: 'Contribs', sortable: true },
   { key: 'country', label: 'Country', sortable: true },
   { key: 'health', label: '', sortable: false },
 ];
 
 const headerCellStyle = {
-  padding: '10px 10px',
+  padding: '10px 12px',
   fontFamily: "'DM Mono', monospace",
   fontSize: 10,
   fontWeight: 600,
   letterSpacing: '.06em',
   textTransform: 'uppercase',
   color: 'rgba(255,255,255,.3)',
-  cursor: 'pointer',
   userSelect: 'none',
   display: 'flex',
   alignItems: 'center',
@@ -61,7 +59,7 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
   const virtualizer = useVirtualizer({
     count: sorted.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => 42,
+    estimateSize: () => 44,
     overscan: 20,
   });
 
@@ -86,6 +84,7 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
             style={{
               ...headerCellStyle,
               cursor: col.sortable ? 'pointer' : 'default',
+              justifyContent: col.key === 'stars' || col.key === 'total_contributors' ? 'flex-end' : 'flex-start',
             }}
             onClick={() => col.sortable && handleSort(col.key)}
           >
@@ -100,8 +99,8 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
       <div style={{
         fontFamily: "'DM Mono', monospace",
         fontSize: 10,
-        color: 'rgba(255,255,255,.25)',
-        padding: '6px 10px',
+        color: 'rgba(255,255,255,.2)',
+        padding: '5px 12px',
         borderBottom: '1px solid rgba(255,255,255,.04)',
       }}>
         {sorted.length.toLocaleString()} repos

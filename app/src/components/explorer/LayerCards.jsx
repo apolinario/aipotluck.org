@@ -6,8 +6,8 @@ export function LayerCards({ layers, activeLayer, onLayerClick }) {
   return (
     <div className="layer-cards-row" style={{
       display: 'flex',
-      gap: 10,
-      padding: '0 24px',
+      gap: 6,
+      padding: '0 20px',
       overflowX: 'auto',
       scrollbarWidth: 'none',
     }}>
@@ -24,60 +24,30 @@ export function LayerCards({ layers, activeLayer, onLayerClick }) {
             activeColor={color}
             onClick={() => onLayerClick(isActive ? null : layer.layer)}
             style={{
-              padding: '12px 14px',
-              minWidth: 140,
+              padding: '8px 12px',
               flexShrink: 0,
-            }}
-          >
-            <div style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
               gap: 8,
-              marginBottom: 8,
+            }}
+          >
+            <span style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 12,
+              fontWeight: 500,
+              color: isActive ? '#fff' : 'rgba(255,255,255,.75)',
+              whiteSpace: 'nowrap',
             }}>
-              <span style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 13,
-                fontWeight: 500,
-                color: isActive ? '#fff' : 'rgba(255,255,255,.85)',
-              }}>
-                {layer.layer}
-              </span>
-              <HealthBadge score={healthScore} />
-            </div>
-            <div style={{
+              {layer.layer}
+            </span>
+            <span style={{
               fontFamily: "'DM Mono', monospace",
               fontSize: 10,
-              color: 'rgba(255,255,255,.4)',
-              letterSpacing: '.06em',
-              marginBottom: 6,
+              color: 'rgba(255,255,255,.3)',
             }}>
-              {layer.subcategories.length} subcategories
-            </div>
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 4,
-            }}>
-              {[...new Set(
-                layer.subcategories
-                  .flatMap((s) => s.top_projects || [])
-              )].slice(0, 3)
-                .map((name) => (
-                  <span key={name} style={{
-                    fontSize: 10,
-                    padding: '2px 7px',
-                    borderRadius: 999,
-                    background: 'rgba(255,255,255,.06)',
-                    border: '1px solid rgba(255,255,255,.08)',
-                    color: 'rgba(255,255,255,.55)',
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {name}
-                  </span>
-                ))}
-            </div>
+              {layer.subcategories.reduce((s, c) => s + (c.project_count || 0), 0)}
+            </span>
+            <HealthBadge score={healthScore} />
           </GlassCard>
         );
       })}
