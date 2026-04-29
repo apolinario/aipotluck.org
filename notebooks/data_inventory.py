@@ -126,13 +126,11 @@ def load_oso_projects(mo, pyoso_db_conn):
           a.artifact_namespace AS owner,
           a.artifact_name      AS name,
           LOWER(a.artifact_namespace || '/' || a.artifact_name) AS repo
-        FROM oso.projects_v1 AS p
-        JOIN oso.artifacts_by_project_v1 AS a
+        FROM oso.oss_directory.projects AS p
+        JOIN oso.oss_directory.artifacts_by_project AS a
           ON p.project_id = a.project_id
         WHERE
           a.artifact_source = 'GITHUB'
-          AND p.project_source = 'OSS_DIRECTORY'
-          AND p.project_namespace = 'oso'
         """,
         output=False,
         engine=pyoso_db_conn
