@@ -713,7 +713,7 @@ def load_license_data(mo, pyoso_db_conn):
         SELECT
           r.license,
           COUNT(*) AS repo_count
-        FROM currentai.scores.repos_summary r
+        FROM currentai.entities.repos r
         WHERE r.license IS NOT NULL AND r.license != ''
         GROUP BY r.license
         ORDER BY repo_count DESC
@@ -733,7 +733,7 @@ def load_license_coverage(mo, pyoso_db_conn):
           COUNT(*) AS total_repos,
           COUNT(CASE WHEN license IS NOT NULL AND license != '' THEN 1 END)
             AS has_license
-        FROM currentai.scores.repos_summary
+        FROM currentai.entities.repos
         """,
         output=False,
         engine=pyoso_db_conn,
