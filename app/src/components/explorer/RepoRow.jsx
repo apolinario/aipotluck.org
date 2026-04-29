@@ -24,7 +24,7 @@ export function RepoRow({ repo, sparkline, packageCount, modelCount, healthScore
       onClick={onClick}
       style={{
         display: 'grid',
-        gridTemplateColumns: '2.5fr 1fr 1fr 70px 90px 70px 80px 70px 50px 50px 36px',
+        gridTemplateColumns: '1.8fr 0.8fr 0.8fr 65px 90px 75px 90px 70px 50px 50px 32px',
         alignItems: 'center',
         height: 40,
         borderBottom: '1px solid rgba(255,255,255,.04)',
@@ -36,7 +36,12 @@ export function RepoRow({ repo, sparkline, packageCount, modelCount, healthScore
       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
     >
       <div style={{ ...cellStyle, fontWeight: 500, color: 'rgba(255,255,255,.9)' }}>
-        {repo.repo}
+        {repo.repo.includes('/') ? (
+          <>
+            <span style={{ color: 'rgba(255,255,255,.4)', fontWeight: 400 }}>{repo.repo.split('/')[0]}/</span>
+            {repo.repo.split('/')[1]}
+          </>
+        ) : repo.repo}
       </div>
       <div style={cellStyle}>{repo.category || '—'}</div>
       <div style={cellStyle}>{repo.subcategory || '—'}</div>

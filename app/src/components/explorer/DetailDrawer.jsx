@@ -103,6 +103,47 @@ export function DetailDrawer({ repo, project, taxonomy, packages, models, sparkl
             }}>
               {displayName}
             </div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 6, flexWrap: 'wrap' }}>
+              {repo.repo.includes('/') && (
+                <span style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 11,
+                  color: 'rgba(255,255,255,.45)',
+                }}>
+                  {repo.repo.split('/')[0]}
+                </span>
+              )}
+              {repo.country && (
+                <span style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 11,
+                  color: 'rgba(255,255,255,.45)',
+                }}>
+                  {repo.country}
+                </span>
+              )}
+              {repo.language && (
+                <span style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 11,
+                  color: 'rgba(255,255,255,.45)',
+                }}>
+                  {repo.language}
+                </span>
+              )}
+              {repo.license && (
+                <span style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 11,
+                  padding: '1px 6px',
+                  border: '1px solid rgba(255,255,255,.12)',
+                  borderRadius: 3,
+                  color: 'rgba(255,255,255,.45)',
+                }}>
+                  {repo.license}
+                </span>
+              )}
+            </div>
           </div>
           <button
             onClick={onClose}

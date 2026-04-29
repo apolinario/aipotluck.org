@@ -270,24 +270,23 @@ def query_taxonomy(client):
     return taxonomy
 
 
-def enrich_layers(layers, taxonomy, projects):
-    project_map = {p["project_slug"]: p for p in projects}
+def enrich_layers(layers, taxonomy, repos):
+    repo_map = {r["repo"]: r for r in repos}
     for layer in layers:
         for sub in layer["subcategories"]:
-            matching = [
-                t for t in taxonomy
+            matching_slugs = [
+                t["project_slug"] for t in taxonomy
                 if t["osai_layer"] == layer["layer"]
                 and t["osai_subcategory"] == sub["subcategory"]
             ]
-            slugs = list({t["project_slug"] for t in matching})
-            sub["project_count"] = len(slugs)
-            top = sorted(
-                [project_map[s] for s in slugs if s in project_map],
-                key=lambda p: p["total_stars"],
-                reverse=True,
-            )[:3]
+            unique_slugs = list(set(matching_slugs))
+            sub["project_count"] = len(unique_slugs)
+            matching_repos = [
+                repo_map[s] for s in unique_slugs if s in repo_map
+            ]
+            top = sorted(matching_repos, key=lambda r: r["stars"], reverse=True)[:3]
             sub["top_projects"] = [
-                p["display_name"] or p["project_slug"] for p in top
+                r["repo"].split("/")[-1] for r in top
             ]
 
 
@@ -371,7 +370,7 @@ def export_data(skip_validation=False):
     sparklines = query_sparklines(client)
     taxonomy = query_taxonomy(client)
 
-    enrich_layers(layers, taxonomy, projects)
+    enrich_layers(layers, taxonomy, repos)
 
     bundle = {
         "generated": str(datetime.date.today()),

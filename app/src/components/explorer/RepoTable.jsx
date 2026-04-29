@@ -18,7 +18,7 @@ const COLUMNS = [
 
 const headerStyle = {
   display: 'grid',
-  gridTemplateColumns: '2.5fr 1fr 1fr 70px 90px 70px 80px 70px 50px 50px 36px',
+  gridTemplateColumns: '1.8fr 0.8fr 0.8fr 65px 90px 75px 90px 70px 50px 50px 32px',
   borderBottom: '1px solid rgba(255,255,255,.08)',
   position: 'sticky',
   top: 0,
