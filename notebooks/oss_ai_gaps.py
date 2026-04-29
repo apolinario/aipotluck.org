@@ -105,10 +105,10 @@ def load_oss_ai_repos(mo, pyoso_db_conn):
           SPLIT_PART(repo, '/', 1) AS owner,
           category,
           subcategory AS primary_subcat,
-          CAST(total_stars AS DOUBLE) AS stars,
-          CAST(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END AS DOUBLE) AS contributors,
+          CAST(stars AS DOUBLE) AS stars,
+          CAST(contributors AS DOUBLE) AS contributors,
           CAST(star_7d AS DOUBLE) AS star_7d
-        FROM currentai.ai_repo_activity.ai_repo_activity
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn

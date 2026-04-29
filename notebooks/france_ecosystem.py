@@ -107,11 +107,11 @@ def load_france_repos(mo, pyoso_db_conn):
           SPLIT_PART(repo, '/', 2) AS name,
           category,
           subcategory,
-          CAST(total_stars AS BIGINT) AS stars,
-          CAST(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END AS BIGINT) AS contributors,
+          CAST(stars AS BIGINT) AS stars,
+          CAST(contributors AS BIGINT) AS contributors,
           CAST(star_7d AS BIGINT) AS star_7d,
           language
-        FROM currentai.ai_repo_activity.ai_repo_activity
+        FROM currentai.scores.repos_summary
         WHERE LOWER(country) = 'france'
         """,
         output=False,
@@ -126,8 +126,8 @@ def load_global_stats(mo, pyoso_db_conn):
         f"""
         SELECT
           COUNT(*) AS total_repos,
-          SUM(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END) AS total_contributors
-        FROM currentai.ai_repo_activity.ai_repo_activity
+          SUM(CAST(contributors AS BIGINT)) AS total_contributors
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn

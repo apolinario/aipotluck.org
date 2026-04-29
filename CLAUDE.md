@@ -52,11 +52,14 @@ Palette uses CSS custom properties: `--paper` (warm off-white), `--ink` (deep br
 
 ### Data Sources
 
-15 queryable tables in the `currentai` org. See `models/README.md` for the complete inventory (UDMs + static/bridge models), including schedules and each model's CSV/SQL source.
+5 datasets in the `currentai` org with ~20 queryable tables. See `models/README.md` for the complete inventory.
 
-- **UDMs** (`currentai.ai_*`): cron-refreshed, SQL-defined models that power joins and derived metrics.
-- **Static/bridge models** (`currentai.*` CSV uploads): GoodAI list repos, HF model↔repo links, OSAI gap scores, and OSAI↔GoodAI mapping bridges.
-- **Public** `oso.*` tables: project registry + event/activity tables (query semantics and join recipes in `docs/guides/currentai-queries.md`).
+- **`catalog`** (static): GoodAI repos, HF benchmarks/model links, OSAI gap map, taxonomy bridges
+- **`entities`**: repos (15K), projects (14K), packages (2.8K), models (6.4K) — resolved identities with oss_directory IDs
+- **`events`**: github_events (24M) — pre-filtered GitHub Archive, 12-month rolling window
+- **`metrics`**: daily (5M) — normalized long format: repo × day × metric → value
+- **`scores`**: taxonomy, dependency_graph, fragility, investment_ranking, project_summary, repos_summary, ossd_coverage
+- **Public** `oso.*` tables: oss_directory, package_owners, sboms, events (query guide in `docs/guides/currentai-queries.md`)
 
 **Also:** local `data/*.csv` files. See `docs/catalog-gaps.md` for known missing orgs/repos.
 

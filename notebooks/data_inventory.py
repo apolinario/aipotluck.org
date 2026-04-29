@@ -57,7 +57,7 @@ def load_goodailist(mo, pyoso_db_conn):
               PARTITION BY LOWER(repo)
               ORDER BY updated_at DESC NULLS LAST
             ) AS _rn
-          FROM currentai.goodailist_repos.repos
+          FROM currentai.catalog.goodailist_repos
         )
         SELECT repo, owner, name, category, primary_subcat, stars, contributors, language
         FROM ranked
@@ -74,12 +74,16 @@ def load_ossinsights(mo, pyoso_db_conn):
     df_ossinsights = mo.sql(
         f"""
         SELECT
-          collection_id,
-          collection_name,
-          repo_id,
-          LOWER(repo_name) AS repo,
-          github_url
-        FROM currentai.ossinsights_ai_collections.ossinsights_ai_collections
+          pc.collection_name,
+          c.display_name AS collection_display_name,
+          LOWER(a.artifact_namespace || '/' || a.artifact_name) AS repo
+        FROM oso.oss_directory.projects_by_collection pc
+        JOIN oso.oss_directory.collections c
+          ON pc.collection_id = c.collection_id
+        JOIN oso.oss_directory.artifacts_by_project a
+          ON pc.project_id = a.project_id
+          AND a.artifact_source = 'GITHUB'
+        WHERE pc.collection_name LIKE 'ossinsight-%'
         """,
         output=False,
         engine=pyoso_db_conn
@@ -122,13 +126,11 @@ def load_oso_projects(mo, pyoso_db_conn):
           a.artifact_namespace AS owner,
           a.artifact_name      AS name,
           LOWER(a.artifact_namespace || '/' || a.artifact_name) AS repo
-        FROM oso.projects_v1 AS p
-        JOIN oso.artifacts_by_project_v1 AS a
+        FROM oso.oss_directory.projects AS p
+        JOIN oso.oss_directory.artifacts_by_project AS a
           ON p.project_id = a.project_id
         WHERE
           a.artifact_source = 'GITHUB'
-          AND p.project_source = 'OSS_DIRECTORY'
-          AND p.project_namespace = 'oso'
         """,
         output=False,
         engine=pyoso_db_conn
@@ -147,7 +149,7 @@ def source_summary(df_goodailist, df_ossinsights, df_gap_map, df_oso_projects, m
         mo.stat(
             value=df_ossinsights["repo"].nunique(),
             label="OSS Insights",
-            caption=f"{df_ossinsights['collection_id'].nunique()} collections",
+            caption=f"{df_ossinsights['collection_name'].nunique()} collections",
         ),
         mo.stat(
             value=len(df_gap_map),

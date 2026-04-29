@@ -122,26 +122,17 @@ def load_osai(pd):
 def load_repos(mo, pyoso_db_conn):
     df_repos = mo.sql(
         f"""
-        WITH ranked AS (
-          SELECT
-            LOWER(repo) AS repo,
-            LOWER(SPLIT_PART(repo, '/', 1)) AS owner,
-            category,
-            TRIM(SPLIT_PART(subcat, ',', 1)) AS subcategory,
-            CAST(stars AS BIGINT) AS stars,
-            CAST(contributors AS BIGINT) AS contributors,
-            language,
-            country,
-            description,
-            ROW_NUMBER() OVER (
-              PARTITION BY LOWER(repo)
-              ORDER BY updated_at DESC NULLS LAST
-            ) AS _rn
-          FROM currentai.goodailist_repos.repos
-        )
-        SELECT repo, owner, category, subcategory, stars, contributors, language, country, description
-        FROM ranked
-        WHERE _rn = 1
+        SELECT
+          repo,
+          SPLIT_PART(repo, '/', 1) AS owner,
+          category,
+          subcategory,
+          CAST(stars AS BIGINT) AS stars,
+          CAST(contributors AS BIGINT) AS contributors,
+          language,
+          country,
+          description
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn

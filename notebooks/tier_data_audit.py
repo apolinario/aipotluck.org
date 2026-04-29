@@ -108,11 +108,9 @@ def load_base_catalog(mo, pyoso_db_conn):
         SELECT
           repo,
           category,
-          CAST(total_stars AS DOUBLE) AS stars,
-          CAST(CASE WHEN total_contributors > 0
-               THEN total_contributors
-               ELSE goodai_contributors END AS DOUBLE) AS contributors
-        FROM currentai.ai_repo_activity.ai_repo_activity
+          CAST(stars AS DOUBLE) AS stars,
+          CAST(contributors AS DOUBLE) AS contributors
+        FROM currentai.scores.repos_summary
         """,
         output=False,
         engine=pyoso_db_conn,
@@ -128,7 +126,7 @@ def load_sbom_coverage(mo, pyoso_db_conn):
           COUNT(DISTINCT s.dependent_artifact_namespace || '/' || s.dependent_artifact_name)
             AS ai_repos_with_sboms
         FROM oso.sboms_v0 s
-        INNER JOIN currentai.ai_repo_activity.ai_repo_activity a
+        INNER JOIN currentai.scores.repos_summary a
           ON s.dependent_artifact_namespace || '/' || s.dependent_artifact_name = a.repo
         """,
         output=False,
@@ -147,7 +145,7 @@ def load_dep_graph_stats(mo, pyoso_db_conn):
           COUNT(CASE WHEN min_depth = 2 THEN 1 END) AS transitive_edges,
           COUNT(DISTINCT dependent_repo) AS dependent_repos,
           COUNT(DISTINCT dependency_repo) AS dependency_repos
-        FROM currentai.ai_dependency_graph.ai_dependency_graph
+        FROM currentai.scores.dependency_graph
         """,
         output=False,
         engine=pyoso_db_conn,
@@ -296,7 +294,7 @@ def load_sbom_by_ecosystem(mo, pyoso_db_conn):
             WHEN a.repo IS NOT NULL THEN s.dependent_artifact_name
           END) AS ai_repos
         FROM oso.sboms_v0 s
-        LEFT JOIN currentai.ai_repo_activity.ai_repo_activity a
+        LEFT JOIN currentai.scores.repos_summary a
           ON s.dependent_artifact_namespace || '/' || s.dependent_artifact_name = a.repo
         GROUP BY s.package_artifact_source
         ORDER BY total_edges DESC
@@ -402,7 +400,7 @@ def load_foundation_repos(mo, pyoso_db_conn):
           COUNT(*) AS total_dependents,
           COUNT(CASE WHEN min_depth = 1 THEN 1 END) AS direct,
           COUNT(CASE WHEN min_depth = 2 THEN 1 END) AS transitive
-        FROM currentai.ai_dependency_graph.ai_dependency_graph
+        FROM currentai.scores.dependency_graph
         GROUP BY dependency_repo, dependency_category, dependency_stars
         ORDER BY total_dependents DESC
         LIMIT 40
@@ -514,7 +512,7 @@ def load_cross_category(mo, pyoso_db_conn):
           dependent_category,
           dependency_category,
           COUNT(*) AS edge_count
-        FROM currentai.ai_dependency_graph.ai_dependency_graph
+        FROM currentai.scores.dependency_graph
         WHERE min_depth = 1
         GROUP BY dependent_category, dependency_category
         ORDER BY edge_count DESC
@@ -591,7 +589,7 @@ def load_explorer_deps(explorer_repo, mo, pyoso_db_conn):
           dependent_repo,
           dependent_category,
           min_depth
-        FROM currentai.ai_dependency_graph.ai_dependency_graph
+        FROM currentai.scores.dependency_graph
         WHERE dependency_repo = '{_selected}'
         ORDER BY min_depth, dependent_repo
         """,
@@ -604,7 +602,7 @@ def load_explorer_deps(explorer_repo, mo, pyoso_db_conn):
           dependency_repo,
           dependency_category,
           min_depth
-        FROM currentai.ai_dependency_graph.ai_dependency_graph
+        FROM currentai.scores.dependency_graph
         WHERE dependent_repo = '{_selected}'
         ORDER BY min_depth, dependency_repo
         """,
@@ -669,9 +667,9 @@ def tier1_gap_analysis(C, F, mo):
         f'<p><strong>What we have:</strong></p>'
         f'<ul style="margin:4px 0 12px;">'
         f'<li>Package-level dependencies for ~960 AI repos via SBOMs (6% coverage)</li>'
-        f'<li>Transitive AI→AI dependency graph via <code>ai_dependency_graph</code> UDM '
-        f'(25.7K edges: 6.3K direct + 19.4K transitive to depth 2)</li>'
-        f'<li>718K package records via ai_repo_packages UDM</li>'
+        f'<li>Transitive AI→AI dependency graph via <code>scores.dependency_graph</code> UDM '
+        f'(~25K edges: direct + transitive to depth 2)</li>'
+        f'<li>Package records via <code>entities.packages</code> UDM</li>'
         f'<li>Foundation project ranking with "hidden pillars" identification</li></ul>'
         f'<p><strong style="color:{C["signal"]};">What\'s missing:</strong></p>'
         f'<ul style="margin:4px 0 12px;">'
@@ -715,7 +713,7 @@ def load_license_data(mo, pyoso_db_conn):
         SELECT
           r.license,
           COUNT(*) AS repo_count
-        FROM currentai.goodailist_repos.repos r
+        FROM currentai.entities.repos r
         WHERE r.license IS NOT NULL AND r.license != ''
         GROUP BY r.license
         ORDER BY repo_count DESC
@@ -735,7 +733,7 @@ def load_license_coverage(mo, pyoso_db_conn):
           COUNT(*) AS total_repos,
           COUNT(CASE WHEN license IS NOT NULL AND license != '' THEN 1 END)
             AS has_license
-        FROM currentai.goodailist_repos.repos
+        FROM currentai.entities.repos
         """,
         output=False,
         engine=pyoso_db_conn,
@@ -875,7 +873,7 @@ def load_absence_ai_coverage(mo, pyoso_db_conn):
         FROM oso.contributor_absence_factor_to_artifact_yearly caf
         LEFT JOIN oso.artifacts_by_project_v1 abp
           ON caf.to_artifact_id = abp.artifact_id
-        LEFT JOIN currentai.ai_repo_activity.ai_repo_activity a
+        LEFT JOIN currentai.scores.repos_summary a
           ON abp.artifact_namespace || '/' || abp.artifact_name = a.repo
         WHERE caf.metrics_sample_date >= DATE('2025-01-01')
         """,
@@ -1032,10 +1030,10 @@ def methodology(C, F, mo):
         f'Methodology</div>'
         f'<div style="font-family:{F["body"]}; font-size:0.85rem; color:{C["ink_3"]}; '
         f'line-height:1.6;">'
-        f'<p><strong>Base catalog:</strong> 15.4K AI repos from GoodAI List + OSS Insights, '
-        f'pre-joined in the <code>ai_repo_activity</code> UDM (daily refresh).</p>'
+        f'<p><strong>Base catalog:</strong> 15.4K AI repos from GoodAI List, '
+        f'resolved in <code>entities.repos</code> UDM (daily refresh).</p>'
         f'<p><strong>Dependency data:</strong> OSO SBOMs (<code>oso.sboms_v0</code>) contain '
-        f'39M package dependency edges across 80K repos. The <code>ai_dependency_graph</code> '
+        f'39M package dependency edges across 80K repos. The <code>scores.dependency_graph</code> '
         f'UDM computes transitive closure (depth 2) of AI→AI dependencies from '
         f'<code>int_code_dependencies</code>, yielding 25.7K edges. '
         f'Coverage is uneven: NPM (51K repos), PIP (15K repos), Rust (9.5K repos).</p>'
