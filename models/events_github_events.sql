@@ -4,40 +4,29 @@
 -- Kind: FULL (daily cron)
 --
 -- Pre-filtered GitHub Archive events for repos in our catalog.
--- Joins on numeric github_id (stable across renames).
--- For repos without a known ID, resolves it from recent events.
--- Events under old repo names automatically map to the current name
--- because we select r.repo (current) not the event's namespace/name.
+-- Name-based join (Trino can't hash-join on source_id within 15GB).
+-- Outputs current repo name from entities.repos.
 -- 12-month rolling window.
+--
+-- Known limitation: events under a pre-rename repo name won't match.
+-- Improves as oss_directory coverage grows (entities.repos tracks
+-- current names; renamed repos get re-resolved on next catalog refresh).
 
-WITH known_ids AS (
-  SELECT repo, CAST(github_id AS VARCHAR) AS github_id
-  FROM currentai.entities.repos
-  WHERE github_id IS NOT NULL
-),
-resolved_ids AS (
+WITH repo_ids AS (
   SELECT
-    r.repo,
-    ev.to_artifact_source_id AS github_id
-  FROM currentai.entities.repos r
-  JOIN oso.int_events__github_unified ev
-    ON LOWER(ev.to_artifact_namespace) = LOWER(SPLIT_PART(r.repo, '/', 1))
-    AND LOWER(ev.to_artifact_name) = LOWER(SPLIT_PART(r.repo, '/', 2))
-  WHERE r.github_id IS NULL
-    AND ev.time >= CURRENT_DATE - INTERVAL '30' DAY
-  GROUP BY r.repo, ev.to_artifact_source_id
-),
-all_ids AS (
-  SELECT repo, github_id FROM known_ids
-  UNION ALL
-  SELECT repo, github_id FROM resolved_ids
+    repo,
+    github_id,
+    LOWER(SPLIT_PART(repo, '/', 1)) AS owner,
+    LOWER(SPLIT_PART(repo, '/', 2)) AS name
+  FROM currentai.entities.repos
 )
 SELECT
-  CAST(r.github_id AS BIGINT) AS github_id,
+  r.github_id,
   r.repo,
   ev.event_type,
   ev.time
-FROM all_ids r
+FROM repo_ids r
 JOIN oso.int_events__github_unified ev
-  ON ev.to_artifact_source_id = r.github_id
+  ON LOWER(ev.to_artifact_namespace) = r.owner
+  AND LOWER(ev.to_artifact_name) = r.name
 WHERE ev.time >= CURRENT_DATE - INTERVAL '365' DAY
