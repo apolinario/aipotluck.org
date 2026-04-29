@@ -244,8 +244,7 @@ app/src/
 │       └── ArtifactList.jsx    # Packages/models list for drawer
 ├── hooks/
 │   ├── useExplorerData.js      # Loads and indexes the JSON bundle
-│   ├── useFilters.js           # Filter state management
-│   └── useVirtualScroll.js     # Row virtualization logic
+│   └── useFilters.js           # Filter state management
 ├── utils/
 │   ├── health.js               # Health bucket/color/label helpers
 │   ├── format.js               # Number formatting (stars, etc.)
