@@ -175,7 +175,7 @@ SELECT
   DATE_TRUNC('week', day) AS week,
   SUM(CASE WHEN metric = 'stars' THEN value ELSE 0 END) AS stars,
   SUM(CASE WHEN metric = 'forks' THEN value ELSE 0 END) AS forks,
-  MAX(CASE WHEN metric = 'contributors' THEN value ELSE 0 END) AS contributors
+  MAX_BY(CASE WHEN metric = 'contributors' THEN value ELSE 0 END, day) AS contributors
 FROM currentai.metrics.daily
 WHERE day >= CURRENT_DATE - INTERVAL '91' DAY
   AND metric IN ('stars', 'forks', 'contributors')
