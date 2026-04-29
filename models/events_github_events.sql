@@ -1,6 +1,6 @@
--- Model: metrics.github_events
--- Dataset: currentai.metrics
--- Table: currentai.metrics.github_events
+-- Model: events.github_events
+-- Dataset: currentai.events
+-- Table: currentai.events.github_events
 -- Kind: FULL (daily cron)
 --
 -- Pre-filtered GitHub Archive events for repos in our catalog.

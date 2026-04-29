@@ -5,7 +5,7 @@
 --
 -- Normalized daily activity metrics per repo, 12-month rolling window.
 -- Long format: one row per repo × day × metric.
--- GitHub event metrics from metrics.github_events,
+-- GitHub event metrics from events.github_events,
 -- contributor metrics from OpenDevData.
 
 WITH event_counts AS (
@@ -15,7 +15,7 @@ WITH event_counts AS (
     CAST(time AS DATE) AS day,
     event_type,
     COUNT(*) AS cnt
-  FROM currentai.metrics.github_events
+  FROM currentai.events.github_events
   GROUP BY repo, github_id, CAST(time AS DATE), event_type
 ),
 contrib AS (
