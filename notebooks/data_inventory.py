@@ -149,7 +149,7 @@ def source_summary(df_goodailist, df_ossinsights, df_gap_map, df_oso_projects, m
         mo.stat(
             value=df_ossinsights["repo"].nunique(),
             label="OSS Insights",
-            caption=f"{df_ossinsights['collection_id'].nunique()} collections",
+            caption=f"{df_ossinsights['collection_name'].nunique()} collections",
         ),
         mo.stat(
             value=len(df_gap_map),

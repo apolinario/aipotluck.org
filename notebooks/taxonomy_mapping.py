@@ -65,7 +65,7 @@ def load_goodai_subcats(mo, pyoso_db_conn):
           SELECT
             LOWER(repo) AS repo,
             category,
-            TRIM(SPLIT_PART(subcat, ',', 1)) AS subcategory,
+            subcategory,
             CAST(stars AS BIGINT) AS stars,
             CAST(contributors AS BIGINT) AS contributors,
             ROW_NUMBER() OVER (

@@ -127,7 +127,7 @@ def load_repos(mo, pyoso_db_conn):
             LOWER(repo) AS repo,
             LOWER(SPLIT_PART(repo, '/', 1)) AS owner,
             category,
-            TRIM(SPLIT_PART(subcat, ',', 1)) AS subcategory,
+            subcategory,
             CAST(stars AS BIGINT) AS stars,
             CAST(contributors AS BIGINT) AS contributors,
             language,

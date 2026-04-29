@@ -106,7 +106,7 @@ def load_france_repos(mo, pyoso_db_conn):
           SPLIT_PART(repo, '/', 1) AS owner,
           SPLIT_PART(repo, '/', 2) AS name,
           category,
-          TRIM(SPLIT_PART(subcat, ',', 1)) AS subcategory,
+          subcategory,
           CAST(stars AS BIGINT) AS stars,
           CAST(contributors AS BIGINT) AS contributors,
           CAST(star_7d AS BIGINT) AS star_7d,
