@@ -61,19 +61,6 @@ def load_osai_gap_map(pd):
 def load_goodai_subcats(mo, pyoso_db_conn):
     df_goodai_subcats = mo.sql(
         f"""
-        WITH ranked AS (
-          SELECT
-            LOWER(repo) AS repo,
-            category,
-            subcategory,
-            CAST(stars AS BIGINT) AS stars,
-            CAST(contributors AS BIGINT) AS contributors,
-            ROW_NUMBER() OVER (
-              PARTITION BY LOWER(repo)
-              ORDER BY updated_at DESC NULLS LAST
-            ) AS _rn
-          FROM currentai.scores.repos_summary
-        )
         SELECT
           category,
           subcategory,
@@ -81,8 +68,7 @@ def load_goodai_subcats(mo, pyoso_db_conn):
           SUM(stars) AS total_stars,
           CAST(APPROX_PERCENTILE(CAST(stars AS DOUBLE), 0.5) AS BIGINT) AS median_stars,
           CAST(APPROX_PERCENTILE(CAST(contributors AS DOUBLE), 0.5) AS BIGINT) AS median_contributors
-        FROM ranked
-        WHERE _rn = 1
+        FROM currentai.scores.repos_summary
         GROUP BY category, subcategory
         ORDER BY category, repos DESC
         """,
