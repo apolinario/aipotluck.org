@@ -220,28 +220,28 @@ app/src/
 │   ├── explorer-data.json      # (generated) static data bundle
 │   └── ...existing data files
 ├── components/
-│   ├── landing/                # Existing landing page components (moved)
-│   │   ├── HomeHero.jsx
-│   │   ├── EcosystemSection.jsx
-│   │   ├── StorySection.jsx
-│   │   ├── MissionSection.jsx
-│   │   ├── RoadmapSection.jsx
-│   │   └── ...
-│   ├── explorer/
-│   │   ├── Explorer.jsx        # Main explorer page layout
-│   │   ├── LayerCards.jsx      # Horizontal layer summary row
-│   │   ├── FilterSidebar.jsx   # Left filter panel
-│   │   ├── RepoTable.jsx       # Virtualized sortable table
-│   │   ├── RepoRow.jsx         # Single table row
-│   │   ├── Sparkline.jsx       # Mini SVG sparkline component
-│   │   ├── DetailDrawer.jsx    # Slide-out project/repo detail
-│   │   ├── HealthBadge.jsx     # Colored dot + label
-│   │   ├── SearchBar.jsx       # Global search input
-│   │   └── ArtifactList.jsx    # Packages/models list for drawer
-│   └── shared/
-│       ├── NavOverlay.jsx      # (existing, extended with router links)
-│       ├── GlassCard.jsx       # Reusable glassmorphic card wrapper
-│       └── Chevron.jsx         # (existing)
+│   ├── HomeHero.jsx            # (existing, untouched)
+│   ├── EcosystemSection.jsx    # (existing, Link added)
+│   ├── StorySection.jsx        # (existing, untouched)
+│   ├── MissionSection.jsx      # (existing, untouched)
+│   ├── RoadmapSection.jsx      # (existing, untouched)
+│   ├── HeroScene.jsx           # (existing, untouched)
+│   ├── Ship.jsx                # (existing, untouched)
+│   ├── NavOverlay.jsx          # (existing, extended with router links)
+│   ├── SectionDots.jsx         # (existing, untouched)
+│   ├── Chevron.jsx             # (existing, untouched)
+│   ├── GlassCard.jsx           # New shared glassmorphic card wrapper
+│   └── explorer/
+│       ├── Explorer.jsx        # Main explorer page layout
+│       ├── LayerCards.jsx      # Horizontal layer summary row
+│       ├── FilterSidebar.jsx   # Left filter panel
+│       ├── RepoTable.jsx       # Virtualized sortable table
+│       ├── RepoRow.jsx         # Single table row
+│       ├── Sparkline.jsx       # Mini SVG sparkline component
+│       ├── DetailDrawer.jsx    # Slide-out project/repo detail
+│       ├── HealthBadge.jsx     # Colored dot + label
+│       ├── SearchBar.jsx       # Global search input
+│       └── ArtifactList.jsx    # Packages/models list for drawer
 ├── hooks/
 │   ├── useExplorerData.js      # Loads and indexes the JSON bundle
 │   ├── useFilters.js           # Filter state management
