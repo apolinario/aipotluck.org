@@ -124,7 +124,7 @@ Sections:
 1. **Header**: project display_name (or repo name if standalone), OSAI layer breadcrumb
 2. **Health card**: gap_score ring, parity verdict label, investment priority badge
 3. **Stats row**: total_stars, contributors_28d, full_time_28d, repo_count, package_count, model_count
-4. **Activity chart**: 90-day sparkline expanded to a larger line chart with commits, stars, forks overlaid
+4. **Activity chart**: 90-day sparkline expanded to a larger line chart with stars, forks, contributors overlaid
 5. **Repos list**: all repos in the project with individual stars, language, 90d activity
 6. **Packages**: list with source icon (NPM/PIP/Go/Rust/Maven/NuGet), name, link
 7. **Models**: list with model_id, pipeline_tag, downloads, likes, benchmark_avg, model_family
@@ -164,7 +164,7 @@ Seven queries, run sequentially:
 3. **repos**: `scores.repos_summary` — ~15K rows, all columns
 4. **packages**: `entities.packages` — ~2.8K rows
 5. **models**: `entities.models` — ~6.4K rows
-6. **sparklines**: `metrics.daily` aggregated to weekly — ~15K repos × 13 weeks × 3 metrics (stars, commits, forks)
+6. **sparklines**: `metrics.daily` aggregated to weekly — ~15K repos × 13 weeks × 3 metrics (stars, contributors, forks)
 7. **taxonomy**: `scores.taxonomy` — ~57K rows (projects appear in multiple subcategories)
 
 ### Sparkline Aggregation Query
@@ -173,12 +173,12 @@ Seven queries, run sequentially:
 SELECT
   repo,
   DATE_TRUNC('week', day) AS week,
-  SUM(CASE WHEN metric = 'commits' THEN value ELSE 0 END) AS commits,
   SUM(CASE WHEN metric = 'stars' THEN value ELSE 0 END) AS stars,
-  SUM(CASE WHEN metric = 'forks' THEN value ELSE 0 END) AS forks
+  SUM(CASE WHEN metric = 'forks' THEN value ELSE 0 END) AS forks,
+  MAX(CASE WHEN metric = 'contributors' THEN CAST(value AS INTEGER) ELSE 0 END) AS contributors
 FROM currentai.metrics.daily
 WHERE day >= CURRENT_DATE - INTERVAL '91' DAY
-  AND metric IN ('commits', 'stars', 'forks')
+  AND metric IN ('stars', 'forks', 'contributors')
 GROUP BY repo, DATE_TRUNC('week', day)
 ORDER BY repo, week
 ```
@@ -187,7 +187,7 @@ Output format in JSON — keyed by repo, array of 13 weekly values:
 
 ```json
 {
-  "pytorch/pytorch": { "commits": [120,135,...], "stars": [89,102,...], "forks": [34,28,...] },
+  "pytorch/pytorch": { "stars": [89,102,...], "forks": [34,28,...], "contributors": [45,48,...] },
   ...
 }
 ```
