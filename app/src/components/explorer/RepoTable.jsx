@@ -1,29 +1,15 @@
 import { useState, useMemo, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { RepoRow, GRID } from './RepoRow.jsx';
+import { RepoRow, TABLE_COLS } from './RepoRow.jsx';
 
 const COLUMNS = [
-  { key: 'repo', label: 'Repository', sortable: true },
-  { key: 'stars', label: 'Stars', sortable: true },
-  { key: 'sparkline', label: 'Activity', sortable: false },
-  { key: 'total_contributors', label: 'Contribs', sortable: true },
-  { key: 'country', label: 'Country', sortable: true },
-  { key: 'health', label: '', sortable: false },
+  { key: 'repo', label: 'Repository', align: 'left' },
+  { key: 'stars', label: 'Stars', align: 'right' },
+  { key: '_sparkline', label: 'Activity (90d)', align: 'center', sortable: false },
+  { key: 'total_contributors', label: 'Contributors', align: 'right' },
+  { key: 'country', label: 'Country', align: 'left' },
+  { key: '_health', label: '', align: 'center', sortable: false },
 ];
-
-const headerCellStyle = {
-  padding: '10px 12px',
-  fontFamily: "'DM Mono', monospace",
-  fontSize: 10,
-  fontWeight: 600,
-  letterSpacing: '.06em',
-  textTransform: 'uppercase',
-  color: 'rgba(255,255,255,.3)',
-  userSelect: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  gap: 4,
-};
 
 export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, taxonomyByProject, onRowClick }) {
   const [sortKey, setSortKey] = useState('stars');
@@ -31,7 +17,7 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
   const scrollRef = useRef(null);
 
   const handleSort = (key) => {
-    if (!COLUMNS.find((c) => c.key === key)?.sortable) return;
+    if (key.startsWith('_')) return;
     if (sortKey === key) {
       setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     } else {
@@ -59,7 +45,7 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
   const virtualizer = useVirtualizer({
     count: sorted.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => 44,
+    estimateSize: () => 48,
     overscan: 20,
   });
 
@@ -72,40 +58,59 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+      {/* Header */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: GRID,
+        gridTemplateColumns: TABLE_COLS,
+        padding: '0 20px',
         borderBottom: '1px solid rgba(255,255,255,.08)',
-        background: '#0a0c12',
+        background: 'rgba(10,12,18,.95)',
+        backdropFilter: 'blur(8px)',
       }}>
-        {COLUMNS.map((col) => (
-          <div
-            key={col.key}
-            style={{
-              ...headerCellStyle,
-              cursor: col.sortable ? 'pointer' : 'default',
-              justifyContent: col.key === 'stars' || col.key === 'total_contributors' ? 'flex-end' : 'flex-start',
-            }}
-            onClick={() => col.sortable && handleSort(col.key)}
-          >
-            {col.label}
-            {col.sortable && sortKey === col.key && (
-              <span style={{ fontSize: 8 }}>{sortDir === 'asc' ? '▲' : '▼'}</span>
-            )}
-          </div>
-        ))}
+        {COLUMNS.map((col) => {
+          const isSortable = col.sortable !== false;
+          const isActive = sortKey === col.key;
+          return (
+            <div
+              key={col.key}
+              onClick={() => isSortable && handleSort(col.key)}
+              style={{
+                padding: '12px 0',
+                paddingRight: col.align === 'right' ? 16 : 0,
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 10,
+                fontWeight: 500,
+                letterSpacing: '.08em',
+                textTransform: 'uppercase',
+                color: isActive ? 'rgba(255,255,255,.6)' : 'rgba(255,255,255,.25)',
+                cursor: isSortable ? 'pointer' : 'default',
+                userSelect: 'none',
+                textAlign: col.align,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: col.align === 'right' ? 'flex-end' : col.align === 'center' ? 'center' : 'flex-start',
+                gap: 4,
+              }}
+            >
+              {col.label}
+              {isActive && <span style={{ fontSize: 8 }}>{sortDir === 'asc' ? '▲' : '▼'}</span>}
+            </div>
+          );
+        })}
       </div>
 
+      {/* Count */}
       <div style={{
+        padding: '6px 20px',
         fontFamily: "'DM Mono', monospace",
         fontSize: 10,
         color: 'rgba(255,255,255,.2)',
-        padding: '5px 12px',
         borderBottom: '1px solid rgba(255,255,255,.04)',
       }}>
         {sorted.length.toLocaleString()} repos
       </div>
 
+      {/* Virtualized rows */}
       <div
         ref={scrollRef}
         className="explorer-table"
