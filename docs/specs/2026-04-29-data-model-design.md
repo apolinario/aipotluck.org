@@ -70,12 +70,13 @@ Replace the current repo-centric, ad-hoc dataset layout with a proper semantic d
 
 ### Dataset Organization
 
-Consolidate from 14 datasets into **4 logical datasets** with clean layering:
+Consolidate from 14 datasets into **5 logical datasets** with clean layering:
 
 - **`catalog`** — static facts (CSV uploads, manually refreshed)
 - **`entities`** — resolved identities and relationships (repos, projects, packages, models)
-- **`metrics`** — normalized time-series observations (daily activity per repo)
-- **`scores`** — interpretive / business logic (taxonomy, dependencies, fragility, rankings)
+- **`events`** — pre-filtered event logs scoped to our catalog repos (GitHub Archive)
+- **`metrics`** — normalized daily activity aggregated from events
+- **`scores`** — interpretive / business logic (taxonomy, dependencies, fragility, rankings, summaries)
 
 #### Dataset 1: `catalog` (STATIC_MODEL)
 
@@ -102,37 +103,41 @@ All identifiable things and the relationships between them.
 | `entities.packages` | Published packages (NPM, PIP, Go, etc.) linked to repos/projects | Weekly | 1 row per package |
 | `entities.models` | HF models linked to repos/projects, with base_model lineage | Weekly | 1 row per model |
 
-#### Dataset 3: `metrics` (USER_MODEL)
+#### Dataset 3: `events` (USER_MODEL)
 
-Normalized time-series observations — what happened, when.
+Pre-filtered event logs scoped to our catalog repos. Currently GitHub Archive; expandable to model releases, incidents, funding.
 
 | Table | Description | Schedule | Grain |
 |-------|-------------|----------|-------|
-| `metrics.daily` | Normalized daily metrics per repo (12-month lookback) | Daily | 1 row per repo × day × metric |
+| `events.github_events` | GitHub Archive events for catalog repos (12-month rolling window) | Daily 5am | 1 row per event |
 
-#### Dataset 4: `scores` (USER_MODEL)
+#### Dataset 4: `metrics` (USER_MODEL)
 
-Interpretive layer — all the messy business logic: taxonomy mapping, dependency analysis, fragility, rankings.
+Normalized time-series activity aggregated from events.
+
+| Table | Description | Schedule | Grain |
+|-------|-------------|----------|-------|
+| `metrics.daily` | Normalized daily metrics per repo (12-month lookback) | Daily 6am | 1 row per repo × day × metric |
+
+#### Dataset 5: `scores` (USER_MODEL)
+
+Interpretive layer — all the messy business logic: taxonomy mapping, dependency analysis, fragility, rankings, summaries.
 
 | Table | Description | Schedule | Grain |
 |-------|-------------|----------|-------|
 | `scores.taxonomy` | Project → OSAI layer/subcategory mapping (editorial classification) | Daily | 1 row per project × OSAI subcategory |
-| `scores.dependency_graph` | Transitive AI→AI dependency edges | Weekly | 1 row per edge |
-| `scores.fragility` | Dependency reach × maintainer capacity per repo | Weekly | 1 row per repo |
-| `scores.investment_ranking` | Composite ranking per OSAI subcategory | Weekly | 1 row per subcategory |
-| `scores.project_summary` | Rolled-up scores per project (stars, dependents, fragility, benchmarks, gap scores) | Weekly | 1 row per project |
+| `scores.dependency_graph` | Transitive AI→AI dependency edges | Daily | 1 row per edge |
+| `scores.fragility` | Dependency reach × maintainer capacity per repo | Daily | 1 row per repo |
+| `scores.investment_ranking` | Composite ranking per OSAI subcategory | Daily | 1 row per subcategory |
+| `scores.project_summary` | Rolled-up scores per project (stars, dependents, fragility, benchmarks, gap scores) | Daily 7am | 1 row per project |
+| `scores.repos_summary` | Per-repo snapshot: catalog metadata + 90-day activity + latest contributors | Daily 7am | 1 row per repo |
 | `scores.ossd_coverage` | Per-org match rates and top candidates for oss-directory additions | Daily | 1 row per GitHub org |
 
-### Datasets to retire
+### Datasets retired
 
-| Dataset | Action | Reason |
-|---------|--------|--------|
-| `ossinsights_ai_collections` | **Deleted** | Superseded by `oso.oss_directory.projects_by_collection` (31K repos vs 616) |
-| `goodailist_repos` | **Keep as source, replace in DAG** | Absorbed into `catalog.goodailist_repos`; downstream UDMs read from `entities.repos` instead |
-| Individual UDM datasets (`ai_repo_activity`, `ai_monthly_devs`, `ai_repo_packages`, `ai_dependency_graph`, `ai_fragility_scores`, `ai_investment_ranking`) | **Delete after migration** | Replaced by tables within `entities`, `metrics`, `scores` datasets |
-| Individual static model datasets (`osai_gap_map`, `osai_subcategory_mapping`, `taxonomy_crosswalk`, `model_benchmarks`, `model_repos`, `foundation_model_repos`) | **Delete after migration** | Absorbed into `catalog` dataset |
+All 13 old individual datasets have been deleted. The `ossinsights_ai_collections` static model was deleted earlier (superseded by `oss_directory`).
 
-Net result: **14 datasets → 4 datasets** (+ 1 subscribed external).
+Net result: **14 datasets → 5 datasets** (+ 1 subscribed external: `oss_directory`).
 
 ---
 
