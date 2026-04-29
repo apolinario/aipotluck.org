@@ -36,6 +36,30 @@ SPOT_CHECKS = {
 }
 
 
+import pandas as pd
+
+
+def _val(v, default=None):
+    """Safely extract a scalar from a pandas row, handling NA/NaN."""
+    if v is None or (isinstance(v, float) and pd.isna(v)) or pd.isna(v):
+        return default
+    return v
+
+
+def _int(v):
+    return int(_val(v, 0))
+
+
+def _float(v):
+    f = _val(v)
+    return float(f) if f is not None else None
+
+
+def _str(v):
+    s = _val(v)
+    return str(s) if s is not None else None
+
+
 def get_client():
     if not os.environ.get("OSO_API_KEY"):
         print("OSO_API_KEY not set.")
@@ -60,8 +84,8 @@ def query_layers(client):
     inv_map = {}
     for _, row in inv_df.iterrows():
         inv_map[(row["layer"], row["subcategory"])] = {
-            "gap_urgency": float(row["gap_urgency"] or 0),
-            "composite_score": float(row["composite_score"] or 0),
+            "gap_urgency": _float(row["gap_urgency"]) or 0,
+            "composite_score": _float(row["composite_score"]) or 0,
         }
 
     layers = {}
@@ -72,7 +96,7 @@ def query_layers(client):
         sub = {
             "subcategory": row["subcategory"],
             "subcategory_id": row["subcategory_id"],
-            "gap_score": float(row["overall_score"] or 0),
+            "gap_score": _float(row["overall_score"]) or 0,
             "parity_verdict": row["parity_verdict"],
             "investment_ranking": inv_map.get((name, row["subcategory"]), {}),
         }
@@ -87,20 +111,20 @@ def query_projects(client):
     for _, row in df.iterrows():
         projects.append({
             "project_slug": row["project_slug"],
-            "display_name": row.get("display_name"),
-            "total_stars": int(row.get("total_stars") or 0),
-            "stars_28d": int(row.get("stars_28d") or 0),
-            "contributors_28d": int(row.get("contributors_28d") or 0),
-            "full_time_28d": int(row.get("full_time_28d") or 0),
-            "repo_count": int(row.get("repo_count") or 0),
-            "package_count": int(row.get("package_count") or 0),
-            "model_count": int(row.get("model_count") or 0),
-            "direct_dependents": int(row.get("direct_dependents") or 0),
-            "total_dependents": int(row.get("total_dependents") or 0),
-            "max_fragility_score": float(row.get("max_fragility_score") or 0),
-            "best_benchmark_avg": float(row["best_benchmark_avg"]) if row.get("best_benchmark_avg") else None,
-            "primary_gap_score": float(row["primary_gap_score"]) if row.get("primary_gap_score") else None,
-            "investment_priority": float(row["investment_priority"]) if row.get("investment_priority") else None,
+            "display_name": _str(row.get("display_name")),
+            "total_stars": _int(row.get("total_stars")),
+            "stars_28d": _int(row.get("stars_28d")),
+            "contributors_28d": _int(row.get("contributors_28d")),
+            "full_time_28d": _int(row.get("full_time_28d")),
+            "repo_count": _int(row.get("repo_count")),
+            "package_count": _int(row.get("package_count")),
+            "model_count": _int(row.get("model_count")),
+            "direct_dependents": _int(row.get("direct_dependents")),
+            "total_dependents": _int(row.get("total_dependents")),
+            "max_fragility_score": _float(row.get("max_fragility_score")) or 0,
+            "best_benchmark_avg": _float(row.get("best_benchmark_avg")),
+            "primary_gap_score": _float(row.get("primary_gap_score")),
+            "investment_priority": _float(row.get("investment_priority")),
         })
     return projects
 
@@ -116,21 +140,21 @@ def query_repos(client):
     for _, row in df.iterrows():
         repos.append({
             "repo": row["repo"],
-            "category": row.get("category"),
-            "subcategory": row.get("subcategory"),
-            "stars": int(row.get("stars") or 0),
-            "star_7d": int(row.get("star_7d") or 0),
-            "contributors": int(row.get("contributors") or 0),
-            "language": row.get("language"),
-            "license": row.get("license") or None,
-            "country": row.get("country"),
-            "description": row.get("description"),
-            "stars_90d": int(row.get("stars_90d") or 0),
-            "forks_90d": int(row.get("forks_90d") or 0),
-            "commits_90d": int(row.get("commits_90d") or 0),
-            "total_contributors": int(row.get("total_contributors") or 0),
-            "full_time": int(row.get("full_time") or 0),
-            "part_time": int(row.get("part_time") or 0),
+            "category": _str(row.get("category")),
+            "subcategory": _str(row.get("subcategory")),
+            "stars": _int(row.get("stars")),
+            "star_7d": _int(row.get("star_7d")),
+            "contributors": _int(row.get("contributors")),
+            "language": _str(row.get("language")),
+            "license": _str(row.get("license")),
+            "country": _str(row.get("country")),
+            "description": _str(row.get("description")),
+            "stars_90d": _int(row.get("stars_90d")),
+            "forks_90d": _int(row.get("forks_90d")),
+            "commits_90d": _int(row.get("commits_90d")),
+            "total_contributors": _int(row.get("total_contributors")),
+            "full_time": _int(row.get("full_time")),
+            "part_time": _int(row.get("part_time")),
         })
     return repos
 
@@ -142,10 +166,10 @@ def query_packages(client):
     for _, row in df.iterrows():
         packages.append({
             "repo": row["repo"],
-            "project_slug": row.get("project_slug"),
+            "project_slug": _str(row.get("project_slug")),
             "package_source": row["package_source"],
             "package_name": row["package_name"],
-            "url": row.get("url", ""),
+            "url": _str(row.get("url")) or "",
         })
     return packages
 
@@ -157,16 +181,16 @@ def query_models(client):
     for _, row in df.iterrows():
         models.append({
             "model_id": row["model_id"],
-            "url": row.get("url"),
-            "repo": row.get("repo"),
-            "project_slug": row.get("project_slug"),
-            "pipeline_tag": row.get("pipeline_tag"),
-            "library_name": row.get("library_name"),
-            "downloads": int(row.get("downloads") or 0),
-            "likes": int(row.get("likes") or 0),
-            "model_family": row.get("model_family"),
-            "benchmark_avg": float(row["benchmark_avg"]) if row.get("benchmark_avg") else None,
-            "architecture": row.get("architecture"),
+            "url": _str(row.get("url")),
+            "repo": _str(row.get("repo")),
+            "project_slug": _str(row.get("project_slug")),
+            "pipeline_tag": _str(row.get("pipeline_tag")),
+            "library_name": _str(row.get("library_name")),
+            "downloads": _int(row.get("downloads")),
+            "likes": _int(row.get("likes")),
+            "model_family": _str(row.get("model_family")),
+            "benchmark_avg": _float(row.get("benchmark_avg")),
+            "architecture": _str(row.get("architecture")),
         })
     return models
 
@@ -191,9 +215,9 @@ def query_sparklines(client):
         repo = row["repo"]
         if repo not in sparklines:
             sparklines[repo] = {"stars": [], "forks": [], "contributors": []}
-        sparklines[repo]["stars"].append(int(row.get("stars") or 0))
-        sparklines[repo]["forks"].append(int(row.get("forks") or 0))
-        sparklines[repo]["contributors"].append(int(row.get("contributors") or 0))
+        sparklines[repo]["stars"].append(_int(row.get("stars")))
+        sparklines[repo]["forks"].append(_int(row.get("forks")))
+        sparklines[repo]["contributors"].append(_int(row.get("contributors")))
     return sparklines
 
 
@@ -206,9 +230,9 @@ def query_taxonomy(client):
             "project_slug": row["project_slug"],
             "osai_layer": row["osai_layer"],
             "osai_subcategory": row["osai_subcategory"],
-            "osai_subcategory_id": row.get("osai_subcategory_id"),
-            "gap_score": float(row.get("gap_score") or 0),
-            "parity_verdict": row.get("parity_verdict"),
+            "osai_subcategory_id": _str(row.get("osai_subcategory_id")),
+            "gap_score": _float(row.get("gap_score")) or 0,
+            "parity_verdict": _str(row.get("parity_verdict")),
         })
     return taxonomy
 
