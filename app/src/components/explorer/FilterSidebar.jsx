@@ -52,7 +52,7 @@ export function FilterSidebar({ filters, setFilter, clearFilters, activeCount, f
 
   return (
     <div className="explorer-sidebar" style={{
-      width: 220,
+      width: 200,
       flexShrink: 0,
       padding: '16px 20px',
       borderRight: '1px solid rgba(255,255,255,.06)',

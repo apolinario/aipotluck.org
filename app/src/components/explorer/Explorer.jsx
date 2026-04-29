@@ -135,7 +135,7 @@ export function Explorer() {
         )}
       </div>
 
-      <div style={{ padding: '16px 0', flexShrink: 0 }}>
+      <div style={{ padding: '12px 0', flexShrink: 0 }}>
         <LayerCards
           layers={data.layers}
           activeLayer={filters.layer}

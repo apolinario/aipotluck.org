@@ -24,8 +24,8 @@ export function LayerCards({ layers, activeLayer, onLayerClick }) {
             activeColor={color}
             onClick={() => onLayerClick(isActive ? null : layer.layer)}
             style={{
-              padding: '14px 18px',
-              minWidth: 160,
+              padding: '12px 14px',
+              minWidth: 140,
               flexShrink: 0,
             }}
           >

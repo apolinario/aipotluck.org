@@ -1,39 +1,25 @@
 import { useState, useMemo, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { RepoRow } from './RepoRow.jsx';
+import { RepoRow, GRID } from './RepoRow.jsx';
 
 const COLUMNS = [
-  { key: 'repo', label: 'Name', sortable: true },
-  { key: 'category', label: 'Category', sortable: true },
+  { key: 'repo', label: 'Repository', sortable: true },
   { key: 'subcategory', label: 'Subcategory', sortable: true },
   { key: 'stars', label: 'Stars', sortable: true },
   { key: 'sparkline', label: '90d Activity', sortable: false },
   { key: 'total_contributors', label: 'Contributors', sortable: true },
-  { key: 'license', label: 'License', sortable: true },
   { key: 'country', label: 'Country', sortable: true },
-  { key: 'packages', label: 'Pkgs', sortable: true },
-  { key: 'models', label: 'Models', sortable: true },
   { key: 'health', label: '', sortable: false },
 ];
 
-const headerStyle = {
-  display: 'grid',
-  gridTemplateColumns: '1.8fr 0.8fr 0.8fr 65px 90px 75px 90px 70px 50px 50px 32px',
-  borderBottom: '1px solid rgba(255,255,255,.08)',
-  position: 'sticky',
-  top: 0,
-  zIndex: 2,
-  background: '#0a0c12',
-};
-
 const headerCellStyle = {
-  padding: '8px 8px',
+  padding: '10px 10px',
   fontFamily: "'DM Mono', monospace",
   fontSize: 10,
   fontWeight: 600,
   letterSpacing: '.06em',
   textTransform: 'uppercase',
-  color: 'rgba(255,255,255,.35)',
+  color: 'rgba(255,255,255,.3)',
   cursor: 'pointer',
   userSelect: 'none',
   display: 'flex',
@@ -48,21 +34,16 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
 
   const handleSort = (key) => {
     if (!COLUMNS.find((c) => c.key === key)?.sortable) return;
-    const actualKey = key === 'packages' ? '_pkgCount' : key === 'models' ? '_modelCount' : key;
-    if (sortKey === actualKey) {
+    if (sortKey === key) {
       setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     } else {
-      setSortKey(actualKey);
+      setSortKey(key);
       setSortDir('desc');
     }
   };
 
   const sorted = useMemo(() => {
-    const arr = repos.map((r) => ({
-      ...r,
-      _pkgCount: packagesByRepo[r.repo]?.length || 0,
-      _modelCount: modelsByRepo[r.repo]?.length || 0,
-    }));
+    const arr = [...repos];
     arr.sort((a, b) => {
       let va = a[sortKey];
       let vb = b[sortKey];
@@ -75,12 +56,12 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
       return a.repo.localeCompare(b.repo);
     });
     return arr;
-  }, [repos, sortKey, sortDir, packagesByRepo, modelsByRepo]);
+  }, [repos, sortKey, sortDir]);
 
   const virtualizer = useVirtualizer({
     count: sorted.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => 40,
+    estimateSize: () => 42,
     overscan: 20,
   });
 
@@ -93,7 +74,12 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      <div style={headerStyle}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: GRID,
+        borderBottom: '1px solid rgba(255,255,255,.08)',
+        background: '#0a0c12',
+      }}>
         {COLUMNS.map((col) => (
           <div
             key={col.key}
@@ -114,8 +100,8 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
       <div style={{
         fontFamily: "'DM Mono', monospace",
         fontSize: 10,
-        color: 'rgba(255,255,255,.3)',
-        padding: '6px 8px',
+        color: 'rgba(255,255,255,.25)',
+        padding: '6px 10px',
         borderBottom: '1px solid rgba(255,255,255,.04)',
       }}>
         {sorted.length.toLocaleString()} repos
@@ -143,8 +129,6 @@ export function RepoTable({ repos, sparklines, packagesByRepo, modelsByRepo, tax
                 <RepoRow
                   repo={repo}
                   sparkline={sparklines[repo.repo]}
-                  packageCount={repo._pkgCount}
-                  modelCount={repo._modelCount}
                   healthScore={getHealthScore(repo)}
                   onClick={() => onRowClick(repo)}
                 />
