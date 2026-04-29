@@ -28,7 +28,7 @@ benchmarks AS (
   FROM currentai.catalog.model_benchmarks
 ),
 repo_projects AS (
-  SELECT repo, project_slug
+  SELECT repo, COALESCE(project_slug, repo) AS project_slug
   FROM currentai.entities.repos
 )
 SELECT
