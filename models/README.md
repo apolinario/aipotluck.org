@@ -1,84 +1,123 @@
 # Models
 
-Data models deployed to the `currentai` org on the OSO data warehouse.
+Data models deployed to the `currentai` org on the OSO data warehouse, organized into 5 datasets.
 
-## User Defined Models (UDMs)
+## Dataset Layout
 
-Each `.sql` file is the source of truth for a deployed UDM. Edits here should be synced to OSO via `createDataModelRevision`.
+```
+catalog (STATIC_MODEL)     — CSV reference data, manually refreshed
+entities (USER_MODEL)      — resolved identities: repos, projects, packages, models
+events (USER_MODEL)        — pre-filtered event logs (GitHub Archive)
+metrics (USER_MODEL)       — normalized daily activity per repo
+scores (USER_MODEL)        — interpretive: taxonomy, dependencies, fragility, rankings
+```
 
-| Model | Table | Schedule | Description |
-|-------|-------|----------|-------------|
-| [ai_repo_packages](ai_repo_packages.sql) | `currentai.ai_repo_packages.ai_repo_packages` | Weekly | Links AI repos to published packages (NPM, PIP, Go, Maven, NuGet, Rust) |
-| [ai_repo_activity](ai_repo_activity.sql) | `currentai.ai_repo_activity.ai_repo_activity` | Daily | Per-repo 90-day stars, forks, FT/PT contributors |
-| [ai_monthly_devs](ai_monthly_devs.sql) | `currentai.ai_monthly_devs.ai_monthly_devs` | Daily | Monthly active developer counts by category |
-| [ai_dependency_graph](ai_dependency_graph.sql) | `currentai.ai_dependency_graph.ai_dependency_graph` | Weekly (Mon 6am) | Transitive AI→AI dependency graph (direct + depth-2, ~25K edges) |
-| [ai_fragility_scores](ai_fragility_scores.sql) | `currentai.ai_fragility_scores.ai_fragility_scores` | Weekly (Mon 7am) | Dependency reach × maintainer capacity — fragility hotspots |
-| [ai_investment_ranking](ai_investment_ranking.sql) | `currentai.ai_investment_ranking.ai_investment_ranking` | Weekly (Mon 7am) | Composite investment ranking: gap urgency × centrality × benchmarks × fragility |
+## Catalog (Static Model)
 
-## Static Models (CSV uploads)
+CSV-based reference data uploaded via scripts. Source CSVs live in `data/`.
 
-These are CSV-based datasets uploaded to OSO. The source CSVs live in `data/` and are refreshed via scripts.
+| Table | Source CSV | Records | Description |
+|-------|-----------|---------|-------------|
+| `currentai.catalog.goodailist_repos` | `data/goodailist/repos.csv` | ~15K | Primary repo catalog with categories, stars, contributors |
+| `currentai.catalog.model_benchmarks` | `data/huggingface/model_benchmarks.csv` | ~4.5K | Open LLM Leaderboard v2 scores |
+| `currentai.catalog.model_repos` | `data/huggingface/model_repos.csv` | ~6.3K | HF model → GitHub repo links |
+| `currentai.catalog.foundation_model_repos` | `data/huggingface/foundation_model_repos.csv` | ~72 | Curated foundation model families → canonical repos |
+| `currentai.catalog.osai_gap_map` | `data/osai-gap-map/scores.csv` | 41 | Qualitative maturity scores (10 dimensions) |
+| `currentai.catalog.osai_subcategory_mapping` | `data/osai_subcategory_repos.csv` | ~42 | OSAI subcategory → GoodAI subcategory bridge |
+| `currentai.catalog.taxonomy_crosswalk` | `data/taxonomy_crosswalk.csv` | ~10 | OSAI layer → GoodAI category bridge |
 
-| Model | Table | Source | Description |
-|-------|-------|--------|-------------|
-| goodailist_repos | `currentai.goodailist_repos.repos` | `data/goodailist/repos.csv` | 15K+ curated AI repos with categories, stars, contributors, country, language |
-| ossinsights_ai_collections | `currentai.ossinsights_ai_collections.ossinsights_ai_collections` | External (OSS Insights) | 616 repos across 53 AI collections |
-| model_benchmarks | `currentai.model_benchmarks.model_benchmarks` | `data/huggingface/model_benchmarks.csv` | 4.5K+ Open LLM Leaderboard v2 scores (IFEval, BBH, MATH, GPQA, MUSR, MMLU-PRO) |
-| model_repos | `currentai.model_repos.model_repos` | `data/huggingface/model_repos.csv` | 6.3K HF model → GitHub repo links with base_model and metadata |
-| foundation_model_repos | `currentai.foundation_model_repos.foundation_model_repos` | `data/huggingface/foundation_model_repos.csv` | 72 curated foundation model families → canonical GitHub repos |
-| osai_gap_map | `currentai.osai_gap_map.osai_gap_map` | `data/osai-gap-map/scores.csv` | 41 AI stack subcategories scored on 10 qualitative dimensions |
-| osai_subcategory_mapping | `currentai.osai_subcategory_mapping.osai_subcategory_mapping` | `data/osai_subcategory_repos.csv` | OSAI subcategory → GoodAI subcategory bridge |
-| taxonomy_crosswalk | `currentai.taxonomy_crosswalk.taxonomy_crosswalk` | `data/taxonomy_crosswalk.csv` | OSAI layer → GoodAI category bridge |
+## Entities (User Defined Models)
+
+Resolved identities and relationships. `entities.repos` is the foundation — everything chains off it.
+
+| Table | SQL | Schedule | Rows | Description |
+|-------|-----|----------|------|-------------|
+| `currentai.entities.repos` | [entities_repos.sql](entities_repos.sql) | Daily 6am | ~15K | Deduped repo catalog + oss_directory IDs and project resolution |
+| `currentai.entities.projects` | [entities_projects.sql](entities_projects.sql) | Daily 6am | ~14K | OSO projects where matched, standalone repos otherwise |
+| `currentai.entities.packages` | [entities_packages.sql](entities_packages.sql) | Daily 6am | ~2.8K | Published packages linked to repos via `package_owners_v0` |
+| `currentai.entities.models` | [entities_models.sql](entities_models.sql) | Daily 6am | ~6.4K | HF models with repo links, benchmarks, foundation model family |
+
+## Events (User Defined Models)
+
+Pre-filtered event logs scoped to our catalog repos.
+
+| Table | SQL | Schedule | Rows | Description |
+|-------|-----|----------|------|-------------|
+| `currentai.events.github_events` | [events_github_events.sql](events_github_events.sql) | Daily 5am | ~24M | GitHub Archive events for catalog repos, 12-month rolling window |
+
+## Metrics (User Defined Models)
+
+Normalized time-series activity.
+
+| Table | SQL | Schedule | Rows | Description |
+|-------|-----|----------|------|-------------|
+| `currentai.metrics.daily` | [metrics_daily.sql](metrics_daily.sql) | Daily 6am | ~5M | Long format: repo × day × metric → value (8 metric types) |
+
+Metric types: `stars`, `forks`, `commits`, `pull_requests`, `issues_opened`, `contributors`, `full_time`, `part_time`
+
+## Scores (User Defined Models)
+
+Interpretive layer — taxonomy, dependencies, fragility, rankings, summaries.
+
+| Table | SQL | Schedule | Rows | Description |
+|-------|-----|----------|------|-------------|
+| `currentai.scores.taxonomy` | [scores_taxonomy.sql](scores_taxonomy.sql) | Daily 6am | ~57K | Project → OSAI layer/subcategory mapping |
+| `currentai.scores.dependency_graph` | [scores_dependency_graph.sql](scores_dependency_graph.sql) | Daily 6am | ~26K | Transitive AI→AI deps (direct + depth-2) |
+| `currentai.scores.fragility` | [scores_fragility.sql](scores_fragility.sql) | Daily 6am | ~600 | Dependency reach × maintainer capacity |
+| `currentai.scores.investment_ranking` | [scores_investment_ranking.sql](scores_investment_ranking.sql) | Daily 6am | 42 | Composite ranking per OSAI subcategory |
+| `currentai.scores.project_summary` | [scores_project_summary.sql](scores_project_summary.sql) | Daily 7am | ~14K | Rolled-up snapshot per project |
+| `currentai.scores.repos_summary` | [scores_repos_summary.sql](scores_repos_summary.sql) | Daily 7am | ~15K | Per-repo snapshot: catalog metadata + 90-day activity + contributors |
+| `currentai.scores.ossd_coverage` | [scores_ossd_coverage.sql](scores_ossd_coverage.sql) | Daily 6am | ~10K | Per-org oss-directory match rates |
+
+## Subscribed External Datasets
+
+| Dataset | Tables | Source |
+|---------|--------|--------|
+| `oss_directory` | `oso.oss_directory.projects`, `.repositories`, `.collections`, `.artifacts_by_project`, `.projects_by_collection` | OSO public marketplace |
 
 ## Querying
 
-All models use three-part table names: `currentai.<dataset>.<table>`
+All tables use three-part names: `currentai.<dataset>.<table>`
 
 ```sql
--- UDM
-SELECT * FROM currentai.ai_repo_packages.ai_repo_packages LIMIT 10
-SELECT * FROM currentai.ai_dependency_graph.ai_dependency_graph LIMIT 10
+-- Entities
+SELECT * FROM currentai.entities.repos LIMIT 10
+SELECT * FROM currentai.entities.projects WHERE project_slug = 'pytorch'
 
--- Static models
-SELECT * FROM currentai.goodailist_repos.repos LIMIT 10
-SELECT * FROM currentai.model_benchmarks.model_benchmarks LIMIT 10
-SELECT * FROM currentai.model_repos.model_repos LIMIT 10
+-- Events
+SELECT event_type, COUNT(*) FROM currentai.events.github_events WHERE repo = 'pytorch/pytorch' GROUP BY event_type
 
--- Join: top benchmarked models linked to AI repos
-SELECT b.model_id, b.average, b.architecture, b.params_b, r.github_repo
-FROM currentai.model_benchmarks.model_benchmarks b
-LEFT JOIN currentai.model_repos.model_repos r ON b.model_id = r.model_id
-WHERE r.github_repo IS NOT NULL AND r.github_repo != ''
-ORDER BY CAST(b.average AS DOUBLE) DESC
-LIMIT 20
+-- Metrics (long format)
+SELECT metric, SUM(value) FROM currentai.metrics.daily WHERE repo = 'pytorch/pytorch' GROUP BY metric
 
--- Join: foundation repos + their benchmarked models
-SELECT d.dependency_repo, d.dependency_category,
-  COUNT(DISTINCT d.dependent_repo) AS dependents,
-  b.model_id, b.average
-FROM currentai.ai_dependency_graph.ai_dependency_graph d
-LEFT JOIN currentai.model_repos.model_repos r
-  ON d.dependency_repo = r.github_repo
-LEFT JOIN currentai.model_benchmarks.model_benchmarks b
-  ON r.model_id = b.model_id
-GROUP BY d.dependency_repo, d.dependency_category, b.model_id, b.average
-ORDER BY dependents DESC
-LIMIT 20
+-- Scores
+SELECT * FROM currentai.scores.repos_summary WHERE country = 'France' ORDER BY stars DESC LIMIT 20
+SELECT * FROM currentai.scores.project_summary ORDER BY total_stars DESC LIMIT 10
+SELECT * FROM currentai.scores.taxonomy WHERE project_slug = 'pytorch'
 ```
 
 ## Refreshing
 
 ```bash
-# Refresh GoodAI List static model:
-# 1. Scrape fresh data
-uv run scripts/fetch_goodailist.py
-# 2. Upload CSV and trigger run via MCP (createStaticModelUploadUrl + createStaticModelRunRequest)
+# Refresh catalog CSVs:
+uv run scripts/fetch_goodailist.py          # then upload via MCP
+uv run scripts/fetch_model_benchmarks.py    # then upload via MCP
 
-# Refresh model benchmarks + repo links (requires HF_TOKEN in .env):
-uv run scripts/fetch_model_benchmarks.py              # both benchmarks + repos
-uv run scripts/fetch_model_benchmarks.py --benchmarks-only   # just leaderboard
-uv run scripts/fetch_model_benchmarks.py --repos-only        # just repo links
-# Then upload CSVs via MCP (same flow as GoodAI List)
+# UDMs refresh on their daily cron schedule, or trigger manually via MCP:
+# createUserModelRunRequest with the dataset ID
+```
 
-# UDMs refresh on their cron schedule, or trigger manually via MCP (createUserModelRunRequest)
+## DAG
+
+```
+catalog (static CSVs)  +  oso.oss_directory.*
+         ↓                        ↓
+    entities (repos → projects, packages, models)
+         ↓
+    events (github_events ← oso.int_events__github_unified)
+         ↓
+    metrics (daily ← events.github_events + OpenDevData)
+         ↓
+    scores (taxonomy, dependency_graph, fragility, investment_ranking,
+            project_summary, repos_summary, ossd_coverage)
 ```
