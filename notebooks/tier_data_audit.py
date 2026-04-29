@@ -108,11 +108,9 @@ def load_base_catalog(mo, pyoso_db_conn):
         SELECT
           repo,
           category,
-          CAST(total_stars AS DOUBLE) AS stars,
-          CAST(CASE WHEN total_contributors > 0
-               THEN total_contributors
-               ELSE goodai_contributors END AS DOUBLE) AS contributors
-        FROM currentai.entities.repos
+          CAST(stars AS DOUBLE) AS stars,
+          CAST(contributors AS DOUBLE) AS contributors
+        FROM currentai.catalog.goodailist_repos
         """,
         output=False,
         engine=pyoso_db_conn,
@@ -128,7 +126,7 @@ def load_sbom_coverage(mo, pyoso_db_conn):
           COUNT(DISTINCT s.dependent_artifact_namespace || '/' || s.dependent_artifact_name)
             AS ai_repos_with_sboms
         FROM oso.sboms_v0 s
-        INNER JOIN currentai.entities.repos a
+        INNER JOIN currentai.catalog.goodailist_repos a
           ON s.dependent_artifact_namespace || '/' || s.dependent_artifact_name = a.repo
         """,
         output=False,
@@ -296,7 +294,7 @@ def load_sbom_by_ecosystem(mo, pyoso_db_conn):
             WHEN a.repo IS NOT NULL THEN s.dependent_artifact_name
           END) AS ai_repos
         FROM oso.sboms_v0 s
-        LEFT JOIN currentai.entities.repos a
+        LEFT JOIN currentai.catalog.goodailist_repos a
           ON s.dependent_artifact_namespace || '/' || s.dependent_artifact_name = a.repo
         GROUP BY s.package_artifact_source
         ORDER BY total_edges DESC
@@ -875,7 +873,7 @@ def load_absence_ai_coverage(mo, pyoso_db_conn):
         FROM oso.contributor_absence_factor_to_artifact_yearly caf
         LEFT JOIN oso.artifacts_by_project_v1 abp
           ON caf.to_artifact_id = abp.artifact_id
-        LEFT JOIN currentai.entities.repos a
+        LEFT JOIN currentai.catalog.goodailist_repos a
           ON abp.artifact_namespace || '/' || abp.artifact_name = a.repo
         WHERE caf.metrics_sample_date >= DATE('2025-01-01')
         """,

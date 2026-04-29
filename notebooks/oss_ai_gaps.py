@@ -104,11 +104,11 @@ def load_oss_ai_repos(mo, pyoso_db_conn):
           repo,
           SPLIT_PART(repo, '/', 1) AS owner,
           category,
-          subcategory AS primary_subcat,
-          CAST(total_stars AS DOUBLE) AS stars,
-          CAST(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END AS DOUBLE) AS contributors,
+          TRIM(SPLIT_PART(subcat, ',', 1)) AS primary_subcat,
+          CAST(stars AS DOUBLE) AS stars,
+          CAST(contributors AS DOUBLE) AS contributors,
           CAST(star_7d AS DOUBLE) AS star_7d
-        FROM currentai.entities.repos
+        FROM currentai.catalog.goodailist_repos
         """,
         output=False,
         engine=pyoso_db_conn

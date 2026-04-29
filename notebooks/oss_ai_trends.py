@@ -104,11 +104,11 @@ def load_oss_ai_repos(mo, pyoso_db_conn):
           repo,
           SPLIT_PART(repo, '/', 1) AS owner,
           category,
-          subcategory AS primary_subcat,
-          CAST(total_stars AS DOUBLE) AS stars,
-          CAST(CASE WHEN total_contributors > 0 THEN total_contributors ELSE goodai_contributors END AS DOUBLE) AS contributors,
+          TRIM(SPLIT_PART(subcat, ',', 1)) AS primary_subcat,
+          CAST(stars AS DOUBLE) AS stars,
+          CAST(contributors AS DOUBLE) AS contributors,
           CAST(star_7d AS DOUBLE) AS star_7d
-        FROM currentai.entities.repos
+        FROM currentai.catalog.goodailist_repos
         """,
         output=False,
         engine=pyoso_db_conn
@@ -134,9 +134,12 @@ def load_repo_activity(mo, pyoso_db_conn):
         f"""
         SELECT
           repo,
-          stars_90d AS stars_3m,
-          forks_90d AS forks_3m
-        FROM currentai.entities.repos
+          SUM(CASE WHEN metric = 'stars' THEN value ELSE 0 END) AS stars_3m,
+          SUM(CASE WHEN metric = 'forks' THEN value ELSE 0 END) AS forks_3m
+        FROM currentai.metrics.daily
+        WHERE day >= CURRENT_DATE - INTERVAL '90' DAY
+          AND metric IN ('stars', 'forks')
+        GROUP BY repo
         ORDER BY stars_3m DESC
         """,
         output=False,
@@ -150,12 +153,15 @@ def load_contributors(mo, pyoso_db_conn):
     df_contributors = mo.sql(
         f"""
         SELECT
-          repo,
-          total_contributors,
-          full_time,
-          part_time
-        FROM currentai.entities.repos
-        WHERE total_contributors > 0
+          m.repo,
+          MAX(CASE WHEN m.metric = 'contributors' THEN CAST(m.value AS INTEGER) END) AS total_contributors,
+          MAX(CASE WHEN m.metric = 'full_time' THEN CAST(m.value AS INTEGER) END) AS full_time,
+          MAX(CASE WHEN m.metric = 'part_time' THEN CAST(m.value AS INTEGER) END) AS part_time
+        FROM currentai.metrics.daily m
+        WHERE m.metric IN ('contributors', 'full_time', 'part_time')
+          AND m.day = (SELECT MAX(day) FROM currentai.metrics.daily WHERE metric = 'contributors')
+        GROUP BY m.repo
+        HAVING MAX(CASE WHEN m.metric = 'contributors' THEN m.value END) > 0
         ORDER BY total_contributors DESC
         """,
         output=False,
@@ -175,7 +181,7 @@ def load_monthly(mo, pyoso_db_conn):
           MAX(CASE WHEN m.metric = 'full_time' THEN CAST(m.value AS INTEGER) ELSE 0 END) AS full_time,
           MAX(CASE WHEN m.metric = 'part_time' THEN CAST(m.value AS INTEGER) ELSE 0 END) AS part_time
         FROM currentai.metrics.daily m
-        JOIN currentai.entities.repos r ON m.repo = r.repo
+        JOIN currentai.catalog.goodailist_repos r ON m.repo = r.repo
         WHERE m.metric IN ('contributors', 'full_time', 'part_time')
         GROUP BY r.category, DATE_TRUNC('month', m.day)
         ORDER BY month, r.category
