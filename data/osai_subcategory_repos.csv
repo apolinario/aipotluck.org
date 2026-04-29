@@ -1,0 +1,43 @@
+osai_layer,osai_subcategory,goodai_subcategories,notes
+Infrastructure,Cloud Compute,"Deploy & Serve,Inference service optimization",Cloud GPU providers and serving infra
+Infrastructure,Communication Libs,"Deep Learning Frameworks",Distributed training libs (NCCL etc) live within framework repos
+Infrastructure,Compilers,"Inference service optimization",TensorRT; ONNX Runtime; model compilers
+Infrastructure,Firmware Drivers,"Inference service optimization",CUDA; ROCm — limited direct repo coverage
+Infrastructure,Hardware Chips,"Inference service optimization",Hardware-adjacent optimization repos
+Infrastructure,Ml Frameworks,"Deep Learning Frameworks,Architecture",PyTorch; JAX; TensorFlow
+Infrastructure,Storage,"Dataset engineering",Data loading and storage tooling
+Model Components: Code,Evaluation Code,"Test & guard,Environments",Eval harnesses; benchmarks
+Model Components: Code,Finetuning Code,"Fine-tuning,Domain-specific training",PEFT; TRL; fine-tuning frameworks
+Model Components: Code,Inference Code,"Inference service optimization,Deploy & Serve",vLLM; TGI; inference engines
+Model Components: Code,Model Architecture,"Architecture,Deep Learning Frameworks",Model definition code; attention implementations
+Model Components: Code,Supporting Libraries,"Give agent tools,Prompt & Scaffold",Tokenizers; data loaders; utilities
+Model Components: Code,Training Code,"Deep Learning Frameworks,Reinforcement Learning",Megatron; DeepSpeed; training infrastructure
+Model Components: Datasets,Benchmark Eval Data,"Dataset engineering,Test & guard",Evaluation datasets
+Model Components: Datasets,Data Preprocessing,"Dataset engineering,Classical ML",Data cleaning; transformation; annotation
+Model Components: Datasets,Preference Alignment Data,"Fine-tuning,Reinforcement Learning",RLHF/DPO datasets
+Model Components: Datasets,Pretraining Data,"Dataset engineering",Large-scale training corpora tooling
+Model Components: Datasets,Synthetic Data,"Dataset engineering,Content creation",Synthetic data generation
+Model Components: Weights,Base Pretrained,"Foundation models",Base foundation model weights repos
+Model Components: Weights,Compressed Weights,"Foundation models,Inference service optimization",Quantization; distillation; pruning
+Model Components: Weights,Domain Weights,"Domain-specific models",Domain-adapted model weights
+Model Components: Weights,Finetuned Chat,"Foundation models",Chat/instruct fine-tuned weights
+Model Components: Weights,Multimodal Weights,"Vision models,Make agent see hear talk",Vision-language; audio-language models
+Product / UX,Deployment,"Deploy & Serve,Build agent workflow (SDK)",Deployment platforms; containerization
+Product / UX,Orchestration Agents,"Build agent workflow (SDK),Give agent tools",Agent frameworks; orchestration
+Product / UX,Output Settings,"Prompt & Scaffold",Structured output; format control
+Product / UX,System Prompt,"Prompt & Scaffold",System prompt engineering tooling
+Product / UX,Telemetry Observability,"Test & guard",LLM observability; tracing; monitoring
+Product / UX,Ui Api,"Coding,Personal",Chat UIs; API wrappers
+Documentation,Data Documentation,"Dataset engineering",Dataset cards; data documentation tools
+Documentation,Eval Results,"Test & guard",Leaderboards; eval result publishing
+Documentation,Model Cards,"Foundation models",Model documentation tooling
+Documentation,Sample Outputs Demos,"ML/AI fundamentals,Tool-specific tutorials",Demo apps; example outputs
+Licensing,Code Licenses,"Give agent tools",License scanning; compliance tooling (sparse coverage)
+Licensing,Dataset Licenses,"Dataset engineering",Dataset licensing tooling (sparse)
+Licensing,Terms Of Service,"Give agent tools",ToS analysis tooling (very sparse)
+Licensing,Weight Licenses,"Foundation models",Model licensing (sparse)
+Safeguards,Access Release,"Test & guard",Access control; release management
+Safeguards,Auditing Reporting,"Test & guard",Safety auditing; bias reporting
+Safeguards,Governance,"Test & guard",AI governance tooling
+Safeguards,Moderation,"Test & guard,Content creation",Content moderation; filtering
+Safeguards,Safety Alignment,"Test & guard,Reinforcement Learning",Alignment; red teaming; guardrails

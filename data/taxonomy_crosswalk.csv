@@ -1,0 +1,12 @@
+osai_layer,goodai_category,notes
+Infrastructure,Infrastructure,Direct match — cloud compute; compilers; frameworks; hardware
+Model Components: Code,Model Development,"Training code, evaluation code, fine-tuning tools"
+Model Components: Code,AI Engineering,"SDKs, orchestration, inference frameworks"
+Model Components: Datasets,Model Development,"Dataset tools, data processing, annotation"
+Model Components: Weights,Models,"Pretrained models, foundation models, fine-tunes"
+Product / UX,Applications,"End-user apps, UIs, agents, chatbots"
+Product / UX,AI Engineering,"APIs, orchestration, observability, deployment"
+Documentation,Tutorials,"Courses, cookbooks, guides"
+Licensing,Misc,"License tooling, governance (limited repo coverage)"
+Safeguards,AI Engineering,"Safety tooling, guardrails, content filtering"
+Safeguards,Model Development,"Evaluation frameworks, red teaming, alignment"

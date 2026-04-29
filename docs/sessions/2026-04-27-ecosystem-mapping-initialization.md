@@ -5,7 +5,7 @@ Initialized the `ecosystem-mapping` repo from scratch and built out the data fou
 ## What we built
 
 ### Repository structure
-- Scaffolded from empty repo → full monorepo with `app/` (Vite website), `notebooks/`, `models/`, `scripts/`, `data/`, `docs/`
+- Scaffolded from empty repo → full monorepo with `app/` (Vite website), `notebooks/`, `models/`, `scripts/`, `data/`, `docs/` (`specs/`, `plans/`, `sessions/`, …)
 - Website prototype implemented from Claude Design handoff (7-layer stack view, workflow view, matrix view, detail drawer, crowdsource section)
 - Dual package managers: `pnpm` for website, `uv` for Python
 
@@ -50,8 +50,8 @@ Initialized the `ecosystem-mapping` repo from scratch and built out the data fou
 
 ### Documentation
 - `docs/specs/2026-04-27-ecosystem-mapping-design.md` — Architecture spec with 4-tier query framework
-- `docs/styles/currentai.md` — Notebook style guide (Fraunces/Inter/JetBrains Mono, paper/ink palette)
-- `docs/agents.md` — Agent guide for querying OSO data
+- `docs/guides/currentai-notebooks.md` — Notebook + style guide (Fraunces/Inter/JetBrains Mono, paper/ink palette)
+- `docs/analysis-router.md` — Compatibility router to persona skill + guides
 - `docs/plans/2026-04-27-restructure-and-data-inventory.md` — Implementation plan (completed)
 - `models/README.md` — UDM and static model registry
 

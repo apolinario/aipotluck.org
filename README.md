@@ -22,20 +22,27 @@ uv sync
 uv run marimo edit notebooks/data_inventory.py
 ```
 
-Requires an [OSO API key](https://docs.oso.xyz) with access to the `currentai` org.
+Requires an [OSO API key](https://www.oso.xyz) with access to the `currentai` org.
 
 ### Query CLI
 
 ```bash
 uv run scripts/query.py "top repos by stars"
-uv run scripts/query.py "trending"
-uv run scripts/query.py "categories"
 uv run scripts/query.py "gaps"
-uv run scripts/query.py "search vllm"
 uv run scripts/query.py "SELECT repo, stars FROM currentai.goodailist_repos.repos LIMIT 5"
 ```
 
 Run `uv run scripts/query.py` with no arguments to see all available templates.
+
+## Analyst Modes
+
+This repo provides one local analyst persona:
+
+- **`pyoso-analyst`**: use [`pyoso-analyst`](./.claude/skills/pyoso-analyst/SKILL.md) when you have an API key and must keep operations read-only via `pyoso`.
+
+Guides:
+- Querying + transforms: [`docs/guides/currentai-queries.md`](docs/guides/currentai-queries.md)
+- Notebooks + marimo style: [`docs/guides/currentai-notebooks.md`](docs/guides/currentai-notebooks.md)
 
 ## Structure
 
@@ -43,19 +50,26 @@ Run `uv run scripts/query.py` with no arguments to see all available templates.
 app/          Website (Vite + vanilla JS)
 notebooks/    Marimo notebooks for data analysis
 scripts/      CLI tools (notebook export, data publishing)
-data/         Raw external CSVs
-docs/         Specs and methodology
+data/         Raw CSVs
+models/       SQL models deployed to the OSO data warehouse
+docs/         Specs, methodology, session logs (`specs/`, `plans/`, `sessions/`)
 ```
 
-## Data Sources
+## Primary Data Sources
 
 | Source | Description |
 |--------|-------------|
-| [GoodAI List](https://goodailist.com/) | 14.7K curated AI repos with categories and activity metrics |
-| OSS Insights AI | 616 repos across 53 AI collections |
+| [Good AI List](https://goodailist.com/) | Curated AI repos with categories and activity metrics |
+| [OSS Insights](https://ossinsight.io/collections) | Additional repos across AI-tagged collections |
+| [OSO Public Tables](https://www.oso.xyz) | Projects, artifacts, and developer metrics from the OSO data lake |
+| [Hugging Face](https://huggingface.co/) | Model and dataset catalogs |
+| [AI Incident Database](https://incidentdatabase.ai/) | Safety/safeguards incidents |
 | OSAI Gap Map | Qualitative maturity scores across 41 subcategories |
-| OSO Public Tables | Projects, artifacts, and developer metrics from the OSO warehouse |
 
-## License
+## Documentation
 
-CC-BY-4.0
+- Repo/assistant ops (Claude Code guidance, commands, env/MCP): [`CLAUDE.md`](CLAUDE.md)
+- Warehouse querying conventions (Trino SQL, joins, naming/dedupe caveats): [`docs/guides/currentai-queries.md`](docs/guides/currentai-queries.md)
+- Notebook authoring conventions (marimo workflow + style): [`docs/guides/currentai-notebooks.md`](docs/guides/currentai-notebooks.md)
+- Model inventory + refresh flows (UDMs, static/bridge models): [`models/README.md`](models/README.md)
+- Catalog coverage backlog (missing orgs/repos to add): [`docs/catalog-gaps.md`](docs/catalog-gaps.md)

@@ -251,7 +251,7 @@ uv run scripts/export_notebooks.py               # export all notebooks to HTML
 - `notebooks/` — marimo notebooks for analysis (query OSO + local CSVs)
 - `scripts/` — Python CLI tools (notebook export, data publishing)
 - `data/` — raw external CSVs (OSAI gap map, etc.)
-- `docs/` — specs and methodology
+- `docs/` — specs (`specs/`), plans (`plans/`), session logs (`sessions/`), methodology (`analysis-router.md`, `catalog-gaps.md`, `styles/`)
 
 ### Design System
 

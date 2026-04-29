@@ -1,9 +1,52 @@
+# JavaScript / Node (commit uv.lock + lockfiles as usual)
 node_modules/
+.pnpm-store/
+
+# Vite build output & cache
 dist/
+.vite/
+
+# Environment & secrets (never commit keys)
 .env
+.env.*
+!.env.example
+
+# Python
 .venv/
-.env.local
-*.log
-.mcp.json
-.DS_Store
+venv/
 __pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+/coverage.xml
+htmlcov/
+.coverage
+.coverage.*
+
+# Logs & debug
+*.log
+pnpm-debug.log*
+npm-debug.log*
+
+# Local MCP / editor secrets (tokens live here per project docs)
+.mcp.json
+
+# Claude Code — local scheduler/runtime locks (not repo config)
+.claude/*.lock
+
+# OS & editors
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+*~
+
+# marimo (interactive runs may write cache alongside notebooks)
+.marimo/
+__marimo__/

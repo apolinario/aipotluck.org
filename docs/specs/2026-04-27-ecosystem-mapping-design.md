@@ -24,11 +24,11 @@ The market-map-of-logos problem. Repos are not products.
 
 | ID | Query | Status |
 |----|-------|--------|
-| 1.1 | **Dependency graph, whitebox.** Actual code-level dependencies, transitively. | Partial — `ai_repo_packages` gives package-level. OSO `sboms_v0` may have more. |
+| 1.1 | **Dependency graph, whitebox.** Actual code-level dependencies, transitively. | Done — `ai_dependency_graph` UDM: 25.7K edges (6.3K direct + 19.4K transitive depth-2) across 822→603 AI repos. Foundation projects identified. |
 | 1.2 | **Dependency graph, blackbox / spec-level.** For a closed product: inferred functional dependencies. The "Kakashi" approach. | Not started |
-| 1.3 | **Substitutability.** For any node X: viable alternatives, and for which use cases each wins. | Started — `layer_mapping` notebook maps OSAI subcategories → repos, but category-level not functional-equivalence. |
+| 1.3 | **Substitutability.** For any node X: viable alternatives, and for which use cases each wins. | Partial — `layer_mapping` notebook maps OSAI subcategories → repos. `model_repos` links HF models to GitHub repos with `base_model` lineage (6.3K models). |
 | 1.4 | **Interoperability / integration cost.** For any two nodes: do they compose? Glue code required? Quantified where possible. The seam visibility existing maps miss. | Not started |
-| 1.5 | **Off-the-shelf ceiling.** Best-of-breed open components assembled: how close to GPT-5/Claude/Gemini per capability? | Qualitative only — OSAI gap map parity verdicts ("Competitive", "Closed leads", etc.) |
+| 1.5 | **Off-the-shelf ceiling.** Best-of-breed open components assembled: how close to GPT-5/Claude/Gemini per capability? | Partial — `model_benchmarks` has Open LLM Leaderboard v2 scores (4.5K models, 6 benchmarks) with architecture and base_model metadata. Still qualitative for non-LLM capabilities. |
 
 ### Tier 2 — Gap & state-of-play (the diagnostic)
 
@@ -67,6 +67,9 @@ The market-map-of-logos problem. Repos are not products.
 | AI Repo Activity (UDM) | `currentai.ai_repo_activity.ai_repo_activity` | 15,375 repos | Daily | Stars, forks, contributors — single source of truth for notebooks |
 | AI Monthly Devs (UDM) | `currentai.ai_monthly_devs.ai_monthly_devs` | ~24 rows | Daily | Monthly developer counts by category |
 | AI Repo Packages (UDM) | `currentai.ai_repo_packages.ai_repo_packages` | 718K packages | Weekly | Package-level dependencies (Tier 1.1) |
+| AI Dependency Graph (UDM) | `currentai.ai_dependency_graph.ai_dependency_graph` | 25.7K edges | Weekly | Transitive AI→AI deps, depth 1+2 (Tier 1.1) |
+| Model Benchmarks | `currentai.model_benchmarks.model_benchmarks` | 4,576 models | Manual upload | Open LLM Leaderboard v2 (Tier 1.5) |
+| Model Repos | `currentai.model_repos.model_repos` | 6,349 models | Manual upload | HF model → GitHub repo links (Tier 1.3) |
 | OSO Public | `oso.*` | Projects, artifacts, dev metrics, events | Continuous | GitHub events, OpenDevData, funding |
 
 #### Local CSVs (`data/`)
@@ -78,6 +81,8 @@ The market-map-of-logos problem. Repos are not products.
 | Hugging Face | `data/huggingface/top_datasets.csv` | 1K datasets | Dataset catalog |
 | Hugging Face | `data/huggingface/tracked_models.csv` | 973 models | Models linked to tracked repos |
 | Hugging Face | `data/huggingface/tracked_datasets.csv` | 98 datasets | Datasets linked to tracked repos |
+| Hugging Face | `data/huggingface/model_benchmarks.csv` | 4,576 models | Open LLM Leaderboard v2 scores |
+| Hugging Face | `data/huggingface/model_repos.csv` | 6,349 models | HF model → GitHub repo + base_model links |
 | AI Incidents | `data/ai-incidents/incidents.csv` | 1,460 incidents | Safety/safeguards (Tier 2) |
 | GitHub Orgs | `data/github-orgs/orgs.csv` | 7,910 orgs/users | Geography, org metadata (Tier 3.3) |
 | GoodAI Enrichment | `data/goodailist/repos_tags.csv` | 46K tag assignments | Functional tagging |
@@ -92,10 +97,14 @@ The market-map-of-logos problem. Repos are not products.
 - Dollar efficiency model for grant allocation
 
 **Tier 1 — Composition:**
-- Transitive dependency graphs (beyond packages → need SBOMs, import analysis)
+- ~~Transitive dependency graphs~~ → Done: `ai_dependency_graph` UDM (depth-2, 25.7K edges)
+- ~~Model benchmarks~~ → Done: `model_benchmarks` (4.5K models, Open LLM Leaderboard v2)
+- ~~Model → repo links~~ → Done: `model_repos` (6.3K models with base_model + GitHub links)
+- SBOM coverage gap: only 6% of AI repos have SBOM data (PIP especially thin)
 - Functional decomposition of closed products (the "Kakashi" spec-level graph)
 - Substitutability matrix (which repos can replace which, under what constraints)
 - Integration cost data (hours/lines/forks between components)
+- Non-LLM benchmarks (vision, speech, code, embedding — not in Open LLM Leaderboard)
 
 **Tier 2 — Gaps:**
 - Per-repo openness audit (weights open? training data open? methodology open?)
@@ -171,10 +180,11 @@ ecosystem-mapping/
 │   ├── fetch_huggingface.py       # HF models & datasets
 │   └── fetch_incidents.py         # AI Incident Database
 ├── docs/
-│   ├── specs/                     # Design specs
+│   ├── specs/                     # Design specs (YYYY-MM-DD-topic.md)
 │   ├── plans/                     # Implementation plans
-│   ├── styles/                    # Notebook style guides
-│   └── agents.md                  # Agent guide for querying OSO
+│   ├── sessions/                  # Session logs (YYYY-MM-DD-topic.md)
+│   ├── guides/                    # Query + notebook guides
+│   └── analysis-router.md         # Analysis routing and persona guidance
 ├── pyproject.toml
 ├── CLAUDE.md
 └── README.md
@@ -205,7 +215,7 @@ Notebooks are the authoritative source for all computed data. UDMs pre-compute e
 
 ## Notebook Style
 
-All notebooks follow `docs/styles/currentai.md`:
+All notebooks follow `docs/guides/currentai-notebooks.md`:
 - F/C/LAYOUT constants (Fraunces, Inter, JetBrains Mono; paper/ink/signal/healthy/warm palette)
 - Numbered section headers with styled eyebrows
 - Health color encoding (≥70 healthy, 45-69 fragile, <45 gap)
@@ -219,19 +229,27 @@ All notebooks follow `docs/styles/currentai.md`:
 ## What's Next
 
 ### Immediate
-1. Exploratory analysis per tier — determine what we have, what we need, what to supplement
-2. Update hosted notebooks (deploy restyled trends + gaps to oso.xyz)
-3. Build `publish_data.py` to bridge notebooks → website
+1. ~~Exploratory analysis per tier~~ → Done: `tier_data_audit.py` notebook
+2. Build notebooks on the new UDMs — fragility dashboard, investment ranking visualization
+3. Update hosted notebooks (deploy restyled trends + gaps to oso.xyz)
+4. Build `publish_data.py` to bridge notebooks → website
+5. Add missing orgs to catalog (Stability AI, BAAI, CompVis, Black Forest Labs, Coqui) — see `docs/catalog-gaps.md`
 
 ### Medium-term
-4. Tier 1 composition data — SBOMs, functional decomposition, substitutability matrix
-5. Tier 2 structured openness audit — per-repo license/governance analysis
-6. Tier 3 funding + fragility — integrate OSO funding data, compute truck factor
-7. Geographic filtering on the website (any country, not just France)
-8. Acquisition history dataset
+6. ~~Tier 1 dependency graph~~ → Done: `ai_dependency_graph` UDM (25.7K edges)
+7. ~~Tier 1 model benchmarks~~ → Done: `model_benchmarks` + `foundation_model_repos` (72 families)
+8. ~~Tier 3 fragility~~ → Done: `ai_fragility_scores` UDM
+9. ~~Tier 0 investment ranking~~ → Done (v1): `ai_investment_ranking` UDM
+10. Refine subcategory mapping (OSAI→GoodAI) — current mapping is approximate
+11. Non-LLM benchmarks (vision, embedding, speech, code) — Open LLM Leaderboard only covers text
+12. Tier 2 structured openness audit — per-repo license/governance analysis
+13. Geographic filtering on the website (any country, not just France)
+14. Acquisition history dataset
 
 ### Long-term
-9. Tier 0 roadmap engine — product spec decomposition, investment ranking, shoppable lists
-10. Crowdsource section connected to real backend
-11. Builder pathway curation (Tier 4)
-12. Continuously-updated live map replacing the static prototype
+15. Tier 0 product spec decomposition ("what does a Claude-equivalent require?")
+16. Substitutability matrix (functional-equivalence, not just category membership)
+17. Integration cost data (API surface analysis or developer surveys)
+18. Crowdsource section connected to real backend
+19. Builder pathway curation (Tier 4)
+20. Continuously-updated live map replacing the static prototype

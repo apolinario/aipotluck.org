@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Open Source AI Market Map for Current AI — an interactive visualization of the open-source AI ecosystem across 7 stack layers, with gap analysis (red spots) and a crowdsourced roadmap. Built for Open Source Observer (OSO) under `oso-external/`.
+Open Source AI Market Map for Current AI — an interactive visualization of the open-source AI ecosystem across key stack layers, with gap analysis (red spots) and a crowdsourced roadmap.
 
 Three phases:
 1. **Interactive visualization** — layered stack map with drill-down to projects
@@ -44,7 +44,7 @@ uv run scripts/export_notebooks.py               # export all notebooks to HTML
 - `notebooks/` — marimo notebooks for analysis (query OSO + local CSVs)
 - `scripts/` — Python CLI tools (notebook export, data publishing)
 - `data/` — raw external CSVs (OSAI gap map, etc.)
-- `docs/` — specs and methodology
+- `docs/` — specs (`specs/`), plans (`plans/`), session logs (`sessions/`), methodology (`analysis-router.md`, `catalog-gaps.md`, `guides/`)
 
 ### Design System
 
@@ -52,13 +52,32 @@ Palette uses CSS custom properties: `--paper` (warm off-white), `--ink` (deep br
 
 ### Data Sources
 
-Notebooks query from multiple sources:
-- `currentai.goodailist_repos.repos` — 14.7K AI repos (GoodAI List, OSO static model)
-- `currentai.ossinsights_ai_collections.ossinsights_ai_collections` — 616 repos, 53 collections
-- `data/*.csv` — OSAI gap map qualitative scores (41 subcategories × 10 dimensions)
-- `oso.*` — public tables (projects, artifacts, developer metrics)
+15 queryable tables in the `currentai` org. See `models/README.md` for the complete inventory (UDMs + static/bridge models), including schedules and each model's CSV/SQL source.
+
+- **UDMs** (`currentai.ai_*`): cron-refreshed, SQL-defined models that power joins and derived metrics.
+- **Static/bridge models** (`currentai.*` CSV uploads): GoodAI list repos, HF model↔repo links, OSAI gap scores, and OSAI↔GoodAI mapping bridges.
+- **Public** `oso.*` tables: project registry + event/activity tables (query semantics and join recipes in `docs/guides/currentai-queries.md`).
+
+**Also:** local `data/*.csv` files. See `docs/catalog-gaps.md` for known missing orgs/repos.
 
 ## Environment
 
 - `OSO_API_KEY` loaded automatically via direnv (per-project `.envrc`)
 - OSO MCP connects via SSE to localhost:8000 with Bearer token in `.mcp.json`
+
+## Persona routing
+
+This repo defines one local analysis persona skill:
+
+### pyoso persona (read-only)
+
+Use `pyoso-analyst` when you have an API key but **no MCP tooling access** and you must keep operations read-only.
+
+Skill: `./.claude/skills/pyoso-analyst/SKILL.md`
+
+### Common references
+
+- Querying + transforms: `docs/guides/currentai-queries.md`
+- Notebook workflows + style guide links: `docs/guides/currentai-notebooks.md`
+
+If a request would require write access or MCP operations, explain what’s missing and escalate to OSO internal workflows.
