@@ -82,7 +82,7 @@ Persistent left sidebar (collapsible on mobile). Filter controls:
 - **Subcategory**: populated dynamically based on selected layer
 - **Health bucket**: healthy / fragile / gap checkboxes
 - **Country**: searchable dropdown (values from `repos_summary.country`)
-- **Language**: searchable dropdown (values from `repos_summary.language`)
+- **License**: searchable dropdown (values from `entities.repos.license`)
 - **Activity level**: slider or buckets (high/medium/low based on `commits_90d`)
 - **Has packages**: toggle
 - **Has models**: toggle
@@ -101,7 +101,7 @@ The primary data surface. Sortable columns, virtualized for 15K rows.
 | Stars | `repos_summary.stars` | Formatted (e.g. "67k") |
 | 90d Activity | `sparklines` | Mini sparkline (13 weekly data points) |
 | Contributors | `repos_summary.total_contributors` | With FT/PT breakdown on hover |
-| Language | `repos_summary.language` | Primary language |
+| License | `repos_summary.license` | SPDX identifier |
 | Country | `repos_summary.country` | Country of origin |
 | Packages | joined from `packages` | Count badge, expandable |
 | Models | joined from `models` | Count badge, expandable |
@@ -286,7 +286,7 @@ Click opens the drawer. If the repo belongs to a multi-repo project, the drawer 
 
 ### URL State
 
-Filter state synced to URL query params: `?layer=infrastructure&country=US&q=pytorch`. Enables sharing filtered views via URL. Drawer state not in URL (ephemeral).
+Filter state synced to URL query params: `?layer=infrastructure&country=US&license=Apache-2.0&q=pytorch`. Enables sharing filtered views via URL. Drawer state not in URL (ephemeral).
 
 ---
 

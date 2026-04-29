@@ -407,16 +407,16 @@ Create `app/src/data/explorer-data.sample.json` — a minimal dataset with 2 lay
     }
   ],
   "repos": [
-    { "repo": "pytorch/pytorch", "category": "Machine Learning", "subcategory": "ML Frameworks", "stars": 82000, "star_7d": 320, "contributors": 4200, "language": "Python", "country": "US", "description": "Tensors and dynamic neural networks in Python", "stars_90d": 2400, "forks_90d": 180, "commits_90d": 890, "total_contributors": 4200, "full_time": 120, "part_time": 340 },
-    { "repo": "google/jax", "category": "Machine Learning", "subcategory": "ML Frameworks", "stars": 30000, "star_7d": 110, "contributors": 890, "language": "Python", "country": "US", "description": "Composable transformations of Python+NumPy programs", "stars_90d": 980, "forks_90d": 45, "commits_90d": 420, "total_contributors": 890, "full_time": 45, "part_time": 120 },
-    { "repo": "huggingface/transformers", "category": "Machine Learning", "subcategory": "Transformers", "stars": 134000, "star_7d": 580, "contributors": 2800, "language": "Python", "country": "France", "description": "State-of-the-art ML for PyTorch, TensorFlow, and JAX", "stars_90d": 4200, "forks_90d": 310, "commits_90d": 1200, "total_contributors": 2800, "full_time": 85, "part_time": 280 },
-    { "repo": "vllm-project/vllm", "category": "Machine Learning", "subcategory": "Inference", "stars": 30000, "star_7d": 250, "contributors": 620, "language": "Python", "country": "US", "description": "High-throughput LLM serving engine", "stars_90d": 3100, "forks_90d": 120, "commits_90d": 560, "total_contributors": 620, "full_time": 28, "part_time": 95 },
-    { "repo": "ggerganov/llama.cpp", "category": "Machine Learning", "subcategory": "Inference", "stars": 67000, "star_7d": 180, "contributors": 780, "language": "C++", "country": "Bulgaria", "description": "LLM inference in C/C++", "stars_90d": 1800, "forks_90d": 200, "commits_90d": 340, "total_contributors": 780, "full_time": 8, "part_time": 145 },
-    { "repo": "ollama/ollama", "category": "Machine Learning", "subcategory": "Inference", "stars": 92000, "star_7d": 420, "contributors": 450, "language": "Go", "country": "US", "description": "Get up and running with large language models", "stars_90d": 5800, "forks_90d": 280, "commits_90d": 210, "total_contributors": 450, "full_time": 12, "part_time": 85 },
-    { "repo": "microsoft/deepspeed", "category": "Machine Learning", "subcategory": "Training", "stars": 35000, "star_7d": 90, "contributors": 520, "language": "Python", "country": "US", "description": "Deep learning optimization library", "stars_90d": 800, "forks_90d": 60, "commits_90d": 180, "total_contributors": 520, "full_time": 22, "part_time": 88 },
-    { "repo": "huggingface/peft", "category": "Machine Learning", "subcategory": "Fine-tuning", "stars": 16000, "star_7d": 45, "contributors": 210, "language": "Python", "country": "France", "description": "Parameter-Efficient Fine-Tuning", "stars_90d": 420, "forks_90d": 35, "commits_90d": 95, "total_contributors": 210, "full_time": 8, "part_time": 42 },
-    { "repo": "ROCm/ROCm", "category": "Hardware", "subcategory": "GPU Runtimes", "stars": 5000, "star_7d": 12, "contributors": 180, "language": "C++", "country": "US", "description": "AMD ROCm platform", "stars_90d": 120, "forks_90d": 15, "commits_90d": 280, "total_contributors": 180, "full_time": 35, "part_time": 22 },
-    { "repo": "openxla/xla", "category": "Hardware", "subcategory": "Compilers", "stars": 3000, "star_7d": 8, "contributors": 140, "language": "C++", "country": "US", "description": "ML compiler framework", "stars_90d": 80, "forks_90d": 10, "commits_90d": 190, "total_contributors": 140, "full_time": 28, "part_time": 18 }
+    { "repo": "pytorch/pytorch", "category": "Machine Learning", "subcategory": "ML Frameworks", "stars": 82000, "star_7d": 320, "contributors": 4200, "language": "Python", "license": "BSD-3-Clause", "country": "US", "description": "Tensors and dynamic neural networks in Python", "stars_90d": 2400, "forks_90d": 180, "commits_90d": 890, "total_contributors": 4200, "full_time": 120, "part_time": 340 },
+    { "repo": "google/jax", "category": "Machine Learning", "subcategory": "ML Frameworks", "stars": 30000, "star_7d": 110, "contributors": 890, "language": "Python", "license": "Apache-2.0", "country": "US", "description": "Composable transformations of Python+NumPy programs", "stars_90d": 980, "forks_90d": 45, "commits_90d": 420, "total_contributors": 890, "full_time": 45, "part_time": 120 },
+    { "repo": "huggingface/transformers", "category": "Machine Learning", "subcategory": "Transformers", "stars": 134000, "star_7d": 580, "contributors": 2800, "language": "Python", "license": "Apache-2.0", "country": "France", "description": "State-of-the-art ML for PyTorch, TensorFlow, and JAX", "stars_90d": 4200, "forks_90d": 310, "commits_90d": 1200, "total_contributors": 2800, "full_time": 85, "part_time": 280 },
+    { "repo": "vllm-project/vllm", "category": "Machine Learning", "subcategory": "Inference", "stars": 30000, "star_7d": 250, "contributors": 620, "language": "Python", "license": "Apache-2.0", "country": "US", "description": "High-throughput LLM serving engine", "stars_90d": 3100, "forks_90d": 120, "commits_90d": 560, "total_contributors": 620, "full_time": 28, "part_time": 95 },
+    { "repo": "ggerganov/llama.cpp", "category": "Machine Learning", "subcategory": "Inference", "stars": 67000, "star_7d": 180, "contributors": 780, "language": "C++", "license": "MIT", "country": "Bulgaria", "description": "LLM inference in C/C++", "stars_90d": 1800, "forks_90d": 200, "commits_90d": 340, "total_contributors": 780, "full_time": 8, "part_time": 145 },
+    { "repo": "ollama/ollama", "category": "Machine Learning", "subcategory": "Inference", "stars": 92000, "star_7d": 420, "contributors": 450, "language": "Go", "license": "MIT", "country": "US", "description": "Get up and running with large language models", "stars_90d": 5800, "forks_90d": 280, "commits_90d": 210, "total_contributors": 450, "full_time": 12, "part_time": 85 },
+    { "repo": "microsoft/deepspeed", "category": "Machine Learning", "subcategory": "Training", "stars": 35000, "star_7d": 90, "contributors": 520, "language": "Python", "license": "Apache-2.0", "country": "US", "description": "Deep learning optimization library", "stars_90d": 800, "forks_90d": 60, "commits_90d": 180, "total_contributors": 520, "full_time": 22, "part_time": 88 },
+    { "repo": "huggingface/peft", "category": "Machine Learning", "subcategory": "Fine-tuning", "stars": 16000, "star_7d": 45, "contributors": 210, "language": "Python", "license": "Apache-2.0", "country": "France", "description": "Parameter-Efficient Fine-Tuning", "stars_90d": 420, "forks_90d": 35, "commits_90d": 95, "total_contributors": 210, "full_time": 8, "part_time": 42 },
+    { "repo": "ROCm/ROCm", "category": "Hardware", "subcategory": "GPU Runtimes", "stars": 5000, "star_7d": 12, "contributors": 180, "language": "C++", "license": "MIT", "country": "US", "description": "AMD ROCm platform", "stars_90d": 120, "forks_90d": 15, "commits_90d": 280, "total_contributors": 180, "full_time": 35, "part_time": 22 },
+    { "repo": "openxla/xla", "category": "Hardware", "subcategory": "Compilers", "stars": 3000, "star_7d": 8, "contributors": 140, "language": "C++", "license": "Apache-2.0", "country": "US", "description": "ML compiler framework", "stars_90d": 80, "forks_90d": 10, "commits_90d": 190, "total_contributors": 140, "full_time": 28, "part_time": 18 }
   ],
   "projects": [
     { "project_slug": "pytorch", "display_name": "PyTorch", "total_stars": 82000, "stars_28d": 1200, "contributors_28d": 320, "full_time_28d": 120, "repo_count": 12, "package_count": 4, "model_count": 0, "direct_dependents": 1800, "total_dependents": 4200, "max_fragility_score": 0.12, "best_benchmark_avg": null, "primary_gap_score": 4.2, "investment_priority": 35.2 },
@@ -501,6 +501,7 @@ export function buildSearchIndex(repos, packages, models) {
       repo.subcategory || '',
       repo.country || '',
       repo.language || '',
+      repo.license || '',
       ...(pkgByRepo[repo.repo] || []),
       ...(modelByRepo[repo.repo] || []),
     ];
@@ -859,7 +860,7 @@ export function useFilters(data, indexes) {
     subcategory: searchParams.get('subcategory') || null,
     health: searchParams.getAll('health'),
     country: searchParams.get('country') || null,
-    language: searchParams.get('language') || null,
+    license: searchParams.get('license') || null,
     activity: searchParams.get('activity') || null,
     hasPackages: searchParams.get('hasPackages') === 'true',
     hasModels: searchParams.get('hasModels') === 'true',
@@ -891,7 +892,7 @@ export function useFilters(data, indexes) {
     if (filters.subcategory) n++;
     if (filters.health.length) n++;
     if (filters.country) n++;
-    if (filters.language) n++;
+    if (filters.license) n++;
     if (filters.activity) n++;
     if (filters.hasPackages) n++;
     if (filters.hasModels) n++;
@@ -950,8 +951,8 @@ export function useFilters(data, indexes) {
     if (filters.country) {
       repos = repos.filter((r) => r.country === filters.country);
     }
-    if (filters.language) {
-      repos = repos.filter((r) => r.language === filters.language);
+    if (filters.license) {
+      repos = repos.filter((r) => r.license === filters.license);
     }
 
     if (filters.activity === 'high') {
@@ -974,11 +975,11 @@ export function useFilters(data, indexes) {
 
   const filterOptions = useMemo(() => {
     const countries = [...new Set(data.repos.map((r) => r.country).filter(Boolean))].sort();
-    const languages = [...new Set(data.repos.map((r) => r.language).filter(Boolean))].sort();
+    const licenses = [...new Set(data.repos.map((r) => r.license).filter(Boolean))].sort();
     const subcategories = filters.layer
       ? data.layers.find((l) => l.layer === filters.layer)?.subcategories.map((s) => s.subcategory) || []
       : [];
-    return { countries, languages, subcategories };
+    return { countries, licenses, subcategories };
   }, [data, filters.layer]);
 
   return { filters, setFilter, clearFilters, activeCount, filteredRepos, filterOptions };
@@ -1273,14 +1274,14 @@ export function FilterSidebar({ filters, setFilter, clearFilters, activeCount, f
         </select>
       </FilterGroup>
 
-      <FilterGroup label="Language">
+      <FilterGroup label="License">
         <select
           style={selectStyle}
-          value={filters.language || ''}
-          onChange={(e) => setFilter('language', e.target.value || null)}
+          value={filters.license || ''}
+          onChange={(e) => setFilter('license', e.target.value || null)}
         >
-          <option value="">All languages</option>
-          {filterOptions.languages.map((l) => (
+          <option value="">All licenses</option>
+          {filterOptions.licenses.map((l) => (
             <option key={l} value={l}>{l}</option>
           ))}
         </select>
@@ -1368,7 +1369,7 @@ export function RepoRow({ repo, sparkline, packageCount, modelCount, healthScore
       onClick={onClick}
       style={{
         display: 'grid',
-        gridTemplateColumns: '2.5fr 1fr 1fr 70px 90px 70px 70px 70px 50px 50px 36px',
+        gridTemplateColumns: '2.5fr 1fr 1fr 70px 90px 70px 80px 70px 50px 50px 36px',
         alignItems: 'center',
         height: 40,
         borderBottom: '1px solid rgba(255,255,255,.04)',
@@ -1389,7 +1390,7 @@ export function RepoRow({ repo, sparkline, packageCount, modelCount, healthScore
         <Sparkline data={sparkline?.stars} width={80} height={20} color="#1b9e8a" />
       </div>
       <div style={monoStyle}>{formatCount(repo.total_contributors)}</div>
-      <div style={cellStyle}>{repo.language || '—'}</div>
+      <div style={monoStyle}>{repo.license || '—'}</div>
       <div style={cellStyle}>{repo.country || '—'}</div>
       <div style={monoStyle}>{packageCount > 0 ? packageCount : '—'}</div>
       <div style={monoStyle}>{modelCount > 0 ? modelCount : '—'}</div>
@@ -1417,7 +1418,7 @@ const COLUMNS = [
   { key: 'stars', label: 'Stars', sortable: true },
   { key: 'sparkline', label: '90d Activity', sortable: false },
   { key: 'total_contributors', label: 'Contributors', sortable: true },
-  { key: 'language', label: 'Language', sortable: true },
+  { key: 'license', label: 'License', sortable: true },
   { key: 'country', label: 'Country', sortable: true },
   { key: 'packages', label: 'Pkgs', sortable: true },
   { key: 'models', label: 'Models', sortable: true },
@@ -1426,7 +1427,7 @@ const COLUMNS = [
 
 const headerStyle = {
   display: 'grid',
-  gridTemplateColumns: '2.5fr 1fr 1fr 70px 90px 70px 70px 70px 50px 50px 36px',
+  gridTemplateColumns: '2.5fr 1fr 1fr 70px 90px 70px 80px 70px 50px 50px 36px',
   borderBottom: '1px solid rgba(255,255,255,.08)',
   position: 'sticky',
   top: 0,
@@ -2508,8 +2509,12 @@ def query_projects(client):
 
 
 def query_repos(client):
-    print("  Querying repos (repos_summary)...")
-    df = client.to_pandas("SELECT * FROM currentai.scores.repos_summary")
+    print("  Querying repos (repos_summary + license from entities.repos)...")
+    df = client.to_pandas("""
+        SELECT rs.*, er.license
+        FROM currentai.scores.repos_summary rs
+        LEFT JOIN currentai.entities.repos er ON rs.repo = er.repo
+    """)
     repos = []
     for _, row in df.iterrows():
         repos.append({
@@ -2520,6 +2525,7 @@ def query_repos(client):
             "star_7d": int(row.get("star_7d") or 0),
             "contributors": int(row.get("contributors") or 0),
             "language": row.get("language"),
+            "license": row.get("license") or None,
             "country": row.get("country"),
             "description": row.get("description"),
             "stars_90d": int(row.get("stars_90d") or 0),
