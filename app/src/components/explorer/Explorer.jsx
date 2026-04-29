@@ -11,10 +11,21 @@ import { DetailDrawer } from './DetailDrawer.jsx';
 
 export function Explorer() {
   const explorerData = useExplorerData();
-  const { data, warnings, bundleError, packagesByRepo, packagesByProject, modelsByRepo, modelsByProject, taxonomyByProject, projectBySlug } = explorerData;
+  const { data, warnings, bundleError, loading, packagesByRepo, packagesByProject, modelsByRepo, modelsByProject, taxonomyByProject, projectBySlug } = explorerData;
   const { filters, setFilter, clearFilters, activeCount, filteredRepos, filterOptions } = useFilters(data, explorerData);
   const [drawerRepo, setDrawerRepo] = useState(null);
   const [mode, setMode] = useState('dawn');
+
+  if (loading) {
+    return (
+      <div style={{ width: '100vw', height: '100vh', background: '#020508', color: '#fff', display: 'grid', placeItems: 'center', fontFamily: "'DM Sans', sans-serif" }}>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, marginBottom: 12 }}>Loading ecosystem data...</h2>
+          <p style={{ color: 'rgba(255,255,255,.4)', fontSize: 13 }}>{data.repos.length} repos loaded</p>
+        </div>
+      </div>
+    );
+  }
 
   if (bundleError) {
     return (

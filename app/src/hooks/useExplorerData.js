@@ -1,22 +1,27 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { buildSearchIndex } from '../utils/search.js';
 import sampleData from '../data/explorer-data.sample.json';
 
 const REQUIRED_KEYS = ['generated', 'layers', 'repos', 'projects', 'packages', 'models', 'sparklines', 'taxonomy'];
 
-function loadData() {
-  try {
-    const modules = import.meta.glob('../data/explorer-data.json', { eager: true });
-    const key = Object.keys(modules)[0];
-    if (key) return modules[key].default || modules[key];
-  } catch { /* fall through */ }
-  return sampleData;
-}
-
-const _data = loadData();
-
 export function useExplorerData() {
-  const data = _data;
+  const [data, setData] = useState(sampleData);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/explorer-data.json')
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((json) => {
+        setData(json);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const bundleError = useMemo(() => {
     const missing = REQUIRED_KEYS.filter((k) => !(k in data));
@@ -89,5 +94,5 @@ export function useExplorerData() {
     return w;
   }, [data]);
 
-  return { data, ...indexes, warnings, bundleError };
+  return { data, ...indexes, warnings, bundleError, loading };
 }
