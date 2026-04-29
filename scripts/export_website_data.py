@@ -196,28 +196,48 @@ def query_models(client):
 
 
 def query_sparklines(client):
-    print("  Querying sparklines (weekly metrics, 91 days)...")
-    df = client.to_pandas("""
+    print("  Querying sparklines — stars+forks (weekly, 91 days)...")
+    events_df = client.to_pandas("""
         SELECT
           repo,
           DATE_TRUNC('week', day) AS week,
-          SUM(CASE WHEN metric = 'stars' THEN value ELSE 0 END) AS stars,
-          SUM(CASE WHEN metric = 'forks' THEN value ELSE 0 END) AS forks,
-          MAX_BY(CASE WHEN metric = 'contributors' THEN value ELSE 0 END, day) AS contributors
+          metric,
+          SUM(value) AS total
         FROM currentai.metrics.daily
         WHERE day >= CURRENT_DATE - INTERVAL '91' DAY
-          AND metric IN ('stars', 'forks', 'contributors')
+          AND metric IN ('stars', 'forks')
+        GROUP BY repo, DATE_TRUNC('week', day), metric
+        ORDER BY repo, week
+    """)
+
+    print("  Querying sparklines — contributors (weekly, 91 days)...")
+    contrib_df = client.to_pandas("""
+        SELECT
+          repo,
+          DATE_TRUNC('week', day) AS week,
+          MAX(value) AS total
+        FROM currentai.metrics.daily
+        WHERE day >= CURRENT_DATE - INTERVAL '91' DAY
+          AND metric = 'contributors'
         GROUP BY repo, DATE_TRUNC('week', day)
         ORDER BY repo, week
     """)
+
     sparklines = {}
-    for _, row in df.iterrows():
+    for _, row in events_df.iterrows():
         repo = row["repo"]
         if repo not in sparklines:
             sparklines[repo] = {"stars": [], "forks": [], "contributors": []}
-        sparklines[repo]["stars"].append(_int(row.get("stars")))
-        sparklines[repo]["forks"].append(_int(row.get("forks")))
-        sparklines[repo]["contributors"].append(_int(row.get("contributors")))
+        metric = row["metric"]
+        if metric in sparklines[repo]:
+            sparklines[repo][metric].append(_int(row.get("total")))
+
+    for _, row in contrib_df.iterrows():
+        repo = row["repo"]
+        if repo not in sparklines:
+            sparklines[repo] = {"stars": [], "forks": [], "contributors": []}
+        sparklines[repo]["contributors"].append(_int(row.get("total")))
+
     return sparklines
 
 
