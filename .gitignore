@@ -36,8 +36,12 @@ npm-debug.log*
 # Local MCP / editor secrets (tokens live here per project docs)
 .mcp.json
 
-# Claude Code — local scheduler/runtime locks (not repo config)
+# Claude Code — local config and runtime locks
 .claude/*.lock
+.claude/settings.local.json
+
+# Playwright MCP
+.playwright-mcp/
 
 # OS & editors
 .DS_Store

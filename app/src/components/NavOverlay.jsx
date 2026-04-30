@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { PALETTES } from '../data/palettes.js';
 
 const navItems = [
@@ -74,30 +75,37 @@ export function NavOverlay({ mode, setMode, section, setSection }) {
             {item.label}
           </button>
         ))}
-        <button
-          type="button"
+        <Link
+          to="/app"
           style={{
             marginLeft: 10,
-            background: '#E8796A',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
             fontFamily: "'DM Sans', sans-serif",
             fontSize: 13,
             fontWeight: 500,
-            padding: '7px 18px',
-            cursor: 'pointer',
-            transition: 'background 180ms ease',
+            color: '#fff',
+            textDecoration: 'none',
+            background: 'rgba(255,255,255,.07)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,.15)',
+            borderRadius: 6,
+            padding: '7px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'all 200ms ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#EF9484';
+            e.currentTarget.style.background = 'rgba(255,255,255,.14)';
+            e.currentTarget.style.borderColor = 'rgba(255,255,255,.3)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#E8796A';
+            e.currentTarget.style.background = 'rgba(255,255,255,.07)';
+            e.currentTarget.style.borderColor = 'rgba(255,255,255,.15)';
           }}
         >
-          Get in touch
-        </button>
+          Explore App
+          <span style={{ opacity: 0.7 }}>→</span>
+        </Link>
       </nav>
     </>
   );

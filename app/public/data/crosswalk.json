@@ -1,0 +1,906 @@
+[
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Deploy & Serve",
+    "category_id": "infrastructure.cloud_compute",
+    "notes": "Cloud serving and deployment infra",
+    "is_primary": true,
+    "repo_count": 220
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Inference service optimization",
+    "category_id": "infrastructure.compilers",
+    "notes": "Model optimization, TensorRT, ONNX Runtime",
+    "is_primary": true,
+    "repo_count": 195
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Deep Learning Frameworks",
+    "category_id": "infrastructure.ml_frameworks",
+    "notes": "PyTorch, JAX, TensorFlow",
+    "is_primary": true,
+    "repo_count": 0
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Kernels",
+    "category_id": "infrastructure.compilers",
+    "notes": "Triton, kernel-level optimizations",
+    "is_primary": true,
+    "repo_count": 86
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Model optimization",
+    "category_id": "infrastructure.compilers",
+    "notes": "Quantization and optimization tools at infra level",
+    "is_primary": true,
+    "repo_count": 141
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Orchestration",
+    "category_id": "infrastructure.cloud_compute",
+    "notes": "Cluster orchestration, Kubernetes ML operators",
+    "is_primary": true,
+    "repo_count": 136
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Gateway",
+    "category_id": "product_ux.deployment",
+    "notes": "API gateways, load balancing for model serving",
+    "is_primary": true,
+    "repo_count": 135
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Observability",
+    "category_id": "product_ux.telemetry_observability",
+    "notes": "Infrastructure-level monitoring",
+    "is_primary": true,
+    "repo_count": 107
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Data systems",
+    "category_id": "infrastructure.storage",
+    "notes": "Vector DBs, data systems for ML",
+    "is_primary": true,
+    "repo_count": 85
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Model Hub",
+    "category_id": "infrastructure.storage",
+    "notes": "Model registries and hubs",
+    "is_primary": true,
+    "repo_count": 32
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Make world agent-ready",
+    "category_id": "product_ux.orchestration_agents",
+    "notes": "MCP, agent infrastructure",
+    "is_primary": true,
+    "repo_count": 33
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Index & Search",
+    "category_id": "infrastructure.storage",
+    "notes": "Search and retrieval for ML data",
+    "is_primary": true,
+    "repo_count": 27
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Toolings",
+    "category_id": "infrastructure.ml_frameworks",
+    "notes": "General ML infrastructure tooling",
+    "is_primary": true,
+    "repo_count": 19
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Protocols",
+    "category_id": "infrastructure.communication_libs",
+    "notes": "Communication protocols",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Give agent knowledge",
+    "category_id": "product_ux.orchestration_agents",
+    "notes": "RAG infrastructure",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": "Other",
+    "category_id": "infrastructure.ml_frameworks",
+    "notes": "Catch-all infra",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Infrastructure",
+    "eco_subcategory": null,
+    "category_id": "infrastructure.ml_frameworks",
+    "notes": "Unclassified infra",
+    "is_primary": true,
+    "repo_count": 4
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Architecture",
+    "category_id": "model_code.model_architecture",
+    "notes": "Model architecture definitions",
+    "is_primary": true,
+    "repo_count": 1485
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Deep Learning Frameworks",
+    "category_id": "infrastructure.ml_frameworks",
+    "notes": "Framework code that lives in Model Development",
+    "is_primary": true,
+    "repo_count": 367
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Classical ML",
+    "category_id": "model_datasets.data_preprocessing",
+    "notes": "Traditional ML, data processing pipelines",
+    "is_primary": true,
+    "repo_count": 410
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Dataset engineering",
+    "category_id": "model_datasets.data_preprocessing",
+    "notes": "Data engineering and curation tools",
+    "is_primary": true,
+    "repo_count": 401
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Domain-specific training",
+    "category_id": "model_code.finetuning_code",
+    "notes": "Domain-specific fine-tuning",
+    "is_primary": true,
+    "repo_count": 341
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Fine-tuning",
+    "category_id": "model_code.finetuning_code",
+    "notes": "PEFT, LoRA, fine-tuning tools",
+    "is_primary": true,
+    "repo_count": 266
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Environments",
+    "category_id": "model_code.evaluation_code",
+    "notes": "Training environments and eval setups",
+    "is_primary": true,
+    "repo_count": 275
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Reinforcement Learning",
+    "category_id": "model_code.training_code",
+    "notes": "RL training code",
+    "is_primary": true,
+    "repo_count": 183
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Training toolkits",
+    "category_id": "model_code.training_code",
+    "notes": "End-to-end training frameworks",
+    "is_primary": true,
+    "repo_count": 151
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "LLM training",
+    "category_id": "model_code.training_code",
+    "notes": "LLM-specific training infrastructure",
+    "is_primary": true,
+    "repo_count": 61
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Interpretability",
+    "category_id": "safeguards.auditing_reporting",
+    "notes": "Model interpretability and explainability",
+    "is_primary": true,
+    "repo_count": 112
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Physical AI",
+    "category_id": "model_code.model_architecture",
+    "notes": "Robotics, embodied AI architectures",
+    "is_primary": true,
+    "repo_count": 13
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Toolings",
+    "category_id": "model_code.supporting_libraries",
+    "notes": "Dev tooling for model development",
+    "is_primary": true,
+    "repo_count": 8
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Object detection",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Vision detection models",
+    "is_primary": true,
+    "repo_count": 4
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Model optimization",
+    "category_id": "model_weights.compressed_weights",
+    "notes": "Quantization, distillation at model level",
+    "is_primary": true,
+    "repo_count": 4
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Audio/Speech models",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Audio/speech model development",
+    "is_primary": true,
+    "repo_count": 2
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Vision models",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Vision model development code",
+    "is_primary": true,
+    "repo_count": 5
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Test & guard",
+    "category_id": "model_code.evaluation_code",
+    "notes": "Testing and guarding in model dev",
+    "is_primary": true,
+    "repo_count": 2
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Access models",
+    "category_id": "model_code.inference_code",
+    "notes": "Model access code",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Dataset collections",
+    "category_id": "model_datasets.pretraining_data",
+    "notes": "Dataset curation",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": "Other",
+    "category_id": "model_code.supporting_libraries",
+    "notes": "Catch-all model dev",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Model Development",
+    "eco_subcategory": null,
+    "category_id": "model_code.supporting_libraries",
+    "notes": "Unclassified model dev",
+    "is_primary": true,
+    "repo_count": 6
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Give agent tools",
+    "category_id": "model_code.supporting_libraries",
+    "notes": "Tool-use libraries, function calling",
+    "is_primary": true,
+    "repo_count": 787
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Give agent knowledge",
+    "category_id": "product_ux.orchestration_agents",
+    "notes": "RAG, knowledge retrieval for agents",
+    "is_primary": true,
+    "repo_count": 401
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Test & guard",
+    "category_id": "model_code.evaluation_code",
+    "notes": "Testing and guardrails",
+    "is_primary": true,
+    "repo_count": 271
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Prompt & Scaffold",
+    "category_id": "product_ux.system_prompt",
+    "notes": "Prompt engineering, scaffolding",
+    "is_primary": true,
+    "repo_count": 233
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Build agent workflow (SDK)",
+    "category_id": "product_ux.orchestration_agents",
+    "notes": "Agent SDK frameworks",
+    "is_primary": true,
+    "repo_count": 210
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Build agent workflow (visual)",
+    "category_id": "product_ux.orchestration_agents",
+    "notes": "Visual agent builders (Flowise, etc)",
+    "is_primary": true,
+    "repo_count": 124
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Make agent see hear talk",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Multimodal agent capabilities",
+    "is_primary": true,
+    "repo_count": 195
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Access models",
+    "category_id": "model_code.inference_code",
+    "notes": "Model access, API clients",
+    "is_primary": true,
+    "repo_count": 167
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Bring agent to users",
+    "category_id": "product_ux.deployment",
+    "notes": "Agent deployment and distribution",
+    "is_primary": true,
+    "repo_count": 121
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Build agent UI",
+    "category_id": "product_ux.ui_api",
+    "notes": "Agent UI frameworks",
+    "is_primary": true,
+    "repo_count": 106
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Protocols",
+    "category_id": "infrastructure.communication_libs",
+    "notes": "Agent protocols (MCP, A2A)",
+    "is_primary": true,
+    "repo_count": 14
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Orchestration",
+    "category_id": "product_ux.orchestration_agents",
+    "notes": "Agent orchestration",
+    "is_primary": true,
+    "repo_count": 2
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Gateway",
+    "category_id": "product_ux.deployment",
+    "notes": "API gateways",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Coding",
+    "category_id": "product_ux.ui_api",
+    "notes": "AI coding tools",
+    "is_primary": true,
+    "repo_count": 3
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Dataset engineering",
+    "category_id": "model_datasets.data_preprocessing",
+    "notes": "Data engineering in AI eng context",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Physical AI",
+    "category_id": "model_code.model_architecture",
+    "notes": "Robotics/embodied AI engineering",
+    "is_primary": true,
+    "repo_count": 2
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Prompt collections",
+    "category_id": "product_ux.system_prompt",
+    "notes": "Prompt libraries",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Wrappers",
+    "category_id": "product_ux.ui_api",
+    "notes": "API wrapper libraries",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "AI Engineering",
+    "eco_subcategory": "Other",
+    "category_id": "model_code.supporting_libraries",
+    "notes": "Catch-all AI engineering",
+    "is_primary": true,
+    "repo_count": 3
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Foundation models",
+    "category_id": "model_weights.base_pretrained",
+    "notes": "Base foundation model weights",
+    "is_primary": true,
+    "repo_count": 211
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Vision models",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Vision models",
+    "is_primary": true,
+    "repo_count": 764
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Domain-specific models",
+    "category_id": "model_weights.domain_weights",
+    "notes": "Domain-adapted models",
+    "is_primary": true,
+    "repo_count": 180
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Audio/Speech models",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Audio and speech models",
+    "is_primary": true,
+    "repo_count": 159
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Language-specific models",
+    "category_id": "model_weights.domain_weights",
+    "notes": "Non-English language models",
+    "is_primary": true,
+    "repo_count": 90
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Embedding Models",
+    "category_id": "model_weights.base_pretrained",
+    "notes": "Embedding models (BERT, sentence-transformers)",
+    "is_primary": true,
+    "repo_count": 9
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Embedding models",
+    "category_id": "model_weights.base_pretrained",
+    "notes": "Embedding models (lowercase variant)",
+    "is_primary": true,
+    "repo_count": 6
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "On-device models",
+    "category_id": "model_weights.compressed_weights",
+    "notes": "On-device / edge models",
+    "is_primary": true,
+    "repo_count": 6
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Architecture",
+    "category_id": "model_code.model_architecture",
+    "notes": "Model architecture in Models cat",
+    "is_primary": true,
+    "repo_count": 2
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Object detection",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Object detection models",
+    "is_primary": true,
+    "repo_count": 2
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": "Physical AI",
+    "category_id": "model_weights.domain_weights",
+    "notes": "Robotics/embodied models",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Models",
+    "eco_subcategory": null,
+    "category_id": "model_weights.base_pretrained",
+    "notes": "Unclassified models",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Content creation",
+    "category_id": "product_ux.ui_api",
+    "notes": "AI content creation apps",
+    "is_primary": true,
+    "repo_count": 548
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Coding",
+    "category_id": "product_ux.ui_api",
+    "notes": "AI coding applications",
+    "is_primary": true,
+    "repo_count": 536
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Personal",
+    "category_id": "product_ux.ui_api",
+    "notes": "Personal AI assistants, chat UIs",
+    "is_primary": true,
+    "repo_count": 471
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Specialists",
+    "category_id": "product_ux.ui_api",
+    "notes": "Specialized domain applications",
+    "is_primary": true,
+    "repo_count": 401
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Productivity",
+    "category_id": "product_ux.ui_api",
+    "notes": "AI productivity tools",
+    "is_primary": true,
+    "repo_count": 292
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Research & knowledge",
+    "category_id": "product_ux.ui_api",
+    "notes": "Research and knowledge management",
+    "is_primary": true,
+    "repo_count": 218
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Wrappers",
+    "category_id": "product_ux.ui_api",
+    "notes": "Thin wrappers around APIs",
+    "is_primary": true,
+    "repo_count": 154
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Object detection",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Detection applications",
+    "is_primary": true,
+    "repo_count": 125
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Other",
+    "category_id": "product_ux.ui_api",
+    "notes": "Catch-all applications",
+    "is_primary": true,
+    "repo_count": 129
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Data organization",
+    "category_id": "model_datasets.data_preprocessing",
+    "notes": "Data org applications",
+    "is_primary": true,
+    "repo_count": 38
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Domain-specific",
+    "category_id": "product_ux.ui_api",
+    "notes": "Domain-specific applications",
+    "is_primary": true,
+    "repo_count": 7
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Audio detection",
+    "category_id": "model_weights.multimodal_weights",
+    "notes": "Audio detection apps",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Applications",
+    "eco_subcategory": "Give agent tools",
+    "category_id": "model_code.supporting_libraries",
+    "notes": "App-level tool integration",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "ML/AI fundamentals",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "ML/AI tutorial repos",
+    "is_primary": true,
+    "repo_count": 881
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Tool-specific tutorials",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Tool-focused tutorials",
+    "is_primary": true,
+    "repo_count": 533
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "AIE roadmap",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "AI engineering roadmaps",
+    "is_primary": true,
+    "repo_count": 172
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Getting started",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Beginner guides",
+    "is_primary": true,
+    "repo_count": 86
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "MLE roadmap",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "ML engineering roadmaps",
+    "is_primary": true,
+    "repo_count": 63
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Interview guide",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "ML interview preparation",
+    "is_primary": true,
+    "repo_count": 55
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "LLM fundamentals",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "LLM tutorial content",
+    "is_primary": true,
+    "repo_count": 29
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Math/CS fundamentals",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Math/CS foundations",
+    "is_primary": true,
+    "repo_count": 18
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Coding with AI",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "AI coding tutorials",
+    "is_primary": true,
+    "repo_count": 2
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Domain-specific",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Domain tutorials",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Other",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Other tutorials",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Prompt collections",
+    "category_id": "product_ux.system_prompt",
+    "notes": "Prompt tutorial collections",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": "Use cases",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Use case demonstrations",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Tutorials",
+    "eco_subcategory": null,
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Unclassified tutorials",
+    "is_primary": true,
+    "repo_count": 10
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Paper collections",
+    "category_id": "documentation.eval_results",
+    "notes": "Curated paper lists and surveys",
+    "is_primary": true,
+    "repo_count": 485
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Tool collections",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Awesome lists of tools",
+    "is_primary": true,
+    "repo_count": 330
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Prompt collections",
+    "category_id": "product_ux.system_prompt",
+    "notes": "Prompt collections and libraries",
+    "is_primary": true,
+    "repo_count": 110
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Use cases",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Use case compilations",
+    "is_primary": true,
+    "repo_count": 81
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Domain-specific",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Domain-specific lists",
+    "is_primary": true,
+    "repo_count": 68
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Model collections",
+    "category_id": "documentation.model_cards",
+    "notes": "Model catalogs and comparisons",
+    "is_primary": true,
+    "repo_count": 47
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Dataset collections",
+    "category_id": "documentation.data_documentation",
+    "notes": "Dataset catalogs",
+    "is_primary": true,
+    "repo_count": 29
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Other",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Other list repos",
+    "is_primary": true,
+    "repo_count": 5
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Getting started",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Getting started lists",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "Tool-specific tutorials",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Tool tutorial lists",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "LLM fundamentals",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "LLM reference lists",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": "ML/AI fundamentals",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "ML/AI reference lists",
+    "is_primary": true,
+    "repo_count": 1
+  },
+  {
+    "eco_category": "Lists",
+    "eco_subcategory": null,
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Unclassified lists",
+    "is_primary": true,
+    "repo_count": 6
+  },
+  {
+    "eco_category": "Misc",
+    "eco_subcategory": null,
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Uncategorized repos",
+    "is_primary": true,
+    "repo_count": 41
+  },
+  {
+    "eco_category": "Misc",
+    "eco_subcategory": "Coding",
+    "category_id": "product_ux.ui_api",
+    "notes": "Misc coding repos",
+    "is_primary": true,
+    "repo_count": 2
+  },
+  {
+    "eco_category": "Misc",
+    "eco_subcategory": "Other",
+    "category_id": "documentation.sample_outputs_demos",
+    "notes": "Misc other",
+    "is_primary": true,
+    "repo_count": 1
+  }
+]
