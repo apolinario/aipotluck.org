@@ -1,6 +1,6 @@
 # Open Source AI Market Map
 
-An interactive visualization of the open-source AI ecosystem — mapping 7 stack layers from silicon to chat, colored by where the open ecosystem is healthy, fragile, or missing entirely.
+An interactive visualization of the open-source AI ecosystem — mapping all stack layers from silicon to chat, colored by where the open ecosystem is healthy, fragile, or missing entirely.
 
 ## Quick Start
 
