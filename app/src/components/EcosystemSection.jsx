@@ -39,42 +39,12 @@ export function EcosystemSection() {
           padding: '18px 24px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
         }}
       >
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,.25)' }}>
           Open source AI ecosystem
         </div>
-        <a
-          href="#"
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: 12,
-            fontWeight: 500,
-            color: '#fff',
-            textDecoration: 'none',
-            background: 'rgba(255,255,255,.07)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,.15)',
-            borderRadius: 6,
-            padding: '7px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            transition: 'all 200ms ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(255,255,255,.14)';
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,.3)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'rgba(255,255,255,.07)';
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,.15)';
-          }}
-        >
-          Go to Ecosystem App
-          <span style={{ opacity: 0.7 }}>→</span>
-        </a>
       </div>
 
       <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} aria-hidden="true">

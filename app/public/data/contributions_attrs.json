@@ -1,0 +1,2951 @@
+[
+  {
+    "product_id": "cm_gpt4o",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "openai/gpt-4o",
+    "significance": 5,
+    "evidence_url": "https://openai.com/index/hello-gpt-4o/",
+    "evidence_date": "2024-05-13",
+    "notes": "Flagship multimodal model",
+    "aliases": [
+      "4o",
+      "gpt4o"
+    ],
+    "metrics": {
+      "context_length": 128000,
+      "modality": [
+        "text",
+        "image",
+        "audio"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image",
+      "audio"
+    ]
+  },
+  {
+    "product_id": "cm_gpt4_1",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "openai/gpt-4.1",
+    "significance": 5,
+    "evidence_url": "https://openai.com/index/gpt-4-1/",
+    "evidence_date": "2025-04-14",
+    "notes": "Latest GPT-4 series",
+    "aliases": [
+      "gpt41"
+    ],
+    "metrics": {
+      "context_length": 1048576,
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_o1",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "openai/o1",
+    "significance": 5,
+    "evidence_url": "https://openai.com/index/introducing-o1/",
+    "evidence_date": "2024-09-12",
+    "notes": "Reasoning model",
+    "aliases": [],
+    "metrics": {
+      "context_length": 200000,
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_o3",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "openai/o3",
+    "significance": 5,
+    "evidence_url": "https://openai.com/index/introducing-o3-and-o4-mini/",
+    "evidence_date": "2025-04-16",
+    "notes": "Advanced reasoning model",
+    "aliases": [],
+    "metrics": {
+      "context_length": 200000,
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_claude_opus",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "anthropic/claude-opus-4",
+    "significance": 5,
+    "evidence_url": "https://www.anthropic.com/news/claude-4-system-card",
+    "evidence_date": "2025-05-22",
+    "notes": "Frontier model with extended thinking",
+    "aliases": [
+      "opus",
+      "opus-4",
+      "claude-opus"
+    ],
+    "metrics": {
+      "context_length": 200000,
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_claude_sonnet",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "anthropic/claude-sonnet-4",
+    "significance": 5,
+    "evidence_url": "https://www.anthropic.com/news/claude-4-system-card",
+    "evidence_date": "2025-05-22",
+    "notes": "Balanced performance/cost model",
+    "aliases": [
+      "sonnet",
+      "sonnet-4",
+      "claude-sonnet"
+    ],
+    "metrics": {
+      "context_length": 200000,
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_claude_haiku",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "anthropic/claude-haiku-3.5",
+    "significance": 4,
+    "evidence_url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
+    "evidence_date": "2024-10-22",
+    "notes": "Fast and affordable model",
+    "aliases": [
+      "haiku",
+      "haiku-3.5",
+      "claude-haiku"
+    ],
+    "metrics": {
+      "context_length": 200000,
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_gemini_2_5_pro",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "google/gemini-2.5-pro",
+    "significance": 5,
+    "evidence_url": "https://deepmind.google/technologies/gemini/",
+    "evidence_date": "2025-03-25",
+    "notes": "Thinking model with 1M context",
+    "aliases": [
+      "gemini-pro",
+      "gemini-2.5"
+    ],
+    "metrics": {
+      "context_length": 1048576,
+      "modality": [
+        "text",
+        "image",
+        "audio",
+        "video"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image",
+      "audio"
+    ]
+  },
+  {
+    "product_id": "cm_gemini_2_5_flash",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "google/gemini-2.5-flash",
+    "significance": 4,
+    "evidence_url": "https://deepmind.google/technologies/gemini/",
+    "evidence_date": "2025-04-17",
+    "notes": "Fast thinking model",
+    "aliases": [
+      "gemini-flash"
+    ],
+    "metrics": {
+      "context_length": 1048576,
+      "modality": [
+        "text",
+        "image",
+        "audio",
+        "video"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image",
+      "audio"
+    ]
+  },
+  {
+    "product_id": "cm_grok",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "xai/grok-3",
+    "significance": 4,
+    "evidence_url": "https://x.ai/blog/grok-3",
+    "evidence_date": "2025-02-17",
+    "notes": "xAI flagship model",
+    "aliases": [
+      "grok3",
+      "grok-3"
+    ],
+    "metrics": {
+      "context_length": 131072,
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_command_r_plus",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "cohere/command-r-plus",
+    "significance": 3,
+    "evidence_url": "https://cohere.com/blog/command-r-plus",
+    "evidence_date": "2024-04-04",
+    "notes": "Enterprise RAG-focused model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_jamba",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "ai21/jamba-1.5-large",
+    "significance": 3,
+    "evidence_url": "https://www.ai21.com/blog/announcing-jamba-1-5",
+    "evidence_date": "2024-08-22",
+    "notes": "SSM-Transformer hybrid",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_reka_core",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "reka/reka-core",
+    "significance": 2,
+    "evidence_url": "https://www.reka.ai/news/reka-core-our-frontier-class-multimodal-language-model",
+    "evidence_date": "2024-04-15",
+    "notes": "Multimodal frontier model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_inflection_pi",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "inflection/pi",
+    "significance": 2,
+    "evidence_url": "https://pi.ai",
+    "evidence_date": "2023-05-02",
+    "notes": "Conversational AI assistant",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_ernie",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "baidu/ernie-4.5",
+    "significance": 3,
+    "evidence_url": "https://yiyan.baidu.com",
+    "evidence_date": "2025-03-16",
+    "notes": "Baidu flagship LLM",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_glm",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "zhipu/glm-4",
+    "significance": 3,
+    "evidence_url": "https://www.zhipuai.cn",
+    "evidence_date": "2024-01-16",
+    "notes": "Zhipu flagship",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_moonshot_kimi",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "moonshot/kimi-k2",
+    "significance": 3,
+    "evidence_url": "https://kimi.moonshot.cn",
+    "evidence_date": "2025-05-01",
+    "notes": "Long-context Chinese model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_deepseek_r1",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "deepseek/deepseek-r1",
+    "significance": 4,
+    "evidence_url": "https://api-docs.deepseek.com",
+    "evidence_date": "2025-01-20",
+    "notes": "Reasoning model (API-only full version)",
+    "aliases": [
+      "deepseek-r1",
+      "r1"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_minimax_m1",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "minimax/minimax-m1",
+    "significance": 3,
+    "evidence_url": "https://www.minimax.io",
+    "evidence_date": "2025-02-26",
+    "notes": "4M context model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_doubao",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "bytedance/doubao-pro",
+    "significance": 3,
+    "evidence_url": "https://www.volcengine.com/product/doubao",
+    "evidence_date": "2024-05-15",
+    "notes": "ByteDance flagship",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_hunyuan",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "tencent/hunyuan-large",
+    "significance": 3,
+    "evidence_url": "https://hunyuan.tencent.com",
+    "evidence_date": "2024-11-05",
+    "notes": "Tencent MoE model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_qwen_max",
+    "artifact_kind": "model_closed",
+    "artifact_ref": "alibaba/qwen-max",
+    "significance": 4,
+    "evidence_url": "https://qwenlm.github.io",
+    "evidence_date": "2024-01-30",
+    "notes": "Alibaba flagship (API version)",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "ch_h100",
+    "artifact_kind": "chip",
+    "artifact_ref": "nvidia/h100",
+    "significance": 5,
+    "evidence_url": "https://www.nvidia.com/en-us/data-center/h100/",
+    "evidence_date": "2023-03-21",
+    "notes": "Dominant training/inference GPU",
+    "aliases": [
+      "hopper",
+      "nvidia-h100"
+    ],
+    "metrics": {
+      "memory_gb": 80,
+      "fp16_tflops": 989,
+      "tdp_watts": 700,
+      "process_node": "4nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_h200",
+    "artifact_kind": "chip",
+    "artifact_ref": "nvidia/h200",
+    "significance": 5,
+    "evidence_url": "https://www.nvidia.com/en-us/data-center/h200/",
+    "evidence_date": "2024-04-01",
+    "notes": "141GB HBM3e variant",
+    "aliases": [
+      "nvidia-h200"
+    ],
+    "metrics": {
+      "memory_gb": 141,
+      "fp16_tflops": 989,
+      "tdp_watts": 700,
+      "process_node": "4nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_b200",
+    "artifact_kind": "chip",
+    "artifact_ref": "nvidia/b200",
+    "significance": 5,
+    "evidence_url": "https://www.nvidia.com/en-us/data-center/gb200-nvl72/",
+    "evidence_date": "2024-03-18",
+    "notes": "Blackwell architecture",
+    "aliases": [
+      "blackwell",
+      "nvidia-b200"
+    ],
+    "metrics": {
+      "memory_gb": 192,
+      "fp16_tflops": 2250,
+      "tdp_watts": 1000,
+      "process_node": "4nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_gb200",
+    "artifact_kind": "chip",
+    "artifact_ref": "nvidia/gb200",
+    "significance": 5,
+    "evidence_url": "https://www.nvidia.com/en-us/data-center/gb200-nvl72/",
+    "evidence_date": "2024-03-18",
+    "notes": "Grace Blackwell superchip rack",
+    "aliases": [
+      "blackwell",
+      "nvidia-b200",
+      "grace-blackwell",
+      "nvl72"
+    ],
+    "metrics": {
+      "memory_gb": 384,
+      "process_node": "4nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_a100",
+    "artifact_kind": "chip",
+    "artifact_ref": "nvidia/a100",
+    "significance": 4,
+    "evidence_url": "https://www.nvidia.com/en-us/data-center/a100/",
+    "evidence_date": "2020-05-14",
+    "notes": "Previous-gen workhorse GPU",
+    "aliases": [
+      "ampere",
+      "nvidia-a100"
+    ],
+    "metrics": {
+      "memory_gb": 80,
+      "fp16_tflops": 312,
+      "tdp_watts": 400,
+      "process_node": "7nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_tpu_v5e",
+    "artifact_kind": "chip",
+    "artifact_ref": "google/tpu-v5e",
+    "significance": 4,
+    "evidence_url": "https://cloud.google.com/tpu/docs/v5e",
+    "evidence_date": "2023-08-29",
+    "notes": "Google training accelerator",
+    "aliases": [
+      "tpuv5e"
+    ],
+    "metrics": {
+      "memory_gb": 16
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_tpu_v6e",
+    "artifact_kind": "chip",
+    "artifact_ref": "google/tpu-v6e",
+    "significance": 5,
+    "evidence_url": "https://cloud.google.com/blog/products/compute/introducing-trillium-6th-gen-tpus",
+    "evidence_date": "2024-05-14",
+    "notes": "Latest Google TPU",
+    "aliases": [
+      "trillium",
+      "tpuv6e"
+    ],
+    "metrics": {
+      "memory_gb": 32
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_mi300x",
+    "artifact_kind": "chip",
+    "artifact_ref": "amd/mi300x",
+    "significance": 4,
+    "evidence_url": "https://www.amd.com/en/products/accelerators/instinct/mi300/mi300x.html",
+    "evidence_date": "2023-12-06",
+    "notes": "AMD datacenter GPU",
+    "aliases": [
+      "mi300",
+      "instinct-mi300x"
+    ],
+    "metrics": {
+      "memory_gb": 192,
+      "fp16_tflops": 1307,
+      "tdp_watts": 750,
+      "process_node": "5nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_mi325x",
+    "artifact_kind": "chip",
+    "artifact_ref": "amd/mi325x",
+    "significance": 4,
+    "evidence_url": "https://www.amd.com/en/products/accelerators/instinct/mi300/mi325x.html",
+    "evidence_date": "2024-10-10",
+    "notes": "Latest AMD accelerator",
+    "aliases": [
+      "mi325",
+      "instinct-mi325x"
+    ],
+    "metrics": {
+      "memory_gb": 256,
+      "process_node": "5nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_gaudi3",
+    "artifact_kind": "chip",
+    "artifact_ref": "intel/gaudi3",
+    "significance": 3,
+    "evidence_url": "https://www.intel.com/content/www/us/en/products/details/processors/ai-accelerators/gaudi3.html",
+    "evidence_date": "2024-04-09",
+    "notes": "Intel AI accelerator",
+    "aliases": [],
+    "metrics": {
+      "memory_gb": 128,
+      "process_node": "5nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_wse3",
+    "artifact_kind": "chip",
+    "artifact_ref": "cerebras/wse-3",
+    "significance": 3,
+    "evidence_url": "https://cerebras.ai/chip",
+    "evidence_date": "2024-03-18",
+    "notes": "Wafer-scale engine",
+    "aliases": [],
+    "metrics": {
+      "process_node": "5nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_trainium2",
+    "artifact_kind": "chip",
+    "artifact_ref": "aws/trainium2",
+    "significance": 4,
+    "evidence_url": "https://aws.amazon.com/machine-learning/trainium/",
+    "evidence_date": "2023-11-28",
+    "notes": "Amazon custom training chip",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_lpu",
+    "artifact_kind": "chip",
+    "artifact_ref": "groq/lpu",
+    "significance": 3,
+    "evidence_url": "https://groq.com/technology/",
+    "evidence_date": "2024-02-01",
+    "notes": "Language Processing Unit for inference",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_m4_neural",
+    "artifact_kind": "chip",
+    "artifact_ref": "apple/m4-neural-engine",
+    "significance": 3,
+    "evidence_url": "https://www.apple.com/newsroom/2024/05/apple-introduces-m4-chip/",
+    "evidence_date": "2024-05-07",
+    "notes": "On-device neural accelerator",
+    "aliases": [],
+    "metrics": {
+      "process_node": "3nm"
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_sn40l",
+    "artifact_kind": "chip",
+    "artifact_ref": "sambanova/sn40l",
+    "significance": 2,
+    "evidence_url": "https://sambanova.ai/products/datascale",
+    "evidence_date": "2023-10-16",
+    "notes": "Reconfigurable dataflow chip",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ch_snapdragon_x",
+    "artifact_kind": "chip",
+    "artifact_ref": "qualcomm/snapdragon-x-elite",
+    "significance": 3,
+    "evidence_url": "https://www.qualcomm.com/products/mobile/snapdragon/pcs-and-tablets/snapdragon-x-elite",
+    "evidence_date": "2024-04-24",
+    "notes": "On-device AI NPU",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "rt_cuda",
+    "artifact_kind": "runtime",
+    "artifact_ref": "nvidia/cuda",
+    "significance": 5,
+    "evidence_url": "https://developer.nvidia.com/cuda-toolkit",
+    "evidence_date": "2007-06-23",
+    "notes": "Dominant GPU programming platform",
+    "aliases": [
+      "nvidia-cuda",
+      "cuda-toolkit"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "rt_rocm",
+    "artifact_kind": "runtime",
+    "artifact_ref": "amd/rocm",
+    "significance": 4,
+    "evidence_url": "https://www.amd.com/en/products/software/rocm.html",
+    "evidence_date": "2016-11-01",
+    "notes": "AMD open GPU compute platform",
+    "aliases": [
+      "amd-rocm"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "rt_metal",
+    "artifact_kind": "runtime",
+    "artifact_ref": "apple/metal",
+    "significance": 3,
+    "evidence_url": "https://developer.apple.com/metal/",
+    "evidence_date": "2014-06-02",
+    "notes": "Apple GPU framework",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "rt_oneapi",
+    "artifact_kind": "runtime",
+    "artifact_ref": "intel/oneapi",
+    "significance": 3,
+    "evidence_url": "https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html",
+    "evidence_date": "2019-11-01",
+    "notes": "Intel unified programming model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "rt_tensorrt",
+    "artifact_kind": "runtime",
+    "artifact_ref": "nvidia/tensorrt",
+    "significance": 4,
+    "evidence_url": "https://developer.nvidia.com/tensorrt",
+    "evidence_date": "2017-03-01",
+    "notes": "NVIDIA inference optimizer",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": "nvidia/tensorrt",
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "cd_openai_pretrain",
+    "artifact_kind": "dataset_closed",
+    "artifact_ref": "openai/pretraining-corpus",
+    "significance": 5,
+    "evidence_url": "https://openai.com",
+    "evidence_date": "2020-06-01",
+    "notes": "Undisclosed web-scale training data",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "cd_anthropic_pretrain",
+    "artifact_kind": "dataset_closed",
+    "artifact_ref": "anthropic/pretraining-corpus",
+    "significance": 5,
+    "evidence_url": "https://anthropic.com",
+    "evidence_date": "2023-01-01",
+    "notes": "Undisclosed training data",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "cd_google_pretrain",
+    "artifact_kind": "dataset_closed",
+    "artifact_ref": "google/gemini-training-data",
+    "significance": 5,
+    "evidence_url": "https://deepmind.google",
+    "evidence_date": "2023-12-01",
+    "notes": "Undisclosed multimodal training data",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "cd_openai_rlhf",
+    "artifact_kind": "dataset_closed",
+    "artifact_ref": "openai/rlhf-data",
+    "significance": 5,
+    "evidence_url": "https://openai.com",
+    "evidence_date": "2022-01-01",
+    "notes": "Proprietary human feedback data",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "cd_anthropic_rlhf",
+    "artifact_kind": "dataset_closed",
+    "artifact_ref": "anthropic/constitutional-ai-data",
+    "significance": 5,
+    "evidence_url": "https://anthropic.com",
+    "evidence_date": "2023-01-01",
+    "notes": "Proprietary preference/CAI data",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "eh_openai_evals",
+    "artifact_kind": "eval_harness",
+    "artifact_ref": "openai/internal-evals",
+    "significance": 4,
+    "evidence_url": "https://openai.com",
+    "evidence_date": "2023-01-01",
+    "notes": "Proprietary safety and capability evals",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "eh_anthropic_evals",
+    "artifact_kind": "eval_harness",
+    "artifact_ref": "anthropic/internal-evals",
+    "significance": 4,
+    "evidence_url": "https://anthropic.com",
+    "evidence_date": "2023-01-01",
+    "notes": "Proprietary alignment and safety evals",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "eh_google_evals",
+    "artifact_kind": "eval_harness",
+    "artifact_ref": "google/internal-evals",
+    "significance": 4,
+    "evidence_url": "https://deepmind.google",
+    "evidence_date": "2023-01-01",
+    "notes": "Internal model evaluation suite",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_nist_rmf",
+    "artifact_kind": "standard",
+    "artifact_ref": "nist/ai-rmf-1.0",
+    "significance": 4,
+    "evidence_url": "https://www.nist.gov/artificial-intelligence/executive-order-safe-secure-and-trustworthy-artificial-intelligence",
+    "evidence_date": "2023-01-26",
+    "notes": "US AI risk management framework",
+    "aliases": [
+      "ai-rmf",
+      "nist-rmf"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_iso_42001",
+    "artifact_kind": "standard",
+    "artifact_ref": "iso/iec-42001",
+    "significance": 3,
+    "evidence_url": "https://www.iso.org/standard/81230.html",
+    "evidence_date": "2023-12-18",
+    "notes": "AI management system standard",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_eu_ai_act",
+    "artifact_kind": "policy",
+    "artifact_ref": "eu/ai-act",
+    "significance": 5,
+    "evidence_url": "https://artificialintelligenceact.eu",
+    "evidence_date": "2024-03-13",
+    "notes": "Comprehensive AI regulation",
+    "aliases": [
+      "ai-act",
+      "european-ai-act"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_us_eo_ai",
+    "artifact_kind": "policy",
+    "artifact_ref": "us/executive-order-14110",
+    "significance": 4,
+    "evidence_url": "https://www.whitehouse.gov/briefing-room/presidential-actions/2023/10/30/executive-order-on-the-safe-secure-and-trustworthy-development-and-use-of-artificial-intelligence/",
+    "evidence_date": "2023-10-30",
+    "notes": "US federal AI safety order",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_mlc_croissant",
+    "artifact_kind": "standard",
+    "artifact_ref": "mlcommons/croissant-1.0",
+    "significance": 3,
+    "evidence_url": "https://mlcommons.org/croissant/",
+    "evidence_date": "2024-03-25",
+    "notes": "ML dataset format standard",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_c2pa",
+    "artifact_kind": "standard",
+    "artifact_ref": "c2pa/c2pa-1.4",
+    "significance": 3,
+    "evidence_url": "https://c2pa.org/specifications/specifications/2.1/index.html",
+    "evidence_date": "2024-02-08",
+    "notes": "Content provenance standard",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_mlc_inference",
+    "artifact_kind": "standard",
+    "artifact_ref": "mlcommons/inference-benchmark",
+    "significance": 4,
+    "evidence_url": "https://mlcommons.org/benchmarks/inference-datacenter/",
+    "evidence_date": "2023-09-01",
+    "notes": "Industry-standard inference benchmark",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_mlc_training",
+    "artifact_kind": "standard",
+    "artifact_ref": "mlcommons/training-benchmark",
+    "significance": 4,
+    "evidence_url": "https://mlcommons.org/benchmarks/training/",
+    "evidence_date": "2023-06-01",
+    "notes": "Industry-standard training benchmark",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_osi_osd",
+    "artifact_kind": "standard",
+    "artifact_ref": "osi/open-source-definition",
+    "significance": 4,
+    "evidence_url": "https://opensource.org/osd",
+    "evidence_date": "1998-02-01",
+    "notes": "Canonical open source definition",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "std_osi_osaid",
+    "artifact_kind": "standard",
+    "artifact_ref": "osi/open-source-ai-definition",
+    "significance": 4,
+    "evidence_url": "https://opensource.org/ai/open-source-ai-definition",
+    "evidence_date": "2024-10-28",
+    "notes": "Definition of open source for AI systems",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_openai_api",
+    "artifact_kind": "service",
+    "artifact_ref": "openai/api",
+    "significance": 5,
+    "evidence_url": "https://platform.openai.com",
+    "evidence_date": "2020-06-11",
+    "notes": "Largest model API platform",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_anthropic_api",
+    "artifact_kind": "service",
+    "artifact_ref": "anthropic/api",
+    "significance": 5,
+    "evidence_url": "https://docs.anthropic.com",
+    "evidence_date": "2023-03-14",
+    "notes": "Claude model API",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_gcp_vertex",
+    "artifact_kind": "service",
+    "artifact_ref": "google/vertex-ai",
+    "significance": 4,
+    "evidence_url": "https://cloud.google.com/vertex-ai",
+    "evidence_date": "2021-05-18",
+    "notes": "Google Cloud ML platform",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_aws_bedrock",
+    "artifact_kind": "service",
+    "artifact_ref": "aws/bedrock",
+    "significance": 4,
+    "evidence_url": "https://aws.amazon.com/bedrock/",
+    "evidence_date": "2023-09-28",
+    "notes": "Multi-model API gateway",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_azure_openai",
+    "artifact_kind": "service",
+    "artifact_ref": "azure/openai-service",
+    "significance": 4,
+    "evidence_url": "https://azure.microsoft.com/en-us/products/ai-services/openai-service",
+    "evidence_date": "2023-01-16",
+    "notes": "Enterprise OpenAI hosting",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_together_api",
+    "artifact_kind": "service",
+    "artifact_ref": "together/api",
+    "significance": 3,
+    "evidence_url": "https://api.together.xyz",
+    "evidence_date": "2023-06-01",
+    "notes": "Open model hosting platform",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_replicate_api",
+    "artifact_kind": "service",
+    "artifact_ref": "replicate/api",
+    "significance": 3,
+    "evidence_url": "https://replicate.com",
+    "evidence_date": "2022-01-01",
+    "notes": "Model hosting via Cog",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_fireworks_api",
+    "artifact_kind": "service",
+    "artifact_ref": "fireworks/api",
+    "significance": 3,
+    "evidence_url": "https://fireworks.ai",
+    "evidence_date": "2023-06-01",
+    "notes": "Fast inference platform",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_groq_api",
+    "artifact_kind": "service",
+    "artifact_ref": "groq/api",
+    "significance": 3,
+    "evidence_url": "https://console.groq.com",
+    "evidence_date": "2024-02-01",
+    "notes": "LPU-powered inference",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_deepinfra_api",
+    "artifact_kind": "service",
+    "artifact_ref": "deepinfra/api",
+    "significance": 2,
+    "evidence_url": "https://deepinfra.com",
+    "evidence_date": "2023-01-01",
+    "notes": "Low-cost inference hosting",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_openrouter",
+    "artifact_kind": "service",
+    "artifact_ref": "openrouter/api",
+    "significance": 3,
+    "evidence_url": "https://openrouter.ai",
+    "evidence_date": "2023-01-01",
+    "notes": "Model API aggregator",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "svc_lepton_api",
+    "artifact_kind": "service",
+    "artifact_ref": "lepton/api",
+    "significance": 2,
+    "evidence_url": "https://www.lepton.ai",
+    "evidence_date": "2023-06-01",
+    "notes": "AI application platform",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_chatgpt",
+    "artifact_kind": "service",
+    "artifact_ref": "openai/chatgpt",
+    "significance": 5,
+    "evidence_url": "https://chat.openai.com",
+    "evidence_date": "2022-11-30",
+    "notes": "Consumer AI chat product",
+    "aliases": [
+      "chat-gpt",
+      "chat.openai.com"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_claude_ai",
+    "artifact_kind": "service",
+    "artifact_ref": "anthropic/claude-ai",
+    "significance": 5,
+    "evidence_url": "https://claude.ai",
+    "evidence_date": "2023-07-11",
+    "notes": "Anthropic consumer interface",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_gemini_app",
+    "artifact_kind": "service",
+    "artifact_ref": "google/gemini-app",
+    "significance": 4,
+    "evidence_url": "https://gemini.google.com",
+    "evidence_date": "2024-02-08",
+    "notes": "Google consumer AI",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_copilot",
+    "artifact_kind": "tool",
+    "artifact_ref": "microsoft/github-copilot",
+    "significance": 5,
+    "evidence_url": "https://github.com/features/copilot",
+    "evidence_date": "2021-06-29",
+    "notes": "AI coding assistant",
+    "aliases": [
+      "github-copilot",
+      "gh-copilot"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_cursor",
+    "artifact_kind": "tool",
+    "artifact_ref": "cursor/cursor",
+    "significance": 4,
+    "evidence_url": "https://cursor.com",
+    "evidence_date": "2023-03-01",
+    "notes": "AI-native code editor",
+    "aliases": [
+      "cursor-ai",
+      "cursor-editor"
+    ],
+    "metrics": {},
+    "repo_ref": "cursor/cursor",
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_perplexity",
+    "artifact_kind": "service",
+    "artifact_ref": "perplexity/search",
+    "significance": 4,
+    "evidence_url": "https://perplexity.ai",
+    "evidence_date": "2022-12-01",
+    "notes": "AI search engine",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_midjourney",
+    "artifact_kind": "service",
+    "artifact_ref": "midjourney/v6",
+    "significance": 4,
+    "evidence_url": "https://www.midjourney.com",
+    "evidence_date": "2023-12-21",
+    "notes": "Closed image generation",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_runway_gen3",
+    "artifact_kind": "service",
+    "artifact_ref": "runway/gen-3",
+    "significance": 3,
+    "evidence_url": "https://runwayml.com",
+    "evidence_date": "2024-06-17",
+    "notes": "Closed video generation",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_pika",
+    "artifact_kind": "service",
+    "artifact_ref": "pika/pika-2.0",
+    "significance": 2,
+    "evidence_url": "https://pika.art",
+    "evidence_date": "2024-12-09",
+    "notes": "Closed video generation",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_suno",
+    "artifact_kind": "service",
+    "artifact_ref": "suno/v4",
+    "significance": 3,
+    "evidence_url": "https://suno.com",
+    "evidence_date": "2024-11-22",
+    "notes": "AI music generation",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "tool_eleven_labs",
+    "artifact_kind": "service",
+    "artifact_ref": "elevenlabs/api",
+    "significance": 3,
+    "evidence_url": "https://elevenlabs.io",
+    "evidence_date": "2023-01-01",
+    "notes": "AI voice synthesis",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": []
+  },
+  {
+    "product_id": "ds_mmlu",
+    "artifact_kind": "dataset",
+    "artifact_ref": "cais/mmlu",
+    "significance": 5,
+    "evidence_url": "https://arxiv.org/abs/2009.03300",
+    "evidence_date": "2021-01-12",
+    "notes": "57-subject knowledge benchmark, de facto LLM eval standard",
+    "aliases": [
+      "massive-multitask"
+    ],
+    "metrics": {
+      "examples": 15908,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ds_humaneval",
+    "artifact_kind": "dataset",
+    "artifact_ref": "openai/human-eval",
+    "significance": 4,
+    "evidence_url": "https://arxiv.org/abs/2107.03374",
+    "evidence_date": "2021-07-07",
+    "notes": "164 Python coding tasks for code generation eval",
+    "aliases": [
+      "human-eval",
+      "openai-humaneval"
+    ],
+    "metrics": {
+      "examples": 164,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": "openai/human-eval",
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ds_hellaswag",
+    "artifact_kind": "dataset",
+    "artifact_ref": "allenai/hellaswag",
+    "significance": 4,
+    "evidence_url": "https://arxiv.org/abs/1905.07830",
+    "evidence_date": "2019-05-19",
+    "notes": "Commonsense reasoning benchmark",
+    "aliases": [
+      "hella-swag"
+    ],
+    "metrics": {
+      "examples": 70000,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ds_gsm8k",
+    "artifact_kind": "dataset",
+    "artifact_ref": "openai/gsm8k",
+    "significance": 4,
+    "evidence_url": "https://arxiv.org/abs/2110.14168",
+    "evidence_date": "2021-10-27",
+    "notes": "8.5K grade school math problems",
+    "aliases": [
+      "grade-school-math"
+    ],
+    "metrics": {
+      "examples": 8500,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ds_chatbot_arena",
+    "artifact_kind": "eval_harness",
+    "artifact_ref": "lmsys/chatbot-arena",
+    "significance": 5,
+    "evidence_url": "https://chat.lmsys.org",
+    "evidence_date": "2024-06-01",
+    "notes": "Crowdsourced pairwise model comparison with ELO ratings",
+    "aliases": [
+      "lmsys-arena",
+      "arena-elo"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ds_gpqa",
+    "artifact_kind": "dataset",
+    "artifact_ref": "idavidrein/gpqa",
+    "significance": 3,
+    "evidence_url": "https://arxiv.org/abs/2311.12022",
+    "evidence_date": "2023-11-20",
+    "notes": "Graduate-level science QA, PhD-level difficulty",
+    "aliases": [
+      "gpqa-diamond"
+    ],
+    "metrics": {
+      "examples": 448,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ds_swebench",
+    "artifact_kind": "dataset",
+    "artifact_ref": "princeton-nlp/SWE-bench",
+    "significance": 4,
+    "evidence_url": "https://www.swebench.com",
+    "evidence_date": "2024-04-15",
+    "notes": "Real-world GitHub issue resolution benchmark for coding agents",
+    "aliases": [
+      "swe-bench",
+      "swebench-verified"
+    ],
+    "metrics": {
+      "examples": 2294,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "sd_cosmopedia",
+    "artifact_kind": "dataset",
+    "artifact_ref": "HuggingFaceTB/cosmopedia",
+    "significance": 4,
+    "evidence_url": "https://huggingface.co/datasets/HuggingFaceTB/cosmopedia",
+    "evidence_date": "2024-02-19",
+    "notes": "25B tokens synthetic textbook data generated by Mixtral",
+    "aliases": [
+      "cosmopedia-v2"
+    ],
+    "metrics": {
+      "size_tokens": 25000000000,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "sd_magpie",
+    "artifact_kind": "dataset",
+    "artifact_ref": "Magpie-Align/Magpie-Pro-300K",
+    "significance": 3,
+    "evidence_url": "https://arxiv.org/abs/2406.08464",
+    "evidence_date": "2024-06-12",
+    "notes": "300K synthetic instruction dataset from LLM self-play",
+    "aliases": [
+      "magpie-pro"
+    ],
+    "metrics": {
+      "examples": 300000,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "sd_openai_synth",
+    "artifact_kind": "dataset_closed",
+    "artifact_ref": "openai/synthetic-data-pipeline",
+    "significance": 5,
+    "evidence_url": "https://openai.com",
+    "evidence_date": "2024-01-01",
+    "notes": "Internal pipeline for generating training data from frontier models",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "sd_anthropic_synth",
+    "artifact_kind": "dataset_closed",
+    "artifact_ref": "anthropic/synthetic-data-pipeline",
+    "significance": 5,
+    "evidence_url": "https://anthropic.com",
+    "evidence_date": "2024-01-01",
+    "notes": "Internal synthetic data from constitutional AI process",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "os_openai_json",
+    "artifact_kind": "service",
+    "artifact_ref": "openai/json-mode",
+    "significance": 5,
+    "evidence_url": "https://platform.openai.com/docs/guides/structured-outputs",
+    "evidence_date": "2024-08-06",
+    "notes": "Native structured output via JSON schema in API",
+    "aliases": [
+      "structured-outputs",
+      "json-mode"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "os_anthropic_tools",
+    "artifact_kind": "service",
+    "artifact_ref": "anthropic/tool-use",
+    "significance": 4,
+    "evidence_url": "https://docs.anthropic.com/en/docs/build-with-claude/tool-use",
+    "evidence_date": "2024-04-04",
+    "notes": "Function calling and structured output via tool use API",
+    "aliases": [
+      "claude-tools",
+      "claude-function-calling"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "os_google_fc",
+    "artifact_kind": "service",
+    "artifact_ref": "google/gemini-function-calling",
+    "significance": 4,
+    "evidence_url": "https://ai.google.dev/gemini-api/docs/function-calling",
+    "evidence_date": "2024-05-14",
+    "notes": "Native function calling in Gemini API",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "lic_cdla",
+    "artifact_kind": "standard",
+    "artifact_ref": "cdla/cdla-permissive-2.0",
+    "significance": 4,
+    "evidence_url": "https://cdla.dev/permissive-2-0/",
+    "evidence_date": "2021-10-22",
+    "notes": "Community Data License Agreement for open data sharing",
+    "aliases": [
+      "cdla",
+      "cdla-2.0"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "lic_odc_by",
+    "artifact_kind": "standard",
+    "artifact_ref": "opendatacommons/odc-by",
+    "significance": 3,
+    "evidence_url": "https://opendatacommons.org/licenses/by/",
+    "evidence_date": "2009-06-01",
+    "notes": "Open Data Commons Attribution License",
+    "aliases": [
+      "odc-by",
+      "opendatacommons"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "lic_cc_by_4",
+    "artifact_kind": "standard",
+    "artifact_ref": "creativecommons/cc-by-4.0",
+    "significance": 5,
+    "evidence_url": "https://creativecommons.org/licenses/by/4.0/",
+    "evidence_date": "2013-11-25",
+    "notes": "Most widely used open data license",
+    "aliases": [
+      "creative-commons",
+      "cc-by"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "tos_openai",
+    "artifact_kind": "policy",
+    "artifact_ref": "openai/usage-policies",
+    "significance": 5,
+    "evidence_url": "https://openai.com/policies/usage-policies/",
+    "evidence_date": "2025-02-15",
+    "notes": "Defines acceptable use for all OpenAI products",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "tos_anthropic",
+    "artifact_kind": "policy",
+    "artifact_ref": "anthropic/acceptable-use-policy",
+    "significance": 5,
+    "evidence_url": "https://www.anthropic.com/legal/aup",
+    "evidence_date": "2025-02-24",
+    "notes": "Defines acceptable use for Claude",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "tos_google",
+    "artifact_kind": "policy",
+    "artifact_ref": "google/gemini-terms",
+    "significance": 4,
+    "evidence_url": "https://ai.google.dev/gemini-api/terms",
+    "evidence_date": "2024-12-01",
+    "notes": "Terms governing Gemini API usage",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "tos_meta_llama",
+    "artifact_kind": "policy",
+    "artifact_ref": "meta/llama-community-license",
+    "significance": 4,
+    "evidence_url": "https://www.llama.com/llama3_1/license/",
+    "evidence_date": "2024-07-23",
+    "notes": "Custom license for Llama models — open but with restrictions",
+    "aliases": [
+      "llama-license",
+      "llama-3.1-license"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ar_hf_gating",
+    "artifact_kind": "service",
+    "artifact_ref": "huggingface/gated-repos",
+    "significance": 4,
+    "evidence_url": "https://huggingface.co/docs/hub/models-gated",
+    "evidence_date": "2024-01-01",
+    "notes": "Access control mechanism for model distribution",
+    "aliases": [
+      "hf-gating",
+      "gated-models"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ar_meta_release",
+    "artifact_kind": "policy",
+    "artifact_ref": "meta/responsible-use-guide",
+    "significance": 3,
+    "evidence_url": "https://www.llama.com/responsible-use-guide/",
+    "evidence_date": "2024-07-23",
+    "notes": "Staged release process for Llama models",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ar_openai_staged",
+    "artifact_kind": "policy",
+    "artifact_ref": "openai/preparedness-framework",
+    "significance": 4,
+    "evidence_url": "https://openai.com/safety/preparedness",
+    "evidence_date": "2023-12-18",
+    "notes": "Framework for staged deployment of frontier models",
+    "aliases": [
+      "preparedness"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "ar_anthropic_rsp",
+    "artifact_kind": "policy",
+    "artifact_ref": "anthropic/responsible-scaling-policy",
+    "significance": 4,
+    "evidence_url": "https://www.anthropic.com/news/anthropics-responsible-scaling-policy",
+    "evidence_date": "2023-09-19",
+    "notes": "Commitment framework for responsible AI deployment",
+    "aliases": [
+      "rsp",
+      "responsible-scaling"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "mod_perspective",
+    "artifact_kind": "service",
+    "artifact_ref": "google/perspective-api",
+    "significance": 4,
+    "evidence_url": "https://perspectiveapi.com",
+    "evidence_date": "2017-02-01",
+    "notes": "Toxicity scoring API used across platforms",
+    "aliases": [
+      "perspective",
+      "jigsaw-perspective"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "mod_openai_moderation",
+    "artifact_kind": "service",
+    "artifact_ref": "openai/moderation-api",
+    "significance": 4,
+    "evidence_url": "https://platform.openai.com/docs/guides/moderation",
+    "evidence_date": "2022-08-10",
+    "notes": "Content classification endpoint for safety categories",
+    "aliases": [
+      "moderation-endpoint"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "sa_constitutional_ai",
+    "artifact_kind": "paper",
+    "artifact_ref": "anthropic/constitutional-ai",
+    "significance": 5,
+    "evidence_url": "https://arxiv.org/abs/2212.08073",
+    "evidence_date": "2022-12-15",
+    "notes": "AI feedback for harmlessness without human labels",
+    "aliases": [
+      "cai",
+      "constitutional"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "sa_rlhf_instructgpt",
+    "artifact_kind": "paper",
+    "artifact_ref": "openai/instructgpt",
+    "significance": 5,
+    "evidence_url": "https://arxiv.org/abs/2203.02155",
+    "evidence_date": "2022-03-04",
+    "notes": "Foundational RLHF paper for instruction following",
+    "aliases": [
+      "instructgpt",
+      "rlhf-paper"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "sa_anthropic_redteam",
+    "artifact_kind": "eval_harness",
+    "artifact_ref": "anthropic/red-team-suite",
+    "significance": 4,
+    "evidence_url": "https://www.anthropic.com/news/claude-4-system-card",
+    "evidence_date": "2025-05-22",
+    "notes": "Internal adversarial testing for Claude models",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "sa_openai_superalignment",
+    "artifact_kind": "paper",
+    "artifact_ref": "openai/weak-to-strong",
+    "significance": 3,
+    "evidence_url": "https://arxiv.org/abs/2312.09390",
+    "evidence_date": "2023-12-14",
+    "notes": "Superalignment research on scalable oversight",
+    "aliases": [
+      "weak-to-strong",
+      "superalignment"
+    ],
+    "metrics": {},
+    "repo_ref": "openai/weak-to-strong",
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null
+  },
+  {
+    "product_id": "om_llama3_1_405b",
+    "artifact_kind": "model",
+    "artifact_ref": "meta-llama/Llama-3.1-405B",
+    "significance": 5,
+    "evidence_url": "https://ai.meta.com/blog/meta-llama-3-1/",
+    "evidence_date": "2024-07-23",
+    "notes": "Largest open-weight model",
+    "aliases": [
+      "llama-3.1",
+      "llama3.1",
+      "llama-405b"
+    ],
+    "metrics": {
+      "parameter_count": 405000000000,
+      "context_length": 131072,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_llama3_3_70b",
+    "artifact_kind": "model",
+    "artifact_ref": "meta-llama/Llama-3.3-70B",
+    "significance": 5,
+    "evidence_url": "https://ai.meta.com/blog/llama-3-3/",
+    "evidence_date": "2024-12-06",
+    "notes": "Latest Llama release",
+    "aliases": [
+      "llama-3.3",
+      "llama3.3"
+    ],
+    "metrics": {
+      "parameter_count": 70000000000,
+      "context_length": 131072,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_mistral_large",
+    "artifact_kind": "model",
+    "artifact_ref": "mistralai/Mistral-Large-2",
+    "significance": 4,
+    "evidence_url": "https://mistral.ai/news/mistral-large-2407/",
+    "evidence_date": "2024-07-24",
+    "notes": "123B open-weight model",
+    "aliases": [
+      "mistral-large-2"
+    ],
+    "metrics": {
+      "parameter_count": 123000000000,
+      "context_length": 131072,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_mixtral",
+    "artifact_kind": "model",
+    "artifact_ref": "mistralai/Mixtral-8x22B",
+    "significance": 4,
+    "evidence_url": "https://mistral.ai/news/mixtral-8x22b/",
+    "evidence_date": "2024-04-17",
+    "notes": "Open MoE model",
+    "aliases": [
+      "mixtral-8x22b"
+    ],
+    "metrics": {
+      "parameter_count": 141000000000,
+      "context_length": 65536,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_qwen2_5_72b",
+    "artifact_kind": "model",
+    "artifact_ref": "Qwen/Qwen2.5-72B",
+    "significance": 4,
+    "evidence_url": "https://qwenlm.github.io/blog/qwen2.5/",
+    "evidence_date": "2024-09-19",
+    "notes": "Alibaba open weights",
+    "aliases": [
+      "qwen2.5",
+      "qwen-72b"
+    ],
+    "metrics": {
+      "parameter_count": 72000000000,
+      "context_length": 131072,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_gemma2_27b",
+    "artifact_kind": "model",
+    "artifact_ref": "google/gemma-2-27b",
+    "significance": 4,
+    "evidence_url": "https://blog.google/technology/developers/google-gemma-2/",
+    "evidence_date": "2024-06-27",
+    "notes": "Google open weights",
+    "aliases": [
+      "gemma2",
+      "gemma-27b"
+    ],
+    "metrics": {
+      "parameter_count": 27000000000,
+      "context_length": 8192,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_deepseek_v3",
+    "artifact_kind": "model",
+    "artifact_ref": "deepseek-ai/DeepSeek-V3",
+    "significance": 5,
+    "evidence_url": "https://github.com/deepseek-ai/DeepSeek-V3",
+    "evidence_date": "2024-12-26",
+    "notes": "671B MoE open model",
+    "aliases": [
+      "deepseek-v3",
+      "deepseek"
+    ],
+    "metrics": {
+      "parameter_count": 671000000000,
+      "context_length": 131072,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_phi3",
+    "artifact_kind": "model",
+    "artifact_ref": "microsoft/Phi-3-medium",
+    "significance": 3,
+    "evidence_url": "https://azure.microsoft.com/en-us/blog/introducing-phi-3/",
+    "evidence_date": "2024-04-23",
+    "notes": "14B efficient model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_falcon_180b",
+    "artifact_kind": "model",
+    "artifact_ref": "tiiuae/falcon-180B",
+    "significance": 3,
+    "evidence_url": "https://falconllm.tii.ae",
+    "evidence_date": "2023-09-06",
+    "notes": "TII open model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_olmo",
+    "artifact_kind": "model",
+    "artifact_ref": "allenai/OLMo-2",
+    "significance": 4,
+    "evidence_url": "https://allenai.org/olmo",
+    "evidence_date": "2024-11-07",
+    "notes": "Fully open model + data + code",
+    "aliases": [
+      "olmo-2",
+      "olmo2"
+    ],
+    "metrics": {
+      "parameter_count": 13000000000,
+      "context_length": 4096,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_starcoder2",
+    "artifact_kind": "model",
+    "artifact_ref": "bigcode-project/starcoder2",
+    "significance": 3,
+    "evidence_url": "https://huggingface.co/blog/starcoder2",
+    "evidence_date": "2024-02-28",
+    "notes": "Open code model",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "om_whisper",
+    "artifact_kind": "model",
+    "artifact_ref": "openai/whisper",
+    "significance": 4,
+    "evidence_url": "https://openai.com/research/whisper",
+    "evidence_date": "2022-09-21",
+    "notes": "Open speech recognition",
+    "aliases": [
+      "openai-whisper"
+    ],
+    "metrics": {
+      "parameter_count": 1500000000,
+      "modality": [
+        "audio"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "audio"
+    ]
+  },
+  {
+    "product_id": "om_clip",
+    "artifact_kind": "model",
+    "artifact_ref": "openai/clip",
+    "significance": 4,
+    "evidence_url": "https://openai.com/research/clip",
+    "evidence_date": "2021-01-05",
+    "notes": "Open vision-language model",
+    "aliases": [
+      "openai-clip"
+    ],
+    "metrics": {
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image"
+    ]
+  },
+  {
+    "product_id": "om_stable_diffusion",
+    "artifact_kind": "model",
+    "artifact_ref": "stabilityai/stable-diffusion-3",
+    "significance": 4,
+    "evidence_url": "https://stability.ai/news/stable-diffusion-3",
+    "evidence_date": "2024-02-22",
+    "notes": "Open image generation",
+    "aliases": [
+      "sd3",
+      "stablediffusion"
+    ],
+    "metrics": {
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image"
+    ]
+  },
+  {
+    "product_id": "om_flux",
+    "artifact_kind": "model",
+    "artifact_ref": "black-forest-labs/FLUX.1-dev",
+    "significance": 4,
+    "evidence_url": "https://blackforestlabs.ai",
+    "evidence_date": "2024-08-01",
+    "notes": "Open image generation",
+    "aliases": [
+      "flux-dev",
+      "flux.1"
+    ],
+    "metrics": {
+      "modality": [
+        "text",
+        "image"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image"
+    ]
+  },
+  {
+    "product_id": "om_moshi",
+    "artifact_kind": "model",
+    "artifact_ref": "kyutai-labs/moshi",
+    "significance": 3,
+    "evidence_url": "https://moshi.chat",
+    "evidence_date": "2024-09-25",
+    "notes": "Open real-time speech model",
+    "aliases": [],
+    "metrics": {
+      "modality": [
+        "text",
+        "audio"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "audio"
+    ]
+  },
+  {
+    "product_id": "sd_distilabel",
+    "artifact_kind": "repo",
+    "artifact_ref": "argilla-io/distilabel",
+    "significance": 3,
+    "evidence_url": "https://github.com/argilla-io/distilabel",
+    "evidence_date": "2024-06-01",
+    "notes": "Framework for synthetic data generation",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": "argilla-io/distilabel",
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "os_outlines",
+    "artifact_kind": "repo",
+    "artifact_ref": "dottxt-ai/outlines",
+    "significance": 4,
+    "evidence_url": "https://github.com/dottxt-ai/outlines",
+    "evidence_date": "2024-06-01",
+    "notes": "Structured generation with constraints",
+    "aliases": [
+      "outlines-dev"
+    ],
+    "metrics": {},
+    "repo_ref": "dottxt-ai/outlines",
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "os_instructor",
+    "artifact_kind": "repo",
+    "artifact_ref": "jxnl/instructor",
+    "significance": 4,
+    "evidence_url": "https://github.com/jxnl/instructor",
+    "evidence_date": "2024-06-01",
+    "notes": "Pydantic-based structured output extraction",
+    "aliases": [
+      "jxnl-instructor"
+    ],
+    "metrics": {},
+    "repo_ref": "567-labs/instructor",
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "mod_llama_guard",
+    "artifact_kind": "model",
+    "artifact_ref": "meta-llama/Llama-Guard-3-8B",
+    "significance": 4,
+    "evidence_url": "https://ai.meta.com/research/publications/llama-guard-llm-based-input-output-safeguard-for-human-ai-conversations/",
+    "evidence_date": "2024-04-18",
+    "notes": "Input/output safety classifier",
+    "aliases": [
+      "llama-guard",
+      "llamaguard"
+    ],
+    "metrics": {
+      "parameter_count": 8000000000,
+      "modality": [
+        "text"
+      ]
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "mod_nemo_guardrails",
+    "artifact_kind": "repo",
+    "artifact_ref": "NVIDIA/NeMo-Guardrails",
+    "significance": 3,
+    "evidence_url": "https://github.com/NVIDIA/NeMo-Guardrails",
+    "evidence_date": "2023-04-25",
+    "notes": "Programmable guardrails for LLM apps",
+    "aliases": [
+      "nemo-guardrails"
+    ],
+    "metrics": {},
+    "repo_ref": "nvidia-nemo/guardrails",
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "sa_trl",
+    "artifact_kind": "repo",
+    "artifact_ref": "huggingface/trl",
+    "significance": 4,
+    "evidence_url": "https://github.com/huggingface/trl",
+    "evidence_date": "2024-06-01",
+    "notes": "Library for RLHF, DPO, PPO training",
+    "aliases": [
+      "trl",
+      "hf-trl"
+    ],
+    "metrics": {},
+    "repo_ref": "huggingface/trl",
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_snowflake_cortex",
+    "artifact_kind": "service",
+    "significance": 4,
+    "evidence_url": "https://www.snowflake.com/en/data-cloud/cortex/",
+    "evidence_date": "2024-06-01",
+    "notes": "Managed vector search and LLM functions",
+    "aliases": [
+      "cortex"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_pinecone",
+    "artifact_kind": "service",
+    "significance": 4,
+    "evidence_url": "https://www.pinecone.io",
+    "evidence_date": "2024-06-01",
+    "notes": "Managed vector database",
+    "aliases": [
+      "pinecone-db"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_weaviate_cloud",
+    "artifact_kind": "service",
+    "significance": 3,
+    "evidence_url": "https://weaviate.io",
+    "evidence_date": "2024-06-01",
+    "notes": "Managed vector DB with hybrid search",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "cm_gpt4_arch",
+    "artifact_kind": "model_closed",
+    "significance": 5,
+    "evidence_url": "https://openai.com",
+    "evidence_date": "2023-03-14",
+    "notes": "Undisclosed architecture — rumored MoE",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_claude_arch",
+    "artifact_kind": "model_closed",
+    "significance": 5,
+    "evidence_url": "https://anthropic.com",
+    "evidence_date": "2024-03-04",
+    "notes": "Undisclosed architecture",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_gemini_arch",
+    "artifact_kind": "model_closed",
+    "significance": 5,
+    "evidence_url": "https://deepmind.google",
+    "evidence_date": "2023-12-06",
+    "notes": "Undisclosed multimodal architecture",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ]
+  },
+  {
+    "product_id": "cm_openai_distill",
+    "artifact_kind": "model_closed",
+    "significance": 4,
+    "evidence_url": "https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/",
+    "evidence_date": "2024-07-18",
+    "notes": "Distilled from GPT-4o for cost efficiency",
+    "aliases": [
+      "4o-mini",
+      "gpt4o-mini"
+    ],
+    "metrics": {
+      "context_length": 128000
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image"
+    ]
+  },
+  {
+    "product_id": "cm_gemini_flash_lite",
+    "artifact_kind": "model_closed",
+    "significance": 3,
+    "evidence_url": "https://deepmind.google/technologies/gemini/",
+    "evidence_date": "2025-02-25",
+    "notes": "Lightweight distilled Gemini variant",
+    "aliases": [
+      "flash-lite"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text",
+      "image"
+    ]
+  },
+  {
+    "product_id": "cm_med_palm2",
+    "artifact_kind": "model_closed",
+    "significance": 4,
+    "evidence_url": "https://arxiv.org/abs/2305.09617",
+    "evidence_date": "2023-05-16",
+    "notes": "Medical domain LLM",
+    "aliases": [
+      "med-palm",
+      "medpalm"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_codex",
+    "artifact_kind": "model_closed",
+    "significance": 4,
+    "evidence_url": "https://openai.com",
+    "evidence_date": "2023-03-14",
+    "notes": "Code-specialized GPT variant powering Copilot",
+    "aliases": [
+      "codex"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "cm_bloomberg_gpt",
+    "artifact_kind": "model_closed",
+    "significance": 3,
+    "evidence_url": "https://arxiv.org/abs/2303.17564",
+    "evidence_date": "2023-03-30",
+    "notes": "Finance-specialized 50B LLM",
+    "aliases": [
+      "bloomberggpt"
+    ],
+    "metrics": {
+      "parameter_count": 50000000000
+    },
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": [
+      "text"
+    ]
+  },
+  {
+    "product_id": "svc_openai_playground",
+    "artifact_kind": "service",
+    "significance": 4,
+    "evidence_url": "https://platform.openai.com/playground",
+    "evidence_date": "2023-01-01",
+    "notes": "Built-in prompt editor and system message config",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_anthropic_workbench",
+    "artifact_kind": "service",
+    "significance": 3,
+    "evidence_url": "https://console.anthropic.com",
+    "evidence_date": "2024-01-01",
+    "notes": "Prompt engineering workbench",
+    "aliases": [
+      "claude-workbench"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_humanloop",
+    "artifact_kind": "service",
+    "significance": 3,
+    "evidence_url": "https://humanloop.com",
+    "evidence_date": "2024-01-01",
+    "notes": "Prompt management and evaluation platform",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_langsmith",
+    "artifact_kind": "service",
+    "significance": 4,
+    "evidence_url": "https://smith.langchain.com",
+    "evidence_date": "2023-07-01",
+    "notes": "LLM tracing and evaluation platform",
+    "aliases": [
+      "langsmith"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_datadog_llm",
+    "artifact_kind": "service",
+    "significance": 4,
+    "evidence_url": "https://www.datadoghq.com/product/llm-observability/",
+    "evidence_date": "2024-04-01",
+    "notes": "Enterprise LLM monitoring",
+    "aliases": [
+      "datadog-llm"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_arize_phoenix",
+    "artifact_kind": "service",
+    "significance": 3,
+    "evidence_url": "https://phoenix.arize.com",
+    "evidence_date": "2024-01-01",
+    "notes": "LLM trace analysis",
+    "aliases": [
+      "phoenix"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_scale_data_engine",
+    "artifact_kind": "service",
+    "significance": 4,
+    "evidence_url": "https://scale.com/data-engine",
+    "evidence_date": "2024-01-01",
+    "notes": "Enterprise data labeling and documentation",
+    "aliases": [
+      "scale-data"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_scale_leaderboard",
+    "artifact_kind": "service",
+    "significance": 4,
+    "evidence_url": "https://scale.com/leaderboard",
+    "evidence_date": "2024-06-01",
+    "notes": "Private expert evaluation of frontier models",
+    "aliases": [
+      "seal",
+      "scale-leaderboard"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_artificial_analysis",
+    "artifact_kind": "service",
+    "significance": 3,
+    "evidence_url": "https://artificialanalysis.ai",
+    "evidence_date": "2024-06-01",
+    "notes": "Independent LLM speed and cost benchmarking",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_openai_model_spec",
+    "artifact_kind": "policy",
+    "significance": 4,
+    "evidence_url": "https://cdn.openai.com/spec/model-spec-2024-05-08.html",
+    "evidence_date": "2024-05-08",
+    "notes": "Internal model behavior specification",
+    "aliases": [
+      "model-spec"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_anthropic_system_card",
+    "artifact_kind": "policy",
+    "significance": 4,
+    "evidence_url": "https://www.anthropic.com/news/claude-4-system-card",
+    "evidence_date": "2025-05-22",
+    "notes": "Public model capability and safety documentation",
+    "aliases": [
+      "claude-system-card"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_fossa",
+    "artifact_kind": "service",
+    "significance": 3,
+    "evidence_url": "https://fossa.com",
+    "evidence_date": "2024-01-01",
+    "notes": "Automated license compliance scanning",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_snyk_license",
+    "artifact_kind": "service",
+    "significance": 3,
+    "evidence_url": "https://snyk.io",
+    "evidence_date": "2024-01-01",
+    "notes": "License and security scanning",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_anthropic_transparency",
+    "artifact_kind": "policy",
+    "significance": 3,
+    "evidence_url": "https://www.anthropic.com/news/usage-policy-update",
+    "evidence_date": "2024-09-01",
+    "notes": "Transparency reporting on model use",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_openai_safety_report",
+    "artifact_kind": "policy",
+    "significance": 3,
+    "evidence_url": "https://openai.com/safety",
+    "evidence_date": "2024-06-01",
+    "notes": "Published safety evaluations and reports",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_openai_board",
+    "artifact_kind": "policy",
+    "significance": 3,
+    "evidence_url": "https://openai.com/blog/openai-board",
+    "evidence_date": "2024-03-01",
+    "notes": "Corporate governance structure for AI safety",
+    "aliases": [],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  },
+  {
+    "product_id": "svc_anthropic_ltbt",
+    "artifact_kind": "policy",
+    "significance": 3,
+    "evidence_url": "https://www.anthropic.com/news/the-long-term-benefit-trust",
+    "evidence_date": "2023-09-01",
+    "notes": "Governance structure for mission alignment",
+    "aliases": [
+      "ltbt"
+    ],
+    "metrics": {},
+    "repo_ref": null,
+    "secondary_entity_ids": [],
+    "base_model_contribution_id": null,
+    "finetuned_from_contribution_id": null,
+    "modality": null
+  }
+]
