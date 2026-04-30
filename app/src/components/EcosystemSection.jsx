@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { STARS } from '../data/stars.js';
 import { ecoClusters } from '../data/ecoClusters.js';
 
@@ -46,8 +45,8 @@ export function EcosystemSection() {
         <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,.25)' }}>
           Open source AI ecosystem
         </div>
-        <Link
-          to="/explore"
+        <a
+          href="#"
           style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: 12,
@@ -75,7 +74,7 @@ export function EcosystemSection() {
         >
           Go to Ecosystem App
           <span style={{ opacity: 0.7 }}>→</span>
-        </Link>
+        </a>
       </div>
 
       <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} aria-hidden="true">

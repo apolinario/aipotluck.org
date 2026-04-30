@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
 import { EcosystemSection } from './components/EcosystemSection.jsx';
 import { RoadmapSection } from './components/RoadmapSection.jsx';
 import { HomeHero } from './components/HomeHero.jsx';
@@ -8,9 +7,8 @@ import { MissionSection } from './components/MissionSection.jsx';
 import { NavOverlay } from './components/NavOverlay.jsx';
 import { SectionDots } from './components/SectionDots.jsx';
 import { Chevron } from './components/Chevron.jsx';
-import { Explorer } from './components/explorer/Explorer.jsx';
 
-function LandingPage() {
+export default function App() {
   const [section, setSection] = useState(2);
   const [mode, setMode] = useState('dawn');
   const [atTop, setAtTop] = useState(false);
@@ -81,14 +79,5 @@ function LandingPage() {
       {!atTop && <Chevron dir="up" onClick={() => scrollByPage(-1)} />}
       {!atBot && <Chevron dir="down" onClick={() => scrollByPage(1)} />}
     </div>
-  );
-}
-
-export default function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/explore" element={<Explorer />} />
-    </Routes>
   );
 }
