@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 
-const BASE = '/data/explorer/';
+const BASE = '/data/';
 
 function buildCatEntityMap(products, entitySummaries, entityMap) {
   const tmp = {};
