@@ -1,17 +1,55 @@
-import { useState, useMemo } from 'react';
-import { ecoClusters, repoPosition, clusterCentroid } from '../data/ecoClusters.js';
+import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ecoClusters } from '../data/ecoClusters.js';
+import { buildStackLayout, galaxyRepoPosition, galaxyClusterCentroid } from '../data/ecosystemLayout.js';
 import ecosystemDawn from '../assets/ecosystem-dawn.png';
 import ecosystemDusk from '../assets/ecosystem-dusk.png';
 
 export function EcosystemSection({ mode }) {
+  const navigate = useNavigate();
+  /** stack: layer (Y) × category criteria avg (X), star-sized dots; galaxy: spiral hub layout */
+  const [layoutMode, setLayoutMode] = useState('stack');
   const [hovCluster, setHovCluster] = useState(null);
   const [hovRepo, setHovRepo] = useState(null);
   const [focusId, setFocusId] = useState('overview');
+
+  const goToCategoryExplorer = useCallback(
+    (categoryId) => {
+      const q = new URLSearchParams({ open: 'category', category: categoryId });
+      navigate(`/app?${q.toString()}`);
+    },
+    [navigate],
+  );
 
   const bgSrc = mode === 'dawn' ? ecosystemDawn : ecosystemDusk;
   const objectPosition = mode === 'dawn' ? 'center 52%' : '32% 52%';
 
   const filterIds = useMemo(() => (focusId === 'overview' ? null : [focusId]), [focusId]);
+
+  const mapLayout = useMemo(() => {
+    if (layoutMode === 'galaxy') {
+      return ecoClusters.map((cluster) => ({
+        cluster,
+        centroid: galaxyClusterCentroid(cluster),
+        items: cluster.repos.map((repo) => ({
+          repo,
+          x: galaxyRepoPosition(cluster, repo).x,
+          y: galaxyRepoPosition(cluster, repo).y,
+          starMul: 1,
+        })),
+      }));
+    }
+    return buildStackLayout(ecoClusters).map(({ cluster, centroid, reposLayout }) => ({
+      cluster,
+      centroid,
+      items: reposLayout.map((rl) => ({
+        repo: rl.repo,
+        x: rl.x,
+        y: rl.y,
+        starMul: rl.starMul,
+      })),
+    }));
+  }, [layoutMode]);
 
   const isClusterEmphasized = (clusterId) => {
     if (!filterIds) return true;
@@ -21,17 +59,21 @@ export function EcosystemSection({ mode }) {
 
   const hubEdges = useMemo(() => {
     if (!filterIds || filterIds.length < 2) return [];
-    const clusters = ecoClusters.filter((c) => filterIds.includes(c.id));
+    const centroids = {};
+    for (const row of mapLayout) {
+      if (filterIds.includes(row.cluster.id)) centroids[row.cluster.id] = row.centroid;
+    }
+    const ids = filterIds.filter((id) => centroids[id]);
     const edges = [];
-    for (let i = 0; i < clusters.length; i++) {
-      for (let j = i + 1; j < clusters.length; j++) {
-        const a = clusterCentroid(clusters[i]);
-        const b = clusterCentroid(clusters[j]);
-        edges.push({ key: `${clusters[i].id}-${clusters[j].id}`, x1: a.cx, y1: a.cy, x2: b.cx, y2: b.cy });
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const a = centroids[ids[i]];
+        const b = centroids[ids[j]];
+        edges.push({ key: `${ids[i]}-${ids[j]}`, x1: a.cx, y1: a.cy, x2: b.cx, y2: b.cy });
       }
     }
     return edges;
-  }, [filterIds]);
+  }, [filterIds, mapLayout]);
 
   const totalRepos = ecoClusters.reduce((a, c) => a + c.repos.length, 0);
 
@@ -99,6 +141,30 @@ export function EcosystemSection({ mode }) {
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, flex: 1, minHeight: 0, width: '100%' }}>
+        {layoutMode === 'stack' && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '14%',
+              right: '14%',
+              bottom: 8,
+              zIndex: 4,
+              pointerEvents: 'none',
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 8,
+              letterSpacing: '.1em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,.28)',
+              textShadow: '0 1px 4px rgba(0,0,0,.85)',
+            }}
+          >
+            <span>← Lower-rated stack areas</span>
+            <span>Higher-rated stack areas →</span>
+          </div>
+        )}
+
         <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} aria-hidden="true">
           {hubEdges.map((e) => (
             <line
@@ -114,20 +180,19 @@ export function EcosystemSection({ mode }) {
               style={{ transition: 'opacity 280ms ease' }}
             />
           ))}
-          {ecoClusters.map((cluster) => {
-            const { cx, cy } = clusterCentroid(cluster);
+          {mapLayout.map(({ cluster, centroid, items }) => {
+            const { cx, cy } = centroid;
             const em = isClusterEmphasized(cluster.id);
             const isHov = hovCluster === cluster.id;
-            return cluster.repos.map((repo, ri) => {
-              const pos = repoPosition(cluster, repo);
+            return items.map((item, ri) => {
               const spokeOp = filterIds ? (em ? (isHov ? 0.32 : 0.24) : 0.04) : isHov ? 0.2 : 0.09;
               return (
                 <line
                   key={`${cluster.id}-${ri}`}
                   x1={`${cx}%`}
                   y1={`${cy}%`}
-                  x2={`${pos.x}%`}
-                  y2={`${pos.y}%`}
+                  x2={`${item.x}%`}
+                  y2={`${item.y}%`}
                   stroke={cluster.color}
                   strokeWidth=".9"
                   opacity={spokeOp}
@@ -138,17 +203,27 @@ export function EcosystemSection({ mode }) {
           })}
         </svg>
 
-        {ecoClusters.flatMap((cluster) => {
+        {mapLayout.flatMap(({ cluster, items }) => {
           const em = isClusterEmphasized(cluster.id);
           const isHovC = hovCluster === cluster.id;
-          return cluster.repos.map((repo, ri) => {
-            const pos = repoPosition(cluster, repo);
+          return items.map(({ repo, x, y, starMul }, ri) => {
             const rk = `${cluster.id}-${ri}`;
             const isHovR = hovRepo === rk;
             const dotOp = filterIds ? (em ? (isHovR ? 1 : 0.92) : 0.14) : isHovC || isHovR ? 0.95 : 0.52;
+            const baseDot = layoutMode === 'stack' ? 5.25 : 6;
+            const w = Math.min(14, Math.max(4.5, (isHovR ? baseDot + 5 : em ? baseDot + 2.2 : baseDot) * starMul));
             return (
               <div
                 key={rk}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    goToCategoryExplorer(cluster.id);
+                  }
+                }}
+                onClick={() => goToCategoryExplorer(cluster.id)}
                 onMouseEnter={() => {
                   setHovCluster(cluster.id);
                   setHovRepo(rk);
@@ -159,11 +234,11 @@ export function EcosystemSection({ mode }) {
                 }}
                 style={{
                   position: 'absolute',
-                  left: `${pos.x}%`,
-                  top: `${pos.y}%`,
+                  left: `${x}%`,
+                  top: `${y}%`,
                   transform: 'translate(-50%,-50%)',
                   zIndex: isHovR ? 9 : em ? 5 : 3,
-                  cursor: 'default',
+                  cursor: 'pointer',
                   animation: `dot-emerge 400ms ${ri * 35}ms cubic-bezier(.16,1,.3,1) both`,
                   opacity: filterIds && !em ? 0.35 : 1,
                   transition: 'opacity 220ms ease',
@@ -171,11 +246,11 @@ export function EcosystemSection({ mode }) {
               >
                 <div
                   style={{
-                    width: isHovR ? 12 : em ? 8 : 6,
-                    height: isHovR ? 12 : em ? 8 : 6,
+                    width: w,
+                    height: w,
                     borderRadius: '50%',
                     background: cluster.color,
-                    opacity: dotOp,
+                    opacity: layoutMode === 'stack' ? Math.min(1, dotOp * (0.92 + starMul * 0.06)) : dotOp,
                     boxShadow: isHovR ? `0 0 14px ${cluster.color}` : em ? `0 0 7px ${cluster.color}70` : 'none',
                     transition: 'all 200ms ease',
                   }}
@@ -190,17 +265,25 @@ export function EcosystemSection({ mode }) {
                       background: 'rgba(8,12,24,.96)',
                       border: '1px solid rgba(255,255,255,.1)',
                       borderRadius: 5,
-                      padding: '5px 10px',
-                      fontFamily: "'DM Mono', monospace",
-                      fontSize: 9,
-                      color: 'rgba(255,255,255,.75)',
-                      whiteSpace: 'nowrap',
+                      padding: '6px 10px 7px',
+                      fontFamily: "'DM Sans', system-ui, sans-serif",
+                      fontSize: 10,
+                      color: 'rgba(255,255,255,.88)',
+                      maxWidth: 260,
+                      textAlign: 'center',
                       zIndex: 20,
                       boxShadow: '0 4px 16px rgba(0,0,0,.5)',
-                      letterSpacing: '.04em',
+                      letterSpacing: '.02em',
+                      lineHeight: 1.35,
+                      pointerEvents: 'none',
                     }}
                   >
-                    {repo.name}
+                    <div style={{ fontWeight: 600, fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: '.04em' }}>
+                      {repo.name}
+                    </div>
+                    <div style={{ marginTop: 3, fontSize: 9, color: 'rgba(255,255,255,.55)', fontFamily: "'DM Mono', monospace", letterSpacing: '.06em' }}>
+                      {cluster.label}
+                    </div>
                   </div>
                 )}
               </div>
@@ -234,6 +317,69 @@ export function EcosystemSection({ mode }) {
             boxShadow: '0 6px 28px rgba(0,0,0,.35)',
           }}
         >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 10,
+              marginBottom: 8,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 8,
+                letterSpacing: '.16em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,.38)',
+              }}
+            >
+              Map layout
+            </span>
+            <div
+              role="group"
+              aria-label="Map layout"
+              style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: '1px solid rgba(255,255,255,.12)' }}
+            >
+              <button
+                type="button"
+                onClick={() => setLayoutMode('stack')}
+                style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 9,
+                  letterSpacing: '.1em',
+                  textTransform: 'uppercase',
+                  padding: '6px 11px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: layoutMode === 'stack' ? 'rgba(255,255,255,.22)' : 'rgba(0,0,0,.25)',
+                  color: layoutMode === 'stack' ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.45)',
+                }}
+              >
+                Stack
+              </button>
+              <button
+                type="button"
+                onClick={() => setLayoutMode('galaxy')}
+                style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 9,
+                  letterSpacing: '.1em',
+                  textTransform: 'uppercase',
+                  padding: '6px 11px',
+                  border: 'none',
+                  borderLeft: '1px solid rgba(255,255,255,.1)',
+                  cursor: 'pointer',
+                  background: layoutMode === 'galaxy' ? 'rgba(255,255,255,.22)' : 'rgba(0,0,0,.25)',
+                  color: layoutMode === 'galaxy' ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.45)',
+                }}
+              >
+                Galaxy
+              </button>
+            </div>
+          </div>
+
           <label
             htmlFor="ecosystem-query"
             style={{
@@ -291,10 +437,10 @@ export function EcosystemSection({ mode }) {
               lineHeight: 1.4,
             }}
           >
-            {totalRepos} repos · {ecoClusters.length} clusters
+            {totalRepos} repos · {ecoClusters.length} stack categories
             {filterIds && (
               <span style={{ display: 'block', marginTop: 4, color: 'rgba(255,255,255,.32)' }}>
-                Showing one layer focus on the map
+                Showing one stack category on the map
               </span>
             )}
           </div>

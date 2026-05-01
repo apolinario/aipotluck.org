@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useExplorerData } from '../../explorer/useExplorerData.js';
 import { Topbar } from './Topbar.jsx';
 import { StacksView } from './StacksView.jsx';
@@ -13,9 +14,26 @@ import '../../styles/explorer.css';
 
 export function ExplorerApp() {
   const data = useExplorerData();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState('stacks');
   const [searchQuery, setSearchQuery] = useState('');
   const [drawer, setDrawer] = useState({ open: false, type: null, id: null });
+
+  /** Open category drawer from URL (?open=category&category=<id>) or clear it when params go away. */
+  useEffect(() => {
+    if (!data.loaded.phase2) return;
+    const open = searchParams.get('open');
+    const category = searchParams.get('category');
+    if (open === 'category' && category && data.catMap[category]) {
+      setDrawer({ open: true, type: 'category', id: category });
+      setView('stacks');
+      return;
+    }
+    setDrawer((d) => {
+      if (d.open && d.type === 'category') return { open: false, type: null, id: null };
+      return d;
+    });
+  }, [data.loaded.phase2, searchParams, data.catMap]);
 
   const handleViewChange = useCallback((v) => {
     setView(v);
@@ -24,19 +42,43 @@ export function ExplorerApp() {
 
   const openCategoryDrawer = useCallback((catId) => {
     setDrawer({ open: true, type: 'category', id: catId });
-  }, []);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.set('open', 'category');
+      p.set('category', catId);
+      return p;
+    });
+  }, [setSearchParams]);
 
   const openRepoDrawer = useCallback((productId) => {
     setDrawer({ open: true, type: 'repo', id: productId });
-  }, []);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.delete('open');
+      p.delete('category');
+      return p;
+    });
+  }, [setSearchParams]);
 
   const openEntityDrawer = useCallback((entityId) => {
     setDrawer({ open: true, type: 'entity', id: entityId });
-  }, []);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.delete('open');
+      p.delete('category');
+      return p;
+    });
+  }, [setSearchParams]);
 
   const closeDrawer = useCallback(() => {
     setDrawer({ open: false, type: null, id: null });
-  }, []);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.delete('open');
+      p.delete('category');
+      return p;
+    });
+  }, [setSearchParams]);
 
   const statsText = useMemo(() => {
     if (view === 'stacks' && data.loaded.phase2) {

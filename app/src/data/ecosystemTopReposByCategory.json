@@ -1,0 +1,4189 @@
+{
+  "generated_at": "2026-05-01T11:09:46.401032+00:00",
+  "source": "app/public/data/products.json + repos_attrs.json + categories.json",
+  "top_n_per_category": 20,
+  "clusters": [
+    {
+      "id": "infrastructure.cloud_compute",
+      "color": "#7AB8A4",
+      "label": "Cloud Compute",
+      "layerId": "infrastructure",
+      "layerName": "Infrastructure",
+      "layerSortOrder": 1,
+      "gapScore": 3,
+      "criteriaAvg": 3.4,
+      "lx": 59.64,
+      "ly": 48.0,
+      "repos": [
+        {
+          "name": "daytona",
+          "productId": "repo:daytonaio/daytona",
+          "stars": 72379,
+          "dx": 1.23,
+          "dy": 1.59
+        },
+        {
+          "name": "modular",
+          "productId": "repo:modular/modular",
+          "stars": 25914,
+          "dx": 0.91,
+          "dy": 2.52
+        },
+        {
+          "name": "umbrel",
+          "productId": "repo:getumbrel/umbrel",
+          "stars": 11081,
+          "dx": 0.1,
+          "dy": 3.12
+        },
+        {
+          "name": "skypilot",
+          "productId": "repo:skypilot-org/skypilot",
+          "stars": 9911,
+          "dx": -0.9,
+          "dy": 3.13
+        },
+        {
+          "name": "moltworker",
+          "productId": "repo:cloudflare/moltworker",
+          "stars": 9869,
+          "dx": -2.09,
+          "dy": 3.09
+        },
+        {
+          "name": "gorse",
+          "productId": "repo:gorse-io/gorse",
+          "stars": 9620,
+          "dx": -1.76,
+          "dy": 1.38
+        },
+        {
+          "name": "cog",
+          "productId": "repo:replicate/cog",
+          "stars": 9407,
+          "dx": -2.52,
+          "dy": 0.91
+        },
+        {
+          "name": "inference",
+          "productId": "repo:xorbitsai/inference",
+          "stars": 9273,
+          "dx": -2.98,
+          "dy": 0.1
+        },
+        {
+          "name": "mage-ai",
+          "productId": "repo:mage-ai/mage-ai",
+          "stars": 8711,
+          "dx": -3.23,
+          "dy": -0.94
+        },
+        {
+          "name": "bentoml",
+          "productId": "repo:bentoml/bentoml",
+          "stars": 8607,
+          "dx": -3.13,
+          "dy": -2.12
+        },
+        {
+          "name": "cortex",
+          "productId": "repo:cortexlabs/cortex",
+          "stars": 8020,
+          "dx": -1.46,
+          "dy": -1.88
+        },
+        {
+          "name": "insforge",
+          "productId": "repo:insforge/insforge",
+          "stars": 7910,
+          "dx": -0.99,
+          "dy": -2.73
+        },
+        {
+          "name": "lmdeploy",
+          "productId": "repo:internlm/lmdeploy",
+          "stars": 7826,
+          "dx": -0.1,
+          "dy": -2.95
+        },
+        {
+          "name": "stable-diffusion-webui-docker",
+          "productId": "repo:abdbarho/stable-diffusion-webui-docker",
+          "stars": 7326,
+          "dx": 0.99,
+          "dy": -3.39
+        },
+        {
+          "name": "flyte",
+          "productId": "repo:flyteorg/flyte",
+          "stars": 6962,
+          "dx": 2.14,
+          "dy": -3.16
+        },
+        {
+          "name": "dynamo",
+          "productId": "repo:ai-dynamo/dynamo",
+          "stars": 6686,
+          "dx": 1.79,
+          "dy": -1.38
+        },
+        {
+          "name": "clearml",
+          "productId": "repo:clearml/clearml",
+          "stars": 6651,
+          "dx": 2.49,
+          "dy": -0.9
+        },
+        {
+          "name": "serving",
+          "productId": "repo:tensorflow/serving",
+          "stars": 6348,
+          "dx": 3.15,
+          "dy": -0.1
+        },
+        {
+          "name": "deepo",
+          "productId": "repo:ufoym/deepo",
+          "stars": 6277,
+          "dx": 3.27,
+          "dy": 0.94
+        },
+        {
+          "name": "osmedeus",
+          "productId": "repo:j3ssie/osmedeus",
+          "stars": 6214,
+          "dx": 3.0,
+          "dy": 2.04
+        }
+      ]
+    },
+    {
+      "id": "infrastructure.communication_libs",
+      "color": "#7AB8A4",
+      "label": "Communication Libs",
+      "layerId": "infrastructure",
+      "layerName": "Infrastructure",
+      "layerSortOrder": 1,
+      "gapScore": 3,
+      "criteriaAvg": 3.3,
+      "lx": 41.98,
+      "ly": 54.81,
+      "repos": [
+        {
+          "name": "bindu",
+          "productId": "repo:getbindu/bindu",
+          "stars": 4937,
+          "dx": 1.19,
+          "dy": 1.78
+        },
+        {
+          "name": "go-sdk",
+          "productId": "repo:modelcontextprotocol/go-sdk",
+          "stars": 4447,
+          "dx": 0.39,
+          "dy": 2.71
+        },
+        {
+          "name": "csharp-sdk",
+          "productId": "repo:modelcontextprotocol/csharp-sdk",
+          "stars": 4225,
+          "dx": -0.94,
+          "dy": 2.98
+        },
+        {
+          "name": "ap2",
+          "productId": "repo:google-agentic-commerce/ap2",
+          "stars": 2939,
+          "dx": -2.34,
+          "dy": 2.48
+        },
+        {
+          "name": "ext-apps",
+          "productId": "repo:modelcontextprotocol/ext-apps",
+          "stars": 2130,
+          "dx": -3.53,
+          "dy": 1.36
+        },
+        {
+          "name": "a2a-python",
+          "productId": "repo:a2aproject/a2a-python",
+          "stars": 1865,
+          "dx": -2.43,
+          "dy": -0.2
+        },
+        {
+          "name": "a2a-samples",
+          "productId": "repo:a2aproject/a2a-samples",
+          "stars": 1536,
+          "dx": -2.06,
+          "dy": -1.22
+        },
+        {
+          "name": "dlpack",
+          "productId": "repo:dmlc/dlpack",
+          "stars": 1202,
+          "dx": -1.65,
+          "dy": -2.47
+        },
+        {
+          "name": "gdpr-transparency-and-consent-framework",
+          "productId": "repo:interactiveadvertisingbureau/gdpr-transparency-and-consent-framework",
+          "stars": 930,
+          "dx": -0.5,
+          "dy": -3.47
+        },
+        {
+          "name": "agent-trace",
+          "productId": "repo:cursor/agent-trace",
+          "stars": 692,
+          "dx": 1.13,
+          "dy": -3.56
+        },
+        {
+          "name": "buffa",
+          "productId": "repo:anthropics/buffa",
+          "stars": 679,
+          "dx": 1.58,
+          "dy": -1.67
+        },
+        {
+          "name": "brief",
+          "productId": "repo:openperf/brief",
+          "stars": 615,
+          "dx": 2.53,
+          "dy": -0.97
+        },
+        {
+          "name": "agent-protocol",
+          "productId": "repo:langchain-ai/agent-protocol",
+          "stars": 572,
+          "dx": 3.02,
+          "dy": 0.25
+        },
+        {
+          "name": "webnn",
+          "productId": "repo:webmachinelearning/webnn",
+          "stars": 522,
+          "dx": 2.81,
+          "dy": 1.66
+        }
+      ]
+    },
+    {
+      "id": "infrastructure.compilers",
+      "color": "#7AB8A4",
+      "label": "Compilers",
+      "layerId": "infrastructure",
+      "layerName": "Infrastructure",
+      "layerSortOrder": 1,
+      "gapScore": 3,
+      "criteriaAvg": 2.9,
+      "lx": 51.03,
+      "ly": 37.08,
+      "repos": [
+        {
+          "name": "llmfit",
+          "productId": "repo:alexsjones/llmfit",
+          "stars": 24786,
+          "dx": 1.94,
+          "dy": 1.03
+        },
+        {
+          "name": "llamafile",
+          "productId": "repo:mozilla-ai/llamafile",
+          "stars": 24299,
+          "dx": 1.74,
+          "dy": 1.82
+        },
+        {
+          "name": "flash-attention",
+          "productId": "repo:dao-ailab/flash-attention",
+          "stars": 23571,
+          "dx": 1.45,
+          "dy": 2.97
+        },
+        {
+          "name": "ncnn",
+          "productId": "repo:tencent/ncnn",
+          "stars": 23161,
+          "dx": 0.44,
+          "dy": 3.15
+        },
+        {
+          "name": "mlc-llm",
+          "productId": "repo:mlc-ai/mlc-llm",
+          "stars": 22541,
+          "dx": -0.64,
+          "dy": 3.63
+        },
+        {
+          "name": "faster-whisper",
+          "productId": "repo:systran/faster-whisper",
+          "stars": 22463,
+          "dx": -1.12,
+          "dy": 2.09
+        },
+        {
+          "name": "onnxruntime",
+          "productId": "repo:microsoft/onnxruntime",
+          "stars": 20371,
+          "dx": -1.72,
+          "dy": 1.67
+        },
+        {
+          "name": "heretic",
+          "productId": "repo:p-e-w/heretic",
+          "stars": 20074,
+          "dx": -2.87,
+          "dy": 1.39
+        },
+        {
+          "name": "llama2.c",
+          "productId": "repo:karpathy/llama2.c",
+          "stars": 19451,
+          "dx": -3.34,
+          "dy": 0.47
+        },
+        {
+          "name": "triton",
+          "productId": "repo:triton-lang/triton",
+          "stars": 19066,
+          "dx": -3.47,
+          "dy": -0.62
+        },
+        {
+          "name": "web-llm",
+          "productId": "repo:mlc-ai/web-llm",
+          "stars": 17845,
+          "dx": -1.87,
+          "dy": -1.0
+        },
+        {
+          "name": "ktransformers",
+          "productId": "repo:kvcache-ai/ktransformers",
+          "stars": 17086,
+          "dx": -1.99,
+          "dy": -2.06
+        },
+        {
+          "name": "open-gpu-kernel-modules",
+          "productId": "repo:nvidia/open-gpu-kernel-modules",
+          "stars": 16940,
+          "dx": -1.32,
+          "dy": -2.7
+        },
+        {
+          "name": "airllm",
+          "productId": "repo:lyogavin/airllm",
+          "stars": 16809,
+          "dx": -0.46,
+          "dy": -3.3
+        },
+        {
+          "name": "weaviate",
+          "productId": "repo:weaviate/weaviate",
+          "stars": 16090,
+          "dx": 0.71,
+          "dy": -4.0
+        },
+        {
+          "name": "mnn",
+          "productId": "repo:alibaba/mnn",
+          "stars": 15042,
+          "dx": 1.04,
+          "dy": -1.94
+        },
+        {
+          "name": "ggml",
+          "productId": "repo:ggml-org/ggml",
+          "stars": 14539,
+          "dx": 2.03,
+          "dy": -1.94
+        },
+        {
+          "name": "tvm",
+          "productId": "repo:apache/tvm",
+          "stars": 13309,
+          "dx": 2.68,
+          "dy": -1.31
+        },
+        {
+          "name": "tensorrt",
+          "productId": "repo:nvidia/tensorrt",
+          "stars": 12944,
+          "dx": 3.28,
+          "dy": -0.46
+        },
+        {
+          "name": "insanely-fast-whisper",
+          "productId": "repo:vaibhavs10/insanely-fast-whisper",
+          "stars": 12707,
+          "dx": 3.66,
+          "dy": 0.65
+        }
+      ]
+    },
+    {
+      "id": "infrastructure.firmware_drivers",
+      "color": "#7AB8A4",
+      "label": "Firmware Drivers",
+      "layerId": "infrastructure",
+      "layerName": "Infrastructure",
+      "layerSortOrder": 1,
+      "gapScore": 3,
+      "criteriaAvg": 3.3,
+      "lx": 57.69,
+      "ly": 57.29,
+      "repos": []
+    },
+    {
+      "id": "infrastructure.hardware_chips",
+      "color": "#7AB8A4",
+      "label": "Hardware Chips",
+      "layerId": "infrastructure",
+      "layerName": "Infrastructure",
+      "layerSortOrder": 1,
+      "gapScore": 2,
+      "criteriaAvg": 2.3,
+      "lx": 36.86,
+      "ly": 45.85,
+      "repos": []
+    },
+    {
+      "id": "infrastructure.ml_frameworks",
+      "color": "#7AB8A4",
+      "label": "ML Frameworks",
+      "layerId": "infrastructure",
+      "layerName": "Infrastructure",
+      "layerSortOrder": 1,
+      "gapScore": 4,
+      "criteriaAvg": 4.3,
+      "lx": 61.8,
+      "ly": 41.05,
+      "repos": [
+        {
+          "name": "tensorflow",
+          "productId": "repo:tensorflow/tensorflow",
+          "stars": 194919,
+          "dx": 2.25,
+          "dy": 0.32
+        },
+        {
+          "name": "pytorch",
+          "productId": "repo:pytorch/pytorch",
+          "stars": 99492,
+          "dx": 2.34,
+          "dy": 1.15
+        },
+        {
+          "name": "opencv",
+          "productId": "repo:opencv/opencv",
+          "stars": 87267,
+          "dx": 2.28,
+          "dy": 2.2
+        },
+        {
+          "name": "scikit-learn",
+          "productId": "repo:scikit-learn/scikit-learn",
+          "stars": 65941,
+          "dx": 1.58,
+          "dy": 2.97
+        },
+        {
+          "name": "keras",
+          "productId": "repo:keras-team/keras",
+          "stars": 64049,
+          "dx": 0.69,
+          "dy": 3.88
+        },
+        {
+          "name": "ray",
+          "productId": "repo:ray-project/ray",
+          "stars": 42347,
+          "dx": -0.32,
+          "dy": 2.27
+        },
+        {
+          "name": "jax",
+          "productId": "repo:jax-ml/jax",
+          "stars": 35496,
+          "dx": -1.07,
+          "dy": 2.21
+        },
+        {
+          "name": "caffe",
+          "productId": "repo:bvlc/caffe",
+          "stars": 34622,
+          "dx": -2.12,
+          "dy": 2.19
+        },
+        {
+          "name": "tinygrad",
+          "productId": "repo:tinygrad/tinygrad",
+          "stars": 32576,
+          "dx": -3.03,
+          "dy": 1.61
+        },
+        {
+          "name": "pytorch-lightning",
+          "productId": "repo:lightning-ai/pytorch-lightning",
+          "stars": 31090,
+          "dx": -3.74,
+          "dy": 0.66
+        },
+        {
+          "name": "fastai",
+          "productId": "repo:fastai/fastai",
+          "stars": 27988,
+          "dx": -2.36,
+          "dy": -0.33
+        },
+        {
+          "name": "mlx",
+          "productId": "repo:ml-explore/mlx",
+          "stars": 25814,
+          "dx": -2.44,
+          "dy": -1.19
+        },
+        {
+          "name": "paddle",
+          "productId": "repo:paddlepaddle/paddle",
+          "stars": 23863,
+          "dx": -2.08,
+          "dy": -2.01
+        },
+        {
+          "name": "pytorch_geometric",
+          "productId": "repo:pyg-team/pytorch_geometric",
+          "stars": 23703,
+          "dx": -1.6,
+          "dy": -3.02
+        },
+        {
+          "name": "marimo",
+          "productId": "repo:marimo-team/marimo",
+          "stars": 20672,
+          "dx": -0.68,
+          "dy": -3.84
+        },
+        {
+          "name": "candle",
+          "productId": "repo:huggingface/candle",
+          "stars": 20107,
+          "dx": 0.31,
+          "dy": -2.18
+        },
+        {
+          "name": "tfjs",
+          "productId": "repo:tensorflow/tfjs",
+          "stars": 19115,
+          "dx": 1.14,
+          "dy": -2.34
+        },
+        {
+          "name": "burn",
+          "productId": "repo:tracel-ai/burn",
+          "stars": 14960,
+          "dx": 2.26,
+          "dy": -2.33
+        },
+        {
+          "name": "brain.js",
+          "productId": "repo:brainjs/brain.js",
+          "stars": 14860,
+          "dx": 2.77,
+          "dy": -1.48
+        },
+        {
+          "name": "horovod",
+          "productId": "repo:horovod/horovod",
+          "stars": 14691,
+          "dx": 3.77,
+          "dy": -0.66
+        }
+      ]
+    },
+    {
+      "id": "infrastructure.storage",
+      "color": "#7AB8A4",
+      "label": "Storage",
+      "layerId": "infrastructure",
+      "layerName": "Infrastructure",
+      "layerSortOrder": 1,
+      "gapScore": 3,
+      "criteriaAvg": 3.4,
+      "lx": 46.22,
+      "ly": 61.03,
+      "repos": [
+        {
+          "name": "meilisearch",
+          "productId": "repo:meilisearch/meilisearch",
+          "stars": 57337,
+          "dx": 1.81,
+          "dy": 1.14
+        },
+        {
+          "name": "milvus",
+          "productId": "repo:milvus-io/milvus",
+          "stars": 44024,
+          "dx": 1.8,
+          "dy": 2.13
+        },
+        {
+          "name": "tidb",
+          "productId": "repo:pingcap/tidb",
+          "stars": 40035,
+          "dx": 1.12,
+          "dy": 2.8
+        },
+        {
+          "name": "faiss",
+          "productId": "repo:facebookresearch/faiss",
+          "stars": 39871,
+          "dx": 0.22,
+          "dy": 3.28
+        },
+        {
+          "name": "one-api",
+          "productId": "repo:songquanpeng/one-api",
+          "stars": 32653,
+          "dx": -0.96,
+          "dy": 3.83
+        },
+        {
+          "name": "qdrant",
+          "productId": "repo:qdrant/qdrant",
+          "stars": 30809,
+          "dx": -1.31,
+          "dy": 2.08
+        },
+        {
+          "name": "new-api",
+          "productId": "repo:quantumnous/new-api",
+          "stars": 29474,
+          "dx": -1.82,
+          "dy": 1.53
+        },
+        {
+          "name": "chroma",
+          "productId": "repo:chroma-core/chroma",
+          "stars": 27667,
+          "dx": -2.8,
+          "dy": 1.13
+        },
+        {
+          "name": "dolt",
+          "productId": "repo:dolthub/dolt",
+          "stars": 22415,
+          "dx": -3.35,
+          "dy": 0.23
+        },
+        {
+          "name": "dvc",
+          "productId": "repo:treeverse/dvc",
+          "stars": 15570,
+          "dx": -3.61,
+          "dy": -0.9
+        },
+        {
+          "name": "annoy",
+          "productId": "repo:spotify/annoy",
+          "stars": 14229,
+          "dx": -1.96,
+          "dy": -1.23
+        },
+        {
+          "name": "openmetadata",
+          "productId": "repo:open-metadata/openmetadata",
+          "stars": 13703,
+          "dx": -1.89,
+          "dy": -2.24
+        },
+        {
+          "name": "lancedb",
+          "productId": "repo:lancedb/lancedb",
+          "stars": 10111,
+          "dx": -1.1,
+          "dy": -2.73
+        },
+        {
+          "name": "3fs",
+          "productId": "repo:deepseek-ai/3fs",
+          "stars": 9838,
+          "dx": -0.23,
+          "dy": -3.36
+        },
+        {
+          "name": "zvec",
+          "productId": "repo:alibaba/zvec",
+          "stars": 9517,
+          "dx": 0.98,
+          "dy": -3.9
+        },
+        {
+          "name": "deeplake",
+          "productId": "repo:activeloopai/deeplake",
+          "stars": 9103,
+          "dx": 1.09,
+          "dy": -1.75
+        },
+        {
+          "name": "modelscope",
+          "productId": "repo:modelscope/modelscope",
+          "stars": 8886,
+          "dx": 2.16,
+          "dy": -1.8
+        },
+        {
+          "name": "stabilitymatrix",
+          "productId": "repo:lykosai/stabilitymatrix",
+          "stars": 8058,
+          "dx": 2.83,
+          "dy": -1.14
+        },
+        {
+          "name": "alluxio",
+          "productId": "repo:alluxio/alluxio",
+          "stars": 7189,
+          "dx": 3.24,
+          "dy": -0.22
+        },
+        {
+          "name": "civitai",
+          "productId": "repo:civitai/civitai",
+          "stars": 7096,
+          "dx": 3.65,
+          "dy": 0.92
+        }
+      ]
+    },
+    {
+      "id": "model_code.evaluation_code",
+      "color": "#9DCFCA",
+      "label": "Evaluation Code",
+      "layerId": "model_code",
+      "layerName": "Model Components: Code",
+      "layerSortOrder": 2,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 43.03,
+      "ly": 35.58,
+      "repos": [
+        {
+          "name": "evals",
+          "productId": "repo:openai/evals",
+          "stars": 18299,
+          "dx": 1.91,
+          "dy": 0.85
+        },
+        {
+          "name": "airsim",
+          "productId": "repo:microsoft/airsim",
+          "stars": 18134,
+          "dx": 1.9,
+          "dy": 1.72
+        },
+        {
+          "name": "deepeval",
+          "productId": "repo:confident-ai/deepeval",
+          "stars": 15038,
+          "dx": 1.53,
+          "dy": 2.67
+        },
+        {
+          "name": "bullet3",
+          "productId": "repo:bulletphysics/bullet3",
+          "stars": 14439,
+          "dx": 0.69,
+          "dy": 3.27
+        },
+        {
+          "name": "carla",
+          "productId": "repo:carla-simulator/carla",
+          "stars": 13891,
+          "dx": -0.4,
+          "dy": 3.76
+        },
+        {
+          "name": "ragas",
+          "productId": "repo:vibrantlabsai/ragas",
+          "stars": 13698,
+          "dx": -0.99,
+          "dy": 2.21
+        },
+        {
+          "name": "mujoco",
+          "productId": "repo:google-deepmind/mujoco",
+          "stars": 13276,
+          "dx": -1.67,
+          "dy": 1.85
+        },
+        {
+          "name": "gorilla",
+          "productId": "repo:shishirpatil/gorilla",
+          "stars": 12851,
+          "dx": -2.51,
+          "dy": 1.45
+        },
+        {
+          "name": "lm-evaluation-harness",
+          "productId": "repo:eleutherai/lm-evaluation-harness",
+          "stars": 12351,
+          "dx": -3.55,
+          "dy": 0.75
+        },
+        {
+          "name": "autoresearchclaw",
+          "productId": "repo:aiming-lab/autoresearchclaw",
+          "stars": 11760,
+          "dx": -3.65,
+          "dy": -0.39
+        },
+        {
+          "name": "tensorzero",
+          "productId": "repo:tensorzero/tensorzero",
+          "stars": 11283,
+          "dx": -1.96,
+          "dy": -0.88
+        },
+        {
+          "name": "pysc2",
+          "productId": "repo:google-deepmind/pysc2",
+          "stars": 8277,
+          "dx": -2.14,
+          "dy": -1.93
+        },
+        {
+          "name": "clawwork",
+          "productId": "repo:hkuds/clawwork",
+          "stars": 8036,
+          "dx": -1.51,
+          "dy": -2.61
+        },
+        {
+          "name": "presidio",
+          "productId": "repo:microsoft/presidio",
+          "stars": 7860,
+          "dx": -0.71,
+          "dy": -3.34
+        },
+        {
+          "name": "upsonic",
+          "productId": "repo:upsonic/upsonic",
+          "stars": 7837,
+          "dx": 0.41,
+          "dy": -3.87
+        },
+        {
+          "name": "pokemonredexperiments",
+          "productId": "repo:pwhiddy/pokemonredexperiments",
+          "stars": 7828,
+          "dx": 0.92,
+          "dy": -2.05
+        },
+        {
+          "name": "garak",
+          "productId": "repo:nvidia/garak",
+          "stars": 7670,
+          "dx": 1.74,
+          "dy": -1.94
+        },
+        {
+          "name": "universe",
+          "productId": "repo:openai/universe",
+          "stars": 7510,
+          "dx": 2.66,
+          "dy": -1.54
+        },
+        {
+          "name": "lab",
+          "productId": "repo:google-deepmind/lab",
+          "stars": 7354,
+          "dx": 3.31,
+          "dy": -0.7
+        },
+        {
+          "name": "evolver",
+          "productId": "repo:evomap/evolver",
+          "stars": 7047,
+          "dx": 3.9,
+          "dy": 0.41
+        }
+      ]
+    },
+    {
+      "id": "model_code.finetuning_code",
+      "color": "#9DCFCA",
+      "label": "Finetuning Code",
+      "layerId": "model_code",
+      "layerName": "Model Components: Code",
+      "layerSortOrder": 2,
+      "gapScore": 3,
+      "criteriaAvg": 3.1,
+      "lx": 64.68,
+      "ly": 52.97,
+      "repos": [
+        {
+          "name": "llamafactory",
+          "productId": "repo:hiyouga/llamafactory",
+          "stars": 70716,
+          "dx": 1.09,
+          "dy": 1.89
+        },
+        {
+          "name": "unsloth",
+          "productId": "repo:unslothai/unsloth",
+          "stars": 63167,
+          "dx": 0.57,
+          "dy": 2.69
+        },
+        {
+          "name": "peft",
+          "productId": "repo:huggingface/peft",
+          "stars": 21010,
+          "dx": -0.32,
+          "dy": 3.0
+        },
+        {
+          "name": "verl",
+          "productId": "repo:verl-project/verl",
+          "stars": 20987,
+          "dx": -1.33,
+          "dy": 2.98
+        },
+        {
+          "name": "alpaca-lora",
+          "productId": "repo:tloen/alpaca-lora",
+          "stars": 18944,
+          "dx": -2.51,
+          "dy": 2.77
+        },
+        {
+          "name": "vision",
+          "productId": "repo:pytorch/vision",
+          "stars": 17646,
+          "dx": -2.13,
+          "dy": 1.22
+        },
+        {
+          "name": "flair",
+          "productId": "repo:flairnlp/flair",
+          "stars": 14370,
+          "dx": -2.46,
+          "dy": 0.52
+        },
+        {
+          "name": "dgl",
+          "productId": "repo:dmlc/dgl",
+          "stars": 14270,
+          "dx": -2.98,
+          "dy": -0.32
+        },
+        {
+          "name": "ms-swift",
+          "productId": "repo:modelscope/ms-swift",
+          "stars": 13947,
+          "dx": -3.18,
+          "dy": -1.43
+        },
+        {
+          "name": "lora",
+          "productId": "repo:microsoft/lora",
+          "stars": 13485,
+          "dx": -2.71,
+          "dy": -2.45
+        },
+        {
+          "name": "allennlp",
+          "productId": "repo:allenai/allennlp",
+          "stars": 11890,
+          "dx": -1.14,
+          "dy": -1.99
+        },
+        {
+          "name": "axolotl",
+          "productId": "repo:axolotl-ai-cloud/axolotl",
+          "stars": 11781,
+          "dx": -0.59,
+          "dy": -2.82
+        },
+        {
+          "name": "qlora",
+          "productId": "repo:artidoro/qlora",
+          "stars": 10898,
+          "dx": 0.29,
+          "dy": -2.74
+        },
+        {
+          "name": "dopamine",
+          "productId": "repo:google/dopamine",
+          "stars": 10878,
+          "dx": 1.45,
+          "dy": -3.22
+        },
+        {
+          "name": "parlai",
+          "productId": "repo:facebookresearch/parlai",
+          "stars": 10633,
+          "dx": 2.69,
+          "dy": -2.96
+        },
+        {
+          "name": "tianshou",
+          "productId": "repo:thu-ml/tianshou",
+          "stars": 10610,
+          "dx": 1.94,
+          "dy": -1.11
+        },
+        {
+          "name": "ai-toolkit",
+          "productId": "repo:ostris/ai-toolkit",
+          "stars": 10369,
+          "dx": 2.46,
+          "dy": -0.52
+        },
+        {
+          "name": "pytorch3d",
+          "productId": "repo:facebookresearch/pytorch3d",
+          "stars": 9864,
+          "dx": 3.06,
+          "dy": 0.33
+        },
+        {
+          "name": "amphion",
+          "productId": "repo:open-mmlab/amphion",
+          "stars": 9776,
+          "dx": 3.05,
+          "dy": 1.37
+        },
+        {
+          "name": "openrlhf",
+          "productId": "repo:openrlhf/openrlhf",
+          "stars": 9424,
+          "dx": 2.69,
+          "dy": 2.45
+        }
+      ]
+    },
+    {
+      "id": "model_code.inference_code",
+      "color": "#9DCFCA",
+      "label": "Inference Code",
+      "layerId": "model_code",
+      "layerName": "Model Components: Code",
+      "layerSortOrder": 2,
+      "gapScore": 4,
+      "criteriaAvg": 3.9,
+      "lx": 35.11,
+      "ly": 53.7,
+      "repos": [
+        {
+          "name": "ollama",
+          "productId": "repo:ollama/ollama",
+          "stars": 170196,
+          "dx": 1.41,
+          "dy": 1.58
+        },
+        {
+          "name": "llama.cpp",
+          "productId": "repo:ggml-org/llama.cpp",
+          "stars": 107110,
+          "dx": 1.01,
+          "dy": 2.29
+        },
+        {
+          "name": "vllm",
+          "productId": "repo:vllm-project/vllm",
+          "stars": 78420,
+          "dx": 0.33,
+          "dy": 3.19
+        },
+        {
+          "name": "gpt4all",
+          "productId": "repo:nomic-ai/gpt4all",
+          "stars": 77375,
+          "dx": -0.66,
+          "dy": 3.08
+        },
+        {
+          "name": "whisper.cpp",
+          "productId": "repo:ggml-org/whisper.cpp",
+          "stars": 49108,
+          "dx": -1.87,
+          "dy": 3.23
+        },
+        {
+          "name": "localai",
+          "productId": "repo:mudler/localai",
+          "stars": 45887,
+          "dx": -1.88,
+          "dy": 1.68
+        },
+        {
+          "name": "exo",
+          "productId": "repo:exo-explore/exo",
+          "stars": 44168,
+          "dx": -2.35,
+          "dy": 1.04
+        },
+        {
+          "name": "sglang",
+          "productId": "repo:sgl-project/sglang",
+          "stars": 26616,
+          "dx": -3.0,
+          "dy": 0.31
+        },
+        {
+          "name": "nemoclaw",
+          "productId": "repo:nvidia/nemoclaw",
+          "stars": 19881,
+          "dx": -3.49,
+          "dy": -0.75
+        },
+        {
+          "name": "openllm",
+          "productId": "repo:bentoml/openllm",
+          "stars": 12301,
+          "dx": -3.2,
+          "dy": -1.85
+        },
+        {
+          "name": "omlx",
+          "productId": "repo:jundot/omlx",
+          "stars": 11720,
+          "dx": -1.47,
+          "dy": -1.64
+        },
+        {
+          "name": "openai-node",
+          "productId": "repo:openai/openai-node",
+          "stars": 10853,
+          "dx": -1.12,
+          "dy": -2.54
+        },
+        {
+          "name": "go-openai",
+          "productId": "repo:sashabaranov/go-openai",
+          "stars": 10642,
+          "dx": -0.31,
+          "dy": -3.04
+        },
+        {
+          "name": "opencode-antigravity-auth",
+          "productId": "repo:noefabris/opencode-antigravity-auth",
+          "stars": 10237,
+          "dx": 0.69,
+          "dy": -3.24
+        },
+        {
+          "name": "ollama-python",
+          "productId": "repo:ollama/ollama-python",
+          "stars": 9884,
+          "dx": 1.88,
+          "dy": -3.26
+        },
+        {
+          "name": "edgegpt",
+          "productId": "repo:acheong08/edgegpt",
+          "stars": 7898,
+          "dx": 1.55,
+          "dy": -1.4
+        },
+        {
+          "name": "claude-agent-sdk-python",
+          "productId": "repo:anthropics/claude-agent-sdk-python",
+          "stars": 6596,
+          "dx": 2.53,
+          "dy": -1.11
+        },
+        {
+          "name": "client",
+          "productId": "repo:openai-php/client",
+          "stars": 5772,
+          "dx": 3.09,
+          "dy": -0.32
+        },
+        {
+          "name": "bard-api",
+          "productId": "repo:dsdanielpark/bard-api",
+          "stars": 5208,
+          "dx": 3.27,
+          "dy": 0.7
+        },
+        {
+          "name": "openai-java",
+          "productId": "repo:theokanning/openai-java",
+          "stars": 4754,
+          "dx": 3.41,
+          "dy": 1.97
+        }
+      ]
+    },
+    {
+      "id": "model_code.model_architecture",
+      "color": "#9DCFCA",
+      "label": "Model Architecture",
+      "layerId": "model_code",
+      "layerName": "Model Components: Code",
+      "layerSortOrder": 2,
+      "gapScore": 3,
+      "criteriaAvg": 2.9,
+      "lx": 57.03,
+      "ly": 34.09,
+      "repos": [
+        {
+          "name": "transformers",
+          "productId": "repo:huggingface/transformers",
+          "stars": 160031,
+          "dx": 1.18,
+          "dy": 1.77
+        },
+        {
+          "name": "nanogpt",
+          "productId": "repo:karpathy/nanogpt",
+          "stars": 57278,
+          "dx": 0.71,
+          "dy": 2.5
+        },
+        {
+          "name": "minimind",
+          "productId": "repo:jingyaogong/minimind",
+          "stars": 48472,
+          "dx": -0.12,
+          "dy": 3.29
+        },
+        {
+          "name": "llm.c",
+          "productId": "repo:karpathy/llm.c",
+          "stars": 29735,
+          "dx": -1.1,
+          "dy": 3.01
+        },
+        {
+          "name": "darknet",
+          "productId": "repo:pjreddie/darknet",
+          "stars": 26446,
+          "dx": -2.27,
+          "dy": 2.9
+        },
+        {
+          "name": "mingpt",
+          "productId": "repo:karpathy/mingpt",
+          "stars": 24258,
+          "dx": -1.88,
+          "dy": 1.27
+        },
+        {
+          "name": "unilm",
+          "productId": "repo:microsoft/unilm",
+          "stars": 22106,
+          "dx": -2.57,
+          "dy": 0.73
+        },
+        {
+          "name": "mamba",
+          "productId": "repo:state-spaces/mamba",
+          "stars": 18110,
+          "dx": -3.15,
+          "dy": -0.12
+        },
+        {
+          "name": "instant-ngp",
+          "productId": "repo:nvlabs/instant-ngp",
+          "stars": 17371,
+          "dx": -3.25,
+          "dy": -1.19
+        },
+        {
+          "name": "tensor2tensor",
+          "productId": "repo:tensorflow/tensor2tensor",
+          "stars": 17217,
+          "dx": -2.82,
+          "dy": -2.22
+        },
+        {
+          "name": "llama3-from-scratch",
+          "productId": "repo:naklecha/llama3-from-scratch",
+          "stars": 15243,
+          "dx": -1.24,
+          "dy": -1.85
+        },
+        {
+          "name": "char-rnn",
+          "productId": "repo:karpathy/char-rnn",
+          "stars": 12030,
+          "dx": -0.72,
+          "dy": -2.56
+        },
+        {
+          "name": "openpi",
+          "productId": "repo:physical-intelligence/openpi",
+          "stars": 11568,
+          "dx": 0.11,
+          "dy": -2.92
+        },
+        {
+          "name": "dinov3",
+          "productId": "repo:facebookresearch/dinov3",
+          "stars": 10245,
+          "dx": 1.21,
+          "dy": -3.3
+        },
+        {
+          "name": "u-2-net",
+          "productId": "repo:xuebinqin/u-2-net",
+          "stars": 9723,
+          "dx": 2.37,
+          "dy": -3.02
+        },
+        {
+          "name": "attention-is-all-you-need-pytorch",
+          "productId": "repo:jadore801120/attention-is-all-you-need-pytorch",
+          "stars": 9709,
+          "dx": 1.8,
+          "dy": -1.2
+        },
+        {
+          "name": "keras-gan",
+          "productId": "repo:eriklindernoren/keras-gan",
+          "stars": 9214,
+          "dx": 2.38,
+          "dy": -0.68
+        },
+        {
+          "name": "pyro",
+          "productId": "repo:pyro-ppl/pyro",
+          "stars": 8995,
+          "dx": 3.22,
+          "dy": 0.12
+        },
+        {
+          "name": "var",
+          "productId": "repo:foundationvision/var",
+          "stars": 8681,
+          "dx": 3.07,
+          "dy": 1.13
+        },
+        {
+          "name": "gpt-neo",
+          "productId": "repo:eleutherai/gpt-neo",
+          "stars": 8281,
+          "dx": 2.9,
+          "dy": 2.29
+        }
+      ]
+    },
+    {
+      "id": "model_code.supporting_libraries",
+      "color": "#9DCFCA",
+      "label": "Supporting Libraries",
+      "layerId": "model_code",
+      "layerName": "Model Components: Code",
+      "layerSortOrder": 2,
+      "gapScore": 4,
+      "criteriaAvg": 4,
+      "lx": 55.09,
+      "ly": 63.04,
+      "repos": [
+        {
+          "name": "markitdown",
+          "productId": "repo:microsoft/markitdown",
+          "stars": 118170,
+          "dx": 1.9,
+          "dy": 1.19
+        },
+        {
+          "name": "firecrawl",
+          "productId": "repo:firecrawl/firecrawl",
+          "stars": 112765,
+          "dx": 1.75,
+          "dy": 2.08
+        },
+        {
+          "name": "servers",
+          "productId": "repo:modelcontextprotocol/servers",
+          "stars": 84690,
+          "dx": 1.19,
+          "dy": 2.95
+        },
+        {
+          "name": "rtk",
+          "productId": "repo:rtk-ai/rtk",
+          "stars": 37391,
+          "dx": 0.23,
+          "dy": 3.31
+        },
+        {
+          "name": "taskmatrix",
+          "productId": "repo:chenfei-wu/taskmatrix",
+          "stars": 34145,
+          "dx": -0.96,
+          "dy": 3.82
+        },
+        {
+          "name": "playwright-mcp",
+          "productId": "repo:microsoft/playwright-mcp",
+          "stars": 31562,
+          "dx": -1.23,
+          "dy": 1.97
+        },
+        {
+          "name": "openai-python",
+          "productId": "repo:openai/openai-python",
+          "stars": 30620,
+          "dx": -1.88,
+          "dy": 1.58
+        },
+        {
+          "name": "github-mcp-server",
+          "productId": "repo:github/github-mcp-server",
+          "stars": 29315,
+          "dx": -2.82,
+          "dy": 1.14
+        },
+        {
+          "name": "jarvis",
+          "productId": "repo:microsoft/jarvis",
+          "stars": 24675,
+          "dx": -3.67,
+          "dy": 0.25
+        },
+        {
+          "name": "blender-mcp",
+          "productId": "repo:ahujasid/blender-mcp",
+          "stars": 20772,
+          "dx": -3.53,
+          "dy": -0.89
+        },
+        {
+          "name": "agentic",
+          "productId": "repo:transitive-bullshit/agentic",
+          "stars": 18127,
+          "dx": -2.01,
+          "dy": -1.26
+        },
+        {
+          "name": "skills",
+          "productId": "repo:openai/skills",
+          "stars": 17735,
+          "dx": -1.67,
+          "dy": -2.01
+        },
+        {
+          "name": "aisuite",
+          "productId": "repo:andrewyng/aisuite",
+          "stars": 13746,
+          "dx": -1.14,
+          "dy": -2.81
+        },
+        {
+          "name": "skill_seekers",
+          "productId": "repo:yusufkaraaslan/skill_seekers",
+          "stars": 13155,
+          "dx": -0.23,
+          "dy": -3.41
+        },
+        {
+          "name": "xiaohongshu-mcp",
+          "productId": "repo:xpzouying/xiaohongshu-mcp",
+          "stars": 13123,
+          "dx": 0.92,
+          "dy": -3.69
+        },
+        {
+          "name": "fastapi_mcp",
+          "productId": "repo:tadata-org/fastapi_mcp",
+          "stars": 11829,
+          "dx": 1.09,
+          "dy": -1.74
+        },
+        {
+          "name": "knowledge-work-plugins",
+          "productId": "repo:anthropics/knowledge-work-plugins",
+          "stars": 11619,
+          "dx": 1.91,
+          "dy": -1.61
+        },
+        {
+          "name": "openskills",
+          "productId": "repo:numman-ali/openskills",
+          "stars": 9952,
+          "dx": 3.04,
+          "dy": -1.22
+        },
+        {
+          "name": "mcp-use",
+          "productId": "repo:mcp-use/mcp-use",
+          "stars": 9840,
+          "dx": 3.19,
+          "dy": -0.22
+        },
+        {
+          "name": "inspector",
+          "productId": "repo:modelcontextprotocol/inspector",
+          "stars": 9589,
+          "dx": 3.54,
+          "dy": 0.89
+        }
+      ]
+    },
+    {
+      "id": "model_code.training_code",
+      "color": "#9DCFCA",
+      "label": "Training Code",
+      "layerId": "model_code",
+      "layerName": "Model Components: Code",
+      "layerSortOrder": 2,
+      "gapScore": 4,
+      "criteriaAvg": 3.8,
+      "lx": 34.91,
+      "ly": 39.9,
+      "repos": [
+        {
+          "name": "deepspeed",
+          "productId": "repo:deepspeedai/deepspeed",
+          "stars": 42211,
+          "dx": 1.55,
+          "dy": 1.72
+        },
+        {
+          "name": "colossalai",
+          "productId": "repo:hpcaitech/colossalai",
+          "stars": 41377,
+          "dx": 1.11,
+          "dy": 2.5
+        },
+        {
+          "name": "gym",
+          "productId": "repo:openai/gym",
+          "stars": 37176,
+          "dx": 0.32,
+          "dy": 3.14
+        },
+        {
+          "name": "nemo",
+          "productId": "repo:nvidia-nemo/nemo",
+          "stars": 17140,
+          "dx": -0.69,
+          "dy": 3.21
+        },
+        {
+          "name": "megatron-lm",
+          "productId": "repo:nvidia/megatron-lm",
+          "stars": 16174,
+          "dx": -1.91,
+          "dy": 3.3
+        },
+        {
+          "name": "nni",
+          "productId": "repo:microsoft/nni",
+          "stars": 14349,
+          "dx": -1.9,
+          "dy": 1.7
+        },
+        {
+          "name": "optuna",
+          "productId": "repo:optuna/optuna",
+          "stars": 14057,
+          "dx": -2.18,
+          "dy": 0.97
+        },
+        {
+          "name": "litgpt",
+          "productId": "repo:lightning-ai/litgpt",
+          "stars": 13328,
+          "dx": -3.08,
+          "dy": 0.32
+        },
+        {
+          "name": "ludwig",
+          "productId": "repo:ludwig-ai/ludwig",
+          "stars": 11679,
+          "dx": -3.41,
+          "dy": -0.73
+        },
+        {
+          "name": "pysyft",
+          "productId": "repo:openmined/pysyft",
+          "stars": 9878,
+          "dx": -3.1,
+          "dy": -1.81
+        },
+        {
+          "name": "autokeras",
+          "productId": "repo:keras-team/autokeras",
+          "stars": 9313,
+          "dx": -1.42,
+          "dy": -1.6
+        },
+        {
+          "name": "gpt-neox",
+          "productId": "repo:eleutherai/gpt-neox",
+          "stars": 7424,
+          "dx": -1.1,
+          "dy": -2.48
+        },
+        {
+          "name": "flower",
+          "productId": "repo:flwrlabs/flower",
+          "stars": 6862,
+          "dx": -0.31,
+          "dy": -2.97
+        },
+        {
+          "name": "angel",
+          "productId": "repo:angel-ml/angel",
+          "stars": 6787,
+          "dx": 0.71,
+          "dy": -3.32
+        },
+        {
+          "name": "metaseq",
+          "productId": "repo:facebookresearch/metaseq",
+          "stars": 6553,
+          "dx": 1.97,
+          "dy": -3.39
+        },
+        {
+          "name": "automl",
+          "productId": "repo:google/automl",
+          "stars": 6471,
+          "dx": 1.63,
+          "dy": -1.46
+        },
+        {
+          "name": "mesh-transformer-jax",
+          "productId": "repo:kingoflolz/mesh-transformer-jax",
+          "stars": 6366,
+          "dx": 2.32,
+          "dy": -1.03
+        },
+        {
+          "name": "fate",
+          "productId": "repo:federatedai/fate",
+          "stars": 6071,
+          "dx": 3.14,
+          "dy": -0.32
+        },
+        {
+          "name": "pufferlib",
+          "productId": "repo:pufferai/pufferlib",
+          "stars": 5631,
+          "dx": 3.22,
+          "dy": 0.69
+        },
+        {
+          "name": "keras-rl",
+          "productId": "repo:keras-rl/keras-rl",
+          "stars": 5556,
+          "dx": 3.21,
+          "dy": 1.86
+        }
+      ]
+    },
+    {
+      "id": "model_datasets.benchmark_eval_data",
+      "color": "#3DAAB8",
+      "label": "Benchmark Eval Data",
+      "layerId": "model_datasets",
+      "layerName": "Model Components: Datasets",
+      "layerSortOrder": 3,
+      "gapScore": 4,
+      "criteriaAvg": 3.9,
+      "lx": 67.43,
+      "ly": 44.45,
+      "repos": []
+    },
+    {
+      "id": "model_datasets.data_preprocessing",
+      "color": "#3DAAB8",
+      "label": "Data Preprocessing",
+      "layerId": "model_datasets",
+      "layerName": "Model Components: Datasets",
+      "layerSortOrder": 3,
+      "gapScore": 3,
+      "criteriaAvg": 3.4,
+      "lx": 39.51,
+      "ly": 61.82,
+      "repos": [
+        {
+          "name": "scrapy",
+          "productId": "repo:scrapy/scrapy",
+          "stars": 61480,
+          "dx": 1.16,
+          "dy": 1.73
+        },
+        {
+          "name": "pandas",
+          "productId": "repo:pandas-dev/pandas",
+          "stars": 48597,
+          "dx": 0.69,
+          "dy": 2.43
+        },
+        {
+          "name": "langextract",
+          "productId": "repo:google/langextract",
+          "stars": 35956,
+          "dx": -0.12,
+          "dy": 3.3
+        },
+        {
+          "name": "spacy",
+          "productId": "repo:explosion/spacy",
+          "stars": 33520,
+          "dx": -1.08,
+          "dy": 2.95
+        },
+        {
+          "name": "xgboost",
+          "productId": "repo:dmlc/xgboost",
+          "stars": 28324,
+          "dx": -2.4,
+          "dy": 3.04
+        },
+        {
+          "name": "label-studio",
+          "productId": "repo:humansignal/label-studio",
+          "stars": 27160,
+          "dx": -2.11,
+          "dy": 1.41
+        },
+        {
+          "name": "fasttext",
+          "productId": "repo:facebookresearch/fasttext",
+          "stars": 26517,
+          "dx": -2.43,
+          "dy": 0.69
+        },
+        {
+          "name": "labelimg",
+          "productId": "repo:humansignal/labelimg",
+          "stars": 24927,
+          "dx": -3.15,
+          "dy": -0.12
+        },
+        {
+          "name": "scrapegraph-ai",
+          "productId": "repo:scrapegraphai/scrapegraph-ai",
+          "stars": 23405,
+          "dx": -3.19,
+          "dy": -1.17
+        },
+        {
+          "name": "datasets",
+          "productId": "repo:huggingface/datasets",
+          "stars": 21460,
+          "dx": -2.77,
+          "dy": -2.18
+        },
+        {
+          "name": "faker",
+          "productId": "repo:joke2k/faker",
+          "stars": 19231,
+          "dx": -1.17,
+          "dy": -1.76
+        },
+        {
+          "name": "lightgbm",
+          "productId": "repo:lightgbm-org/lightgbm",
+          "stars": 18302,
+          "dx": -0.76,
+          "dy": -2.66
+        },
+        {
+          "name": "tiktoken",
+          "productId": "repo:openai/tiktoken",
+          "stars": 18038,
+          "dx": 0.11,
+          "dy": -2.84
+        },
+        {
+          "name": "magika",
+          "productId": "repo:google/magika",
+          "stars": 16802,
+          "dx": 1.19,
+          "dy": -3.24
+        },
+        {
+          "name": "gensim",
+          "productId": "repo:piskvorky/gensim",
+          "stars": 16399,
+          "dx": 2.35,
+          "dy": -3.0
+        },
+        {
+          "name": "labelme",
+          "productId": "repo:wkentaro/labelme",
+          "stars": 15803,
+          "dx": 1.67,
+          "dy": -1.13
+        },
+        {
+          "name": "cvat",
+          "productId": "repo:cvat-ai/cvat",
+          "stars": 15727,
+          "dx": 2.68,
+          "dy": -0.76
+        },
+        {
+          "name": "albumentations",
+          "productId": "repo:albumentations-team/albumentations",
+          "stars": 15287,
+          "dx": 3.02,
+          "dy": 0.11
+        },
+        {
+          "name": "nltk",
+          "productId": "repo:nltk/nltk",
+          "stars": 14598,
+          "dx": 3.0,
+          "dy": 1.1
+        },
+        {
+          "name": "easy-dataset",
+          "productId": "repo:conardli/easy-dataset",
+          "stars": 14097,
+          "dx": 3.03,
+          "dy": 2.37
+        }
+      ]
+    },
+    {
+      "id": "model_datasets.preference_alignment_data",
+      "color": "#3DAAB8",
+      "label": "Preference Alignment Data",
+      "layerId": "model_datasets",
+      "layerName": "Model Components: Datasets",
+      "layerSortOrder": 3,
+      "gapScore": 4,
+      "criteriaAvg": 4,
+      "lx": 47.61,
+      "ly": 30.9,
+      "repos": []
+    },
+    {
+      "id": "model_datasets.pretraining_data",
+      "color": "#3DAAB8",
+      "label": "Pretraining Data",
+      "layerId": "model_datasets",
+      "layerName": "Model Components: Datasets",
+      "layerSortOrder": 3,
+      "gapScore": 3,
+      "criteriaAvg": 3.1,
+      "lx": 64.52,
+      "ly": 59.34,
+      "repos": [
+        {
+          "name": "dialog_corpus",
+          "productId": "repo:candlewill/dialog_corpus",
+          "stars": 2053,
+          "dx": 1.5,
+          "dy": 1.67
+        }
+      ]
+    },
+    {
+      "id": "model_datasets.synthetic_data",
+      "color": "#3DAAB8",
+      "label": "Synthetic Data",
+      "layerId": "model_datasets",
+      "layerName": "Model Components: Datasets",
+      "layerSortOrder": 3,
+      "gapScore": 3,
+      "criteriaAvg": 2.9,
+      "lx": 30.67,
+      "ly": 48.74,
+      "repos": [
+        {
+          "name": "distilabel",
+          "productId": "repo:sd_distilabel",
+          "stars": 0,
+          "dx": 2.05,
+          "dy": 0.44
+        },
+        {
+          "name": "distilabel",
+          "productId": "sd_distilabel",
+          "stars": 0,
+          "dx": -2.45,
+          "dy": -0.53
+        }
+      ]
+    },
+    {
+      "id": "model_weights.base_pretrained",
+      "color": "#E8796A",
+      "label": "Base Pretrained",
+      "layerId": "model_weights",
+      "layerName": "Model Components: Weights",
+      "layerSortOrder": 4,
+      "gapScore": 4,
+      "criteriaAvg": 3.9,
+      "lx": 63.96,
+      "ly": 35.13,
+      "repos": [
+        {
+          "name": "deepseek-v3",
+          "productId": "repo:deepseek-ai/deepseek-v3",
+          "stars": 103244,
+          "dx": 2.09,
+          "dy": 0.45
+        },
+        {
+          "name": "deepseek-r1",
+          "productId": "repo:deepseek-ai/deepseek-r1",
+          "stars": 91998,
+          "dx": 2.4,
+          "dy": 1.38
+        },
+        {
+          "name": "llama",
+          "productId": "repo:meta-llama/llama",
+          "stars": 59374,
+          "dx": 2.07,
+          "dy": 2.3
+        },
+        {
+          "name": "grok-1",
+          "productId": "repo:xai-org/grok-1",
+          "stars": 51535,
+          "dx": 1.36,
+          "dy": 3.06
+        },
+        {
+          "name": "bert",
+          "productId": "repo:google-research/bert",
+          "stars": 40004,
+          "dx": 0.38,
+          "dy": 3.67
+        },
+        {
+          "name": "fastchat",
+          "productId": "repo:lm-sys/fastchat",
+          "stars": 39461,
+          "dx": -0.48,
+          "dy": 2.27
+        },
+        {
+          "name": "bitnet",
+          "productId": "repo:microsoft/bitnet",
+          "stars": 38619,
+          "dx": -1.2,
+          "dy": 2.08
+        },
+        {
+          "name": "fairseq",
+          "productId": "repo:facebookresearch/fairseq",
+          "stars": 32211,
+          "dx": -2.15,
+          "dy": 1.94
+        },
+        {
+          "name": "stanford_alpaca",
+          "productId": "repo:tatsu-lab/stanford_alpaca",
+          "stars": 30262,
+          "dx": -3.13,
+          "dy": 1.4
+        },
+        {
+          "name": "llama3",
+          "productId": "repo:meta-llama/llama3",
+          "stars": 29301,
+          "dx": -3.49,
+          "dy": 0.37
+        },
+        {
+          "name": "qwen3",
+          "productId": "repo:qwenlm/qwen3",
+          "stars": 27173,
+          "dx": -2.25,
+          "dy": -0.48
+        },
+        {
+          "name": "open-r1",
+          "productId": "repo:huggingface/open-r1",
+          "stars": 26008,
+          "dx": -2.4,
+          "dy": -1.39
+        },
+        {
+          "name": "minigpt-4",
+          "productId": "repo:vision-cair/minigpt-4",
+          "stars": 25729,
+          "dx": -1.84,
+          "dy": -2.05
+        },
+        {
+          "name": "llava",
+          "productId": "repo:haotian-liu/llava",
+          "stars": 24729,
+          "dx": -1.43,
+          "dy": -3.21
+        },
+        {
+          "name": "qwen",
+          "productId": "repo:qwenlm/qwen",
+          "stars": 21080,
+          "dx": -0.41,
+          "dy": -3.93
+        },
+        {
+          "name": "gpt-oss",
+          "productId": "repo:openai/gpt-oss",
+          "stars": 20049,
+          "dx": 0.44,
+          "dy": -2.05
+        },
+        {
+          "name": "qwen3-vl",
+          "productId": "repo:qwenlm/qwen3-vl",
+          "stars": 19077,
+          "dx": 1.36,
+          "dy": -2.34
+        },
+        {
+          "name": "janus",
+          "productId": "repo:deepseek-ai/janus",
+          "stars": 17705,
+          "dx": 2.22,
+          "dy": -2.01
+        },
+        {
+          "name": "tfjs-models",
+          "productId": "repo:tensorflow/tfjs-models",
+          "stars": 14777,
+          "dx": 3.12,
+          "dy": -1.38
+        },
+        {
+          "name": "rwkv-lm",
+          "productId": "repo:blinkdl/rwkv-lm",
+          "stars": 14493,
+          "dx": 3.79,
+          "dy": -0.4
+        }
+      ]
+    },
+    {
+      "id": "model_weights.compressed_weights",
+      "color": "#E8796A",
+      "label": "Compressed Weights",
+      "layerId": "model_weights",
+      "layerName": "Model Components: Weights",
+      "layerSortOrder": 4,
+      "gapScore": 3,
+      "criteriaAvg": 3.1,
+      "lx": 49.07,
+      "ly": 66.54,
+      "repos": [
+        {
+          "name": "mobilenetv3",
+          "productId": "repo:xiaolai-sqlai/mobilenetv3",
+          "stars": 1850,
+          "dx": 1.71,
+          "dy": 1.44
+        },
+        {
+          "name": "agentcpm-gui",
+          "productId": "repo:openbmb/agentcpm-gui",
+          "stars": 1358,
+          "dx": 0.65,
+          "dy": 2.63
+        },
+        {
+          "name": "tinyengine",
+          "productId": "repo:mit-han-lab/tinyengine",
+          "stars": 942,
+          "dx": -1.24,
+          "dy": 3.03
+        },
+        {
+          "name": "stm32ai-modelzoo",
+          "productId": "repo:stmicroelectronics/stm32ai-modelzoo",
+          "stars": 670,
+          "dx": -2.88,
+          "dy": 1.78
+        },
+        {
+          "name": "mobillama",
+          "productId": "repo:mbzuai-oryx/mobillama",
+          "stars": 669,
+          "dx": -3.62,
+          "dy": -0.26
+        },
+        {
+          "name": "open_lth",
+          "productId": "repo:facebookresearch/open_lth",
+          "stars": 639,
+          "dx": -1.8,
+          "dy": -1.52
+        },
+        {
+          "name": "hailo_model_zoo",
+          "productId": "repo:hailo-ai/hailo_model_zoo",
+          "stars": 634,
+          "dx": -0.61,
+          "dy": -2.46
+        },
+        {
+          "name": "kill-the-bits",
+          "productId": "repo:facebookresearch/kill-the-bits",
+          "stars": 631,
+          "dx": 1.18,
+          "dy": -2.9
+        },
+        {
+          "name": "pytorch-slimming",
+          "productId": "repo:foolwood/pytorch-slimming",
+          "stars": 576,
+          "dx": 3.04,
+          "dy": -1.89
+        },
+        {
+          "name": "fastv",
+          "productId": "repo:pkunlp-icler/fastv",
+          "stars": 574,
+          "dx": 3.77,
+          "dy": 0.27
+        }
+      ]
+    },
+    {
+      "id": "model_weights.domain_weights",
+      "color": "#E8796A",
+      "label": "Domain Weights",
+      "layerId": "model_weights",
+      "layerName": "Model Components: Weights",
+      "layerSortOrder": 4,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 36.95,
+      "ly": 33.52,
+      "repos": [
+        {
+          "name": "chatglm-6b",
+          "productId": "repo:zai-org/chatglm-6b",
+          "stars": 41144,
+          "dx": 2.18,
+          "dy": 0.46
+        },
+        {
+          "name": "deepseek-coder",
+          "productId": "repo:deepseek-ai/deepseek-coder",
+          "stars": 23157,
+          "dx": 2.41,
+          "dy": 1.39
+        },
+        {
+          "name": "kronos",
+          "productId": "repo:shiyu-coder/kronos",
+          "stars": 21835,
+          "dx": 2.02,
+          "dy": 2.26
+        },
+        {
+          "name": "cosyvoice",
+          "productId": "repo:funaudiollm/cosyvoice",
+          "stars": 20788,
+          "dx": 1.3,
+          "dy": 2.93
+        },
+        {
+          "name": "fingpt",
+          "productId": "repo:ai4finance-foundation/fingpt",
+          "stars": 19856,
+          "dx": 0.38,
+          "dy": 3.65
+        },
+        {
+          "name": "chinese-llama-alpaca",
+          "productId": "repo:ymcui/chinese-llama-alpaca",
+          "stars": 18946,
+          "dx": -0.47,
+          "dy": 2.21
+        },
+        {
+          "name": "timesfm",
+          "productId": "repo:google-research/timesfm",
+          "stars": 18767,
+          "dx": -1.35,
+          "dy": 2.32
+        },
+        {
+          "name": "sentence-transformers",
+          "productId": "repo:huggingface/sentence-transformers",
+          "stars": 18603,
+          "dx": -2.2,
+          "dy": 1.98
+        },
+        {
+          "name": "qwen3-coder",
+          "productId": "repo:qwenlm/qwen3-coder",
+          "stars": 16458,
+          "dx": -3.34,
+          "dy": 1.48
+        },
+        {
+          "name": "codellama",
+          "productId": "repo:meta-llama/codellama",
+          "stars": 16334,
+          "dx": -3.5,
+          "dy": 0.37
+        },
+        {
+          "name": "chatglm2-6b",
+          "productId": "repo:zai-org/chatglm2-6b",
+          "stars": 15607,
+          "dx": -2.31,
+          "dy": -0.49
+        },
+        {
+          "name": "llama-chinese",
+          "productId": "repo:llamachinese/llama-chinese",
+          "stars": 14727,
+          "dx": -2.5,
+          "dy": -1.44
+        },
+        {
+          "name": "alphafold",
+          "productId": "repo:google-deepmind/alphafold",
+          "stars": 14534,
+          "dx": -1.86,
+          "dy": -2.07
+        },
+        {
+          "name": "chatglm3",
+          "productId": "repo:zai-org/chatglm3",
+          "stars": 13713,
+          "dx": -1.34,
+          "dy": -3.02
+        },
+        {
+          "name": "chinese-bert-wwm",
+          "productId": "repo:ymcui/chinese-bert-wwm",
+          "stars": 10201,
+          "dx": -0.41,
+          "dy": -3.88
+        },
+        {
+          "name": "codegeex",
+          "productId": "repo:zai-org/codegeex",
+          "stars": 8773,
+          "dx": 0.48,
+          "dy": -2.25
+        },
+        {
+          "name": "belle",
+          "productId": "repo:lianjiatech/belle",
+          "stars": 8284,
+          "dx": 1.41,
+          "dy": -2.42
+        },
+        {
+          "name": "alphafold3",
+          "productId": "repo:google-deepmind/alphafold3",
+          "stars": 7915,
+          "dx": 2.42,
+          "dy": -2.17
+        },
+        {
+          "name": "glm-130b",
+          "productId": "repo:zai-org/glm-130b",
+          "stars": 7659,
+          "dx": 2.95,
+          "dy": -1.32
+        },
+        {
+          "name": "codegeex2",
+          "productId": "repo:zai-org/codegeex2",
+          "stars": 7579,
+          "dx": 3.66,
+          "dy": -0.38
+        }
+      ]
+    },
+    {
+      "id": "model_weights.finetuned_chat",
+      "color": "#E8796A",
+      "label": "Finetuned Chat",
+      "layerId": "model_weights",
+      "layerName": "Model Components: Weights",
+      "layerSortOrder": 4,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 70.5,
+      "ly": 50.56,
+      "repos": []
+    },
+    {
+      "id": "model_weights.multimodal_weights",
+      "color": "#E8796A",
+      "label": "Multimodal Weights",
+      "layerId": "model_weights",
+      "layerName": "Model Components: Weights",
+      "layerSortOrder": 4,
+      "gapScore": 3,
+      "criteriaAvg": 3.2,
+      "lx": 32.76,
+      "ly": 59.11,
+      "repos": [
+        {
+          "name": "whisper",
+          "productId": "repo:openai/whisper",
+          "stars": 98559,
+          "dx": 1.5,
+          "dy": 1.46
+        },
+        {
+          "name": "tesseract",
+          "productId": "repo:tesseract-ocr/tesseract",
+          "stars": 73768,
+          "dx": 1.19,
+          "dy": 2.26
+        },
+        {
+          "name": "stable-diffusion",
+          "productId": "repo:compvis/stable-diffusion",
+          "stars": 72950,
+          "dx": 0.56,
+          "dy": 3.19
+        },
+        {
+          "name": "yolov5",
+          "productId": "repo:ultralytics/yolov5",
+          "stars": 57306,
+          "dx": -0.45,
+          "dy": 3.15
+        },
+        {
+          "name": "ultralytics",
+          "productId": "repo:ultralytics/ultralytics",
+          "stars": 56527,
+          "dx": -1.68,
+          "dy": 3.42
+        },
+        {
+          "name": "face_recognition",
+          "productId": "repo:ageitgey/face_recognition",
+          "stars": 56345,
+          "dx": -1.75,
+          "dy": 1.79
+        },
+        {
+          "name": "segment-anything",
+          "productId": "repo:facebookresearch/segment-anything",
+          "stars": 54054,
+          "dx": -2.32,
+          "dy": 1.22
+        },
+        {
+          "name": "tts",
+          "productId": "repo:coqui-ai/tts",
+          "stars": 45192,
+          "dx": -3.09,
+          "dy": 0.54
+        },
+        {
+          "name": "chattts",
+          "productId": "repo:2noise/chattts",
+          "stars": 39168,
+          "dx": -3.32,
+          "dy": -0.48
+        },
+        {
+          "name": "bark",
+          "productId": "repo:suno-ai/bark",
+          "stars": 39091,
+          "dx": -3.14,
+          "dy": -1.55
+        },
+        {
+          "name": "supervision",
+          "productId": "repo:roboflow/supervision",
+          "stars": 38248,
+          "dx": -1.64,
+          "dy": -1.59
+        },
+        {
+          "name": "gfpgan",
+          "productId": "repo:tencentarc/gfpgan",
+          "stars": 37437,
+          "dx": -1.37,
+          "dy": -2.57
+        },
+        {
+          "name": "pytorch-image-models",
+          "productId": "repo:huggingface/pytorch-image-models",
+          "stars": 36725,
+          "dx": -0.47,
+          "dy": -2.74
+        },
+        {
+          "name": "draggan",
+          "productId": "repo:xingangpan/draggan",
+          "stars": 35893,
+          "dx": 0.49,
+          "dy": -3.46
+        },
+        {
+          "name": "real-esrgan",
+          "productId": "repo:xinntao/real-esrgan",
+          "stars": 35217,
+          "dx": 1.7,
+          "dy": -3.47
+        },
+        {
+          "name": "detectron2",
+          "productId": "repo:facebookresearch/detectron2",
+          "stars": 34423,
+          "dx": 1.4,
+          "dy": -1.45
+        },
+        {
+          "name": "openpose",
+          "productId": "repo:cmu-perceptual-computing-lab/openpose",
+          "stars": 34048,
+          "dx": 2.35,
+          "dy": -1.24
+        },
+        {
+          "name": "controlnet",
+          "productId": "repo:lllyasviel/controlnet",
+          "stars": 33846,
+          "dx": 3.07,
+          "dy": -0.54
+        },
+        {
+          "name": "diffusers",
+          "productId": "repo:huggingface/diffusers",
+          "stars": 33484,
+          "dx": 3.2,
+          "dy": 0.46
+        },
+        {
+          "name": "clip",
+          "productId": "repo:openai/clip",
+          "stars": 33348,
+          "dx": 3.29,
+          "dy": 1.62
+        }
+      ]
+    },
+    {
+      "id": "product_ux.deployment",
+      "color": "#D4A255",
+      "label": "Deployment",
+      "layerId": "product_ux",
+      "layerName": "Product / UX",
+      "layerSortOrder": 5,
+      "gapScore": 4,
+      "criteriaAvg": 3.8,
+      "lx": 54.68,
+      "ly": 28.74,
+      "repos": [
+        {
+          "name": "litellm",
+          "productId": "repo:berriai/litellm",
+          "stars": 45023,
+          "dx": 1.85,
+          "dy": 1.34
+        },
+        {
+          "name": "kong",
+          "productId": "repo:kong/kong",
+          "stars": 43277,
+          "dx": 1.54,
+          "dy": 2.12
+        },
+        {
+          "name": "semantic-kernel",
+          "productId": "repo:microsoft/semantic-kernel",
+          "stars": 27799,
+          "dx": 0.95,
+          "dy": 2.95
+        },
+        {
+          "name": "wechaty",
+          "productId": "repo:wechaty/wechaty",
+          "stars": 22716,
+          "dx": -0.01,
+          "dy": 3.4
+        },
+        {
+          "name": "kirara-ai",
+          "productId": "repo:lss233/kirara-ai",
+          "stars": 18706,
+          "dx": -1.22,
+          "dy": 3.72
+        },
+        {
+          "name": "free-claude-code",
+          "productId": "repo:alishahryar1/free-claude-code",
+          "stars": 16937,
+          "dx": -1.43,
+          "dy": 1.96
+        },
+        {
+          "name": "hubot",
+          "productId": "repo:hubotio/hubot",
+          "stars": 16783,
+          "dx": -2.01,
+          "dy": 1.46
+        },
+        {
+          "name": "sub2api",
+          "productId": "repo:wei-shaw/sub2api",
+          "stars": 16324,
+          "dx": -3.01,
+          "dy": 0.97
+        },
+        {
+          "name": "langbot",
+          "productId": "repo:langbot-app/langbot",
+          "stars": 15896,
+          "dx": -3.55,
+          "dy": -0.01
+        },
+        {
+          "name": "casdoor",
+          "productId": "repo:casdoor/casdoor",
+          "stars": 13497,
+          "dx": -3.59,
+          "dy": -1.17
+        },
+        {
+          "name": "gateway",
+          "productId": "repo:portkey-ai/gateway",
+          "stars": 11490,
+          "dx": -1.74,
+          "dy": -1.28
+        },
+        {
+          "name": "claude-relay-service",
+          "productId": "repo:wei-shaw/claude-relay-service",
+          "stars": 11382,
+          "dx": -1.72,
+          "dy": -2.36
+        },
+        {
+          "name": "typebot.io",
+          "productId": "repo:baptistearno/typebot.io",
+          "stars": 9887,
+          "dx": -0.92,
+          "dy": -2.84
+        },
+        {
+          "name": "copilot-sdk",
+          "productId": "repo:github/copilot-sdk",
+          "stars": 8557,
+          "dx": 0.01,
+          "dy": -3.29
+        },
+        {
+          "name": "higress",
+          "productId": "repo:higress-group/higress",
+          "stars": 8283,
+          "dx": 1.2,
+          "dy": -3.68
+        },
+        {
+          "name": "gpt-ai-assistant",
+          "productId": "repo:memochou1993/gpt-ai-assistant",
+          "stars": 7745,
+          "dx": 1.22,
+          "dy": -1.68
+        },
+        {
+          "name": "gpt4free-ts",
+          "productId": "repo:xiangsx/gpt4free-ts",
+          "stars": 7731,
+          "dx": 2.08,
+          "dy": -1.51
+        },
+        {
+          "name": "nonebot2",
+          "productId": "repo:nonebot/nonebot2",
+          "stars": 7487,
+          "dx": 2.94,
+          "dy": -0.95
+        },
+        {
+          "name": "aiclient-2-api",
+          "productId": "repo:justlovemaki/aiclient-2-api",
+          "stars": 7383,
+          "dx": 3.24,
+          "dy": 0.01
+        },
+        {
+          "name": "nullclaw",
+          "productId": "repo:nullclaw/nullclaw",
+          "stars": 7358,
+          "dx": 3.65,
+          "dy": 1.19
+        }
+      ]
+    },
+    {
+      "id": "product_ux.orchestration_agents",
+      "color": "#D4A255",
+      "label": "Orchestration Agents",
+      "layerId": "product_ux",
+      "layerName": "Product / UX",
+      "layerSortOrder": 5,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 60.75,
+      "ly": 65.37,
+      "repos": [
+        {
+          "name": "openclaw",
+          "productId": "repo:openclaw/openclaw",
+          "stars": 365635,
+          "dx": 2.1,
+          "dy": 0.15
+        },
+        {
+          "name": "autogpt",
+          "productId": "repo:significant-gravitas/autogpt",
+          "stars": 183847,
+          "dx": 2.35,
+          "dy": 0.96
+        },
+        {
+          "name": "superpowers",
+          "productId": "repo:obra/superpowers",
+          "stars": 170701,
+          "dx": 2.54,
+          "dy": 2.12
+        },
+        {
+          "name": "langflow",
+          "productId": "repo:langflow-ai/langflow",
+          "stars": 147454,
+          "dx": 1.71,
+          "dy": 2.74
+        },
+        {
+          "name": "dify",
+          "productId": "repo:langgenius/dify",
+          "stars": 139468,
+          "dx": 0.95,
+          "dy": 3.81
+        },
+        {
+          "name": "langchain",
+          "productId": "repo:langchain-ai/langchain",
+          "stars": 135218,
+          "dx": -0.17,
+          "dy": 2.39
+        },
+        {
+          "name": "hermes-agent",
+          "productId": "repo:nousresearch/hermes-agent",
+          "stars": 121920,
+          "dx": -0.94,
+          "dy": 2.33
+        },
+        {
+          "name": "comfyui",
+          "productId": "repo:comfy-org/comfyui",
+          "stars": 110403,
+          "dx": -2.0,
+          "dy": 2.38
+        },
+        {
+          "name": "agency-agents",
+          "productId": "repo:msitarzewski/agency-agents",
+          "stars": 87942,
+          "dx": -3.13,
+          "dy": 1.95
+        },
+        {
+          "name": "ragflow",
+          "productId": "repo:infiniflow/ragflow",
+          "stars": 79175,
+          "dx": -3.71,
+          "dy": 0.92
+        },
+        {
+          "name": "autoresearch",
+          "productId": "repo:karpathy/autoresearch",
+          "stars": 77392,
+          "dx": -2.12,
+          "dy": -0.15
+        },
+        {
+          "name": "paddleocr",
+          "productId": "repo:paddlepaddle/paddleocr",
+          "stars": 76740,
+          "dx": -2.48,
+          "dy": -1.01
+        },
+        {
+          "name": "openbb",
+          "productId": "repo:openbb-finance/openbb",
+          "stars": 66652,
+          "dx": -2.22,
+          "dy": -1.86
+        },
+        {
+          "name": "crawl4ai",
+          "productId": "repo:unclecode/crawl4ai",
+          "stars": 64690,
+          "dx": -1.84,
+          "dy": -2.94
+        },
+        {
+          "name": "pathway",
+          "productId": "repo:pathwaycom/pathway",
+          "stars": 63391,
+          "dx": -0.96,
+          "dy": -3.86
+        },
+        {
+          "name": "mineru",
+          "productId": "repo:opendatalab/mineru",
+          "stars": 61432,
+          "dx": 0.16,
+          "dy": -2.29
+        },
+        {
+          "name": "paperclip",
+          "productId": "repo:paperclipai/paperclip",
+          "stars": 59902,
+          "dx": 0.97,
+          "dy": -2.41
+        },
+        {
+          "name": "llm-app",
+          "productId": "repo:pathwaycom/llm-app",
+          "stars": 59899,
+          "dx": 1.95,
+          "dy": -2.33
+        },
+        {
+          "name": "docling",
+          "productId": "repo:docling-project/docling",
+          "stars": 58707,
+          "dx": 2.76,
+          "dy": -1.73
+        },
+        {
+          "name": "autogen",
+          "productId": "repo:microsoft/autogen",
+          "stars": 57528,
+          "dx": 3.79,
+          "dy": -0.94
+        }
+      ]
+    },
+    {
+      "id": "product_ux.output_settings",
+      "color": "#D4A255",
+      "label": "Output Settings",
+      "layerId": "product_ux",
+      "layerName": "Product / UX",
+      "layerSortOrder": 5,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 29.13,
+      "ly": 41.83,
+      "repos": [
+        {
+          "name": "Instructor",
+          "productId": "repo:os_instructor",
+          "stars": 0,
+          "dx": 2.04,
+          "dy": 0.44
+        },
+        {
+          "name": "Instructor",
+          "productId": "os_instructor",
+          "stars": 0,
+          "dx": -0.58,
+          "dy": 2.73
+        },
+        {
+          "name": "Outlines",
+          "productId": "repo:os_outlines",
+          "stars": 0,
+          "dx": -3.19,
+          "dy": -0.68
+        },
+        {
+          "name": "Outlines",
+          "productId": "os_outlines",
+          "stars": 0,
+          "dx": 0.68,
+          "dy": -3.21
+        }
+      ]
+    },
+    {
+      "id": "product_ux.system_prompt",
+      "color": "#D4A255",
+      "label": "System Prompt",
+      "layerId": "product_ux",
+      "layerName": "Product / UX",
+      "layerSortOrder": 5,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 70.15,
+      "ly": 39.38,
+      "repos": [
+        {
+          "name": "prompts.chat",
+          "productId": "repo:f/prompts.chat",
+          "stars": 160986,
+          "dx": 2.06,
+          "dy": 0.15
+        },
+        {
+          "name": "awesome-chatgpt-prompts-zh",
+          "productId": "repo:plexpt/awesome-chatgpt-prompts-zh",
+          "stars": 59436,
+          "dx": 2.45,
+          "dy": 0.99
+        },
+        {
+          "name": "get-shit-done",
+          "productId": "repo:gsd-build/get-shit-done",
+          "stars": 58253,
+          "dx": 2.29,
+          "dy": 1.93
+        },
+        {
+          "name": "caveman",
+          "productId": "repo:juliusbrussee/caveman",
+          "stars": 48638,
+          "dx": 1.77,
+          "dy": 2.84
+        },
+        {
+          "name": "fabric",
+          "productId": "repo:danielmiessler/fabric",
+          "stars": 41101,
+          "dx": 0.9,
+          "dy": 3.63
+        },
+        {
+          "name": "system_prompts_leaks",
+          "productId": "repo:asgeirtj/system_prompts_leaks",
+          "stars": 39090,
+          "dx": -0.17,
+          "dy": 2.4
+        },
+        {
+          "name": "dspy",
+          "productId": "repo:stanfordnlp/dspy",
+          "stars": 34043,
+          "dx": -0.97,
+          "dy": 2.39
+        },
+        {
+          "name": "skills",
+          "productId": "repo:mattpocock/skills",
+          "stars": 33386,
+          "dx": -1.96,
+          "dy": 2.33
+        },
+        {
+          "name": "gpts",
+          "productId": "repo:linexjlin/gpts",
+          "stars": 31977,
+          "dx": -2.93,
+          "dy": 1.84
+        },
+        {
+          "name": "prompt-optimizer",
+          "productId": "repo:linshenkx/prompt-optimizer",
+          "stars": 27344,
+          "dx": -3.47,
+          "dy": 0.87
+        },
+        {
+          "name": "cl4r1t4s",
+          "productId": "repo:elder-plinius/cl4r1t4s",
+          "stars": 25723,
+          "dx": -2.36,
+          "dy": -0.16
+        },
+        {
+          "name": "toon",
+          "productId": "repo:toon-format/toon",
+          "stars": 24043,
+          "dx": -2.42,
+          "dy": -0.98
+        },
+        {
+          "name": "awesome-nano-banana-images",
+          "productId": "repo:picotrex/awesome-nano-banana-images",
+          "stars": 22438,
+          "dx": -2.2,
+          "dy": -1.85
+        },
+        {
+          "name": "babyagi",
+          "productId": "repo:yoheinakajima/babyagi",
+          "stars": 22243,
+          "dx": -1.8,
+          "dy": -2.88
+        },
+        {
+          "name": "guidance",
+          "productId": "repo:guidance-ai/guidance",
+          "stars": 21409,
+          "dx": -0.91,
+          "dy": -3.67
+        },
+        {
+          "name": "l1b3rt4s",
+          "productId": "repo:elder-plinius/l1b3rt4s",
+          "stars": 18540,
+          "dx": 0.14,
+          "dy": -2.04
+        },
+        {
+          "name": "leaked-system-prompts",
+          "productId": "repo:jujumilk3/leaked-system-prompts",
+          "stars": 14521,
+          "dx": 0.99,
+          "dy": -2.44
+        },
+        {
+          "name": "outlines",
+          "productId": "repo:dottxt-ai/outlines",
+          "stars": 13748,
+          "dx": 1.98,
+          "dy": -2.36
+        },
+        {
+          "name": "taste-skill",
+          "productId": "repo:leonxlnx/taste-skill",
+          "stars": 13639,
+          "dx": 2.88,
+          "dy": -1.79
+        },
+        {
+          "name": "instructor",
+          "productId": "repo:567-labs/instructor",
+          "stars": 12840,
+          "dx": 3.69,
+          "dy": -0.92
+        }
+      ]
+    },
+    {
+      "id": "product_ux.telemetry_observability",
+      "color": "#D4A255",
+      "label": "Telemetry Observability",
+      "layerId": "product_ux",
+      "layerName": "Product / UX",
+      "layerSortOrder": 5,
+      "gapScore": 3,
+      "criteriaAvg": 3.4,
+      "lx": 41.32,
+      "ly": 67.21,
+      "repos": [
+        {
+          "name": "langfuse",
+          "productId": "repo:langfuse/langfuse",
+          "stars": 26228,
+          "dx": 1.93,
+          "dy": 1.2
+        },
+        {
+          "name": "scalene",
+          "productId": "repo:plasma-umass/scalene",
+          "stars": 13394,
+          "dx": 1.67,
+          "dy": 2.0
+        },
+        {
+          "name": "wandb",
+          "productId": "repo:wandb/wandb",
+          "stars": 11037,
+          "dx": 1.22,
+          "dy": 3.02
+        },
+        {
+          "name": "nvtop",
+          "productId": "repo:syllo/nvtop",
+          "stars": 10576,
+          "dx": 0.23,
+          "dy": 3.39
+        },
+        {
+          "name": "phoenix",
+          "productId": "repo:arize-ai/phoenix",
+          "stars": 9461,
+          "dx": -0.91,
+          "dy": 3.64
+        },
+        {
+          "name": "tensorboardx",
+          "productId": "repo:lanpa/tensorboardx",
+          "stars": 7986,
+          "dx": -1.32,
+          "dy": 2.1
+        },
+        {
+          "name": "coroot",
+          "productId": "repo:coroot/coroot",
+          "stars": 7582,
+          "dx": -2.07,
+          "dy": 1.72
+        },
+        {
+          "name": "evidently",
+          "productId": "repo:evidentlyai/evidently",
+          "stars": 7430,
+          "dx": -2.78,
+          "dy": 1.12
+        },
+        {
+          "name": "hertzbeat",
+          "productId": "repo:apache/hertzbeat",
+          "stars": 7189,
+          "dx": -3.48,
+          "dy": 0.24
+        },
+        {
+          "name": "tensorboard",
+          "productId": "repo:tensorflow/tensorboard",
+          "stars": 7155,
+          "dx": -3.41,
+          "dy": -0.86
+        },
+        {
+          "name": "openllmetry",
+          "productId": "repo:traceloop/openllmetry",
+          "stars": 7046,
+          "dx": -1.86,
+          "dy": -1.17
+        },
+        {
+          "name": "nvitop",
+          "productId": "repo:xuehaipan/nvitop",
+          "stars": 6829,
+          "dx": -1.7,
+          "dy": -2.04
+        },
+        {
+          "name": "aim",
+          "productId": "repo:aimhubio/aim",
+          "stars": 6101,
+          "dx": -1.08,
+          "dy": -2.69
+        },
+        {
+          "name": "helicone",
+          "productId": "repo:helicone/helicone",
+          "stars": 5566,
+          "dx": -0.22,
+          "dy": -3.29
+        },
+        {
+          "name": "agentops",
+          "productId": "repo:agentops-ai/agentops",
+          "stars": 5501,
+          "dx": 0.99,
+          "dy": -3.93
+        },
+        {
+          "name": "coze-loop",
+          "productId": "repo:coze-dev/coze-loop",
+          "stars": 5431,
+          "dx": 1.09,
+          "dy": -1.74
+        },
+        {
+          "name": "sacred",
+          "productId": "repo:idsia/sacred",
+          "stars": 4364,
+          "dx": 2.12,
+          "dy": -1.77
+        },
+        {
+          "name": "logfire",
+          "productId": "repo:pydantic/logfire",
+          "stars": 4198,
+          "dx": 2.92,
+          "dy": -1.17
+        },
+        {
+          "name": "cml",
+          "productId": "repo:iterative/cml",
+          "stars": 4174,
+          "dx": 3.16,
+          "dy": -0.22
+        },
+        {
+          "name": "agenta",
+          "productId": "repo:agenta-ai/agenta",
+          "stars": 4066,
+          "dx": 3.56,
+          "dy": 0.9
+        }
+      ]
+    },
+    {
+      "id": "product_ux.ui_api",
+      "color": "#D4A255",
+      "label": "UI & API",
+      "layerId": "product_ux",
+      "layerName": "Product / UX",
+      "layerSortOrder": 5,
+      "gapScore": 3,
+      "criteriaAvg": 2.9,
+      "lx": 42.3,
+      "ly": 28.16,
+      "repos": [
+        {
+          "name": "claw-code",
+          "productId": "repo:ultraworkers/claw-code",
+          "stars": 188924,
+          "dx": 1.95,
+          "dy": 0.42
+        },
+        {
+          "name": "n8n",
+          "productId": "repo:n8n-io/n8n",
+          "stars": 185927,
+          "dx": 2.31,
+          "dy": 1.34
+        },
+        {
+          "name": "stable-diffusion-webui",
+          "productId": "repo:automatic1111/stable-diffusion-webui",
+          "stars": 162653,
+          "dx": 2.04,
+          "dy": 2.27
+        },
+        {
+          "name": "opencode",
+          "productId": "repo:anomalyco/opencode",
+          "stars": 151003,
+          "dx": 1.28,
+          "dy": 2.89
+        },
+        {
+          "name": "open-webui",
+          "productId": "repo:open-webui/open-webui",
+          "stars": 134566,
+          "dx": 0.39,
+          "dy": 3.76
+        },
+        {
+          "name": "skills",
+          "productId": "repo:anthropics/skills",
+          "stars": 125177,
+          "dx": -0.49,
+          "dy": 2.3
+        },
+        {
+          "name": "claude-code",
+          "productId": "repo:anthropics/claude-code",
+          "stars": 118701,
+          "dx": -1.28,
+          "dy": 2.21
+        },
+        {
+          "name": "gemini-cli",
+          "productId": "repo:google-gemini/gemini-cli",
+          "stars": 102608,
+          "dx": -2.21,
+          "dy": 1.99
+        },
+        {
+          "name": "deep-live-cam",
+          "productId": "repo:hacksider/deep-live-cam",
+          "stars": 92398,
+          "dx": -3.37,
+          "dy": 1.49
+        },
+        {
+          "name": "spec-kit",
+          "productId": "repo:github/spec-kit",
+          "stars": 91405,
+          "dx": -3.73,
+          "dy": 0.39
+        },
+        {
+          "name": "browser-use",
+          "productId": "repo:browser-use/browser-use",
+          "stars": 90873,
+          "dx": -2.18,
+          "dy": -0.47
+        },
+        {
+          "name": "nextchat",
+          "productId": "repo:chatgptnextweb/nextchat",
+          "stars": 87832,
+          "dx": -2.34,
+          "dy": -1.36
+        },
+        {
+          "name": "gstack",
+          "productId": "repo:garrytan/gstack",
+          "stars": 85713,
+          "dx": -2.02,
+          "dy": -2.23
+        },
+        {
+          "name": "zed",
+          "productId": "repo:zed-industries/zed",
+          "stars": 79925,
+          "dx": -1.33,
+          "dy": -3.0
+        },
+        {
+          "name": "codex",
+          "productId": "repo:openai/codex",
+          "stars": 78466,
+          "dx": -0.39,
+          "dy": -3.76
+        },
+        {
+          "name": "lobehub",
+          "productId": "repo:lobehub/lobehub",
+          "stars": 75776,
+          "dx": 0.46,
+          "dy": -2.15
+        },
+        {
+          "name": "screenshot-to-code",
+          "productId": "repo:abi/screenshot-to-code",
+          "stars": 72396,
+          "dx": 1.24,
+          "dy": -2.17
+        },
+        {
+          "name": "openhands",
+          "productId": "repo:openhands/openhands",
+          "stars": 72244,
+          "dx": 2.26,
+          "dy": -2.04
+        },
+        {
+          "name": "ui-ux-pro-max-skill",
+          "productId": "repo:nextlevelbuilder/ui-ux-pro-max-skill",
+          "stars": 71631,
+          "dx": 3.08,
+          "dy": -1.36
+        },
+        {
+          "name": "gpt_academic",
+          "productId": "repo:binary-husky/gpt_academic",
+          "stars": 70551,
+          "dx": 3.9,
+          "dy": -0.41
+        }
+      ]
+    },
+    {
+      "id": "documentation.data_documentation",
+      "color": "#A89CC8",
+      "label": "Data Documentation",
+      "layerId": "documentation",
+      "layerName": "Documentation",
+      "layerSortOrder": 6,
+      "gapScore": 3,
+      "criteriaAvg": 3.1,
+      "lx": 70.4,
+      "ly": 57.93,
+      "repos": [
+        {
+          "name": "llm-datasets",
+          "productId": "repo:mlabonne/llm-datasets",
+          "stars": 4488,
+          "dx": 2.25,
+          "dy": 0.31
+        },
+        {
+          "name": "awesome-satellite-imagery-datasets",
+          "productId": "repo:chrieke/awesome-satellite-imagery-datasets",
+          "stars": 3884,
+          "dx": 2.52,
+          "dy": 1.22
+        },
+        {
+          "name": "llmdatahub",
+          "productId": "repo:zjh-819/llmdatahub",
+          "stars": 3382,
+          "dx": 2.24,
+          "dy": 2.16
+        },
+        {
+          "name": "wordvectors",
+          "productId": "repo:kyubyong/wordvectors",
+          "stars": 2234,
+          "dx": 1.48,
+          "dy": 2.8
+        },
+        {
+          "name": "bench2drive",
+          "productId": "repo:thinklab-sjtu/bench2drive",
+          "stars": 1853,
+          "dx": 0.64,
+          "dy": 3.67
+        },
+        {
+          "name": "chineseglue",
+          "productId": "repo:chineseglue/chineseglue",
+          "stars": 1788,
+          "dx": -0.32,
+          "dy": 2.3
+        },
+        {
+          "name": "awesome-llms-datasets",
+          "productId": "repo:lmmlzn/awesome-llms-datasets",
+          "stars": 1459,
+          "dx": -1.1,
+          "dy": 2.26
+        },
+        {
+          "name": "humanml3d",
+          "productId": "repo:ericguo5513/humanml3d",
+          "stars": 1456,
+          "dx": -2.02,
+          "dy": 2.1
+        },
+        {
+          "name": "conversational-datasets",
+          "productId": "repo:polyai-ldn/conversational-datasets",
+          "stars": 1392,
+          "dx": -3.05,
+          "dy": 1.62
+        },
+        {
+          "name": "open-speech-corpora",
+          "productId": "repo:coqui-ai/open-speech-corpora",
+          "stars": 1392,
+          "dx": -3.58,
+          "dy": 0.63
+        },
+        {
+          "name": "diffusiondb",
+          "productId": "repo:poloclub/diffusiondb",
+          "stars": 1375,
+          "dx": -2.26,
+          "dy": -0.32
+        },
+        {
+          "name": "datasets",
+          "productId": "repo:jbrownlee/datasets",
+          "stars": 1235,
+          "dx": -2.43,
+          "dy": -1.19
+        },
+        {
+          "name": "awesome-instruction-dataset",
+          "productId": "repo:yaodongc/awesome-instruction-dataset",
+          "stars": 1147,
+          "dx": -2.16,
+          "dy": -2.08
+        },
+        {
+          "name": "datasets",
+          "productId": "repo:satellite-image-deep-learning/datasets",
+          "stars": 1131,
+          "dx": -1.53,
+          "dy": -2.89
+        },
+        {
+          "name": "awesome-twitter-data",
+          "productId": "repo:shaypal5/awesome-twitter-data",
+          "stars": 1104,
+          "dx": -0.69,
+          "dy": -3.93
+        },
+        {
+          "name": "game-datasets",
+          "productId": "repo:leomaurodesenv/game-datasets",
+          "stars": 1041,
+          "dx": 0.31,
+          "dy": -2.22
+        },
+        {
+          "name": "awesome-dataset-tools",
+          "productId": "repo:jsbroks/awesome-dataset-tools",
+          "stars": 935,
+          "dx": 1.16,
+          "dy": -2.37
+        },
+        {
+          "name": "ai-audio-datasets",
+          "productId": "repo:yuan-manx/ai-audio-datasets",
+          "stars": 931,
+          "dx": 2.18,
+          "dy": -2.26
+        },
+        {
+          "name": "awesome-chatgpt-dataset",
+          "productId": "repo:voidful/awesome-chatgpt-dataset",
+          "stars": 762,
+          "dx": 2.87,
+          "dy": -1.53
+        },
+        {
+          "name": "awesome-instruction-datasets",
+          "productId": "repo:jianzhnie/awesome-instruction-datasets",
+          "stars": 730,
+          "dx": 3.79,
+          "dy": -0.67
+        }
+      ]
+    },
+    {
+      "id": "documentation.eval_results",
+      "color": "#A89CC8",
+      "label": "Eval Results",
+      "layerId": "documentation",
+      "layerName": "Documentation",
+      "layerSortOrder": 6,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 27.46,
+      "ly": 53.5,
+      "repos": [
+        {
+          "name": "deep-learning-papers-reading-roadmap",
+          "productId": "repo:floodsung/deep-learning-papers-reading-roadmap",
+          "stars": 39499,
+          "dx": 2.08,
+          "dy": 0.6
+        },
+        {
+          "name": "500-ai-machine-learning-deep-learning-computer-vision-nlp-projects-with-code",
+          "productId": "repo:ashishpatel26/500-ai-machine-learning-deep-learning-computer-vision-nlp-projects-with-code",
+          "stars": 33277,
+          "dx": 2.26,
+          "dy": 1.52
+        },
+        {
+          "name": "awesome-deep-learning-papers",
+          "productId": "repo:terryum/awesome-deep-learning-papers",
+          "stars": 26123,
+          "dx": 1.85,
+          "dy": 2.38
+        },
+        {
+          "name": "nlp-progress",
+          "productId": "repo:sebastianruder/nlp-progress",
+          "stars": 22970,
+          "dx": 1.08,
+          "dy": 2.97
+        },
+        {
+          "name": "cvpr2026-papers-with-code",
+          "productId": "repo:amusi/cvpr2026-papers-with-code",
+          "stars": 22494,
+          "dx": 0.13,
+          "dy": 3.73
+        },
+        {
+          "name": "awesome-multimodal-large-language-models",
+          "productId": "repo:bradyfu/awesome-multimodal-large-language-models",
+          "stars": 17722,
+          "dx": -0.67,
+          "dy": 2.33
+        },
+        {
+          "name": "gnnpapers",
+          "productId": "repo:thunlp/gnnpapers",
+          "stars": 16754,
+          "dx": -1.38,
+          "dy": 2.04
+        },
+        {
+          "name": "transferlearning",
+          "productId": "repo:jindongwang/transferlearning",
+          "stars": 14324,
+          "dx": -2.49,
+          "dy": 1.93
+        },
+        {
+          "name": "cvpr2024-paper-code-interpretation",
+          "productId": "repo:extreme-assistant/cvpr2024-paper-code-interpretation",
+          "stars": 12492,
+          "dx": -3.48,
+          "dy": 1.26
+        },
+        {
+          "name": "ai-papers-of-the-week",
+          "productId": "repo:dair-ai/ai-papers-of-the-week",
+          "stars": 12359,
+          "dx": -3.7,
+          "dy": 0.13
+        },
+        {
+          "name": "awesome-diffusion-models",
+          "productId": "repo:diff-usion/awesome-diffusion-models",
+          "stars": 12322,
+          "dx": -2.11,
+          "dy": -0.61
+        },
+        {
+          "name": "llmsurvey",
+          "productId": "repo:rucaibox/llmsurvey",
+          "stars": 12152,
+          "dx": -2.24,
+          "dy": -1.52
+        },
+        {
+          "name": "deep_learning_object_detection",
+          "productId": "repo:hoya012/deep_learning_object_detection",
+          "stars": 11402,
+          "dx": -1.76,
+          "dy": -2.26
+        },
+        {
+          "name": "awesome-deep-vision",
+          "productId": "repo:kjw0612/awesome-deep-vision",
+          "stars": 11155,
+          "dx": -1.14,
+          "dy": -3.15
+        },
+        {
+          "name": "3d-machine-learning",
+          "productId": "repo:timzhang642/3d-machine-learning",
+          "stars": 10155,
+          "dx": -0.13,
+          "dy": -3.76
+        },
+        {
+          "name": "awesome-rl",
+          "productId": "repo:aikorea/awesome-rl",
+          "stars": 9741,
+          "dx": 0.59,
+          "dy": -2.07
+        },
+        {
+          "name": "state-of-the-art-result-for-machine-learning-problems",
+          "productId": "repo:redditsota/state-of-the-art-result-for-machine-learning-problems",
+          "stars": 8915,
+          "dx": 1.57,
+          "dy": -2.31
+        },
+        {
+          "name": "llm-agent-paper-list",
+          "productId": "repo:woooodyy/llm-agent-paper-list",
+          "stars": 8113,
+          "dx": 2.5,
+          "dy": -1.95
+        },
+        {
+          "name": "awesome-object-detection",
+          "productId": "repo:amusi/awesome-object-detection",
+          "stars": 7500,
+          "dx": 3.14,
+          "dy": -1.14
+        },
+        {
+          "name": "awesome-llm-strawberry",
+          "productId": "repo:hijkzzz/awesome-llm-strawberry",
+          "stars": 6906,
+          "dx": 3.77,
+          "dy": -0.13
+        }
+      ]
+    },
+    {
+      "id": "documentation.model_cards",
+      "color": "#A89CC8",
+      "label": "Model Cards",
+      "layerId": "documentation",
+      "layerName": "Documentation",
+      "layerSortOrder": 6,
+      "gapScore": 3,
+      "criteriaAvg": 2.7,
+      "lx": 62.75,
+      "ly": 29.63,
+      "repos": [
+        {
+          "name": "the-gan-zoo",
+          "productId": "repo:hindupuravinash/the-gan-zoo",
+          "stars": 14695,
+          "dx": 1.13,
+          "dy": 1.96
+        },
+        {
+          "name": "open-llms",
+          "productId": "repo:eugeneyan/open-llms",
+          "stars": 12741,
+          "dx": 0.58,
+          "dy": 2.74
+        },
+        {
+          "name": "awesome-coreml-models",
+          "productId": "repo:likedan/awesome-coreml-models",
+          "stars": 6991,
+          "dx": -0.35,
+          "dy": 3.23
+        },
+        {
+          "name": "awesome-llms-in-china",
+          "productId": "repo:wgwang/awesome-llms-in-china",
+          "stars": 6440,
+          "dx": -1.38,
+          "dy": 3.06
+        },
+        {
+          "name": "awesome-video-diffusion",
+          "productId": "repo:showlab/awesome-video-diffusion",
+          "stars": 5615,
+          "dx": -2.47,
+          "dy": 2.74
+        },
+        {
+          "name": "awesome-pretrained-chinese-nlp-models",
+          "productId": "repo:lonepatient/awesome-pretrained-chinese-nlp-models",
+          "stars": 5556,
+          "dx": -1.96,
+          "dy": 1.13
+        },
+        {
+          "name": "awesome-totally-open-chatgpt",
+          "productId": "repo:nichtdax/awesome-totally-open-chatgpt",
+          "stars": 4766,
+          "dx": -2.65,
+          "dy": 0.55
+        },
+        {
+          "name": "open_model_zoo",
+          "productId": "repo:openvinotoolkit/open_model_zoo",
+          "stars": 4384,
+          "dx": -3.03,
+          "dy": -0.33
+        },
+        {
+          "name": "pinto_model_zoo",
+          "productId": "repo:pinto0309/pinto_model_zoo",
+          "stars": 4138,
+          "dx": -3.32,
+          "dy": -1.49
+        },
+        {
+          "name": "awesome-domain-llm",
+          "productId": "repo:luban-agi/awesome-domain-llm",
+          "stars": 2577,
+          "dx": -2.75,
+          "dy": -2.49
+        },
+        {
+          "name": "ailia-models",
+          "productId": "repo:ailia-ai/ailia-models",
+          "stars": 2346,
+          "dx": -1.08,
+          "dy": -1.9
+        },
+        {
+          "name": "collection-claude-code-source-code",
+          "productId": "repo:chauncygu/collection-claude-code-source-code",
+          "stars": 2310,
+          "dx": -0.58,
+          "dy": -2.77
+        },
+        {
+          "name": "awesome-sentence-embedding",
+          "productId": "repo:separius/awesome-sentence-embedding",
+          "stars": 2289,
+          "dx": 0.33,
+          "dy": -3.02
+        },
+        {
+          "name": "awesome-chatbot",
+          "productId": "repo:fendouai/awesome-chatbot",
+          "stars": 2170,
+          "dx": 1.34,
+          "dy": -3.0
+        },
+        {
+          "name": "deeplearning-biology",
+          "productId": "repo:hussius/deeplearning-biology",
+          "stars": 2135,
+          "dx": 2.69,
+          "dy": -2.96
+        },
+        {
+          "name": "findthechatgpter",
+          "productId": "repo:chenking2020/findthechatgpter",
+          "stars": 2015,
+          "dx": 1.95,
+          "dy": -1.11
+        },
+        {
+          "name": "audio-ai-timeline",
+          "productId": "repo:archinetai/audio-ai-timeline",
+          "stars": 1911,
+          "dx": 2.66,
+          "dy": -0.56
+        },
+        {
+          "name": "awesome-embedding-models",
+          "productId": "repo:hironsan/awesome-embedding-models",
+          "stars": 1834,
+          "dx": 3.09,
+          "dy": 0.33
+        },
+        {
+          "name": "awesome-remote-sensing-foundation-models",
+          "productId": "repo:jack-bo1220/awesome-remote-sensing-foundation-models",
+          "stars": 1788,
+          "dx": 3.1,
+          "dy": 1.38
+        },
+        {
+          "name": "coreml-models",
+          "productId": "repo:john-rocky/coreml-models",
+          "stars": 1734,
+          "dx": 2.81,
+          "dy": 2.55
+        }
+      ]
+    },
+    {
+      "id": "documentation.sample_outputs_demos",
+      "color": "#A89CC8",
+      "label": "Sample Outputs & Demos",
+      "layerId": "documentation",
+      "layerName": "Documentation",
+      "layerSortOrder": 6,
+      "gapScore": 4,
+      "criteriaAvg": 3.9,
+      "lx": 54.04,
+      "ly": 69.76,
+      "repos": [
+        {
+          "name": "everything-claude-code",
+          "productId": "repo:affaan-m/everything-claude-code",
+          "stars": 168837,
+          "dx": 2.04,
+          "dy": 0.44
+        },
+        {
+          "name": "javaguide",
+          "productId": "repo:snailclimb/javaguide",
+          "stars": 155279,
+          "dx": 2.44,
+          "dy": 1.4
+        },
+        {
+          "name": "system-prompts-and-models-of-ai-tools",
+          "productId": "repo:x1xhlol/system-prompts-and-models-of-ai-tools",
+          "stars": 136266,
+          "dx": 2.11,
+          "dy": 2.34
+        },
+        {
+          "name": "generative-ai-for-beginners",
+          "productId": "repo:microsoft/generative-ai-for-beginners",
+          "stars": 109971,
+          "dx": 1.39,
+          "dy": 3.12
+        },
+        {
+          "name": "awesome-llm-apps",
+          "productId": "repo:shubhamsaboo/awesome-llm-apps",
+          "stars": 107872,
+          "dx": 0.41,
+          "dy": 3.89
+        },
+        {
+          "name": "andrej-karpathy-skills",
+          "productId": "repo:forrestchang/andrej-karpathy-skills",
+          "stars": 95708,
+          "dx": -0.51,
+          "dy": 2.37
+        },
+        {
+          "name": "llms-from-scratch",
+          "productId": "repo:rasbt/llms-from-scratch",
+          "stars": 91622,
+          "dx": -1.21,
+          "dy": 2.1
+        },
+        {
+          "name": "ml-for-beginners",
+          "productId": "repo:microsoft/ml-for-beginners",
+          "stars": 85516,
+          "dx": -2.28,
+          "dy": 2.05
+        },
+        {
+          "name": "cs-video-courses",
+          "productId": "repo:developer-y/cs-video-courses",
+          "stars": 80512,
+          "dx": -3.17,
+          "dy": 1.41
+        },
+        {
+          "name": "funnlp",
+          "productId": "repo:fighting41love/funnlp",
+          "stars": 80337,
+          "dx": -3.53,
+          "dy": 0.37
+        },
+        {
+          "name": "llm-course",
+          "productId": "repo:mlabonne/llm-course",
+          "stars": 78763,
+          "dx": -2.39,
+          "dy": -0.51
+        },
+        {
+          "name": "models",
+          "productId": "repo:tensorflow/models",
+          "stars": 77667,
+          "dx": -2.43,
+          "dy": -1.4
+        },
+        {
+          "name": "d2l-zh",
+          "productId": "repo:d2l-ai/d2l-zh",
+          "stars": 77492,
+          "dx": -1.85,
+          "dy": -2.07
+        },
+        {
+          "name": "prompt-engineering-guide",
+          "productId": "repo:dair-ai/prompt-engineering-guide",
+          "stars": 73932,
+          "dx": -1.36,
+          "dy": -3.06
+        },
+        {
+          "name": "openai-cookbook",
+          "productId": "repo:openai/openai-cookbook",
+          "stars": 73053,
+          "dx": -0.42,
+          "dy": -3.99
+        },
+        {
+          "name": "awesome-machine-learning",
+          "productId": "repo:josephmisiti/awesome-machine-learning",
+          "stars": 72320,
+          "dx": 0.44,
+          "dy": -2.05
+        },
+        {
+          "name": "awesome-design-md",
+          "productId": "repo:voltagent/awesome-design-md",
+          "stars": 67151,
+          "dx": 1.26,
+          "dy": -2.19
+        },
+        {
+          "name": "annotated_deep_learning_paper_implementations",
+          "productId": "repo:labmlai/annotated_deep_learning_paper_implementations",
+          "stars": 66410,
+          "dx": 2.47,
+          "dy": -2.21
+        },
+        {
+          "name": "ai-agents-for-beginners",
+          "productId": "repo:microsoft/ai-agents-for-beginners",
+          "stars": 59938,
+          "dx": 2.9,
+          "dy": -1.29
+        },
+        {
+          "name": "learn-claude-code",
+          "productId": "repo:shareai-lab/learn-claude-code",
+          "stars": 57123,
+          "dx": 3.69,
+          "dy": -0.39
+        }
+      ]
+    },
+    {
+      "id": "licensing.code_licenses",
+      "color": "#E8B86D",
+      "label": "Code Licenses",
+      "layerId": "licensing",
+      "layerName": "Licensing",
+      "layerSortOrder": 7,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 30.95,
+      "ly": 34.33,
+      "repos": []
+    },
+    {
+      "id": "licensing.dataset_licenses",
+      "color": "#E8B86D",
+      "label": "Dataset Licenses",
+      "layerId": "licensing",
+      "layerName": "Licensing",
+      "layerSortOrder": 7,
+      "gapScore": 4,
+      "criteriaAvg": 3.9,
+      "lx": 74.27,
+      "ly": 46.14,
+      "repos": []
+    },
+    {
+      "id": "licensing.terms_of_service",
+      "color": "#E8B86D",
+      "label": "Terms of Service",
+      "layerId": "licensing",
+      "layerName": "Licensing",
+      "layerSortOrder": 7,
+      "gapScore": 2,
+      "criteriaAvg": 1.9,
+      "lx": 33.29,
+      "ly": 64.73,
+      "repos": []
+    },
+    {
+      "id": "licensing.weight_licenses",
+      "color": "#E8B86D",
+      "label": "Weight Licenses",
+      "layerId": "licensing",
+      "layerName": "Licensing",
+      "layerSortOrder": 7,
+      "gapScore": 3,
+      "criteriaAvg": 3.1,
+      "lx": 50.12,
+      "ly": 24.98,
+      "repos": []
+    },
+    {
+      "id": "safeguards.access_release",
+      "color": "#B8A08C",
+      "label": "Access & Release",
+      "layerId": "safeguards",
+      "layerName": "Safeguards",
+      "layerSortOrder": 8,
+      "gapScore": 3,
+      "criteriaAvg": 3.5,
+      "lx": 66.86,
+      "ly": 65.22,
+      "repos": []
+    },
+    {
+      "id": "safeguards.auditing_reporting",
+      "color": "#B8A08C",
+      "label": "Auditing & Reporting",
+      "layerId": "safeguards",
+      "layerName": "Safeguards",
+      "layerSortOrder": 8,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 24.77,
+      "ly": 45.83,
+      "repos": [
+        {
+          "name": "pytorch-grad-cam",
+          "productId": "repo:jacobgil/pytorch-grad-cam",
+          "stars": 12783,
+          "dx": 1.93,
+          "dy": 1.2
+        },
+        {
+          "name": "rerun",
+          "productId": "repo:rerun-io/rerun",
+          "stars": 10598,
+          "dx": 1.79,
+          "dy": 2.13
+        },
+        {
+          "name": "pytorch-cnn-visualizations",
+          "productId": "repo:utkuozbulak/pytorch-cnn-visualizations",
+          "stars": 8209,
+          "dx": 1.13,
+          "dy": 2.81
+        },
+        {
+          "name": "dowhy",
+          "productId": "repo:py-why/dowhy",
+          "stars": 8087,
+          "dx": 0.22,
+          "dy": 3.22
+        },
+        {
+          "name": "bertviz",
+          "productId": "repo:jessevig/bertviz",
+          "stars": 8034,
+          "dx": -0.89,
+          "dy": 3.57
+        },
+        {
+          "name": "interpret",
+          "productId": "repo:interpretml/interpret",
+          "stars": 6840,
+          "dx": -1.2,
+          "dy": 1.93
+        },
+        {
+          "name": "cleverhans",
+          "productId": "repo:cleverhans-lab/cleverhans",
+          "stars": 6429,
+          "dx": -1.99,
+          "dy": 1.66
+        },
+        {
+          "name": "nn-svg",
+          "productId": "repo:alexlenail/nn-svg",
+          "stars": 5665,
+          "dx": -2.84,
+          "dy": 1.14
+        },
+        {
+          "name": "captum",
+          "productId": "repo:meta-pytorch/captum",
+          "stars": 5616,
+          "dx": -3.37,
+          "dy": 0.23
+        },
+        {
+          "name": "tensorspace",
+          "productId": "repo:tensorspace-team/tensorspace",
+          "stars": 5170,
+          "dx": -3.59,
+          "dy": -0.9
+        },
+        {
+          "name": "visualdl",
+          "productId": "repo:paddlepaddle/visualdl",
+          "stars": 4883,
+          "dx": -1.83,
+          "dy": -1.15
+        },
+        {
+          "name": "yellowbrick",
+          "productId": "repo:districtdatalabs/yellowbrick",
+          "stars": 4398,
+          "dx": -1.85,
+          "dy": -2.2
+        },
+        {
+          "name": "transformer-debugger",
+          "productId": "repo:openai/transformer-debugger",
+          "stars": 4109,
+          "dx": -1.14,
+          "dy": -2.82
+        },
+        {
+          "name": "lit",
+          "productId": "repo:pair-code/lit",
+          "stars": 3652,
+          "dx": -0.24,
+          "dy": -3.55
+        },
+        {
+          "name": "pytorchviz",
+          "productId": "repo:szagoruyko/pytorchviz",
+          "stars": 3496,
+          "dx": 0.97,
+          "dy": -3.86
+        },
+        {
+          "name": "shapash",
+          "productId": "repo:maif/shapash",
+          "stars": 3208,
+          "dx": 1.16,
+          "dy": -1.85
+        },
+        {
+          "name": "dtreeviz",
+          "productId": "repo:parrt/dtreeviz",
+          "stars": 3141,
+          "dx": 2.13,
+          "dy": -1.77
+        },
+        {
+          "name": "keras-vis",
+          "productId": "repo:raghakot/keras-vis",
+          "stars": 2997,
+          "dx": 2.88,
+          "dy": -1.16
+        },
+        {
+          "name": "torchinfo",
+          "productId": "repo:tyleryep/torchinfo",
+          "stars": 2910,
+          "dx": 3.19,
+          "dy": -0.22
+        },
+        {
+          "name": "aif360",
+          "productId": "repo:trusted-ai/aif360",
+          "stars": 2800,
+          "dx": 3.79,
+          "dy": 0.95
+        }
+      ]
+    },
+    {
+      "id": "safeguards.governance",
+      "color": "#B8A08C",
+      "label": "Governance",
+      "layerId": "safeguards",
+      "layerName": "Safeguards",
+      "layerSortOrder": 8,
+      "gapScore": 3,
+      "criteriaAvg": 3.2,
+      "lx": 70.37,
+      "ly": 33.68,
+      "repos": []
+    },
+    {
+      "id": "safeguards.moderation",
+      "color": "#B8A08C",
+      "label": "Moderation",
+      "layerId": "safeguards",
+      "layerName": "Safeguards",
+      "layerSortOrder": 8,
+      "gapScore": 3,
+      "criteriaAvg": 2.6,
+      "lx": 45.38,
+      "ly": 71.52,
+      "repos": [
+        {
+          "name": "NeMo Guardrails",
+          "productId": "repo:mod_nemo_guardrails",
+          "stars": 0,
+          "dx": 1.89,
+          "dy": 0.69
+        },
+        {
+          "name": "NeMo Guardrails",
+          "productId": "mod_nemo_guardrails",
+          "stars": 0,
+          "dx": -2.41,
+          "dy": -0.88
+        }
+      ]
+    },
+    {
+      "id": "safeguards.safety_alignment",
+      "color": "#B8A08C",
+      "label": "Safety & Alignment",
+      "layerId": "safeguards",
+      "layerName": "Safeguards",
+      "layerSortOrder": 8,
+      "gapScore": 3,
+      "criteriaAvg": 3,
+      "lx": 36.13,
+      "ly": 27.58,
+      "repos": [
+        {
+          "name": "TRL",
+          "productId": "sa_trl",
+          "stars": 0,
+          "dx": 1.92,
+          "dy": 0.86
+        },
+        {
+          "name": "TRL (Transformer Reinforcement Learning)",
+          "productId": "repo:sa_trl",
+          "stars": 0,
+          "dx": -2.32,
+          "dy": -1.04
+        }
+      ]
+    }
+  ]
+}
