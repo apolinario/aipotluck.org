@@ -119,9 +119,9 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-/* Roadmap sidenotes — stacked under each card (same column alignment as the parchment) */
+/* Roadmap sidenotes */
 .roadmap-sidenote-below {
-  margin-top: 10px;
+  margin-top: 8px;
   max-width: 100%;
   pointer-events: none;
 }
@@ -131,9 +131,9 @@ button:focus-visible {
   font-size: 7px;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: rgba(15, 25, 35, 0.55);
-  line-height: 1.45;
-  margin-bottom: 6px;
+  color: rgba(255, 245, 225, 0.45);
+  line-height: 1.5;
+  margin-bottom: 5px;
 }
 
 .roadmap-sidenote-line:last-child {
