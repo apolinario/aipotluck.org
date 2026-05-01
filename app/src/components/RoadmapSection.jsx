@@ -46,7 +46,7 @@ export function RoadmapSection({ mode }) {
             inset: 0,
             pointerEvents: 'none',
             background:
-              'radial-gradient(ellipse 90% 85% at 50% 50%, rgba(0,0,0,.25) 0%, rgba(0,0,0,.45) 100%)',
+              'radial-gradient(ellipse 90% 85% at 50% 50%, rgba(0,0,0,.32) 0%, rgba(0,0,0,.52) 100%)',
           }}
         />
       </div>
@@ -101,27 +101,28 @@ export function RoadmapSection({ mode }) {
                   width: 'calc(50% - 30px)',
                   textAlign: isLeft ? 'right' : 'left',
                   transition: 'opacity 180ms ease',
-                  opacity: hov !== null && !isHov ? 0.28 : 1,
+                  opacity: hov !== null && !isHov ? 0.44 : 1,
                 }}
               >
                 <div
                   style={{
-                    background: isHov ? `${STATUS_COLOR[item.status]}10` : 'rgba(255,255,255,.03)',
-                    border: `1px solid ${STATUS_COLOR[item.status]}${isHov ? '66' : '22'}`,
+                    background: isHov ? 'rgba(255,252,248,.97)' : 'rgba(255,252,248,.9)',
+                    border: `1px solid ${isHov ? STATUS_COLOR[item.status] : 'rgba(18,35,52,.14)'}`,
                     borderRadius: 4,
                     padding: '13px 15px 11px',
                     boxShadow: isHov
-                      ? `2px 3px 0 rgba(0,0,0,.4), 0 0 18px ${STATUS_COLOR[item.status]}14`
-                      : '1px 2px 0 rgba(0,0,0,.25)',
+                      ? `2px 3px 0 rgba(0,0,0,.12), 0 0 0 1px ${STATUS_COLOR[item.status]}22`
+                      : '1px 2px 0 rgba(0,0,0,.06)',
                     transition: 'all 220ms ease',
+                    backdropFilter: 'blur(10px)',
                   }}
                 >
                   <div
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
                       fontSize: 'clamp(.95rem,1.4vw,1.18rem)',
-                      fontWeight: 300,
-                      color: isHov ? '#fff' : 'rgba(255,255,255,.8)',
+                      fontWeight: 400,
+                      color: '#0a1520',
                       lineHeight: 1,
                       marginBottom: 5,
                       transition: 'color 180ms ease',
@@ -134,7 +135,7 @@ export function RoadmapSection({ mode }) {
                       fontFamily: "'DM Sans', sans-serif",
                       fontSize: 10,
                       lineHeight: 1.5,
-                      color: 'rgba(255,255,255,.32)',
+                      color: '#2c3e4a',
                       marginBottom: isHov ? 6 : 0,
                       transition: 'margin 180ms ease',
                     }}
@@ -150,7 +151,7 @@ export function RoadmapSection({ mode }) {
                     }}
                   >
                     {item.items.map((sub, j) => (
-                      <div key={j} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: 'rgba(255,255,255,.48)', lineHeight: 1.55, marginTop: 3 }}>
+                      <div key={j} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: '#1e3240', lineHeight: 1.55, marginTop: 3 }}>
                         {sub}
                       </div>
                     ))}
@@ -163,8 +164,8 @@ export function RoadmapSection({ mode }) {
                       letterSpacing: '.14em',
                       textTransform: 'uppercase',
                       color: STATUS_COLOR[item.status],
-                      opacity: isHov ? 0.85 : 0.35,
-                      border: `1px solid ${STATUS_COLOR[item.status]}38`,
+                      opacity: isHov ? 1 : 0.88,
+                      border: `1px solid ${STATUS_COLOR[item.status]}55`,
                       display: 'inline-block',
                       padding: '1px 5px',
                       borderRadius: 2,

@@ -1,6 +1,6 @@
 /**
- * Ecosystem map: clusters and repo dots are positioned with lx, ly (hub %)
- * and small dx, dy offsets so everything sits in the middle of the viewport.
+ * Ecosystem map: clusters and repo dots use lx, ly (hub %) + dx, dy offsets.
+ * Inner dots (~2–3%): core; outer (~3.2–4.5%): ring around the core.
  */
 export const ecoClusters = [
   {
@@ -16,6 +16,13 @@ export const ecoClusters = [
       { name: 'MMLU', dx: 2.4, dy: 0.6 },
       { name: 'OpenLLM', dx: 0.4, dy: 2.1 },
       { name: 'MT-Bench', dx: -0.6, dy: -2.2 },
+      { name: 'TruthfulQA', dx: 3.5, dy: 0.2 },
+      { name: 'HumanEval', dx: -0.3, dy: 3.8 },
+      { name: 'IFEval', dx: 3.0, dy: -3.0 },
+      { name: 'HEIM', dx: -3.6, dy: 2.3 },
+      { name: 'RULER', dx: 2.9, dy: 2.7 },
+      { name: 'BBH', dx: -3.2, dy: -2.6 },
+      { name: 'ARC', dx: 1.2, dy: -3.4 },
     ],
   },
   {
@@ -32,6 +39,13 @@ export const ecoClusters = [
       { name: 'Phi-3', dx: 2.6, dy: -1.6 },
       { name: 'Gemma 2', dx: 0.2, dy: 1.9 },
       { name: 'OLMo', dx: -1.8, dy: 1.4 },
+      { name: 'DBRX', dx: 3.6, dy: -0.1 },
+      { name: 'Yi-34B', dx: -3.1, dy: 3.0 },
+      { name: 'Nemotron', dx: 3.2, dy: 2.4 },
+      { name: 'Stable LM', dx: -3.4, dy: -2.4 },
+      { name: 'Jamba', dx: 0.6, dy: 3.5 },
+      { name: 'Mixtral', dx: -2.0, dy: -3.1 },
+      { name: 'CodeLlama', dx: 2.1, dy: 3.2 },
     ],
   },
   {
@@ -47,6 +61,12 @@ export const ecoClusters = [
       { name: 'FineWeb', dx: 2.4, dy: -0.4 },
       { name: 'RedPajama', dx: 2.0, dy: 1.2 },
       { name: 'ROOTS', dx: -0.4, dy: 2.0 },
+      { name: 'C4', dx: 3.4, dy: 1.0 },
+      { name: 'LAION-5B', dx: -3.5, dy: -2.0 },
+      { name: 'SlimPajama', dx: 2.8, dy: -2.8 },
+      { name: 'CCNet', dx: -3.0, dy: 2.8 },
+      { name: 'OpenWebText', dx: 0.2, dy: -3.3 },
+      { name: 'Cosmopedia', dx: 3.2, dy: -1.6 },
     ],
   },
   {
@@ -61,6 +81,12 @@ export const ecoClusters = [
       { name: 'llama.cpp', dx: -2.8, dy: 1.0 },
       { name: 'TGI', dx: 2.2, dy: -0.2 },
       { name: 'ExLlamaV2', dx: 2.6, dy: -1.2 },
+      { name: 'TensorRT-LLM', dx: 3.5, dy: 0.8 },
+      { name: 'CTranslate2', dx: -3.6, dy: -1.9 },
+      { name: 'MLC-LLM', dx: -1.5, dy: 3.2 },
+      { name: 'OpenVINO', dx: 3.0, dy: -2.6 },
+      { name: 'ONNX Runtime', dx: -2.2, dy: -3.2 },
+      { name: 'AITemplate', dx: 1.0, dy: 3.4 },
     ],
   },
   {
@@ -74,6 +100,11 @@ export const ecoClusters = [
       { name: 'AI Incident DB', dx: 1.8, dy: -0.9 },
       { name: 'DataSheets', dx: -2.4, dy: 0.9 },
       { name: 'RAIL Licenses', dx: 2.2, dy: 0.8 },
+      { name: 'Risk cards', dx: 3.4, dy: -0.5 },
+      { name: 'Datasheets 2.0', dx: -3.2, dy: -2.0 },
+      { name: 'Eval cards', dx: 2.9, dy: 2.6 },
+      { name: 'Safety cards', dx: -2.8, dy: 2.7 },
+      { name: 'Procurement guide', dx: 0.4, dy: -3.2 },
     ],
   },
   {
@@ -88,6 +119,12 @@ export const ecoClusters = [
       { name: 'Petals', dx: -2.2, dy: 1.3 },
       { name: 'Together AI', dx: 2.3, dy: -0.2 },
       { name: 'Modal', dx: 2.6, dy: -1.2 },
+      { name: 'Slurm', dx: -3.5, dy: 0.4 },
+      { name: 'Kubeflow', dx: 3.4, dy: 1.4 },
+      { name: 'Volcano', dx: -1.2, dy: -3.0 },
+      { name: 'Argo', dx: 3.0, dy: -2.5 },
+      { name: 'Nebula', dx: -3.2, dy: 2.4 },
+      { name: 'Prime Intellect', dx: 1.1, dy: 3.3 },
     ],
   },
 ];
