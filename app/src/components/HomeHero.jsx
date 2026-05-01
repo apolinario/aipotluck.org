@@ -1,5 +1,6 @@
 import { HeroScene } from './HeroScene.jsx';
 import { PALETTES } from '../data/palettes.js';
+import logoFull from '../assets/currentai-logo-full.svg';
 
 export function HomeHero({ mode }) {
   const p = PALETTES[mode];
@@ -20,20 +21,19 @@ export function HomeHero({ mode }) {
           pointerEvents: 'none',
         }}
       >
-        <div style={{ textAlign: 'center' }}>
-          <div
+        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <img
+            src={logoFull}
+            alt="Current AI"
+            width={506}
+            height={96}
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(4rem,9vw,8rem)',
-              fontWeight: 300,
-              letterSpacing: '.05em',
-              color: '#fff',
-              lineHeight: 1,
-              textShadow: '0 4px 80px rgba(0,0,0,.7),0 1px 12px rgba(0,0,0,.5)',
+              width: 'min(90vw, 200px)',
+              height: 'auto',
+              display: 'block',
+              filter: 'drop-shadow(0 4px 48px rgba(0,0,0,.65)) drop-shadow(0 1px 10px rgba(0,0,0,.45))',
             }}
-          >
-            Current AI
-          </div>
+          />
           <div
             style={{
               fontFamily: "'DM Mono', monospace",
@@ -41,7 +41,7 @@ export function HomeHero({ mode }) {
               letterSpacing: '.26em',
               textTransform: 'uppercase',
               color: p.glowColor,
-              marginTop: 16,
+              marginTop: 20,
               opacity: 0.82,
             }}
           >

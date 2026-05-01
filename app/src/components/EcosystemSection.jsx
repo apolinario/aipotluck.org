@@ -1,33 +1,50 @@
 import { useState } from 'react';
-import { STARS } from '../data/stars.js';
 import { ecoClusters } from '../data/ecoClusters.js';
+import ecosystemDawn from '../assets/ecosystem-dawn.png';
+import ecosystemDusk from '../assets/ecosystem-dusk.png';
 
-export function EcosystemSection() {
+export function EcosystemSection({ mode }) {
   const [hovCluster, setHovCluster] = useState(null);
   const [hovRepo, setHovRepo] = useState(null);
 
+  const bgSrc = mode === 'dawn' ? ecosystemDawn : ecosystemDusk;
+  const objectPosition = mode === 'dawn' ? 'center 52%' : '32% 52%';
+
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: '#050811' }} data-screen-label="01 Ecosystem">
-      <svg
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
-        viewBox="0 0 1440 900"
-        preserveAspectRatio="xMidYMid slice"
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          overflow: 'hidden',
+          background: '#050811',
+        }}
         aria-hidden="true"
       >
-        {STARS.map((s, i) => (
-          <circle
-            key={i}
-            cx={s.x}
-            cy={s.y}
-            r={s.r}
-            fill="white"
-            opacity={0.1 + (i % 7) * 0.06}
-            style={{ animation: `twinkle ${s.dur}s ease-in-out infinite`, animationDelay: `${s.delay}s` }}
-          />
-        ))}
-        <ellipse cx="300" cy="300" rx="500" ry="200" fill="#1E4A60" opacity=".035" style={{ filter: 'blur(60px)' }} />
-        <ellipse cx="1100" cy="600" rx="420" ry="180" fill="#E8796A" opacity=".025" style={{ filter: 'blur(60px)' }} />
-      </svg>
+        <img
+          src={bgSrc}
+          alt=""
+          decoding="async"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition,
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            background:
+              'radial-gradient(ellipse 92% 88% at 50% 48%, transparent 25%, rgba(5,8,17,.42) 100%)',
+          }}
+        />
+      </div>
 
       <div
         style={{

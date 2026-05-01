@@ -58,7 +58,7 @@ export default function App() {
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#020508' }}>
       <div ref={scrollRef} className="scroll-container" style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
         <div ref={(el) => (sectionRefs.current[0] = el)} style={{ height: '100vh' }}>
-          <EcosystemSection />
+          <EcosystemSection mode={mode} />
         </div>
         <div ref={(el) => (sectionRefs.current[1] = el)} style={{ height: '100vh' }}>
           <RoadmapSection mode={mode} />

@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { PALETTES } from '../data/palettes.js';
 import { stackData } from '../data/stackData.js';
 import { STATUS_COLOR, STATUS_LABEL } from '../constants/status.js';
+import roadmapDawn from '../assets/roadmap-dawn.png';
+import roadmapDusk from '../assets/roadmap-dusk.png';
 
 export function RoadmapSection({ mode }) {
   const p = PALETTES[mode];
-  const bright = mode === 'dawn';
   const [hov, setHov] = useState(null);
+  const bgSrc = mode === 'dawn' ? roadmapDawn : roadmapDusk;
+  const objectPosition = mode === 'dawn' ? '82% 45%' : '18% 45%';
 
   return (
     <div
@@ -14,58 +17,39 @@ export function RoadmapSection({ mode }) {
       style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: p.rmBg }}
       data-screen-label="01 Roadmap"
     >
-      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <defs>
-          <filter id="rm-cld">
-            <feGaussianBlur stdDeviation="34" />
-          </filter>
-          <filter id="rm-ray">
-            <feGaussianBlur stdDeviation="20" />
-          </filter>
-          <filter id="rm-paint" x="-5%" y="-5%" width="110%" height="110%">
-            <feTurbulence type="fractalNoise" baseFrequency=".022 .015" numOctaves="3" seed="7" result="t" />
-            <feDisplacementMap in="SourceGraphic" in2="t" scale="10" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-        <rect width="1440" height="900" fill={p.rmBg} />
-        <g filter="url(#rm-paint)" opacity={bright ? 0.38 : 0.2}>
-          <ellipse cx="300" cy="200" rx="500" ry="160" fill={bright ? '#1E2E58' : '#1A2448'} />
-          <ellipse cx="920" cy="150" rx="580" ry="140" fill={bright ? '#263866' : '#16204A'} />
-          <ellipse cx="1300" cy="300" rx="420" ry="150" fill={bright ? '#1C2850' : '#12183A'} />
-          <ellipse cx="500" cy="540" rx="660" ry="185" fill={bright ? '#141E46' : '#0E1430'} />
-          {bright && (
-            <>
-              <ellipse cx="760" cy="380" rx="380" ry="90" fill="#3C1E08" opacity=".5" />
-              <ellipse cx="1380" cy="520" rx="300" ry="80" fill="#301408" opacity=".4" />
-            </>
-          )}
-        </g>
-        {p.rmRayAngles.map((deg, i) => {
-          const r = (deg * Math.PI) / 180;
-          const len = 2500;
-          return (
-            <line
-              key={i}
-              x1={p.rmRayX}
-              y1={p.rmRayY}
-              x2={p.rmRayX + Math.cos(r) * len}
-              y2={p.rmRayY + Math.sin(r) * len}
-              stroke={p.glowColor}
-              strokeWidth={i === 3 ? 8 : 4}
-              opacity={bright ? 0.032 : 0.018}
-              filter="url(#rm-ray)"
-            />
-          );
-        })}
-        <circle
-          cx={p.rmRayX === 1440 ? 1440 : 0}
-          cy="900"
-          r="550"
-          fill={p.glowColor}
-          opacity={bright ? 0.07 : 0.034}
-          filter="url(#rm-ray)"
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          overflow: 'hidden',
+          background: p.rmBg,
+        }}
+        aria-hidden="true"
+      >
+        <img
+          src={bgSrc}
+          alt=""
+          decoding="async"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition,
+          }}
         />
-      </svg>
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            background:
+              'radial-gradient(ellipse 90% 85% at 50% 50%, rgba(0,0,0,.25) 0%, rgba(0,0,0,.45) 100%)',
+          }}
+        />
+      </div>
 
       <div
         style={{
@@ -74,6 +58,7 @@ export function RoadmapSection({ mode }) {
           top: 0,
           bottom: 0,
           width: 1,
+          zIndex: 1,
           background: 'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,.1) 4%, rgba(255,255,255,.1) 96%, transparent 100%)',
           transform: 'translateX(-50%)',
           pointerEvents: 'none',
@@ -87,6 +72,7 @@ export function RoadmapSection({ mode }) {
           bottom: 0,
           left: 0,
           right: 0,
+          zIndex: 1,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-evenly',
