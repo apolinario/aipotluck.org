@@ -60,7 +60,7 @@ export default function App() {
         <div ref={(el) => (sectionRefs.current[0] = el)} style={{ height: '100vh' }}>
           <EcosystemSection mode={mode} />
         </div>
-        <div ref={(el) => (sectionRefs.current[1] = el)} style={{ height: '100vh' }}>
+        <div ref={(el) => (sectionRefs.current[1] = el)}>
           <RoadmapSection mode={mode} />
         </div>
         <div ref={(el) => (sectionRefs.current[2] = el)} style={{ height: '100vh' }}>

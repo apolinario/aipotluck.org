@@ -9,6 +9,7 @@ const LABEL_RE = /@label\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
 const LABEL_COLOR_RE = /@label-color\s*:\s*(\S+)/i;
 const PERIOD_RE = /@period\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
 const HIGHLIGHT_RE = /@highlight\s*:\s*(\S+)/i;
+const COMPARE_RE = /@compare\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
 
 /** Accent for @period roadmap chips — signal red aligned with `--signal`/gap accents */
 export const ROADMAP_PERIOD_PILL_COLOR = '#b03848';
@@ -60,6 +61,7 @@ function stripStepMeta(body) {
   let labelColorFromMarkdown = null;
   let periodFromMarkdown = '';
   let highlightColor = null;
+  let compareFromMarkdown = '';
 
   for (let iter = 0; iter < 20; iter++) {
     let hit = false;
@@ -98,6 +100,13 @@ function stripStepMeta(body) {
       hit = true;
       continue;
     }
+    const cr = b.match(COMPARE_RE);
+    if (cr) {
+      compareFromMarkdown = cr[1].trim();
+      b = b.replace(cr[0], '').trim();
+      hit = true;
+      continue;
+    }
     if (!hit) break;
   }
 
@@ -108,6 +117,7 @@ function stripStepMeta(body) {
     labelColorFromMarkdown,
     periodFromMarkdown,
     highlightColor,
+    compareFromMarkdown,
   };
 }
 
@@ -173,6 +183,7 @@ export function parseRoadmapMarkdown(content) {
         labelColorFromMarkdown: meta.labelColorFromMarkdown,
         periodFromMarkdown: meta.periodFromMarkdown || null,
         highlightColor: meta.highlightColor,
+        compareFromMarkdown: meta.compareFromMarkdown || null,
         annotations: [],
         sidenotes: [],
       };

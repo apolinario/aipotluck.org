@@ -54,3 +54,4 @@ Thumbs.db
 # marimo (interactive runs may write cache alongside notebooks)
 .marimo/
 __marimo__/
+.gstack/
