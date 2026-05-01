@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ecoClusters } from '../data/ecoClusters.js';
+import { productSpecs } from '../data/productSpecs.js';
 import { buildStackLayout, galaxyRepoPosition, galaxyClusterCentroid } from '../data/ecosystemLayout.js';
 import ecosystemDawn from '../assets/ecosystem-dawn.png';
 import ecosystemDusk from '../assets/ecosystem-dusk.png';
@@ -24,7 +25,24 @@ export function EcosystemSection({ mode }) {
   const bgSrc = mode === 'dawn' ? ecosystemDawn : ecosystemDusk;
   const objectPosition = mode === 'dawn' ? 'center 52%' : '32% 52%';
 
-  const filterIds = useMemo(() => (focusId === 'overview' ? null : [focusId]), [focusId]);
+  const focusSpec = useMemo(
+    () => (focusId === 'overview' ? null : productSpecs.find((p) => p.slug === focusId) ?? null),
+    [focusId],
+  );
+
+  const focusRepoSet = useMemo(() => {
+    if (!focusSpec) return null;
+    return new Set(focusSpec.repoProductIds);
+  }, [focusSpec]);
+
+  const focusClusterIds = useMemo(() => {
+    if (!focusRepoSet) return null;
+    const s = new Set();
+    for (const c of ecoClusters) {
+      if (c.repos.some((r) => focusRepoSet.has(r.productId))) s.add(c.id);
+    }
+    return s;
+  }, [focusRepoSet]);
 
   const mapLayout = useMemo(() => {
     if (layoutMode === 'galaxy') {
@@ -52,18 +70,18 @@ export function EcosystemSection({ mode }) {
   }, [layoutMode]);
 
   const isClusterEmphasized = (clusterId) => {
-    if (!filterIds) return true;
+    if (focusClusterIds == null) return true;
     if (hovCluster === clusterId) return true;
-    return filterIds.includes(clusterId);
+    return focusClusterIds.has(clusterId);
   };
 
   const hubEdges = useMemo(() => {
-    if (!filterIds || filterIds.length < 2) return [];
+    if (!focusClusterIds || focusClusterIds.size < 2) return [];
     const centroids = {};
     for (const row of mapLayout) {
-      if (filterIds.includes(row.cluster.id)) centroids[row.cluster.id] = row.centroid;
+      if (focusClusterIds.has(row.cluster.id)) centroids[row.cluster.id] = row.centroid;
     }
-    const ids = filterIds.filter((id) => centroids[id]);
+    const ids = [...focusClusterIds].filter((id) => centroids[id]);
     const edges = [];
     for (let i = 0; i < ids.length; i++) {
       for (let j = i + 1; j < ids.length; j++) {
@@ -73,7 +91,7 @@ export function EcosystemSection({ mode }) {
       }
     }
     return edges;
-  }, [filterIds, mapLayout]);
+  }, [focusClusterIds, mapLayout]);
 
   const totalRepos = ecoClusters.reduce((a, c) => a + c.repos.length, 0);
 
@@ -185,7 +203,19 @@ export function EcosystemSection({ mode }) {
             const em = isClusterEmphasized(cluster.id);
             const isHov = hovCluster === cluster.id;
             return items.map((item, ri) => {
-              const spokeOp = filterIds ? (em ? (isHov ? 0.32 : 0.24) : 0.04) : isHov ? 0.2 : 0.09;
+              const inList = focusRepoSet == null || focusRepoSet.has(item.repo.productId);
+              const spokeOp =
+                focusRepoSet == null
+                  ? isHov
+                    ? 0.2
+                    : 0.09
+                  : !em
+                    ? 0.04
+                    : isHov
+                      ? 0.32
+                      : inList
+                        ? 0.26
+                        : 0.1;
               return (
                 <line
                   key={`${cluster.id}-${ri}`}
@@ -209,7 +239,15 @@ export function EcosystemSection({ mode }) {
           return items.map(({ repo, x, y, starMul }, ri) => {
             const rk = `${cluster.id}-${ri}`;
             const isHovR = hovRepo === rk;
-            const dotOp = filterIds ? (em ? (isHovR ? 1 : 0.92) : 0.14) : isHovC || isHovR ? 0.95 : 0.52;
+            const inProduct = focusRepoSet == null || focusRepoSet.has(repo.productId);
+            let dotOp;
+            if (focusRepoSet == null) {
+              dotOp = isHovC || isHovR ? 0.95 : 0.52;
+            } else if (!em) {
+              dotOp = 0.14;
+            } else {
+              dotOp = inProduct ? (isHovR ? 1 : 0.92) : 0.26;
+            }
             const baseDot = layoutMode === 'stack' ? 5.25 : 6;
             const w = Math.min(14, Math.max(4.5, (isHovR ? baseDot + 5 : em ? baseDot + 2.2 : baseDot) * starMul));
             return (
@@ -240,7 +278,7 @@ export function EcosystemSection({ mode }) {
                   zIndex: isHovR ? 9 : em ? 5 : 3,
                   cursor: 'pointer',
                   animation: `dot-emerge 400ms ${ri * 35}ms cubic-bezier(.16,1,.3,1) both`,
-                  opacity: filterIds && !em ? 0.35 : 1,
+                  opacity: focusRepoSet != null && !em ? 0.35 : 1,
                   transition: 'opacity 220ms ease',
                 }}
               >
@@ -380,52 +418,66 @@ export function EcosystemSection({ mode }) {
             </div>
           </div>
 
-          <label
-            htmlFor="ecosystem-query"
+          <div
             style={{
-              display: 'block',
-              fontFamily: "'DM Mono', monospace",
-              fontSize: 8,
-              letterSpacing: '.16em',
-              textTransform: 'uppercase',
-              color: 'rgba(255,255,255,.38)',
-              marginBottom: 8,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              marginBottom: 10,
             }}
           >
-            Product focus
-          </label>
-          <select
-            id="ecosystem-query"
-            value={focusId}
-            onChange={(e) => setFocusId(e.target.value)}
-            style={{
-              width: '100%',
-              fontFamily: "'DM Sans', system-ui, sans-serif",
-              fontSize: 13,
-              fontWeight: 500,
-              color: 'rgba(255,255,255,.9)',
-              background: 'rgba(0,0,0,.35)',
-              border: '1px solid rgba(255,255,255,.14)',
-              borderRadius: 6,
-              padding: '10px 12px',
-              outline: 'none',
-              cursor: 'pointer',
-              appearance: 'none',
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 12px center',
-              paddingRight: 36,
-            }}
-          >
-            <option value="overview" style={{ color: '#0B1E2D', background: '#F5F2EE' }}>
-              Overview — all layers
-            </option>
-            {ecoClusters.map((c) => (
-              <option key={c.id} value={c.id} style={{ color: '#0B1E2D', background: '#F5F2EE' }}>
-                {c.label}
+            <label
+              htmlFor="ecosystem-query"
+              style={{
+                flexShrink: 0,
+                margin: 0,
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 8,
+                letterSpacing: '.16em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,.38)',
+              }}
+            >
+              Product focus
+            </label>
+            <select
+              id="ecosystem-query"
+              value={focusId}
+              onChange={(e) => setFocusId(e.target.value)}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                maxWidth: 280,
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 9,
+                letterSpacing: '.1em',
+                fontWeight: 500,
+                textTransform: 'none',
+                color: 'rgba(255,255,255,.9)',
+                background: 'rgba(0,0,0,.35)',
+                border: '1px solid rgba(255,255,255,.14)',
+                borderRadius: 6,
+                padding: '6px 11px',
+                paddingRight: 30,
+                outline: 'none',
+                cursor: 'pointer',
+                appearance: 'none',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 10px center',
+              }}
+            >
+              <option value="overview" style={{ color: '#0B1E2D', background: '#F5F2EE' }}>
+                Overview — full map
               </option>
-            ))}
-          </select>
+              {productSpecs.map((p) => (
+                <option key={p.slug} value={p.slug} style={{ color: '#0B1E2D', background: '#F5F2EE' }}>
+                  {p.title}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div
             style={{
@@ -438,9 +490,9 @@ export function EcosystemSection({ mode }) {
             }}
           >
             {totalRepos} repos · {ecoClusters.length} stack categories
-            {filterIds && (
+            {focusSpec && focusClusterIds && (
               <span style={{ display: 'block', marginTop: 4, color: 'rgba(255,255,255,.32)' }}>
-                Showing one stack category on the map
+                Spec: {focusSpec.repoProductIds.length} repos across {focusClusterIds.size} categories
               </span>
             )}
           </div>
