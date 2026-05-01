@@ -1,9 +1,16 @@
-import { PALETTES } from '../data/palettes.js';
 import storyDawn from '../assets/story-dawn.png';
 import storyDusk from '../assets/story-dusk.png';
 
+const STORY_LINES = [
+  'And, in the spiced Indian air, by night,',
+  "Full often hath she gossip'd by my side,",
+  "And sat with me on Neptune's yellow sands,",
+  'Marking the embarked traders on the flood',
+  "When we have laugh'd to see the sails conceive",
+  'And grow big-bellied with the wanton wind',
+];
+
 export function StorySection({ mode }) {
-  const p = PALETTES[mode];
   const bgSrc = mode === 'dawn' ? storyDawn : storyDusk;
   const objectPosition = mode === 'dawn' ? '48% 44%' : '82% 46%';
 
@@ -42,54 +49,48 @@ export function StorySection({ mode }) {
           }}
         />
       </div>
-      <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 40px' }}>
-        <div
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          flex: 1,
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'flex-start',
+          padding: 'clamp(28px, 5vw, 56px)',
+          paddingBottom: 'clamp(72px, 14vh, 140px)',
+        }}
+      >
+        <blockquote
           style={{
-            maxWidth: 480,
-            textAlign: 'center',
-            padding: '38px 44px',
-            background: 'rgba(0,0,0,.42)',
-            backdropFilter: 'blur(14px)',
-            WebkitBackdropFilter: 'blur(14px)',
-            borderRadius: 10,
-            border: '1px solid rgba(255,255,255,.07)',
-            boxShadow: '0 8px 48px rgba(0,0,0,.5)',
+            margin: 0,
+            padding: 0,
+            border: 'none',
+            maxWidth: 'min(36em, 88vw)',
+            textAlign: 'left',
           }}
         >
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: p.accent, marginBottom: 18 }}>Our story</div>
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.8rem,3.2vw,2.9rem)', fontWeight: 300, color: '#fff', letterSpacing: '-.02em', lineHeight: 1.12, margin: '0 0 20px' }}>
-            We stand at the shore of something new.
-          </h2>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.72, color: 'rgba(255,255,255,.62)', margin: '0 0 28px' }}>
-            Every major infrastructure shift in history was shaped by early decisions about who it served — electricity, the internet, telecommunications. AI is that moment now.
-          </p>
-          <a
-            href="#"
+          <p
             style={{
-              display: 'inline-block',
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 13,
-              fontWeight: 500,
-              color: '#fff',
-              textDecoration: 'none',
-              border: '1px solid rgba(255,255,255,.28)',
-              borderRadius: 6,
-              padding: '10px 24px',
-              background: 'rgba(255,255,255,.06)',
-              transition: 'all 220ms ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,.14)';
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,.06)';
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,.28)';
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(0.98rem, 2.05vw, 1.125rem)',
+              fontWeight: 400,
+              fontStyle: 'italic',
+              color: 'rgba(255,255,255,.58)',
+              lineHeight: 1.72,
+              margin: 0,
+              letterSpacing: '0.01em',
+              textShadow: '0 1px 20px rgba(0,0,0,.85), 0 0 1px rgba(0,0,0,.6)',
             }}
           >
-            Read the full story →
-          </a>
-        </div>
+            {STORY_LINES.map((line, i) => (
+              <span key={i}>
+                {line}
+                {i < STORY_LINES.length - 1 ? <br /> : null}
+              </span>
+            ))}
+          </p>
+        </blockquote>
       </div>
     </div>
   );
