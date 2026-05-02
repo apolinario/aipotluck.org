@@ -1,14 +1,16 @@
 /**
- * Ordered roadmap: numbered steps with `slug`, optional @status, @label, @label-color,
- * @period: … (time window pill, rendered red — e.g. Q1 26), @highlight, annotations (`-`
- * or blockquote `>`), sidenotes (`^` below the card).
+ * Ordered roadmap: numbered steps with `slug`, optional @status, @owners, @label-color,
+ * @ready_by: … (time window pill — e.g. Q1 26), @gap, annotations (`-` or blockquote `>`),
+ * @note lines (rendered below the card).
+ *
+ * Legacy aliases still accepted: @label, @period, @highlight, ^
  */
 
 const STATUS_RE = /@status\s*:\s*(gap|partial|active)/i;
-const LABEL_RE = /@label\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
+const LABEL_RE = /@(?:owners|label)\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
 const LABEL_COLOR_RE = /@label-color\s*:\s*(\S+)/i;
-const PERIOD_RE = /@period\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
-const HIGHLIGHT_RE = /@highlight\s*:\s*(\S+)/i;
+const PERIOD_RE = /@(?:ready_by|period)\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
+const HIGHLIGHT_RE = /@(?:gap|highlight)\s*:\s*(\S+)/i;
 const COMPARE_RE = /@compare\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
 
 /** Accent for @period roadmap chips — signal red aligned with `--signal`/gap accents */
@@ -195,8 +197,11 @@ export function parseRoadmapMarkdown(content) {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    if (trimmed.startsWith('^')) {
-      cur.sidenotes.push(trimmed.slice(1).trim());
+    if (trimmed.startsWith('@note') || trimmed.startsWith('^')) {
+      const text = trimmed.startsWith('@note')
+        ? trimmed.slice(5).trimStart()
+        : trimmed.slice(1).trim();
+      cur.sidenotes.push(text);
       continue;
     }
 
