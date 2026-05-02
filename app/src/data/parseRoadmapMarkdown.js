@@ -7,7 +7,7 @@
  */
 
 const STATUS_RE = /@status\s*:\s*(gap|partial|active)/i;
-const LABEL_RE = /@(?:owners|label)\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
+const LABEL_RE = /@(?:maintainers|owners|label)\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
 const LABEL_COLOR_RE = /@label-color\s*:\s*(\S+)/i;
 const PERIOD_RE = /@(?:ready_by|period)\s*:\s*([^@]+?)(?=\s+@|\s*$)/i;
 const HIGHLIGHT_RE = /@(?:gap|highlight)\s*:\s*(\S+)/i;
