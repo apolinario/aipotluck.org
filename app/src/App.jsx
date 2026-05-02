@@ -16,11 +16,19 @@ export default function App() {
   const scrollRef = useRef(null);
   const sectionRefs = useRef([]);
 
-  const scrollToSection = (idx) => {
+  /** Distance from scroll container origin to section top — offsetTop breaks when offsetParent ≠ container. */
+  const sectionScrollTop = (container, el) =>
+    Math.round(
+      el.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop,
+    );
+
+  const scrollToSection = (idx, opts = {}) => {
     const container = scrollRef.current;
     const target = sectionRefs.current[idx];
     if (!container || !target) return;
-    container.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
+    const top = sectionScrollTop(container, target);
+    const behavior = opts.instant ? 'auto' : 'smooth';
+    container.scrollTo({ top: Math.max(0, top), behavior });
   };
 
   const scrollByPage = (dir) => {
@@ -30,8 +38,17 @@ export default function App() {
   };
 
   useEffect(() => {
-    const t = setTimeout(() => scrollToSection(2), 80);
-    return () => clearTimeout(t);
+    let cancelled = false;
+    /** Run after roadmap layout settles (sticky bg + imgs); offsetTop timing was undershooting mobile. */
+    const run = () => {
+      if (cancelled) return;
+      scrollToSection(2, { instant: true });
+    };
+    const t = setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(run)), 120);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, []);
 
   useEffect(() => {
@@ -44,8 +61,10 @@ export default function App() {
       setAtTop(st < 8);
       setAtBot(st + ch >= sh - 8);
       let active = 0;
+      const threshold = st + ch * 0.45;
       sectionRefs.current.forEach((ref, i) => {
-        if (ref && ref.offsetTop <= st + ch * 0.45) active = i;
+        if (!ref) return;
+        if (sectionScrollTop(container, ref) <= threshold) active = i;
       });
       setSection(active);
     };
