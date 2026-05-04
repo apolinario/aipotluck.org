@@ -6,6 +6,16 @@
   padding: 0;
 }
 
+:root {
+  --app-height: 100vh;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --app-height: 100dvh;
+  }
+}
+
 html,
 body {
   width: 100%;
@@ -22,7 +32,8 @@ body {
 
 #root {
   width: 100vw;
-  height: 100vh;
+  height: var(--app-height);
+  max-height: var(--app-height);
   overflow: hidden;
 }
 

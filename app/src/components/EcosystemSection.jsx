@@ -99,7 +99,8 @@ export function EcosystemSection({ mode }) {
     <div
       style={{
         width: '100vw',
-        height: '100vh',
+        height: 'var(--app-height)',
+        minHeight: 'var(--app-height)',
         position: 'relative',
         overflow: 'hidden',
         background: '#050811',

@@ -1,5 +1,4 @@
 import { HeroScene } from './HeroScene.jsx';
-import { PALETTES } from '../data/palettes.js';
 import logoFull from '../assets/currentai-logo-full.svg';
 
 const CONTRIBUTORS = [
@@ -11,11 +10,16 @@ const CONTRIBUTORS = [
 ];
 
 export function HomeHero({ mode }) {
-  const p = PALETTES[mode];
   return (
     <div
       className="grain"
-      style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}
+      style={{
+        width: '100vw',
+        height: 'var(--app-height)',
+        minHeight: 'var(--app-height)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
       data-screen-label="02 Home"
     >
       <HeroScene mode={mode} />
@@ -23,6 +27,7 @@ export function HomeHero({ mode }) {
         style={{
           position: 'absolute',
           inset: 0,
+          zIndex: 2,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

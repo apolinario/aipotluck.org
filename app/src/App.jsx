@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { EcosystemSection } from './components/EcosystemSection.jsx';
 import { RoadmapSection } from './components/RoadmapSection.jsx';
 import { HomeHero } from './components/HomeHero.jsx';
@@ -16,6 +16,21 @@ export default function App() {
   const scrollRef = useRef(null);
   const sectionRefs = useRef([]);
 
+  const syncViewportHeight = () => {
+    const h = window.visualViewport?.height ?? window.innerHeight;
+    document.documentElement.style.setProperty('--app-height', `${Math.round(h)}px`);
+  };
+
+  const snapSectionIntoView = (idx, instant) => {
+    const target = sectionRefs.current[idx];
+    if (!target) return;
+    target.scrollIntoView({
+      behavior: instant ? 'auto' : 'smooth',
+      block: 'start',
+      inline: 'nearest',
+    });
+  };
+
   /** Distance from scroll container origin to section top — offsetTop breaks when offsetParent ≠ container. */
   const sectionScrollTop = (container, el) =>
     Math.round(
@@ -23,31 +38,50 @@ export default function App() {
     );
 
   const scrollToSection = (idx, opts = {}) => {
-    const container = scrollRef.current;
-    const target = sectionRefs.current[idx];
-    if (!container || !target) return;
-    const top = sectionScrollTop(container, target);
-    const behavior = opts.instant ? 'auto' : 'smooth';
-    container.scrollTo({ top: Math.max(0, top), behavior });
+    snapSectionIntoView(idx, !!opts.instant);
+  };
+
+  const pageScrollStep = () => {
+    const raw = getComputedStyle(document.documentElement).getPropertyValue('--app-height').trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) && n > 0 ? n : window.innerHeight;
   };
 
   const scrollByPage = (dir) => {
     const container = scrollRef.current;
     if (!container) return;
-    container.scrollBy({ top: dir * window.innerHeight, behavior: 'smooth' });
+    container.scrollBy({ top: dir * pageScrollStep(), behavior: 'smooth' });
   };
 
+  useLayoutEffect(() => {
+    syncViewportHeight();
+    snapSectionIntoView(2, true);
+  }, []);
+
   useEffect(() => {
-    let cancelled = false;
-    /** Run after roadmap layout settles (sticky bg + imgs); offsetTop timing was undershooting mobile. */
-    const run = () => {
-      if (cancelled) return;
-      scrollToSection(2, { instant: true });
+    syncViewportHeight();
+    const resyncHome = () => {
+      syncViewportHeight();
+      snapSectionIntoView(2, true);
     };
-    const t = setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(run)), 120);
+    window.addEventListener('resize', syncViewportHeight);
+    window.visualViewport?.addEventListener('resize', syncViewportHeight);
+    const onPageShow = (e) => {
+      if (e.persisted) resyncHome();
+    };
+    window.addEventListener('pageshow', onPageShow);
+    let onLoad = null;
+    if (document.readyState === 'complete') {
+      resyncHome();
+    } else {
+      onLoad = () => resyncHome();
+      window.addEventListener('load', onLoad);
+    }
     return () => {
-      cancelled = true;
-      clearTimeout(t);
+      window.removeEventListener('resize', syncViewportHeight);
+      window.visualViewport?.removeEventListener('resize', syncViewportHeight);
+      window.removeEventListener('pageshow', onPageShow);
+      if (onLoad) window.removeEventListener('load', onLoad);
     };
   }, []);
 
@@ -74,18 +108,33 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#020508' }}>
+    <div
+      style={{
+        width: '100vw',
+        height: 'var(--app-height)',
+        maxHeight: 'var(--app-height)',
+        overflow: 'hidden',
+        background: '#020508',
+      }}
+    >
       <div ref={scrollRef} className="scroll-container" style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
-        <div ref={(el) => (sectionRefs.current[0] = el)} style={{ height: '100vh' }}>
+        <div ref={(el) => (sectionRefs.current[0] = el)} style={{ height: 'var(--app-height)' }}>
           <EcosystemSection mode={mode} />
         </div>
-        <div ref={(el) => (sectionRefs.current[1] = el)}>
+        <div ref={(el) => (sectionRefs.current[1] = el)} style={{ isolation: 'isolate' }}>
           <RoadmapSection mode={mode} />
         </div>
-        <div ref={(el) => (sectionRefs.current[2] = el)} style={{ height: '100vh' }}>
+        <div
+          ref={(el) => (sectionRefs.current[2] = el)}
+          style={{
+            height: 'var(--app-height)',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
           <HomeHero mode={mode} />
         </div>
-        <div ref={(el) => (sectionRefs.current[3] = el)} style={{ height: '100vh' }}>
+        <div ref={(el) => (sectionRefs.current[3] = el)} style={{ height: 'var(--app-height)' }}>
           <StorySection mode={mode} />
         </div>
         <div ref={(el) => (sectionRefs.current[4] = el)}>

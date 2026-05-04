@@ -52,8 +52,8 @@ export function RoadmapSection({ mode }) {
         style={{
           position: 'sticky',
           top: 0,
-          height: '100vh',
-          marginBottom: '-100vh',
+          height: 'var(--app-height)',
+          marginBottom: 'calc(-1 * var(--app-height))',
           overflow: 'hidden',
           zIndex: 0,
           background: p.rmBg,

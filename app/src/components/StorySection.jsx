@@ -30,7 +30,7 @@ export function StorySection({ mode }) {
   const objectPosition = mode === 'dawn' ? '48% 44%' : '82% 46%';
 
   return (
-    <div className="grain" style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#030508' }} data-screen-label="04 Story">
+    <div className="grain" style={{ width: '100vw', height: 'var(--app-height)', minHeight: 'var(--app-height)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#030508' }} data-screen-label="04 Story">
       <div
         style={{
           position: 'absolute',
