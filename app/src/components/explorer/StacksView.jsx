@@ -1,10 +1,26 @@
-import { useMemo } from 'react';
-import { LAYER_COLORS } from '../../explorer/constants.js';
-import { fmt, fmtN, entityName, bucketFromVerdict, verdictShort } from '../../explorer/helpers.js';
+import { useState, useMemo, useCallback } from 'react';
+import { LAYER_COLORS, FLAGS, GEO_PRESETS } from '../../explorer/constants.js';
+import { fmt, fmtN, flag, entityName, bucketFromVerdict, verdictShort } from '../../explorer/helpers.js';
 
-function CategoryCell({ cat, catEntityMap, entityMap, loaded, onClick }) {
+const PRODUCT_GROUPS = [
+  { key: '', label: 'All products' },
+  { key: 'repos', label: 'Repos' },
+  { key: 'models', label: 'Models' },
+  { key: 'packages', label: 'Packages' },
+  { key: 'other', label: 'Other' },
+];
+
+const OPEN_CLOSED = [
+  { key: '', label: 'All' },
+  { key: 'open', label: 'OSS' },
+  { key: 'closed', label: 'Closed' },
+];
+
+function CategoryCell({ cat, catEntityMap, entityMap, catCounts, loaded, onClick }) {
   const bucket = bucketFromVerdict(cat.parity_verdict);
-  const openN = cat.open_contributions || 0;
+  const counts = catCounts[cat.id] || { open: 0, closed: 0 };
+  const openN = counts.open;
+  const closedN = counts.closed;
 
   let chips;
   if (loaded.phase2) {
@@ -20,7 +36,7 @@ function CategoryCell({ cat, catEntityMap, entityMap, loaded, onClick }) {
     const closedChips = ed.closed.slice(0, 1).map(e => {
       const ent = entityMap[e.entityId];
       return (
-        <span key={e.entityId} className="chip chip-closed" title="Closed source">
+        <span key={e.entityId} className="chip chip-closed" title="Closed">
           {entityName(ent) || e.entityId}
         </span>
       );
@@ -45,19 +61,22 @@ function CategoryCell({ cat, catEntityMap, entityMap, loaded, onClick }) {
         <span className={`cell-verdict verdict-${bucket}`}>{verdictShort(cat.parity_verdict)}</span>
       </div>
       <div className="cell-meta">
-        <strong>{fmtN(openN)}</strong> OSS
+        {openN > 0 && <><strong>{fmtN(openN)}</strong> OSS</>}
+        {openN > 0 && closedN > 0 && ' · '}
+        {closedN > 0 && <><strong>{fmtN(closedN)}</strong> closed</>}
+        {openN === 0 && closedN === 0 && '—'}
       </div>
       <div className="cell-chips">{chips}</div>
     </div>
   );
 }
 
-function LayerRow({ layer, cats, catEntityMap, entityMap, loaded, onCategoryClick }) {
+function LayerRow({ layer, cats, catEntityMap, entityMap, catCounts, loaded, onCategoryClick }) {
   const lc = LAYER_COLORS[layer.id] || 'var(--ink-3)';
   const desc = layer.description || '';
   const truncated = desc.length > 88 ? desc.substring(0, 88) + '…' : desc;
-  const totalOpen = layer.categories.reduce((s, c) => s + (c.open_contributions || 0), 0);
-  const totalClosed = layer.categories.reduce((s, c) => s + (c.closed_contributions || 0), 0);
+  const totalOpen = layer.categories.reduce((s, c) => s + (catCounts[c.id]?.open || 0), 0);
+  const totalClosed = layer.categories.reduce((s, c) => s + (catCounts[c.id]?.closed || 0), 0);
 
   return (
     <div className="layer-row">
@@ -66,9 +85,10 @@ function LayerRow({ layer, cats, catEntityMap, entityMap, loaded, onCategoryClic
         <h3>{layer.display_name}</h3>
         <p>{truncated}</p>
         <div className="layer-counts">
-          <span className="lc-open">{fmt(totalOpen)} OSS</span>
-          <span className="lc-sep">·</span>
-          <span className="lc-closed">{fmt(totalClosed)} closed</span>
+          {totalOpen > 0 && <span className="lc-open">{fmt(totalOpen)} OSS</span>}
+          {totalOpen > 0 && totalClosed > 0 && <span className="lc-sep">·</span>}
+          {totalClosed > 0 && <span className="lc-closed">{fmt(totalClosed)} closed</span>}
+          {totalOpen === 0 && totalClosed === 0 && <span className="lc-open">—</span>}
         </div>
       </div>
       <div className="layer-cells">
@@ -78,6 +98,7 @@ function LayerRow({ layer, cats, catEntityMap, entityMap, loaded, onCategoryClic
             cat={c}
             catEntityMap={catEntityMap}
             entityMap={entityMap}
+            catCounts={catCounts}
             loaded={loaded}
             onClick={onCategoryClick}
           />
@@ -87,7 +108,31 @@ function LayerRow({ layer, cats, catEntityMap, entityMap, loaded, onCategoryClic
   );
 }
 
-export function StacksView({ layers, catEntityMap, entityMap, searchQuery, loaded, onCategoryClick }) {
+export function StacksView({ layers, catEntityMap, entityMap, catCounts, searchQuery, loaded, onCategoryClick, onFilterChange }) {
+  const [filter, setFilter] = useState({ productGroup: '', openClosed: '', countryPreset: 'all', country: '' });
+
+  const updateFilter = useCallback((patch) => {
+    setFilter(prev => {
+      const next = { ...prev, ...patch };
+      const hasFilter = next.productGroup || next.openClosed || (next.countryPreset && next.countryPreset !== 'all') || next.country;
+      onFilterChange(hasFilter ? next : null);
+      return next;
+    });
+  }, [onFilterChange]);
+
+  const handlePreset = useCallback((key) => {
+    updateFilter({ countryPreset: key, country: '' });
+  }, [updateFilter]);
+
+  const handleCountryChange = useCallback((val) => {
+    updateFilter({ country: val, countryPreset: val ? 'all' : filter.countryPreset });
+  }, [updateFilter, filter.countryPreset]);
+
+  const countries = useMemo(() => {
+    const all = Object.values(entityMap);
+    return [...new Set(all.map(e => e.country).filter(c => c && FLAGS[c]))].sort();
+  }, [entityMap]);
+
   const filteredLayers = useMemo(() => {
     if (!loaded.phase1) return [];
     const q = (searchQuery || '').toLowerCase();
@@ -111,18 +156,71 @@ export function StacksView({ layers, catEntityMap, entityMap, searchQuery, loade
   }
 
   return (
-    <div className="stack-grid">
-      {filteredLayers.map(({ layer, cats }) => (
-        <LayerRow
-          key={layer.id}
-          layer={layer}
-          cats={cats}
-          catEntityMap={catEntityMap}
-          entityMap={entityMap}
-          loaded={loaded}
-          onCategoryClick={onCategoryClick}
-        />
-      ))}
-    </div>
+    <>
+      <div className="filter-bar">
+        <div className="ctrl">
+          <label>Products</label>
+          <select value={filter.productGroup} onChange={e => updateFilter({ productGroup: e.target.value })}>
+            {PRODUCT_GROUPS.map(g => (
+              <option key={g.key} value={g.key}>{g.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="ctrl">
+          <label>Licensing</label>
+          <div className="preset-bar">
+            {OPEN_CLOSED.map(o => (
+              <button
+                key={o.key}
+                className={`preset-btn${filter.openClosed === o.key ? ' active' : ''}`}
+                onClick={() => updateFilter({ openClosed: o.key })}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="filter-bar-sep" />
+        <div className="ctrl">
+          <label>Geography</label>
+          <div className="preset-bar">
+            {GEO_PRESETS.map(p => (
+              <button
+                key={p.key}
+                className={`preset-btn${filter.countryPreset === p.key && !filter.country ? ' active' : ''}`}
+                onClick={() => handlePreset(p.key)}
+              >
+                {p.label}
+              </button>
+            ))}
+            <select
+              value={filter.country}
+              onChange={e => handleCountryChange(e.target.value)}
+              style={{ marginLeft: 4 }}
+              className="preset-btn"
+            >
+              <option value="">Other…</option>
+              {countries.map(c => (
+                <option key={c} value={c}>{flag(c)} {c}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="stack-grid">
+        {filteredLayers.map(({ layer, cats }) => (
+          <LayerRow
+            key={layer.id}
+            layer={layer}
+            cats={cats}
+            catEntityMap={catEntityMap}
+            entityMap={entityMap}
+            catCounts={catCounts}
+            loaded={loaded}
+            onCategoryClick={onCategoryClick}
+          />
+        ))}
+      </div>
+    </>
   );
 }

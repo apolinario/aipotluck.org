@@ -13,11 +13,12 @@ import { fmtN } from '../../explorer/helpers.js';
 import '../../styles/explorer.css';
 
 export function ExplorerApp() {
-  const data = useExplorerData();
   const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState('stacks');
   const [searchQuery, setSearchQuery] = useState('');
+  const [stacksFilter, setStacksFilter] = useState(null);
   const [drawer, setDrawer] = useState({ open: false, type: null, id: null });
+  const data = useExplorerData(stacksFilter);
 
   /** Open category drawer from URL (?open=category&category=<id>) or clear it when params go away. */
   useEffect(() => {
@@ -38,6 +39,7 @@ export function ExplorerApp() {
   const handleViewChange = useCallback((v) => {
     setView(v);
     setSearchQuery('');
+    setStacksFilter(null);
   }, []);
 
   const openCategoryDrawer = useCallback((catId) => {
@@ -149,9 +151,11 @@ export function ExplorerApp() {
             layers={data.layers}
             catEntityMap={data.catEntityMap}
             entityMap={data.entityMap}
+            catCounts={data.catCounts}
             searchQuery={searchQuery}
             loaded={data.loaded}
             onCategoryClick={openCategoryDrawer}
+            onFilterChange={setStacksFilter}
           />
         )}
 

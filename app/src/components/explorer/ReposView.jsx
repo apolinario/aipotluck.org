@@ -1,17 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { FLAGS } from '../../explorer/constants.js';
+import { FLAGS, GEO_PRESETS } from '../../explorer/constants.js';
 import { flag, fmt, fmtN, entityName, matchesPreset } from '../../explorer/helpers.js';
 
 const LICENSES = ['MIT', 'Apache-2.0', 'BSD-3-Clause', 'GPL-3.0', 'LGPL-2.1', 'MPL-2.0', 'AGPL-3.0'];
-
-const PRESETS = [
-  { key: 'all', label: 'All' },
-  { key: 'us', label: '🇺🇸 US' },
-  { key: 'cn', label: '🇨🇳 China' },
-  { key: 'eu', label: '🇪🇺 EU' },
-  { key: 'ex-us-cn', label: 'Excl. US+CN' },
-  { key: 'other', label: 'Rest of world' },
-];
 
 const SORT_LABELS = {
   stars: 'stars', star7d: '+stars / 7d', commits90: 'commits / 90d', name: 'name', entity: 'team',
@@ -153,7 +144,7 @@ export function ReposView({
         <div className="ctrl">
           <label>Geography</label>
           <div className="preset-bar">
-            {PRESETS.map(p => (
+            {GEO_PRESETS.map(p => (
               <button
                 key={p.key}
                 className={`preset-btn${countryPreset === p.key ? ' active' : ''}`}

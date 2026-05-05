@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { LAYER_COLORS, TYPE_ORDER, TYPE_LABELS } from '../../explorer/constants.js';
-import { fmtN, entityName, flag, generateEntitySummary, entityTypeSimple } from '../../explorer/helpers.js';
+import { fmtN, entityName, flag, generateEntitySummary } from '../../explorer/helpers.js';
 import { ProductRow } from './ProductRow.jsx';
 
 export function EntityDrawerContent({
@@ -47,7 +47,7 @@ export function EntityDrawerContent({
           <a className="em-link-pill" href={entity.homepage} target="_blank" rel="noopener">↗ Website</a>
         )}
         <span className="em-item" style={{ color: 'var(--ink-3)', fontSize: '12px' }}>
-          {fmtN(totalProds)} contributions
+          {fmtN(totalProds)} products
         </span>
       </div>
 

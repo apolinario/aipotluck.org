@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { PRODUCT_GROUP_TYPES } from './constants.js';
+import { matchesPreset } from './helpers.js';
 
 const BASE = '/data/';
 
@@ -73,7 +75,7 @@ function buildEntitySummaries(entities, products, categories, layers) {
     .sort((a, b) => b.total - a.total);
 }
 
-export function useExplorerData() {
+export function useExplorerData(stacksFilter = null) {
   const [layers, setLayers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [entities, setEntities] = useState([]);
@@ -81,7 +83,6 @@ export function useExplorerData() {
   const [reposAttrs, setReposAttrs] = useState([]);
   const [modelsAttrs, setModelsAttrs] = useState([]);
   const [packagesAttrs, setPackagesAttrs] = useState([]);
-  const [contribAttrs, setContribAttrs] = useState([]);
   const [loaded, setLoaded] = useState({ phase1: false, phase2: false, repos: false });
 
   useEffect(() => {
@@ -116,13 +117,7 @@ export function useExplorerData() {
 
   const loadRepos = useCallback(() => {
     if (loaded.repos) return;
-    fetch(BASE + 'contributions_attrs.json')
-      .then(r => r.json())
-      .then(data => {
-        setContribAttrs(data);
-        setLoaded(prev => ({ ...prev, repos: true }));
-      })
-      .catch(e => console.error('Repos:', e));
+    setLoaded(prev => ({ ...prev, repos: true }));
   }, [loaded.repos]);
 
   const catMap = useMemo(
@@ -145,18 +140,44 @@ export function useExplorerData() {
     () => Object.fromEntries(packagesAttrs.map(p => [p.product_id, p])),
     [packagesAttrs]
   );
-  const contribAttrsByPid = useMemo(
-    () => Object.fromEntries(contribAttrs.map(c => [c.product_id, c])),
-    [contribAttrs]
-  );
+  const filteredProducts = useMemo(() => {
+    if (!stacksFilter) return products;
+    const { productGroup, openClosed, countryPreset, country } = stacksFilter;
+    let list = products;
+    if (productGroup) {
+      const types = PRODUCT_GROUP_TYPES[productGroup];
+      if (types) list = list.filter(p => types.has(p.product_type));
+    }
+    if (openClosed === 'open') list = list.filter(p => p.is_open);
+    else if (openClosed === 'closed') list = list.filter(p => !p.is_open);
+    if (country) {
+      list = list.filter(p => (entityMap[p.entity_id]?.country || '') === country);
+    } else if (countryPreset && countryPreset !== 'all') {
+      list = list.filter(p => matchesPreset(entityMap[p.entity_id]?.country || null, countryPreset));
+    }
+    return list;
+  }, [products, stacksFilter, entityMap]);
+
+  // Stacks-specific: use filteredProducts so category counts/chips reflect the filter
   const productsByCat = useMemo(() => {
     const m = {};
-    for (const p of products) {
+    for (const p of filteredProducts) {
       if (!m[p.category_id]) m[p.category_id] = [];
       m[p.category_id].push(p);
     }
     return m;
-  }, [products]);
+  }, [filteredProducts]);
+
+  const catCounts = useMemo(() => {
+    const m = {};
+    for (const p of filteredProducts) {
+      if (!m[p.category_id]) m[p.category_id] = { open: 0, closed: 0 };
+      if (p.is_open) m[p.category_id].open++; else m[p.category_id].closed++;
+    }
+    return m;
+  }, [filteredProducts]);
+
+  // Global: use unfiltered products so repos/teams views are not affected
   const entityByPid = useMemo(() => {
     const m = {};
     for (const p of products) m[p.product_id] = p.entity_id;
@@ -171,15 +192,17 @@ export function useExplorerData() {
     () => loaded.phase2 ? buildEntityTypeCount(products) : {},
     [loaded.phase2, products]
   );
+
+  // Stacks-specific: filtered entity chips per category
   const catEntityMap = useMemo(
-    () => loaded.phase2 ? buildCatEntityMap(products, entitySummaries, entityMap) : {},
-    [loaded.phase2, products, entitySummaries, entityMap]
+    () => loaded.phase2 ? buildCatEntityMap(filteredProducts, entitySummaries, entityMap) : {},
+    [loaded.phase2, filteredProducts, entitySummaries, entityMap]
   );
 
   return {
     layers, catMap, entityMap, products, productsByCat, entityByPid,
-    reposAttrsByPid, modelsAttrsByPid, packagesAttrsByPid, contribAttrsByPid,
-    entitySummaries, entityTypeCount, catEntityMap,
+    reposAttrsByPid, modelsAttrsByPid, packagesAttrsByPid,
+    entitySummaries, entityTypeCount, catEntityMap, catCounts,
     loaded, loadRepos,
   };
 }

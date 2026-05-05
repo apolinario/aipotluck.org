@@ -46,10 +46,12 @@ export const TYPE_ORDER = [
   'dataset_closed', 'service', 'chip',
 ];
 
-export const OPEN_TYPES = new Set([
-  'repo', 'model', 'package', 'dataset', 'eval_harness',
-  'tool', 'paper', 'runtime', 'standard',
-]);
+export const PRODUCT_GROUP_TYPES = {
+  repos: new Set(['repo']),
+  models: new Set(['model', 'model_closed']),
+  packages: new Set(['package']),
+  other: new Set(['chip', 'runtime', 'dataset', 'dataset_closed', 'eval_harness', 'standard', 'policy', 'service', 'tool', 'paper']),
+};
 
 export const EU = new Set([
   'Germany', 'France', 'Netherlands', 'Italy', 'Spain', 'Sweden', 'Finland',
@@ -65,13 +67,14 @@ export const VERDICT_CLASS = {
   no_oss_exists: 'gap',
 };
 
-export const SORT_LABELS = {
-  stars: 'stars',
-  star7d: '+stars / 7d',
-  commits90: 'commits / 90d',
-  name: 'name',
-  entity: 'team',
-};
+export const GEO_PRESETS = [
+  { key: 'all', label: 'All' },
+  { key: 'us', label: '🇺🇸 US' },
+  { key: 'cn', label: '🇨🇳 China' },
+  { key: 'eu', label: '🇪🇺 EU' },
+  { key: 'ex-us-cn', label: 'Excl. US+CN' },
+  { key: 'other', label: 'Rest of world' },
+];
 
 export const SEARCH_PLACEHOLDERS = {
   stacks: 'Search categories…',

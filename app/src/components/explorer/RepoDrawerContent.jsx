@@ -90,7 +90,7 @@ export function RepoDrawerContent({
               )}
             </div>
             <div className="proj-row2">
-              {fmtN(entSummary?.total || 0)} contributions ·{' '}
+              {fmtN(entSummary?.total || 0)} products ·{' '}
               <a href={orgHref} target="_blank" rel="noopener"
                 onClick={e => e.stopPropagation()} style={{ color: 'var(--accent)' }}>
                 ↗ GitHub org

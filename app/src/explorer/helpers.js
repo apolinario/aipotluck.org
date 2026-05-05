@@ -51,10 +51,10 @@ export function verdictShort(v) {
 
 export function verdictLong(v) {
   return ({
-    competitive:   'Competitive with closed source',
-    closed_leads:  'Closed source leads',
-    unique_to_oss: 'Unique to open source',
-    no_oss_exists: 'No open source exists',
+    competitive:   'Competitive with closed',
+    closed_leads:  'Closed leads',
+    unique_to_oss: 'Unique to OSS',
+    no_oss_exists: 'No OSS exists',
   })[v] || v || '—';
 }
 
@@ -78,8 +78,8 @@ export function generateEntitySummary(entity, summary) {
   const closedCount = summary?.closedCount || 0;
   const layerCount = (summary?.layers || []).length;
   const parts = [];
-  if (openCount > 0) parts.push(`${fmtN(openCount)} open source`);
-  if (closedCount > 0) parts.push(`${fmtN(closedCount)} closed source`);
-  const contribStr = parts.join(' and ') + (parts.length ? ' contributions' : 'no mapped contributions');
-  return `${name} is ${/^[aeiou]/i.test(typeLabel) ? 'an' : 'a'} ${typeLabel}${country ? ' ' + country : ''}. They have ${contribStr}${layerCount > 0 ? ` across ${layerCount} layer${layerCount !== 1 ? 's' : ''}` : ''} of the AI stack.`;
+  if (openCount > 0) parts.push(`${fmtN(openCount)} OSS`);
+  if (closedCount > 0) parts.push(`${fmtN(closedCount)} closed`);
+  const prodStr = parts.join(' and ') + (parts.length ? ' products' : 'no mapped products');
+  return `${name} is ${/^[aeiou]/i.test(typeLabel) ? 'an' : 'a'} ${typeLabel}${country ? ' ' + country : ''}. They have ${prodStr}${layerCount > 0 ? ` across ${layerCount} layer${layerCount !== 1 ? 's' : ''}` : ''} of the AI stack.`;
 }

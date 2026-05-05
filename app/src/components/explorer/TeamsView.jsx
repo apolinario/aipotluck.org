@@ -1,19 +1,6 @@
 import { useState, useMemo } from 'react';
-import { LAYER_COLORS, TYPE_LABELS, TYPE_ORDER, FLAGS } from '../../explorer/constants.js';
-import { flag, fmtN, entityName, matchesPreset } from '../../explorer/helpers.js';
-
-const PRESETS = [
-  { key: 'all', label: 'All' },
-  { key: 'us', label: '🇺🇸 US' },
-  { key: 'cn', label: '🇨🇳 China' },
-  { key: 'eu', label: '🇪🇺 EU' },
-  { key: 'ex-us-cn', label: 'Excl. US+CN' },
-  { key: 'other', label: 'Rest of world' },
-];
-
-function entityTypeSimple(e) {
-  return e.type === 'individual' ? 'Individual' : 'Organization';
-}
+import { LAYER_COLORS, TYPE_LABELS, TYPE_ORDER, GEO_PRESETS } from '../../explorer/constants.js';
+import { flag, fmtN, entityName, entityTypeSimple, matchesPreset } from '../../explorer/helpers.js';
 
 export function TeamsView({ layers, entitySummaries, entityTypeCount, loaded, searchQuery, onEntityClick }) {
   const [filter, setFilter] = useState({ type: '', country: '', productType: '' });
@@ -76,7 +63,7 @@ export function TeamsView({ layers, entitySummaries, entityTypeCount, loaded, se
     <section>
       <div className="filter-bar">
         <div className="ctrl">
-          <label>Type</label>
+          <label>Entity type</label>
           <select value={filter.type} onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}>
             <option value="">All types</option>
             <option value="individual">Individual</option>
@@ -86,7 +73,7 @@ export function TeamsView({ layers, entitySummaries, entityTypeCount, loaded, se
         <div className="ctrl">
           <label>Products</label>
           <select value={filter.productType} onChange={e => setFilter(f => ({ ...f, productType: e.target.value }))}>
-            <option value="">Any product</option>
+            <option value="">All products</option>
             {productTypeOptions.map(t => (
               <option key={t} value={t}>Has {TYPE_LABELS[t] || t}</option>
             ))}
@@ -96,7 +83,7 @@ export function TeamsView({ layers, entitySummaries, entityTypeCount, loaded, se
         <div className="ctrl">
           <label>Geography</label>
           <div className="preset-bar">
-            {PRESETS.map(p => (
+            {GEO_PRESETS.map(p => (
               <button
                 key={p.key}
                 className={`preset-btn${countryPreset === p.key ? ' active' : ''}`}
