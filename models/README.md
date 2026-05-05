@@ -25,6 +25,7 @@ CSV-based reference data uploaded via scripts. Source CSVs live in `data/`.
 | `currentai.catalog.osai_gap_map` | `data/osai-gap-map/scores.csv` | 41 | Qualitative maturity scores (10 dimensions) |
 | `currentai.catalog.osai_subcategory_mapping` | `data/osai_subcategory_repos.csv` | ~42 | OSAI subcategory → GoodAI subcategory bridge |
 | `currentai.catalog.taxonomy_crosswalk` | `data/taxonomy_crosswalk.csv` | ~10 | OSAI layer → GoodAI category bridge |
+| `currentai.catalog.pypi_downloads` | `data/pypi/pypi_downloads.csv` (gitignored) | ~1.6M | PyPI daily downloads by package × country, 39 AI packages |
 
 ## Entities (User Defined Models)
 

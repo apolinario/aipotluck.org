@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { TYPE_ORDER, TYPE_LABELS, MATURITY_LABELS, VERDICT_CLASS } from '../../explorer/constants.js';
+import { TYPE_ORDER, TYPE_LABELS, VERDICT_CLASS } from '../../explorer/constants.js';
 import { fmtN, bucketFromVerdict, verdictShort, verdictLong } from '../../explorer/helpers.js';
 import { ProductRow } from './ProductRow.jsx';
 
@@ -118,37 +118,6 @@ export function CategoryDrawerContent({
         </>
       )}
 
-      {cat.scores && (
-        <>
-          <div className="section-h" style={{ marginTop: '20px' }}>
-            Maturity dimensions{' '}
-            <span className="countpill">avg {cat.criteria_avg?.toFixed(1) || '—'}/5</span>
-          </div>
-          <div className="dim-grid">
-            {Object.entries(cat.scores).map(([k, v]) => (
-              <div key={k} className="dim-item">
-                <div className="dim-label">{MATURITY_LABELS[k] || k}</div>
-                <div className="dim-bar-wrap">
-                  <div className="dim-bar" style={{ width: `${(v / 5) * 100}%` }} />
-                </div>
-                <div className="dim-val">{v}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ fontSize: 10, color: 'var(--ink-3)', marginTop: 4 }}>
-            Source:{' '}
-            <a
-              href="https://docs.google.com/spreadsheets/d/1plMCnpEoIJsc29wGnEGiaZGI1IFfFMnCIB0SG85N4gg"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--accent)' }}
-            >
-              OSAI Gap Map
-            </a>
-            {cat.last_audited && <> · Last audited {cat.last_audited}</>}
-          </div>
-        </>
-      )}
     </>
   );
 }

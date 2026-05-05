@@ -51,19 +51,6 @@ export const OPEN_TYPES = new Set([
   'tool', 'paper', 'runtime', 'standard',
 ]);
 
-export const MATURITY_LABELS = {
-  breadth: 'Breadth of coverage',
-  production_readiness: 'Production readiness',
-  ease_of_adoption: 'Ease of adoption',
-  documentation: 'Documentation quality',
-  community_activity: 'Community activity',
-  performance_vs_closed: 'Performance vs. closed source',
-  enterprise_readiness: 'Enterprise readiness',
-  interoperability: 'Interoperability',
-  sustainability: 'Project sustainability',
-  standardization: 'Standardization',
-};
-
 export const EU = new Set([
   'Germany', 'France', 'Netherlands', 'Italy', 'Spain', 'Sweden', 'Finland',
   'Austria', 'Poland', 'Belgium', 'Ireland', 'Denmark', 'Czechia', 'Czech Republic',

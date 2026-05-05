@@ -45,7 +45,7 @@ function CategoryCell({ cat, catEntityMap, entityMap, loaded, onClick }) {
         <span className={`cell-verdict verdict-${bucket}`}>{verdictShort(cat.parity_verdict)}</span>
       </div>
       <div className="cell-meta">
-        <strong>{fmtN(openN)}</strong> OSS · <em>{cat.maturity || '—'}</em>
+        <strong>{fmtN(openN)}</strong> OSS
       </div>
       <div className="cell-chips">{chips}</div>
     </div>

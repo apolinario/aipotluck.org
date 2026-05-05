@@ -55,3 +55,6 @@ Thumbs.db
 .marimo/
 __marimo__/
 .gstack/
+
+# Large data files (uploaded via MCP, not checked in)
+data/pypi/
