@@ -231,3 +231,66 @@ button:focus-visible {
   cursor: default;
   pointer-events: none;
 }
+
+.minimal-landing__email-drop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.minimal-landing__email-label {
+  color: #f29186;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.minimal-landing__email-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.minimal-landing__email-input {
+  border: 1px solid #f2c1bb;
+  background: #fff;
+  color: #131313;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  min-width: 220px;
+  font: inherit;
+}
+
+.minimal-landing__email-input:focus-visible {
+  outline: 2px solid rgba(242, 145, 134, 0.5);
+  outline-offset: 1px;
+}
+
+.minimal-landing__email-submit {
+  border: 1px solid #f29186;
+  background: #fff;
+  color: #d9736a;
+  border-radius: 6px;
+  padding: 0.45rem 0.7rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.minimal-landing__email-submit:hover {
+  background: #fff3f2;
+}
+
+.minimal-landing__email-submit:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.minimal-landing__email-note {
+  color: #7e8690;
+  font-size: 0.82rem;
+}
+
+.minimal-landing__email-note--error {
+  color: #c85566;
+}

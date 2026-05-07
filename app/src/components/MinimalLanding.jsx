@@ -1,25 +1,41 @@
+import { useState } from 'react';
 import logoBlack from '../assets/currentai-logo-black-transparent.png';
 
-const CONTACT_SUBJECT = encodeURIComponent('Joining the AI Potluck');
-const CONTACT_BODY = encodeURIComponent(
-  [
-    'Hi Current AI team,',
-    '',
-    "I'd love to join the AI Potluck and get involved.",
-    '',
-    'AI Potluck is a shared table for builders: a collaborative effort to map the open-source AI ecosystem, identify meaningful gaps, and coordinate contributions so the ecosystem grows stronger together.',
-    '',
-    'A little about me:',
-    '- Name:',
-    '- Background:',
-    '- What I want to contribute:',
-    '- Links (GitHub/website):',
-    '',
-    'Looking forward to connecting.',
-  ].join('\n'),
-);
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mrejlvak';
 
 export function MinimalLanding() {
+  const [email, setEmail] = useState('');
+  const [submitState, setSubmitState] = useState('idle');
+
+  const handleEmailDrop = async (event) => {
+    event.preventDefault();
+    const normalized = email.trim();
+    if (!normalized) return;
+
+    setSubmitState('submitting');
+
+    try {
+      const formData = new FormData();
+      formData.append('email', normalized);
+      formData.append('source', 'current-ai-landing');
+
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        body: formData,
+        headers: { Accept: 'application/json' },
+      });
+
+      if (!response.ok) {
+        throw new Error('Form submission failed');
+      }
+
+      setSubmitState('success');
+      setEmail('');
+    } catch {
+      setSubmitState('error');
+    }
+  };
+
   return (
     <main className="minimal-landing">
       <div className="minimal-landing__inner">
@@ -33,11 +49,11 @@ export function MinimalLanding() {
 
         <div className="minimal-landing__copy">
           <p>
-            Every culture in the world has a version of the shared meal. The Persian sofreħ, the
-            Lebanese mezza, the Indian thali, the Spanish tapas. Long before states and institutions
-            existed, humans had technologies for coordination, and the most enduring one is the shared
-            table. When people bring their best and break bread together, something emerges that no
-            single person could have done alone.
+            Every culture in the world has a version of the shared meal. The Lebanese mezza, the
+            Indian thali, the Spanish tapas. Long before states and institutions existed, humans had
+            technologies for coordination, and the most enduring one is the shared table. When people
+            bring their best and break bread together, something emerges that no single person could
+            have done alone.
           </p>
           <p>
             We’re making a bet that this oldest model of collective abundance is also the right one
@@ -50,16 +66,41 @@ export function MinimalLanding() {
             <a className="minimal-landing__link" href="/gaps">
               Gaps
             </a>
-            <span className="minimal-landing__link minimal-landing__link--muted" aria-disabled="true">
-              Roadmap (coming soon)
-            </span>
           </div>
-          <a
-            className="minimal-landing__link"
-            href={`mailto:potluck@currentai.org,josh@currentai.org?subject=${CONTACT_SUBJECT}&body=${CONTACT_BODY}`}
-          >
-            Get in touch
-          </a>
+          <form className="minimal-landing__email-drop" onSubmit={handleEmailDrop}>
+            <label className="minimal-landing__email-label" htmlFor="email-drop">
+              Get in touch
+            </label>
+            <div className="minimal-landing__email-row">
+              <input
+                id="email-drop"
+                className="minimal-landing__email-input"
+                type="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  if (submitState !== 'idle') setSubmitState('idle');
+                }}
+                placeholder="Drop your email"
+                required
+              />
+              <button
+                type="submit"
+                className="minimal-landing__email-submit"
+                disabled={submitState === 'submitting'}
+              >
+                {submitState === 'submitting' ? 'Submitting…' : 'Submit'}
+              </button>
+            </div>
+            {submitState === 'success' ? (
+              <p className="minimal-landing__email-note">Thanks, your email has been saved.</p>
+            ) : null}
+            {submitState === 'error' ? (
+              <p className="minimal-landing__email-note minimal-landing__email-note--error">
+                We could not save your email. Please try again.
+              </p>
+            ) : null}
+          </form>
         </div>
       </div>
     </main>

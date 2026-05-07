@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { LAYER_COLORS, FLAGS, GEO_PRESETS } from '../../explorer/constants.js';
-import { fmt, fmtN, flag, entityName, bucketFromVerdict, verdictShort } from '../../explorer/helpers.js';
+import { fmt, fmtN, flag, entityName } from '../../explorer/helpers.js';
 
 const PRODUCT_GROUPS = [
   { key: '', label: 'All projects' },
@@ -17,7 +17,6 @@ const OPEN_CLOSED = [
 ];
 
 function CategoryCell({ cat, catEntityMap, entityMap, catCounts, loaded, onClick }) {
-  const bucket = bucketFromVerdict(cat.parity_verdict);
   const counts = catCounts[cat.id] || { open: 0, closed: 0 };
   const openN = counts.open;
   const closedN = counts.closed;
@@ -53,12 +52,10 @@ function CategoryCell({ cat, catEntityMap, entityMap, catCounts, loaded, onClick
     <div
       className="cell"
       data-cat-id={cat.id}
-      data-health={bucket}
       onClick={() => onClick(cat.id)}
     >
       <div className="cell-head">
         <span className="cell-name">{cat.display_name}</span>
-        <span className={`cell-verdict verdict-${bucket}`}>{verdictShort(cat.parity_verdict)}</span>
       </div>
       <div className="cell-meta">
         {openN > 0 && <><strong>{fmtN(openN)}</strong> OSS</>}
