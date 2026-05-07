@@ -190,10 +190,37 @@ html:has(.explorer) #root {
   cursor: pointer; position: relative;
   transition: transform .12s, box-shadow .12s, border-color .12s;
   min-height: 130px; display: flex; flex-direction: column;
+  border-left: 3px solid color-mix(in oklch, var(--stack-color, var(--ink-3)) 78%, transparent);
+  background: color-mix(in oklch, var(--stack-color, var(--paper-2)) 5%, var(--paper-2));
 }
-.explorer .cell:hover { transform: translateY(-2px); box-shadow: var(--shadow-1); border-color: var(--rule); }
+.explorer .cell:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-1);
+  border-color: color-mix(in oklch, var(--stack-color, var(--rule)) 40%, var(--rule));
+}
 .explorer .cell-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; margin-bottom: 6px; }
 .explorer .cell-name { font-weight: 600; font-size: 12.5px; letter-spacing: -.005em; line-height: 1.25; }
+.explorer .cell-name {
+  color: color-mix(in oklch, var(--stack-color, var(--ink)) 62%, var(--ink));
+}
+.explorer .cell-claim-btn {
+  border: 1px solid var(--rule-soft);
+  background: var(--paper);
+  color: var(--ink-2);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.2;
+}
+.explorer .cell-claim-btn:hover { border-color: var(--rule); color: var(--ink); }
+.explorer .cell-claimed-name {
+  font-size: 10.5px;
+  color: var(--accent);
+  font-weight: 600;
+  white-space: nowrap;
+}
 .explorer .cell-verdict {
   font-family: 'DM Mono', monospace; font-size: 10.5px; font-weight: 600;
   text-transform: uppercase; letter-spacing: .04em;
@@ -331,6 +358,47 @@ html:has(.explorer) #root {
 .explorer .stat-strip { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; padding-bottom: 13px; border-bottom: 1px solid var(--rule-soft); }
 .explorer .stat-item .sl { font-size: 9.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); font-weight: 600; }
 .explorer .stat-item .sv { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--ink); margin-top: 2px; }
+.explorer .claim-stack-wrap { margin: -2px 0 14px; }
+.explorer .claim-stack-btn {
+  border: 1px solid var(--rule-soft);
+  background: var(--paper-2);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.explorer .claim-stack-btn:hover { border-color: var(--rule); }
+.explorer .claim-stack-claimed { font-size: 12px; color: var(--ink-2); }
+.explorer .claim-stack-form { display: flex; flex-direction: column; gap: 8px; }
+.explorer .claim-stack-note { margin: 0; font-size: 12px; color: var(--ink-2); line-height: 1.45; }
+.explorer .claim-stack-row { display: flex; gap: 8px; align-items: center; }
+.explorer .claim-stack-input {
+  border: 1px solid var(--rule-soft);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 12px;
+  min-width: 170px;
+}
+.explorer .claim-stack-submit {
+  border: 1px solid var(--rule);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.explorer .claim-stack-error {
+  margin: 0;
+  font-size: 12px;
+  color: var(--signal);
+}
 
 /* Analysis card — color matches verdict */
 .explorer .analysis-card { padding: 11px 13px; border-radius: 0 var(--radius-2) var(--radius-2) 0; margin-bottom: 14px; }

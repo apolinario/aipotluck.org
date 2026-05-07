@@ -16,10 +16,11 @@ const OPEN_CLOSED = [
   { key: 'closed', label: 'Closed' },
 ];
 
-function CategoryCell({ cat, catEntityMap, entityMap, catCounts, loaded, onClick }) {
+function CategoryCell({ cat, layerId, catEntityMap, entityMap, catCounts, loaded, onClick, claimedBy }) {
   const counts = catCounts[cat.id] || { open: 0, closed: 0 };
   const openN = counts.open;
   const closedN = counts.closed;
+  const stackColor = LAYER_COLORS[layerId] || 'var(--ink-3)';
 
   let chips;
   if (loaded.phase2) {
@@ -52,10 +53,24 @@ function CategoryCell({ cat, catEntityMap, entityMap, catCounts, loaded, onClick
     <div
       className="cell"
       data-cat-id={cat.id}
+      style={{ '--stack-color': stackColor }}
       onClick={() => onClick(cat.id)}
     >
       <div className="cell-head">
         <span className="cell-name">{cat.display_name}</span>
+        {claimedBy ? (
+          <span className="cell-claimed-name">{claimedBy}</span>
+        ) : (
+          <button
+            className="cell-claim-btn"
+            onClick={(event) => {
+              event.stopPropagation();
+              onClick(cat.id);
+            }}
+          >
+            Claim
+          </button>
+        )}
       </div>
       <div className="cell-meta">
         {openN > 0 && <><strong>{fmtN(openN)}</strong> OSS</>}
@@ -68,7 +83,7 @@ function CategoryCell({ cat, catEntityMap, entityMap, catCounts, loaded, onClick
   );
 }
 
-function LayerRow({ layer, cats, catEntityMap, entityMap, catCounts, loaded, onCategoryClick }) {
+function LayerRow({ layer, cats, catEntityMap, entityMap, catCounts, stackClaims, loaded, onCategoryClick }) {
   const lc = LAYER_COLORS[layer.id] || 'var(--ink-3)';
   const desc = layer.description || '';
   const truncated = desc.length > 88 ? desc.substring(0, 88) + '…' : desc;
@@ -93,9 +108,11 @@ function LayerRow({ layer, cats, catEntityMap, entityMap, catCounts, loaded, onC
           <CategoryCell
             key={c.id}
             cat={c}
+            layerId={layer.id}
             catEntityMap={catEntityMap}
             entityMap={entityMap}
             catCounts={catCounts}
+            claimedBy={stackClaims?.[c.id]}
             loaded={loaded}
             onClick={onCategoryClick}
           />
@@ -105,7 +122,7 @@ function LayerRow({ layer, cats, catEntityMap, entityMap, catCounts, loaded, onC
   );
 }
 
-export function StacksView({ layers, catEntityMap, entityMap, catCounts, searchQuery, loaded, onCategoryClick, onFilterChange }) {
+export function StacksView({ layers, catEntityMap, entityMap, catCounts, stackClaims, searchQuery, loaded, onCategoryClick, onFilterChange }) {
   const [filter, setFilter] = useState({ productGroup: '', openClosed: '', countryPreset: 'all', country: '' });
 
   const updateFilter = useCallback((patch) => {
@@ -213,6 +230,7 @@ export function StacksView({ layers, catEntityMap, entityMap, catCounts, searchQ
             catEntityMap={catEntityMap}
             entityMap={entityMap}
             catCounts={catCounts}
+            stackClaims={stackClaims}
             loaded={loaded}
             onCategoryClick={onCategoryClick}
           />

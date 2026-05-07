@@ -13,12 +13,14 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<MinimalLanding />} />
         <Route path="/v2" element={<App />} />
-        <Route path="/app" element={<ExplorerApp />} />
-        <Route path="/stacks" element={<ExplorerApp />} />
-        <Route path="/gaps" element={<ExplorerApp />} />
-        <Route path="/repos" element={<ExplorerApp />} />
-        <Route path="/teams" element={<ExplorerApp />} />
-        <Route path="/stack" element={<StackPage />} />
+        <Route path="/app/*" element={<ExplorerApp />} />
+        <Route path="/stacks/*" element={<ExplorerApp />} />
+        <Route path="/gaps/*" element={<ExplorerApp />} />
+        <Route path="/repos/*" element={<ExplorerApp />} />
+        <Route path="/teams/*" element={<ExplorerApp />} />
+        <Route path="/stack/*" element={<StackPage />} />
+        <Route path="/map" element={<StackPage />} />
+        <Route path="*" element={<MinimalLanding />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

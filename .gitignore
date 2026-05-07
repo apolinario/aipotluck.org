@@ -58,3 +58,4 @@ __marimo__/
 
 # Large data files (uploaded via MCP, not checked in)
 data/pypi/
+.vercel

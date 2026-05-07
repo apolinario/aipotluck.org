@@ -18,8 +18,30 @@ export function ExplorerApp() {
   const [productGroup, setProductGroup] = useState('repos');
   const [searchQuery, setSearchQuery] = useState('');
   const [stacksFilter, setStacksFilter] = useState(null);
+  const [stackClaims, setStackClaims] = useState({});
   const [drawer, setDrawer] = useState({ open: false, type: null, id: null });
   const data = useExplorerData(stacksFilter);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadClaims = async () => {
+      try {
+        const response = await fetch('/api/stack-claims');
+        if (!response.ok) return;
+        const payload = await response.json();
+        if (!isMounted) return;
+        if (payload?.claims && typeof payload.claims === 'object') {
+          setStackClaims(payload.claims);
+        }
+      } catch {
+        // non-fatal; claim UI remains usable for new submissions
+      }
+    };
+    loadClaims();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const requestedView = searchParams.get('view');
@@ -35,7 +57,7 @@ export function ExplorerApp() {
       return;
     }
     if (location.pathname === '/repos') {
-      setView('repos');
+      setView('products');
       return;
     }
     if (location.pathname === '/teams') {
@@ -106,6 +128,34 @@ export function ExplorerApp() {
     });
   }, [setSearchParams]);
 
+  const handleClaimStack = useCallback(async (catId, name, inviteCode) => {
+    const trimmed = String(name || '').trim();
+    if (!trimmed) return { ok: false, error: 'Name is required' };
+    const code = String(inviteCode || '').trim();
+
+    try {
+      const response = await fetch('/api/claim-stack', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ catId, name: trimmed, inviteCode: code }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        return { ok: false, error: payload.error || 'Could not validate invite code' };
+      }
+
+      const payload = await response.json().catch(() => ({}));
+      const claimedName = payload?.claim?.claimedBy || trimmed;
+
+      setStackClaims(prev => ({ ...prev, [catId]: claimedName }));
+
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Claim service unavailable' };
+    }
+  }, []);
+
   const statsText = useMemo(() => {
     if (view === 'stacks' && data.loaded.phase2) {
       const catCount = data.layers.reduce((s, l) => s + l.categories.length, 0);
@@ -172,6 +222,7 @@ export function ExplorerApp() {
             catEntityMap={data.catEntityMap}
             entityMap={data.entityMap}
             catCounts={data.catCounts}
+            stackClaims={stackClaims}
             searchQuery={searchQuery}
             loaded={data.loaded}
             onCategoryClick={openCategoryDrawer}
@@ -218,6 +269,8 @@ export function ExplorerApp() {
             reposAttrsByPid={data.reposAttrsByPid}
             modelsAttrsByPid={data.modelsAttrsByPid}
             packagesAttrsByPid={data.packagesAttrsByPid}
+            claimedBy={stackClaims[drawer.id] || ''}
+            onClaimStack={handleClaimStack}
             onEntityClick={openEntityDrawer}
           />
         )}

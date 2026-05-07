@@ -6,6 +6,7 @@ import { ProductRow } from './ProductRow.jsx';
 export function CategoryDrawerContent({
   catId, layers, catMap, productsByCat, entityMap,
   reposAttrsByPid, modelsAttrsByPid, packagesAttrsByPid,
+  claimedBy, onClaimStack,
   onEntityClick,
 }) {
   const cat = catMap[catId];
@@ -25,6 +26,10 @@ export function CategoryDrawerContent({
   const [activeType, setActiveType] = useState(null);
   const currentType = activeType ?? allTypes[0] ?? null;
   const [showAll, setShowAll] = useState(false);
+  const [showClaimForm, setShowClaimForm] = useState(false);
+  const [claimName, setClaimName] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [claimError, setClaimError] = useState('');
 
   const sortByStars = (arr) => [...arr].sort((a, b) => {
     const byStars = (reposAttrsByPid[b.product_id]?.stars || 0) - (reposAttrsByPid[a.product_id]?.stars || 0);
@@ -38,6 +43,22 @@ export function CategoryDrawerContent({
   const closedProds = products.filter(p => !p.is_open);
   const sorted = currentType && byType[currentType] ? sortByStars(byType[currentType]) : [];
   const visible = showAll ? sorted : sorted.slice(0, 20);
+  const hasClaim = Boolean(claimedBy);
+
+  const handleClaimSubmit = async (event) => {
+    event.preventDefault();
+    const trimmed = claimName.trim();
+    if (!trimmed) return;
+    const result = await onClaimStack?.(catId, trimmed, inviteCode);
+    if (!result?.ok) {
+      setClaimError(result?.error || 'Could not submit claim');
+      return;
+    }
+    setClaimError('');
+    setShowClaimForm(false);
+    setClaimName('');
+    setInviteCode('');
+  };
 
   return (
     <>
@@ -65,6 +86,49 @@ export function CategoryDrawerContent({
           <div className="sl">Closed</div>
           <div className="sv mono">{fmtN(closedProds.length)}</div>
         </div>
+      </div>
+
+      <div className="claim-stack-wrap">
+        {hasClaim ? (
+          <div className="claim-stack-claimed">
+            Claimed by <strong>{claimedBy}</strong>
+          </div>
+        ) : showClaimForm ? (
+          <form className="claim-stack-form" onSubmit={handleClaimSubmit}>
+            <p className="claim-stack-note">
+              AI Potluck helps collaborators claim a stack area so contributors can coordinate around shared priorities.
+            </p>
+            <div className="claim-stack-row">
+              <input
+                className="claim-stack-input"
+                type="text"
+                value={claimName}
+                onChange={(event) => setClaimName(event.target.value)}
+                placeholder="Your name"
+                required
+              />
+              <input
+                className="claim-stack-input"
+                type="password"
+                value={inviteCode}
+                onChange={(event) => {
+                  setInviteCode(event.target.value);
+                  if (claimError) setClaimError('');
+                }}
+                placeholder="Invite code"
+                required
+              />
+              <button className="claim-stack-submit" type="submit">Claim</button>
+            </div>
+            {claimError ? (
+              <p className="claim-stack-error">{claimError}</p>
+            ) : null}
+          </form>
+        ) : (
+          <button className="claim-stack-btn" onClick={() => setShowClaimForm(true)}>
+            Claim this stack
+          </button>
+        )}
       </div>
 
       {cat.parity_rationale && (
