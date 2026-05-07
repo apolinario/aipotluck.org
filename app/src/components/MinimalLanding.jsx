@@ -1,8 +1,22 @@
-import logoBlack from '../assets/currentai-logo-black.jpg';
+import logoBlack from '../assets/currentai-logo-black-transparent.png';
 
-const CONTACT_SUBJECT = encodeURIComponent('Current AI — Get in touch');
+const CONTACT_SUBJECT = encodeURIComponent('Joining the AI Potluck');
 const CONTACT_BODY = encodeURIComponent(
-  'Hi Current AI,\n\nI would like to get in touch.\n',
+  [
+    'Hi Current AI team,',
+    '',
+    "I'd love to join the AI Potluck and get involved.",
+    '',
+    'AI Potluck is a shared table for builders: a collaborative effort to map the open-source AI ecosystem, identify meaningful gaps, and coordinate contributions so the ecosystem grows stronger together.',
+    '',
+    'A little about me:',
+    '- Name:',
+    '- Background:',
+    '- What I want to contribute:',
+    '- Links (GitHub/website):',
+    '',
+    'Looking forward to connecting.',
+  ].join('\n'),
 );
 
 export function MinimalLanding() {
@@ -32,15 +46,17 @@ export function MinimalLanding() {
         </div>
 
         <div className="minimal-landing__actions">
-          <a className="minimal-landing__link" href="/gaps">
-            Gaps
-          </a>
-          <span className="minimal-landing__link minimal-landing__link--muted" aria-disabled="true">
-            Roadmap (coming soon)
-          </span>
+          <div className="minimal-landing__links-row">
+            <a className="minimal-landing__link" href="/gaps">
+              Gaps
+            </a>
+            <span className="minimal-landing__link minimal-landing__link--muted" aria-disabled="true">
+              Roadmap (coming soon)
+            </span>
+          </div>
           <a
             className="minimal-landing__link"
-            href={`mailto:?subject=${CONTACT_SUBJECT}&body=${CONTACT_BODY}`}
+            href={`mailto:ayah@currentai.org,josh@currentai.org?subject=${CONTACT_SUBJECT}&body=${CONTACT_BODY}`}
           >
             Get in touch
           </a>

@@ -179,7 +179,7 @@ button:focus-visible {
 
 .minimal-landing__copy {
   max-width: 720px;
-  text-align: center;
+  text-align: left;
   font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
   font-size: clamp(1rem, 1.4vw, 1.125rem);
   line-height: 1.7;
@@ -190,6 +190,14 @@ button:focus-visible {
 }
 
 .minimal-landing__actions {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 1.25rem;
+  justify-content: center;
+}
+
+.minimal-landing__links-row {
   display: flex;
   align-items: center;
   gap: 1.25rem;
