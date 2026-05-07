@@ -32,7 +32,7 @@ export function MinimalLanding() {
         </div>
 
         <div className="minimal-landing__actions">
-          <a className="minimal-landing__link" href="/app?view=stacks">
+          <a className="minimal-landing__link" href="/gaps">
             Gaps
           </a>
           <span className="minimal-landing__link minimal-landing__link--muted" aria-disabled="true">

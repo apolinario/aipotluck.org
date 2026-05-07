@@ -17,7 +17,7 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
         </Link>
 
         <div className="nav-tabs" style={{ marginLeft: 24 }}>
-          {['stacks', 'repos', 'teams'].map(v => (
+          {['stacks', 'repos'].map(v => (
             <button
               key={v}
               className={`nav-tab${view === v ? ' active' : ''}`}
@@ -30,12 +30,11 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
 
         <select
           className="mobile-nav-select"
-          value={view}
+          value={view === 'teams' ? 'stacks' : view}
           onChange={e => setView(e.target.value)}
         >
           <option value="stacks">Stacks</option>
           <option value="repos">Repos</option>
-          <option value="teams">Teams</option>
         </select>
 
         <div className="topbar-divider" />

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { useExplorerData } from '../../explorer/useExplorerData.js';
 import { Topbar } from './Topbar.jsx';
 import { StacksView } from './StacksView.jsx';
@@ -13,6 +13,7 @@ import { fmtN } from '../../explorer/helpers.js';
 import '../../styles/explorer.css';
 
 export function ExplorerApp() {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState('stacks');
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +28,20 @@ export function ExplorerApp() {
       setView(requestedView);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (location.pathname === '/stacks' || location.pathname === '/gaps') {
+      setView('stacks');
+      return;
+    }
+    if (location.pathname === '/repos') {
+      setView('repos');
+      return;
+    }
+    if (location.pathname === '/teams') {
+      setView('teams');
+    }
+  }, [location.pathname]);
 
   /** Open category drawer from URL (?open=category&category=<id>) or clear it when params go away. */
   useEffect(() => {
