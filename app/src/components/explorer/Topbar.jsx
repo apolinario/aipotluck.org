@@ -12,7 +12,7 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
   return (
     <div className="topbar">
       <div className="topbar-inner">
-        <Link to="/" className="brand">
+        <Link to="/v2" className="brand">
           Current AI
         </Link>
 

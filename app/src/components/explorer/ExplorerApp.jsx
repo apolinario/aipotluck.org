@@ -20,6 +20,14 @@ export function ExplorerApp() {
   const [drawer, setDrawer] = useState({ open: false, type: null, id: null });
   const data = useExplorerData(stacksFilter);
 
+  useEffect(() => {
+    const requestedView = searchParams.get('view');
+    if (!requestedView) return;
+    if (requestedView === 'stacks' || requestedView === 'repos' || requestedView === 'teams') {
+      setView(requestedView);
+    }
+  }, [searchParams]);
+
   /** Open category drawer from URL (?open=category&category=<id>) or clear it when params go away. */
   useEffect(() => {
     if (!data.loaded.phase2) return;
