@@ -13,7 +13,7 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
   return (
     <div className="topbar">
       <div className="topbar-inner">
-        <Link to="/v2" className="brand" aria-label="Current AI home">
+        <Link to="/" className="brand" aria-label="Current AI home">
           <img
             src={logoBlack}
             alt="Current AI"
@@ -28,7 +28,7 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
               className={`nav-tab${view === v ? ' active' : ''}`}
               onClick={() => setView(v)}
             >
-              {v.charAt(0).toUpperCase() + v.slice(1)}
+              {v === 'products' ? 'Projects' : v.charAt(0).toUpperCase() + v.slice(1)}
             </button>
           ))}
         </div>
@@ -39,7 +39,7 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
           onChange={e => setView(e.target.value)}
         >
           <option value="stacks">Stacks</option>
-          <option value="products">Products</option>
+          <option value="products">Projects</option>
         </select>
 
         <div className="topbar-divider" />

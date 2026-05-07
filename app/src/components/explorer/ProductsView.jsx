@@ -259,7 +259,7 @@ export function ProductsView({
       {/* Type segment control + Filter bar */}
       <div className="filter-bar">
         <div className="ctrl">
-          <label>Product type</label>
+          <label>Project type</label>
           <div className="preset-bar">
             {GROUP_KEYS.map(gk => (
               <button

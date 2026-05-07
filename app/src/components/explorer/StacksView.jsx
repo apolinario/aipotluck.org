@@ -3,7 +3,7 @@ import { LAYER_COLORS, FLAGS, GEO_PRESETS } from '../../explorer/constants.js';
 import { fmt, fmtN, flag, entityName, bucketFromVerdict, verdictShort } from '../../explorer/helpers.js';
 
 const PRODUCT_GROUPS = [
-  { key: '', label: 'All products' },
+  { key: '', label: 'All projects' },
   { key: 'repos', label: 'Repos' },
   { key: 'models', label: 'Models' },
   { key: 'packages', label: 'Packages' },
@@ -159,7 +159,7 @@ export function StacksView({ layers, catEntityMap, entityMap, catCounts, searchQ
     <>
       <div className="filter-bar">
         <div className="ctrl">
-          <label>Products</label>
+          <label>Projects</label>
           <select value={filter.productGroup} onChange={e => updateFilter({ productGroup: e.target.value })}>
             {PRODUCT_GROUPS.map(g => (
               <option key={g.key} value={g.key}>{g.label}</option>
