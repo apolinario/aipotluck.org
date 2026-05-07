@@ -33,4 +33,13 @@ export async function ensureStackClaimsTable() {
       claimed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS stack_contributors (
+      id BIGSERIAL PRIMARY KEY,
+      cat_id TEXT NOT NULL REFERENCES stack_claims(cat_id) ON DELETE CASCADE,
+      contributor_name TEXT NOT NULL,
+      contributed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE(cat_id, contributor_name)
+    )
+  `;
 }

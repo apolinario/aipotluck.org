@@ -16,7 +16,9 @@ const OPEN_CLOSED = [
   { key: 'closed', label: 'Closed' },
 ];
 
-function CategoryCell({ cat, layerId, catEntityMap, entityMap, catCounts, loaded, onClick, claimedBy }) {
+function CategoryCell({ cat, layerId, catEntityMap, entityMap, catCounts, loaded, onClick, claim }) {
+  const claimedBy = claim?.claimedBy || '';
+  const additionalCount = claim?.contributors?.length || 0;
   const counts = catCounts[cat.id] || { open: 0, closed: 0 };
   const openN = counts.open;
   const closedN = counts.closed;
@@ -59,7 +61,10 @@ function CategoryCell({ cat, layerId, catEntityMap, entityMap, catCounts, loaded
       <div className="cell-head">
         <span className="cell-name">{cat.display_name}</span>
         {claimedBy ? (
-          <span className="cell-claimed-name">{claimedBy}</span>
+          <span className="cell-claimed-name-wrap">
+            <span className="cell-claimed-name">{claimedBy}</span>
+            {additionalCount > 0 ? <span className="chip chip-more">+{additionalCount}</span> : null}
+          </span>
         ) : (
           <button
             className="cell-claim-btn"
@@ -112,7 +117,7 @@ function LayerRow({ layer, cats, catEntityMap, entityMap, catCounts, stackClaims
             catEntityMap={catEntityMap}
             entityMap={entityMap}
             catCounts={catCounts}
-            claimedBy={stackClaims?.[c.id]}
+            claim={stackClaims?.[c.id]}
             loaded={loaded}
             onClick={onCategoryClick}
           />

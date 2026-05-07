@@ -128,7 +128,7 @@ export function ExplorerApp() {
     });
   }, [setSearchParams]);
 
-  const handleClaimStack = useCallback(async (catId, name, inviteCode) => {
+  const handleClaimStack = useCallback(async (catId, name, inviteCode, action = 'claim') => {
     const trimmed = String(name || '').trim();
     if (!trimmed) return { ok: false, error: 'Name is required' };
     const code = String(inviteCode || '').trim();
@@ -137,7 +137,7 @@ export function ExplorerApp() {
       const response = await fetch('/api/claim-stack', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ catId, name: trimmed, inviteCode: code }),
+        body: JSON.stringify({ catId, name: trimmed, inviteCode: code, action }),
       });
 
       if (!response.ok) {
@@ -146,9 +146,12 @@ export function ExplorerApp() {
       }
 
       const payload = await response.json().catch(() => ({}));
-      const claimedName = payload?.claim?.claimedBy || trimmed;
-
-      setStackClaims(prev => ({ ...prev, [catId]: claimedName }));
+      const claim = payload?.claim || {
+        catId,
+        claimedBy: trimmed,
+        contributors: [],
+      };
+      setStackClaims(prev => ({ ...prev, [catId]: claim }));
 
       return { ok: true };
     } catch {
@@ -269,7 +272,7 @@ export function ExplorerApp() {
             reposAttrsByPid={data.reposAttrsByPid}
             modelsAttrsByPid={data.modelsAttrsByPid}
             packagesAttrsByPid={data.packagesAttrsByPid}
-            claimedBy={stackClaims[drawer.id] || ''}
+            claim={stackClaims[drawer.id] || null}
             onClaimStack={handleClaimStack}
             onEntityClick={openEntityDrawer}
           />
