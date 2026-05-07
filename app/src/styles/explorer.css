@@ -478,6 +478,13 @@ html:has(.explorer) #root {
   .explorer .layer-row   { grid-template-columns: 1fr; }
   .explorer .layer-label { border-right: 0; border-bottom: 1px solid var(--rule-soft); padding: 0 0 10px; }
   .explorer .layer-cells { grid-template-columns: 1fr; }
+  .explorer .cell {
+    background: color-mix(in oklch, var(--stack-color, var(--paper-2)) 11%, var(--paper-2));
+    border-color: color-mix(in oklch, var(--stack-color, var(--rule-soft)) 30%, var(--rule-soft));
+  }
+  .explorer .cell-name {
+    color: color-mix(in oklch, var(--stack-color, var(--ink)) 72%, var(--ink));
+  }
   .explorer .nav-tabs    { display: none; }
   .explorer .mobile-nav-select { display: block; }
   .explorer .view-stats  { display: none; }
