@@ -13,7 +13,7 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
   return (
     <div className="topbar">
       <div className="topbar-inner">
-        <Link to="/" className="brand" aria-label="Current AI home">
+        <Link to="/v2" className="brand" aria-label="Current AI home">
           <img
             src={logoBlack}
             alt="Current AI"
@@ -22,7 +22,7 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
         </Link>
 
         <div className="nav-tabs" style={{ marginLeft: 24 }}>
-          {['stacks', 'repos'].map(v => (
+          {['stacks', 'products'].map(v => (
             <button
               key={v}
               className={`nav-tab${view === v ? ' active' : ''}`}
@@ -39,7 +39,7 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
           onChange={e => setView(e.target.value)}
         >
           <option value="stacks">Stacks</option>
-          <option value="repos">Repos</option>
+          <option value="products">Products</option>
         </select>
 
         <div className="topbar-divider" />
@@ -55,6 +55,14 @@ export function Topbar({ view, setView, searchValue, onSearchChange, statsText }
           />
         </div>
 
+        <a
+          href="https://www.oso.xyz/currentai"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pill insights"
+        >
+          Insights ↗
+        </a>
         <button className="pill primary">Contribute →</button>
       </div>
     </div>

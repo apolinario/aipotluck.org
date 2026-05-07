@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { ENTITY_TYPE_LABELS, VERDICT_CLASS } from '../../explorer/constants.js';
 import { fmt, fmtN, entityName, flag, bucketFromVerdict, verdictLong } from '../../explorer/helpers.js';
 import { ProductRow } from './ProductRow.jsx';
@@ -36,6 +37,17 @@ export function RepoDrawerContent({
         ['model', 'package', 'dataset', 'eval_harness'].includes(p2.product_type)
       ).slice(0, 4)
     : [];
+
+  const repoSlug = (productId || '').replace('repo:', '');
+  const linkedProducts = useMemo(() => {
+    if (!repoSlug) return [];
+    return products.filter(p2 => {
+      if (p2.product_id === productId) return false;
+      const mAttrs = modelsAttrsByPid[p2.product_id];
+      const pAttrs = packagesAttrsByPid[p2.product_id];
+      return (mAttrs?.repo === repoSlug) || (pAttrs?.repo === repoSlug);
+    });
+  }, [products, productId, repoSlug, modelsAttrsByPid, packagesAttrsByPid]);
 
   return (
     <>
@@ -117,6 +129,30 @@ export function RepoDrawerContent({
               <ProductRow
                 key={rp.product_id}
                 product={rp}
+                entityMap={entityMap}
+                catMap={catMap}
+                reposAttrsByPid={reposAttrsByPid}
+                modelsAttrsByPid={modelsAttrsByPid}
+                packagesAttrsByPid={packagesAttrsByPid}
+                showDesc
+                noEntity
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {linkedProducts.length > 0 && (
+        <>
+          <div className="section-h">
+            Linked products
+            <span className="countpill">{linkedProducts.length}</span>
+          </div>
+          <div className="proj-list">
+            {linkedProducts.map(lp => (
+              <ProductRow
+                key={lp.product_id}
+                product={lp}
                 entityMap={entityMap}
                 catMap={catMap}
                 reposAttrsByPid={reposAttrsByPid}

@@ -78,6 +78,58 @@ export const GEO_PRESETS = [
 
 export const SEARCH_PLACEHOLDERS = {
   stacks: 'Search categories…',
-  repos: 'Search repos…',
+  products: 'Search products…',
   teams: 'Search teams…',
+};
+
+export const PRODUCT_GROUP_LABELS = {
+  repos: 'Repos',
+  models: 'Models',
+  packages: 'Packages',
+  other: 'Other',
+};
+
+export const PRODUCT_COLUMNS = {
+  repos: [
+    { key: 'entity', label: 'Maintained by', sortable: true, width: '14%' },
+    { key: 'name', label: 'Repository', sortable: true, width: '24%' },
+    { key: 'category', label: 'Category', sortable: false, width: '12%' },
+    { key: 'stars', label: 'Stars', sortable: true, width: '8%', numeric: true },
+    { key: 'star7d', label: '+7d', sortable: true, width: '7%', numeric: true },
+    { key: 'commits90', label: 'Commits/90d', sortable: true, width: '9%', numeric: true },
+    { key: 'language', label: 'Language', sortable: false, width: '9%' },
+    { key: 'license', label: 'License', sortable: false, width: '9%' },
+  ],
+  models: [
+    { key: 'entity', label: 'Maintained by', sortable: true, width: '14%' },
+    { key: 'name', label: 'Model', sortable: true, width: '24%' },
+    { key: 'category', label: 'Category', sortable: false, width: '12%' },
+    { key: 'pipeline', label: 'Pipeline', sortable: false, width: '10%' },
+    { key: 'downloads', label: 'Downloads', sortable: true, width: '8%', numeric: true },
+    { key: 'likes', label: 'Likes', sortable: true, width: '7%', numeric: true },
+    { key: 'library', label: 'Library', sortable: false, width: '9%' },
+    { key: 'linked_repo', label: 'Repo', sortable: false, width: '8%' },
+  ],
+  packages: [
+    { key: 'entity', label: 'Maintained by', sortable: true, width: '14%' },
+    { key: 'name', label: 'Package', sortable: true, width: '24%' },
+    { key: 'category', label: 'Category', sortable: false, width: '12%' },
+    { key: 'source', label: 'Source', sortable: false, width: '10%' },
+    { key: 'package_name', label: 'Package Name', sortable: true, width: '16%' },
+    { key: 'linked_repo', label: 'Linked Repo', sortable: false, width: '16%' },
+  ],
+  other: [
+    { key: 'entity', label: 'Maintained by', sortable: true, width: '14%' },
+    { key: 'name', label: 'Name', sortable: true, width: '24%' },
+    { key: 'category', label: 'Category', sortable: false, width: '12%' },
+    { key: 'type', label: 'Type', sortable: false, width: '14%' },
+    { key: 'open', label: 'Open?', sortable: false, width: '10%' },
+  ],
+};
+
+export const PRODUCT_SORT_DEFAULTS = {
+  repos: { col: 'stars', dir: 'desc' },
+  models: { col: 'downloads', dir: 'desc' },
+  packages: { col: 'name', dir: 'asc' },
+  other: { col: 'name', dir: 'asc' },
 };

@@ -3,8 +3,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { useExplorerData } from '../../explorer/useExplorerData.js';
 import { Topbar } from './Topbar.jsx';
 import { StacksView } from './StacksView.jsx';
-import { ReposView } from './ReposView.jsx';
-import { TeamsView } from './TeamsView.jsx';
+import { ProductsView } from './ProductsView.jsx';
 import { Drawer } from './Drawer.jsx';
 import { CategoryDrawerContent } from './CategoryDrawerContent.jsx';
 import { RepoDrawerContent } from './RepoDrawerContent.jsx';
@@ -16,6 +15,7 @@ export function ExplorerApp() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState('stacks');
+  const [productGroup, setProductGroup] = useState('repos');
   const [searchQuery, setSearchQuery] = useState('');
   const [stacksFilter, setStacksFilter] = useState(null);
   const [drawer, setDrawer] = useState({ open: false, type: null, id: null });
@@ -63,6 +63,7 @@ export function ExplorerApp() {
     setView(v);
     setSearchQuery('');
     setStacksFilter(null);
+    if (v === 'products') setProductGroup('repos');
   }, []);
 
   const openCategoryDrawer = useCallback((catId) => {
@@ -108,17 +109,13 @@ export function ExplorerApp() {
   const statsText = useMemo(() => {
     if (view === 'stacks' && data.loaded.phase2) {
       const catCount = data.layers.reduce((s, l) => s + l.categories.length, 0);
-      return `${catCount} categories · ${fmtN(data.products.length)} products · ${data.entitySummaries.length} teams`;
+      return `${data.layers.length} layers · ${catCount} categories`;
     }
-    if (view === 'repos' && data.loaded.phase2) {
-      const repoCount = data.products.filter(p => p.product_type === 'repo').length;
-      return `${fmtN(repoCount)} repos`;
-    }
-    if (view === 'teams' && data.loaded.phase2) {
-      return `${data.entitySummaries.filter(e => e.total > 0).length} teams`;
+    if (view === 'products' && data.loaded.phase2) {
+      return `${fmtN(data.products.length)} products`;
     }
     return '—';
-  }, [view, data.loaded, data.layers, data.products, data.entitySummaries]);
+  }, [view, data.loaded, data.layers, data.products]);
 
   const drawerCrumb = useMemo(() => {
     if (!drawer.open) return '';
@@ -182,30 +179,26 @@ export function ExplorerApp() {
           />
         )}
 
-        {view === 'repos' && (
-          <ReposView
+        {view === 'products' && (
+          <ProductsView
             layers={data.layers}
             products={data.products}
             catMap={data.catMap}
             entityMap={data.entityMap}
             reposAttrsByPid={data.reposAttrsByPid}
+            modelsAttrsByPid={data.modelsAttrsByPid}
+            packagesAttrsByPid={data.packagesAttrsByPid}
             loaded={data.loaded}
             loadRepos={data.loadRepos}
             searchQuery={searchQuery}
             onRepoClick={openRepoDrawer}
+            onProductClick={openRepoDrawer}
+            productGroup={productGroup}
+            onGroupChange={setProductGroup}
           />
         )}
 
-        {view === 'teams' && (
-          <TeamsView
-            layers={data.layers}
-            entitySummaries={data.entitySummaries}
-            entityTypeCount={data.entityTypeCount}
-            loaded={data.loaded}
-            searchQuery={searchQuery}
-            onEntityClick={openEntityDrawer}
-          />
-        )}
+        {/* Teams view hidden for now — re-enable when ready */}
       </main>
 
       <Drawer
