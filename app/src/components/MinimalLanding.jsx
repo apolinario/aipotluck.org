@@ -62,11 +62,6 @@ export function MinimalLanding() {
         </div>
 
         <div className="minimal-landing__actions">
-          <div className="minimal-landing__links-row">
-            <a className="minimal-landing__link" href="/stacks">
-              Stacks
-            </a>
-          </div>
           <form className="minimal-landing__email-drop" onSubmit={handleEmailDrop}>
             <label className="minimal-landing__email-label" htmlFor="email-drop">
               Get in touch
