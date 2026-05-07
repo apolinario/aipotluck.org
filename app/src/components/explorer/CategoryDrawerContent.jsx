@@ -95,51 +95,55 @@ export function CategoryDrawerContent({
         {hasClaim ? (
           <>
             <div className="claim-stack-claimed">
-              Claimed by <strong>{claimedBy}</strong>. Additional contributors:{' '}
-              {contributors.length > 0 ? contributors.join(', ') : '—'}
+              Claimed by <strong>{claimedBy}</strong>
+              {contributors.length > 0 ? (
+                <>. Additional contributors: {contributors.join(', ')}</>
+              ) : null}
             </div>
-            {showClaimForm ? (
-              <form className="claim-stack-form" onSubmit={handleClaimSubmit}>
-                <p className="claim-stack-note">
-                  AI Potluck coordinates stack owners with collaborators so people can help on focused goals without stepping on each other.
-                </p>
-                <div className="claim-stack-row">
-                  <input
-                    className="claim-stack-input"
-                    type="text"
-                    value={claimName}
-                    onChange={(event) => setClaimName(event.target.value)}
-                    placeholder="Your name"
-                    required
-                  />
-                  <input
-                    className="claim-stack-input"
-                    type="password"
-                    value={inviteCode}
-                    onChange={(event) => {
-                      setInviteCode(event.target.value);
-                      if (claimError) setClaimError('');
-                    }}
-                    placeholder="Invite code"
-                    required
-                  />
-                  <button className="claim-stack-submit" type="submit">Contribute</button>
-                </div>
-                {claimError ? (
-                  <p className="claim-stack-error">{claimError}</p>
-                ) : null}
-              </form>
-            ) : (
-              <button
-                className="claim-stack-btn"
-                onClick={() => {
-                  setClaimAction('contribute');
-                  setShowClaimForm(true);
-                }}
-              >
-                Contribute to this stack
-              </button>
-            )}
+            <div className="claim-stack-followup">
+              {showClaimForm ? (
+                <form className="claim-stack-form" onSubmit={handleClaimSubmit}>
+                  <p className="claim-stack-note">
+                    AI Potluck coordinates stack owners with collaborators so people can help on focused goals without stepping on each other.
+                  </p>
+                  <div className="claim-stack-row">
+                    <input
+                      className="claim-stack-input"
+                      type="text"
+                      value={claimName}
+                      onChange={(event) => setClaimName(event.target.value)}
+                      placeholder="Your name"
+                      required
+                    />
+                    <input
+                      className="claim-stack-input"
+                      type="password"
+                      value={inviteCode}
+                      onChange={(event) => {
+                        setInviteCode(event.target.value);
+                        if (claimError) setClaimError('');
+                      }}
+                      placeholder="Invite code"
+                      required
+                    />
+                    <button className="claim-stack-submit" type="submit">Contribute</button>
+                  </div>
+                  {claimError ? (
+                    <p className="claim-stack-error">{claimError}</p>
+                  ) : null}
+                </form>
+              ) : (
+                <button
+                  className="claim-stack-btn"
+                  onClick={() => {
+                    setClaimAction('contribute');
+                    setShowClaimForm(true);
+                  }}
+                >
+                  Contribute to this stack
+                </button>
+              )}
+            </div>
           </>
         ) : showClaimForm ? (
           <form className="claim-stack-form" onSubmit={handleClaimSubmit}>

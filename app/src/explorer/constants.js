@@ -78,7 +78,7 @@ export const GEO_PRESETS = [
 
 export const SEARCH_PLACEHOLDERS = {
   stacks: 'Search categories…',
-  products: 'Search products…',
+  products: 'Search projects…',
   teams: 'Search teams…',
 };
 

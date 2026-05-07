@@ -18,7 +18,6 @@ createRoot(document.getElementById('root')).render(
         <Route path="/gaps/*" element={<ExplorerApp />} />
         <Route path="/repos/*" element={<ExplorerApp />} />
         <Route path="/teams/*" element={<ExplorerApp />} />
-        <Route path="/stack/*" element={<StackPage />} />
         <Route path="/map" element={<StackPage />} />
         <Route path="*" element={<MinimalLanding />} />
       </Routes>

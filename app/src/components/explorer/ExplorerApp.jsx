@@ -165,7 +165,7 @@ export function ExplorerApp() {
       return `${data.layers.length} layers · ${catCount} categories`;
     }
     if (view === 'products' && data.loaded.phase2) {
-      return `${fmtN(data.products.length)} products`;
+      return `${fmtN(data.products.length)} projects`;
     }
     return '—';
   }, [view, data.loaded, data.layers, data.products]);
