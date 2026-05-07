@@ -56,7 +56,7 @@ export function MinimalLanding() {
           </div>
           <a
             className="minimal-landing__link"
-            href={`mailto:ayah@currentai.org,josh@currentai.org?subject=${CONTACT_SUBJECT}&body=${CONTACT_BODY}`}
+            href={`mailto:potluck@currentai.org,josh@currentai.org?subject=${CONTACT_SUBJECT}&body=${CONTACT_BODY}`}
           >
             Get in touch
           </a>
