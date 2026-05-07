@@ -22,11 +22,24 @@ html:has(.stack-page) #root {
   overflow: auto;
 }
 
-.stack-scaler {
-  width: 1600px;
-  height: 1100px;
-  transform-origin: top center;
-  flex-shrink: 0;
+.stack-diagram-shell {
+  width: 100%;
+  padding: 16px;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+.stack-diagram-frame {
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  aspect-ratio: 1600 / 1100;
+}
+
+.stack-svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* ─────────────────────────────────────────────
@@ -173,16 +186,17 @@ html:has(.stack-page) #root {
 ───────────────────────────────────────────── */
 .stack-tooltip {
   position: fixed;
-  z-index: 9999;
+  z-index: 1000;
   width: 320px;
+  max-height: calc(100vh - 24px);
+  overflow: auto;
   background: #fff;
   border: 1px solid #d1d9ee;
   border-radius: 14px;
   box-shadow: 0 12px 48px rgba(15, 23, 42, .18), 0 2px 8px rgba(15, 23, 42, .08);
   font-family: 'DM Sans', sans-serif;
-  overflow: hidden;
   animation: stackTipIn .17s cubic-bezier(.22, 1, .36, 1);
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 @keyframes stackTipIn {
@@ -282,8 +296,15 @@ html:has(.stack-page) #root {
   display: none;
 }
 
-@media (max-width: 768px) {
-  .stack-scaler {
+@media (max-width: 1280px) {
+  .stack-diagram-frame {
+    width: 1200px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .stack-diagram-shell {
     display: none;
   }
   .stack-mobile-msg {
