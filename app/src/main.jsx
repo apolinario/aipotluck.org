@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.jsx';
 import { ExplorerApp } from './components/explorer/ExplorerApp.jsx';
 import { MinimalLanding } from './components/MinimalLanding.jsx';
+import { StackPage } from './components/stack/StackPage.jsx';
 import './styles/global.css';
 
 createRoot(document.getElementById('root')).render(
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/gaps" element={<ExplorerApp />} />
         <Route path="/repos" element={<ExplorerApp />} />
         <Route path="/teams" element={<ExplorerApp />} />
+        <Route path="/stack" element={<StackPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

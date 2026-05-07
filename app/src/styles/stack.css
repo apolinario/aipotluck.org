@@ -1,0 +1,319 @@
+/* ─────────────────────────────────────────────
+   Stack Page — AI Stack Interactive Diagram
+───────────────────────────────────────────── */
+
+/* Override any global html/body constraints when stack page is active */
+html:has(.stack-page),
+html:has(.stack-page) body,
+html:has(.stack-page) #root {
+  overflow: auto;
+  height: auto;
+  min-height: 100vh;
+  background: #0f172a;
+}
+
+.stack-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+}
+
+.stack-scaler {
+  width: 1600px;
+  height: 1100px;
+  transform-origin: top center;
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────
+   TOPBAR — mirrors explorer topbar, dark variant
+───────────────────────────────────────────── */
+.stack-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: saturate(140%) blur(8px);
+  -webkit-backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stack-topbar-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 32px;
+}
+
+.stack-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.stack-brand img {
+  height: 20px;
+  width: auto;
+}
+
+/* Nav tabs — same pill shape as explorer */
+.stack-nav {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.stack-nav-link {
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 16px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.48);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s;
+  cursor: pointer;
+}
+
+.stack-nav-link:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stack-nav-link.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+/* Search — same shape as explorer, dark variant */
+.stack-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 5px 13px;
+  background: rgba(255, 255, 255, 0.06);
+  margin-left: auto;
+  min-width: 0;
+  max-width: 280px;
+  flex: 1;
+}
+
+.stack-search svg {
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.stack-search input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  flex: 1;
+  color: #fff;
+  min-width: 0;
+}
+
+.stack-search input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Pills — same shape as explorer */
+.stack-pill {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+
+.stack-pill.insights {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.stack-pill.insights:hover {
+  opacity: 0.8;
+}
+
+/* ─────────────────────────────────────────────
+   CARD HOVER & TRANSITIONS
+───────────────────────────────────────────── */
+.stack-page svg .card {
+  transition: filter 0.15s ease;
+}
+.stack-page svg .card:hover {
+  filter: brightness(0.97) drop-shadow(0 2px 8px rgba(15, 23, 42, 0.12));
+}
+
+/* ─────────────────────────────────────────────
+   TOOLTIP
+───────────────────────────────────────────── */
+.stack-tooltip {
+  position: fixed;
+  z-index: 9999;
+  width: 320px;
+  background: #fff;
+  border: 1px solid #d1d9ee;
+  border-radius: 14px;
+  box-shadow: 0 12px 48px rgba(15, 23, 42, .18), 0 2px 8px rgba(15, 23, 42, .08);
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+  animation: stackTipIn .17s cubic-bezier(.22, 1, .36, 1);
+  pointer-events: none;
+}
+
+@keyframes stackTipIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stack-tip-bar { height: 3px; }
+.stack-tip-body { padding: 18px 20px 20px; }
+
+.stack-tip-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.stack-tip-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #0f172a;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.stack-tip-desc {
+  font-size: 12px;
+  line-height: 1.72;
+  color: #334155;
+  margin-bottom: 12px;
+}
+
+.stack-tip-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.stack-tip-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  padding: 2px 9px;
+  border-radius: 4px;
+}
+.stack-tip-chip.blue { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.stack-tip-chip.orange { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+.stack-tip-chip.green { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.stack-tip-chip.gray { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+.stack-tip-feats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stack-tip-feat {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 11.5px;
+  color: #475569;
+  line-height: 1.55;
+}
+
+.stack-tip-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.stack-tip-trend {
+  margin-top: 14px;
+  padding: 11px 13px;
+  border-radius: 9px;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: #0f172a;
+}
+
+.stack-tip-trend-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* ─────────────────────────────────────────────
+   MOBILE FALLBACK
+───────────────────────────────────────────── */
+.stack-mobile-msg {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .stack-scaler {
+    display: none;
+  }
+  .stack-mobile-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    min-height: 50vh;
+  }
+  .stack-mobile-msg p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .stack-mobile-msg a {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    padding: 8px 20px;
+    transition: background 0.15s;
+  }
+  .stack-mobile-msg a:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
