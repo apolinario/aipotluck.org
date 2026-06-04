@@ -1,0 +1,1242 @@
+{
+ "metadata": {
+  "title": "OSS Map v3 \u2014 flagship three-axis scores",
+  "generated": "2026-06-04",
+  "method": "web-verified scoring per docs/specs/oss-map-v3/scoring-rubric-v3.md; adversarial version+openness verification pass",
+  "scope": "flagship pilot set (~24 intended; 32 scored incl. variants)",
+  "note": "Directional v3 scores for the flagship set. Long tail not yet scored. Every non-null value carries sources in the product record."
+ },
+ "products": [
+  {
+   "product": "OLMo 2 (Ai2)",
+   "type": "model",
+   "shelf": "fully-open",
+   "version_note": "OLMo 2 family (1B/7B/13B/32B), base + Instruct. Latest 32B-Instruct (0325) and 1B (0425, updated May 2025). Verified existing June 2026; succeeded by OLMo 3 announced late 2025/2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "weights:open(Apache-2.0);data:open(Dolma/Tulu, all stages incl pre/mid/post-training);code:open(training code+recipes+logs);checkpoints:open(thousands of intermediate);license:Apache-2.0(OSI)",
+    "sources": [
+     "https://allenai.org/blog/olmo2",
+     "https://huggingface.co/allenai/OLMo-2-1124-7B",
+     "https://arxiv.org/pdf/2501.00656",
+     "https://huggingface.co/collections/allenai/olmo-2"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "ATOM Report (Apr 2026) measures ~14.8M cumulative downloads for the OLMo family on Hugging Face; OLMo 2 1B alone ~323k downloads. Falls in 1-10M cumulative downloads band. Strong in research/interpretability circles but small vs Qwen/Llama scale.",
+    "sources": [
+     "https://arxiv.org/html/2604.07190v1",
+     "https://huggingface.co/allenai/OLMo-2-0425-1B"
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:MMLU/GPQA",
+    "note": "OLMo 2 32B is the most capable; reported competitive with GPT-3.5-Turbo / GPT-4o-mini class and Qwen 2.5 on academic benchmarks but below current frontier open models (DeepSeek-V4, Qwen 3.6). Mid-tier capability \u2014 the value proposition is full openness, not raw SOTA.",
+    "sources": [
+     "https://allenai.org/blog/olmo2",
+     "https://arxiv.org/pdf/2501.00656"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Pythia (EleutherAI)",
+   "type": "model",
+   "shelf": "fully-open",
+   "version_note": "Pythia suite: 16 models, 70M-12B params (8 sizes x Pile/deduped-Pile), 154 intermediate checkpoints each. Released 2023 (arXiv 2304.01373); remains the standard interpretability/training-dynamics suite as of June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "weights:open(Apache-2.0);data:open(the Pile, with dataloader reconstruction tools);code:open(training+analysis code, GitHub);checkpoints:open(154 per model);license:Apache-2.0(OSI)",
+    "sources": [
+     "https://arxiv.org/abs/2304.01373",
+     "https://github.com/EleutherAI/pythia",
+     "https://huggingface.co/EleutherAI/pythia-12b/blob/main/README.md"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "usage_volume",
+    "note": "Heavily used as a research/interpretability benchmark suite (de facto standard for training-dynamics studies); cited extensively. Hugging Face download volume across the 16 models is in the 100k-1M aggregate range \u2014 meaningful for research but not production deployment. Honest signal: research adoption, not end-user scale.",
+    "sources": [
+     "https://huggingface.co/EleutherAI/pythia-6.9b",
+     "https://www.eleuther.ai/papers-blog/pythia-a-suite-for-analyzing-large-language-modelsacross-training-and-scaling"
+    ]
+   },
+   "capability": {
+    "score": 1,
+    "basis": "benchmark:n/a",
+    "note": "Not built for capability. Pythia models (max 12B, 2023-era Pile training) are intentionally research instruments for studying scaling/learning dynamics, not competitive on modern capability benchmarks. Scored 1 on a capability axis where the comparison set is 2026 frontier models.",
+    "sources": [
+     "https://arxiv.org/abs/2304.01373"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Llama 4 Scout / Maverick (Meta)",
+   "type": "model",
+   "shelf": "open-weight (use-restricted)",
+   "version_note": "Llama 4 herd, released April 2025: Scout (17B active / 109B total MoE, 10M-token context) and Maverick (17B active / 400B total MoE, 1M-token context), natively multimodal. Behemoth still unreleased/preview as of June 2026. Both Scout/Maverick verified live on HF June 2026.",
+   "openness": {
+    "score": 2,
+    "class": "restricted",
+    "components": "weights:open(downloadable on HF);data:closed;code:partial(inference/utils via llama-models, no training code);license:Llama-4-Community(non-OSI: 700M MAU commercial cap as of Apr 2025 + no-compete/no-train-competing-LLM clause)",
+    "sources": [
+     "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E",
+     "https://ai.meta.com/blog/llama-4-multimodal-intelligence/",
+     "https://huggingface.co/blog/llama4-release",
+     "https://royfactory.net/posts/ai/202512/meta-llama4-open-weights-scout-maverick-license/"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "ATOM Report (Apr 2026): Llama family ~476.0M cumulative HF downloads (second to Qwen). Llama 4 specifically is a fraction of that and lost derivative-base share (Meta's new-fine-tune share fell to ~11% by Feb 2026 from a 44% peak). Family-level 1-10M+ easily; Llama 4 alone solidly in the 1-10M band.",
+    "sources": [
+     "https://arxiv.org/html/2604.07190v1",
+     "https://huggingface.co/meta-llama"
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:MMLU-Pro/GPQA",
+    "note": "Maverick (instruct) reports MMLU-Pro 80.5, GPQA Diamond 69.8; positioned at/above GPT-4o and Gemini 2.0 Flash at launch (Apr 2025). By June 2026 this is mid-tier vs DeepSeek-V4 / Qwen 3.6 frontier open models. Scout's long-context retrieval reported weak (Fiction.LiveBench 15.6% at 128K).",
+    "sources": [
+     "https://royfactory.net/posts/ai/202512/meta-llama4-open-weights-scout-maverick-license/",
+     "https://ai.meta.com/blog/llama-4-multimodal-intelligence/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "DeepSeek-V3.2 (DeepSeek)",
+   "type": "model",
+   "shelf": "open-weight",
+   "version_note": "DeepSeek-V3.2, 671B total / 37B active MoE, introduces DeepSeek Sparse Attention (DSA). Open V3.2 + V3.2-Speciale (gold-medal IMO/IOI reasoning) released; Speciale dated Dec 1 2025; tech report arXiv 2512.02556. Verified live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(MIT, on HF);data:closed(training-data synthesis described in report but corpus not released);code:partial(inference code in HF repo; no full training pipeline);license:MIT(OSI-style permissive, no use restrictions)",
+    "sources": [
+     "https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
+     "https://arxiv.org/pdf/2512.02556",
+     "https://stable-learn.com/en/deepseek-v32-tech-report/"
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "signal_type": "usage_volume",
+    "note": "ATOM Report (Apr 2026): China open models reached ~1.15B cumulative HF downloads with DeepSeek a primary driver; DeepSeek-V3.2 widely served (OpenRouter, multiple inference providers) with sustained post-launch production usage and frontier-at-10x-lower-cost positioning. Real usage well into the >10M-equivalent band across web app + API + derivatives.",
+    "sources": [
+     "https://arxiv.org/html/2604.07190v1",
+     "https://openrouter.ai/deepseek/deepseek-v3.2",
+     "https://introl.com/blog/deepseek-v3-2-open-source-ai-cost-advantage"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:MMLU-Pro/GPQA/SWE-bench",
+    "note": "Tech report (arXiv 2512.02556): MMLU-Pro 85.0, GPQA Diamond 82.4, SWE-bench Verified 77.2; Speciale variant earns gold-medal IMO/IOI reasoning and AIME 2025 96.0. Near-frontier open model; sits just below DeepSeek-V4-Pro on the same family's curve.",
+    "sources": [
+     "https://arxiv.org/html/2512.02556v1",
+     "https://stable-learn.com/en/deepseek-v32-tech-report/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "DeepSeek-V4-Pro (DeepSeek)",
+   "type": "model",
+   "shelf": "open-weight",
+   "version_note": "DeepSeek-V4-Pro, 1.6T total / 49B active MoE, 1M-token context, hybrid CSA+HCA attention. Released April 24 2026 under MIT, alongside V4-Flash (284B). V4-Pro-Max = max-reasoning mode. Verified live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(MIT, on HF, both Pro and Flash);data:closed;code:partial(inference/serving; no training pipeline or data);license:MIT(permissive, no use restrictions)",
+    "sources": [
+     "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro",
+     "https://api-docs.deepseek.com/news/news260424",
+     "https://simonwillison.net/2026/apr/24/deepseek-v4/"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "Released Apr 24 2026 \u2014 ~6 weeks of production at scoring time. Available open-weights + API (permanent pricing set May 22 2026) and served across providers (OpenRouter, DeepInfra). Strong early traction consistent with DeepSeek family scale, but too recent to confirm >10M-equivalent reach independently; placed at 4 pending sustained data.",
+    "sources": [
+     "https://openrouter.ai/deepseek/deepseek-v4-pro",
+     "https://codersera.com/blog/deepseek-v4-pro-review-benchmarks-pricing-2026/",
+     "https://deepinfra.com/blog/deepseek-v4-pro-model-overview"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench/MMLU-Pro/GPQA",
+    "note": "SWE-bench Verified 80.6% (trails Claude Opus 4.6 by ~0.2), MMLU-Pro 87.5, GPQA Diamond 90.1, LiveCodeBench Pass@1 93.5 (reported best of any model). V4-Pro-Max described as the strongest open-source model available \u2014 at/near closed frontier on coding and reasoning.",
+    "sources": [
+     "https://codersera.com/blog/deepseek-v4-pro-review-benchmarks-pricing-2026/",
+     "https://benchlm.ai/models/deepseek-v4-pro-high",
+     "https://www.morphllm.com/deepseek-v4"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Qwen 3.6 (Alibaba)",
+   "type": "model",
+   "shelf": "open-weight (mixed-tier)",
+   "version_note": "Qwen3.6 series, released early-mid 2026: open-weight variants incl Qwen3.6-35B-A3B (MoE, Apr 16 2026) and dense Qwen3.6-27B (Apr 22 2026), plus hosted flagship tiers Qwen3.6-Plus and Qwen3.6-Max (Preview) that are proprietary/API-only. GitHub QwenLM/Qwen3.6 verified live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(Apache-2.0 for open variants e.g. 27B/35B-A3B);data:closed;code:partial(inference/usage code on GitHub; no training pipeline/data);license:mixed(open variants Apache-2.0; Plus/Max flagship tiers proprietary, commercial-restricted/API-only)",
+    "sources": [
+     "https://github.com/QwenLM/Qwen3.6",
+     "https://www.marktechpost.com/2026/04/22/alibaba-qwen-team-releases-qwen3-6-27b-a-dense-open-weight-model-outperforming-397b-moe-on-agentic-coding-benchmarks/",
+     "https://llm-stats.com/models/qwen3.6-plus",
+     "https://aimlapi.com/blog/qwen-3-6-series-alibabas-open-source-llm-revolution-in-2026"
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "signal_type": "usage_volume",
+    "note": "ATOM Report (Apr 2026): Qwen family ~942.1M cumulative HF downloads (>50% of all global open-source downloads), overtook Llama in Sept 2025; >113,000 derivative models (>200,000 incl tagged); 69% of new fine-tunes by Feb 2026 build on Qwen. Qwen 3.6 is the current flagship generation of that dominant family \u2014 unambiguously >10M reach.",
+    "sources": [
+     "https://arxiv.org/html/2604.07190v1",
+     "https://www.scmp.com/tech/big-tech/article/3349552/alibabas-qwen-family-captures-over-50-global-open-source-downloads-report-finds",
+     "https://www.arturmarkus.com/alibabas-qwen-hits-700-million-downloads-on-hugging-face-overtakes-metas-llama-as-worlds-most-popular-open-source-ai-model/"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench/Terminal-Bench",
+    "note": "Dense Qwen3.6-27B: SWE-bench Verified 77.2, Terminal-Bench 2.0 59.3 (reported matching Claude 4.5 Opus class), outperforming a 397B MoE on agentic coding. Flagship Qwen3.6-Plus reported matching Claude Opus 4.5 on SWE-bench/Terminal-Bench. Frontier-tier open family.",
+    "sources": [
+     "https://www.marktechpost.com/2026/04/22/alibaba-qwen-team-releases-qwen3-6-27b-a-dense-open-weight-model-outperforming-397b-moe-on-agentic-coding-benchmarks/",
+     "https://www.caixinglobal.com/2026-04-02/alibaba-releases-qwen-36-plus-ai-model-with-enhanced-coding-capabilities-102430395.html"
+    ]
+   },
+   "flags": [
+    "mixed_tier_openness"
+   ]
+  },
+  {
+   "product": "Kimi K2.6 (Moonshot AI)",
+   "type": "model",
+   "shelf": "open-weight",
+   "version_note": "Kimi K2.6, 1T total / 32B active MoE (384 experts, MLA), 256K context, 400M-param MoonViT vision encoder. Released April 20 2026 (rolled to all subscribers Apr 13). Verified live on HF June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(downloadable on HF);data:closed;code:partial(inference/deploy; no training data or full pipeline);license:Modified-MIT(standard MIT below 100M MAU / $20M monthly rev; above thresholds requires 'Kimi K2' UI attribution \u2014 attribution-only, not a use cap)",
+    "sources": [
+     "https://huggingface.co/moonshotai/Kimi-K2.6",
+     "https://miraflow.ai/blog/kimi-k2-6-explained-moonshot-ai-open-source-model-ties-gpt-5-5-coding",
+     "https://www.verdent.ai/guides/what-is-kimi-k2-6"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "Free on kimi.com + Kimi app + API + Kimi Code; partners Vercel, Baseten, Ollama, Factory.ai validated K2.6 in production (Vercel reports >50% improvement on Next.js benchmark). OpenRouter shows sustained post-launch usage spikes indicating genuine production adoption. No exact download/user count published; placed at 4 (1-10M-equivalent) on production-traction signal.",
+    "sources": [
+     "https://www.marktechpost.com/2026/04/20/moonshot-ai-releases-kimi-k2-6-with-long-horizon-coding-agent-swarm-scaling-to-300-sub-agents-and-4000-coordinated-steps/",
+     "https://blog.kilo.ai/p/kimi-k26-has-arrived-an-open-weight"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench/Terminal-Bench",
+    "note": "SWE-bench Verified 80.2%, SWE-bench Pro 58.6% (up from 50.7% in K2.5), Terminal-Bench 2.0 66.7% (up from 50.8%). Reported tying GPT-5.5 on coding and beating some top US models; specialized for long-horizon agentic coding (300-agent swarms, 4,000 coordinated steps). Frontier-tier for agentic/coding work.",
+    "sources": [
+     "https://benchlm.ai/models/kimi-2-6",
+     "https://officechai.com/ai/kimi-k2-6-benchmarks/",
+     "https://www.kimi.com/blog/kimi-k2-6"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Mistral Large 3",
+   "type": "model",
+   "shelf": "open-weights frontier (permissive)",
+   "version_note": "Mistral Large 3 (mistral-large-3-25-12), announced 2 Dec 2025. Sparse MoE, 41B active / 675B total params. Base + instruct released; reasoning variant announced but not shipped as of mid-2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(Apache-2.0);data:closed;code:closed;license:Apache-2.0(OSI)",
+    "sources": [
+     "https://mistral.ai/news/mistral-3/",
+     "https://docs.mistral.ai/models/mistral-large-3-25-12",
+     "https://azure.microsoft.com/en-us/blog/introducing-mistral-large-3-in-microsoft-foundry-open-capable-and-ready-for-production-workloads/"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "reported_traction",
+    "note": "Distributed via Hugging Face (NVFP4 checkpoint, vLLM-ready) and Microsoft Foundry as a production model. No published hard download/user counts found; level 3 reflects multi-platform enterprise distribution rather than a verified usage_volume number.",
+    "sources": [
+     "https://azure.microsoft.com/en-us/blog/introducing-mistral-large-3-in-microsoft-foundry-open-capable-and-ready-for-production-workloads/",
+     "https://mistral.ai/news/mistral-3/"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:LMArena",
+    "note": "Debuts #2 in LMArena OSS non-reasoning category (#6 among all OSS models). Per-benchmark MMLU-Pro/GPQA/SWE-bench not given in the launch post.",
+    "sources": [
+     "https://mistral.ai/news/mistral-3/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Gemma 3 (Google)",
+   "type": "model",
+   "shelf": "use-restricted open weights",
+   "version_note": "Gemma 3 family (1B, 4B, 12B, 27B), released 12 Mar 2025. 4B/12B/27B are vision-language; 1B is text-only. Both pretrained and instruction-tuned weights released. (Successor Gemma 4 has since appeared but Gemma 3 is the scored product.)",
+   "openness": {
+    "score": 2,
+    "class": "restricted",
+    "components": "weights:open;data:closed;code:closed;license:Gemma-License(non-OSI,Prohibited-Use-Policy)",
+    "sources": [
+     "https://ai.google.dev/gemma/docs/core/model_card_3",
+     "https://huggingface.co/blog/gemma3",
+     "https://www.deeplearning.ai/the-batch/google-releases-gemma-3-vision-language-models-with-open-weights/"
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "signal_type": "usage_volume",
+    "note": "Gemma family is among the most-downloaded open model families on Hugging Face; Gemma 3 variants run on consumer hardware and are widely deployed via HF, Ollama, and Google AI tooling. Family-level downloads are in the tens-of-millions+ range.",
+    "sources": [
+     "https://huggingface.co/blog/gemma3",
+     "https://blog.google/technology/developers/gemma-3/"
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:MMLU-Pro",
+    "note": "Gemma 3 27B-IT: MMLU-Pro 67.5, GPQA Diamond 42.4 (0-shot), LMArena/Chatbot Arena Elo ~1338 (top-10, above much larger non-thinking OSS models). Strong for size but a non-reasoning, mid-2025 model.",
+    "sources": [
+     "https://ai.google.dev/gemma/docs/core/model_card_3",
+     "https://arxiv.org/html/2503.19786v1"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "GLM-5.1 (Zhipu / Z.ai)",
+   "type": "model",
+   "shelf": "open-weights frontier coder (permissive)",
+   "version_note": "GLM-5.1 released 7 Apr 2026 by Z.ai (formerly Zhipu AI). Post-training upgrade on GLM-5 base; 744B-param MoE. Weights on Hugging Face under MIT.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(MIT);data:closed;code:closed;license:MIT(OSI)",
+    "sources": [
+     "https://www.buildfastwithai.com/blogs/glm-5-1-open-source-review-2026",
+     "https://mlhive.com/2026/04/zhipu-ai-glm-5-1-744b-open-source-release",
+     "https://llm-stats.com/models/glm-5.1"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "reported_traction",
+    "note": "Widely covered as a top open coding model and available via Z.ai API, OpenRouter, and HF; strong reported uptake but only ~2 months old at scoring time, no verified hard user/download count. Level 3 reflects reported traction, not a measured usage_volume figure.",
+    "sources": [
+     "https://www.buildfastwithai.com/blogs/glm-5-1-open-source-review-2026",
+     "https://wavespeed.ai/blog/posts/glm-5-1-vs-claude-gpt-gemini-deepseek-llm-comparison/"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench",
+    "note": "SWE-Bench Pro 58.4 (reported #1 at release, edging GPT-5.4 57.7 and Claude Opus 4.6 57.3); Terminal-Bench 2.0 63.5. Frontier-tier agentic coding for an open-weights model.",
+    "sources": [
+     "https://serenitiesai.com/articles/glm-5-1-zhipu-coding-benchmark-claude-opus-comparison-2026",
+     "https://www.modemguides.com/blogs/ai-news/glm-5-1-open-source-benchmarks-local-ai",
+     "https://www.vals.ai/models/zai_glm-5.1-thinking"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Phi-4 (Microsoft)",
+   "type": "model",
+   "shelf": "open-weights small model (permissive)",
+   "version_note": "Phi-4, 14B dense model, weights released on Hugging Face under MIT (full release Jan 2025 following Dec 2024 announcement). Reasoning variants (Phi-4-reasoning / -reasoning-plus) released later under open weights but are separate SKUs; this record scores base Phi-4 14B.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(MIT);data:closed;code:closed;license:MIT(OSI)",
+    "sources": [
+     "https://the-decoder.com/microsoft-releases-full-phi-4-model-with-weights-under-mit-license/",
+     "https://venturebeat.com/ai/microsoft-makes-powerful-phi-4-model-fully-open-source-on-hugging-face"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "Phi-4 is a widely downloaded small model on Hugging Face, distributed via Azure AI Foundry, Ollama, and many local-inference stacks; download volume for the Phi-4 line is in the millions range. Level 4 reflects broad small-model adoption.",
+    "sources": [
+     "https://venturebeat.com/ai/microsoft-makes-powerful-phi-4-model-fully-open-source-on-hugging-face",
+     "https://artificialanalysis.ai/models/phi-4"
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:GPQA",
+    "note": "14B model with outsized math/reasoning: ~56.1% on graduate-level (GPQA-style) science questions, 80.4% on competition math, strong AMC results; reportedly beats GPT-4 (its teacher) on some STEM. Strong-for-size but a small/older model vs 2026 frontier.",
+    "sources": [
+     "https://the-decoder.com/microsoft-releases-full-phi-4-model-with-weights-under-mit-license/",
+     "https://artificialanalysis.ai/models/phi-4"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Falcon 3 (TII)",
+   "type": "model",
+   "shelf": "use-restricted open weights (small models)",
+   "version_note": "Falcon 3 family (1B, 3B, 7B, 10B), released 17 Dec 2024 by TII. Trained on 14T tokens. Sub-13B SLMs; now a dated generation relative to 2026 frontier.",
+   "openness": {
+    "score": 2,
+    "class": "restricted",
+    "components": "weights:open;data:closed;code:closed;license:TII-Falcon-License-2.0(Apache-based+AUP,non-OSI)",
+    "sources": [
+     "https://huggingface.co/blog/falcon3",
+     "https://huggingface.co/tiiuae/Falcon3-7B-Base",
+     "https://www.tii.ae/news/falcon-3-uaes-technology-innovation-institute-launches-worlds-most-powerful-small-ai-models"
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "signal_type": "reported_traction",
+    "note": "Available on Hugging Face with moderate uptake at launch as a sub-13B SLM; no large verified usage figures and relevance has faded against newer SLMs. Level 2 reflects modest reported traction.",
+    "sources": [
+     "https://venturebeat.com/ai/uaes-falcon-3-challenges-open-source-leaders-amid-surging-demand-for-small-ai-models",
+     "https://huggingface.co/tiiuae/Falcon3-7B-Base"
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "benchmark:MMLU-Pro",
+    "note": "Falcon3-10B-Base: MMLU 73.1, MMLU-Pro 42.5, GSM8K 83.0; Falcon3-7B-Base: MMLU 67.4, MMLU-Pro 39.2. Competitive among sub-13B in 2024 but low vs 2026 frontier.",
+    "sources": [
+     "https://huggingface.co/blog/falcon3"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "MiniMax M3",
+   "type": "model",
+   "shelf": "announced open-weights (weights not yet shipped)",
+   "version_note": "MiniMax M3 launched 1 Jun 2026: API-only at launch with MiniMax Sparse Attention, 1M-token context, native multimodal. Company committed to releasing technical report + open weights within ~10 days, but as of scoring the weights are NOT on Hugging Face and the license is unconfirmed (predecessor M2.7 used a non-commercial-restricted license).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:announced_not_yet_released;data:closed;code:closed;license:TBD(M2.7-precedent=non-commercial-restricted)",
+    "sources": [
+     "https://the-decoder.com/minimax-m3-open-weight-model-with-a-million-token-context-challenges-proprietary-leaders/",
+     "https://www.opensourceforu.com/2026/06/minimax-challenges-ai-rivals-with-m3-but-stops-short-of-full-open-source-commitment/",
+     "https://venturebeat.com/technology/minimax-m3-debuts-eclipsing-gpt-5-5-and-gemini-3-1-pro-on-key-benchmark-performance-for-just-5-10-of-the-cost"
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "signal_type": "unknown",
+    "note": "Days old at scoring time and API-only (OpenRouter launch promo ~$0.30/$1.20 per M tokens). No honest usage signal yet; weights not released so no download signal either.",
+    "sources": [
+     "https://www.opensourceforu.com/2026/06/minimax-challenges-ai-rivals-with-m3-but-stops-short-of-full-open-source-commitment/"
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "benchmark:SWE-bench",
+    "note": "Vendor reports SWE-Bench Pro scores edging out GPT-5.5 and Gemini 3.1 Pro, but benchmarks are vendor-run and not independently verified at scoring time; declining to assign a score to avoid relying on unverified claims.",
+    "sources": [
+     "https://www.techtimes.com/articles/317532/20260601/minimax-m3-open-weight-coding-model-frontier-claims-unverified-benchmarks.htm",
+     "https://venturebeat.com/technology/minimax-m3-debuts-eclipsing-gpt-5-5-and-gemini-3-1-pro-on-key-benchmark-performance-for-just-5-10-of-the-cost"
+    ]
+   },
+   "flags": [
+    "partial_release_weights_pending",
+    "unverified_benchmarks"
+   ]
+  },
+  {
+   "product": "Nemotron 3 (NVIDIA)",
+   "type": "model",
+   "shelf": "near-open-source (weights + data + recipes, non-OSI license)",
+   "version_note": "Scored on Nemotron 3 Super (120B hybrid MoE, 12B active, 1M context), released 11 Mar 2026 at GTC. Family also includes Nemotron 3 Nano (Dec 2025) and Nemotron 3 Nano Omni (Apr 2026, 30B multimodal). NVIDIA releases weights + pretraining data (10T tokens) + post-training samples (40M) + training recipes + RL env configs.",
+   "openness": {
+    "score": 4,
+    "class": "open_weights",
+    "components": "weights:open;data:open(~10T-token pretraining + 40M post-training);code:open(recipes+21 RL env configs);license:NVIDIA-Open-Model-License(permissive,commercial,non-OSI)",
+    "sources": [
+     "https://research.nvidia.com/labs/nemotron/Nemotron-3/",
+     "https://llm-stats.com/blog/research/nemotron-3-super-launch",
+     "https://research.nvidia.com/labs/nemotron/files/NVIDIA-Nemotron-3-Super-Technical-Report.pdf"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "reported_traction",
+    "note": "Distributed free via OpenRouter (nemotron-3-super-120b-a12b:free), NVIDIA build/NIM, and Hugging Face; positioned for agentic/enterprise use. Strong distribution but no verified hard usage count; level 3 = reported traction.",
+    "sources": [
+     "https://openrouter.ai/nvidia/nemotron-3-super-120b-a12b:free",
+     "https://research.nvidia.com/labs/nemotron/Nemotron-3/"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench",
+    "note": "Nemotron 3 Super: SWE-Bench Verified 60.47, AIME 2025 90.21, GPQA (no tools) 79.23, MMLU-Pro 83.73; ~2.2x inference throughput vs GPT-OSS-120B. Frontier-tier open model.",
+    "sources": [
+     "https://llm-stats.com/blog/research/nemotron-3-super-launch",
+     "https://research.nvidia.com/labs/nemotron/files/NVIDIA-Nemotron-3-Super-Technical-Report.pdf"
+    ]
+   },
+   "flags": [
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "GPT-5",
+   "type": "model",
+   "shelf": "frontier-proprietary-llm",
+   "version_note": "OpenAI GPT-5, released Aug 7, 2025; default ChatGPT model. Successor versions (5.2/5.4/5.5) shipped through April 2026, but the scored entity is GPT-5 itself, which remains in service via API/ChatGPT.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "sources": [
+     "https://openai.com/index/introducing-gpt-5/",
+     "https://en.wikipedia.org/wiki/GPT-5"
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "signal_type": "active_users",
+    "note": "GPT-5 was rolled out as the default model for logged-in ChatGPT users (Aug 2025). ChatGPT reached ~900M weekly active users (Feb 2026) and ~1B by May 2026, far exceeding the >10M threshold. Adoption attributed to the surface GPT-5 powers, not a standalone GPT-5 download count.",
+    "sources": [
+     "https://almcorp.com/blog/chatgpt-900-million-weekly-active-users/",
+     "https://www.demandsage.com/chatgpt-statistics/"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench Verified",
+    "note": "OpenAI-reported at launch: SWE-bench Verified 74.9%, MMMU 84.2%, AIME 2025 94.6% (no tools), Aider Polyglot 88%. Frontier-tier coding/reasoning. Vendor-reported figures.",
+    "sources": [
+     "https://openai.com/index/introducing-gpt-5/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Claude Opus 4.7",
+   "type": "model",
+   "shelf": "frontier-proprietary-llm",
+   "version_note": "Anthropic Claude Opus 4.7, released Apr 16, 2026 (model id claude-opus-4-7). Superseded by Opus 4.8 on May 28, 2026, but 4.7 remains available across API/Bedrock/Vertex/Foundry as of June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "sources": [
+     "https://www.anthropic.com/news/claude-opus-4-7",
+     "https://aws.amazon.com/blogs/aws/introducing-anthropics-claude-opus-4-7-model-in-amazon-bedrock/"
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "signal_type": "unknown",
+    "note": "Anthropic's launch post lists 28 enterprise testimonials (Stripe, Replit, Vercel, etc.) but discloses no quantitative user/usage figures for Opus 4.7 specifically. No honest per-model adoption signal available; not scoring on testimonials.",
+    "sources": [
+     "https://www.anthropic.com/news/claude-opus-4-7"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:GDPval-AA",
+    "note": "Anthropic-reported: state-of-the-art on GDPval-AA and Finance Agent; CursorBench 70% (vs 58% for Opus 4.6); BigLaw Bench 90.9% at high effort; gains on SWE-bench Verified/Pro/Multilingual. Independent Gemini 3.5 Flash comparisons place Opus 4.7 in the frontier field. Vendor-reported.",
+    "sources": [
+     "https://www.anthropic.com/news/claude-opus-4-7",
+     "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Gemini 3.5 Flash",
+   "type": "model",
+   "shelf": "frontier-proprietary-llm",
+   "version_note": "Google Gemini 3.5 family; 3.5 Flash launched at I/O 2026 on May 19, 2026 as the first 3.5 model. Gemini 3.5 Pro announced as in internal use, expected ~June 2026 (not yet GA at scoring time). Scored facts are for the released 3.5 Flash; Pro availability unconfirmed.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "sources": [
+     "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/",
+     "https://deepmind.google/models/gemini/"
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "signal_type": "active_users",
+    "note": "Gemini 3.5 Flash distributed via the Gemini app and AI Mode in Google Search 'to billions globally.' The Gemini app surpassed 750M monthly active users (TechCrunch, Feb 2026, Q4 2025 figure). Well above >10M. Attributed to the Gemini app surface 3.5 Flash powers, not a standalone count.",
+    "sources": [
+     "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/",
+     "https://techcrunch.com/2026/02/04/googles-gemini-app-has-surpassed-750m-monthly-active-users/"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:Terminal-Bench 2.1",
+    "note": "Google-reported for 3.5 Flash: Terminal-Bench 2.1 76.2%, MCP Atlas 83.6%, CharXiv Reasoning 84.2%, GDPval-AA 1656 Elo; reported to lead Opus 4.7 and GPT-5.5 on MCP Atlas, Toolathlon, Finance Agent v2, CharXiv, MMMU-Pro. Top-right of Artificial Analysis Intelligence Index. Vendor-reported.",
+    "sources": [
+     "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/"
+    ]
+   },
+   "flags": [
+    "renamed_from_gemini_3.5_per_verify"
+   ]
+  },
+  {
+   "product": "Grok 4.20",
+   "type": "model",
+   "shelf": "frontier-proprietary-llm",
+   "version_note": "xAI Grok 4.20; beta Feb 17, 2026, API GA Mar 10, 2026 (Grok 4.20 + Multi-agent). Revision '4.20 0309 v2' dated Apr 7, 2026. Multi-agent architecture (4 parallel agents); 2M-token context.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "sources": [
+     "https://artificialanalysis.ai/models/grok-4-20",
+     "https://docs.x.ai/developers/release-notes"
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "signal_type": "reported_traction",
+    "note": "Grok 4.20 is selectable by free X users (with limits) and via SuperGrok (~$30/mo) / X Premium+. No clean standalone Grok-4.20 user/usage count is published; available on aggregators (OpenRouter, MindStudio). Conservative tier from API rate-limited distribution rather than a confirmed user figure; treat as directional.",
+    "sources": [
+     "https://grokipedia.com/page/Grok_420",
+     "https://openrouter.ai/x-ai/grok-4.20"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:Artificial Analysis Intelligence Index",
+    "note": "Artificial Analysis Intelligence Index v4.0 score of 49, ranked #24 of 150 (median 36); index includes GPQA Diamond and SciCode (individual subscores not disclosed). Provisional LMSYS/LMArena Elo ~1505-1535 (vs 1483 for Grok 4.1). Strong but a notch below the GPT-5/Gemini 3.5/Opus 4.7 leaders on the AA index.",
+    "sources": [
+     "https://artificialanalysis.ai/models/grok-4-20",
+     "https://www.nextbigfuture.com/2026/02/xai-launches-grok-4-20-and-it-has-4-ai-agents-collaborating.html"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "vLLM",
+   "type": "software",
+   "shelf": "inference",
+   "version_note": "v0.22.0, released May 29, 2026 (GitHub releases). Confirmed to exist as of June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;governance:vLLM-project(community,PyTorch-ecosystem adjacent)",
+    "sources": [
+     "https://github.com/vllm-project/vllm",
+     "https://www.programming-helper.com/tech/vllm-2026-open-source-llm-inference-engine"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "~3M+ PyPI downloads/month as of 2026; de facto standard open inference engine with enterprise adoption (Amazon, Roblox, Stripe). 81.9k GitHub stars corroborates but is not the primary basis. Level 4 (1-10M) on download volume; could exceed if cumulative installs counted.",
+    "sources": [
+     "https://pypistats.org/packages/vllm",
+     "https://pypi.org/project/vllm/",
+     "https://awesomeagents.ai/tools/best-open-source-llm-inference-servers-2026/"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:MLPerf",
+    "note": "Reference PagedAttention implementation; used in MLPerf Inference submissions (Red Hat OpenShift AI on GPT-J-6b and llama-2-70b). Broad model/hardware coverage (200+ architectures) per repo. Top-tier among open inference engines.",
+    "sources": [
+     "https://www.redhat.com/en/blog/accelerating-generative-ai-adoption-red-hat-openshift-ai-achieves-impressive-results-mlperf-inference-benchmarks-vllm-runtime",
+     "https://github.com/vllm-project/vllm"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "SGLang",
+   "type": "software",
+   "shelf": "inference",
+   "version_note": "v0.5.12.post1, released May 26, 2026 (GitHub). Hosted under LMSYS / PyTorch ecosystem. Confirmed to exist as of June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;governance:LMSYS/PyTorch-ecosystem(community)",
+    "sources": [
+     "https://github.com/sgl-project/sglang"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "Reported generating trillions of tokens/day in production across 400,000+ GPUs; enterprise users include xAI, NVIDIA, AMD, LinkedIn, Cursor, Oracle/Google/Azure/AWS clouds. Used as rollout backend for frontier-model training (verl, slime, etc.). 28.9k stars secondary. Level 4 reflects very large but operator-concentrated deployment footprint.",
+    "sources": [
+     "https://github.com/sgl-project/sglang",
+     "https://inference.net/content/sglang-complete-guide/"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "note": "RadixAttention, structured generation, multi-step pipelines; benchmarked as top-tier vs vLLM/TensorRT-LLM on H100 in 2026 comparisons; 25x perf improvement reported on NVIDIA GB300 NVL72 (Feb 2026). No formal MLPerf submission confirmed for SGLang itself, so basis is feature_matrix plus third-party benchmarks rather than a standardized suite.",
+    "sources": [
+     "https://www.spheron.network/blog/vllm-vs-tensorrt-llm-vs-sglang-benchmarks/",
+     "https://github.com/sgl-project/sglang"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Ray",
+   "type": "software",
+   "shelf": "distributed/serving infra",
+   "version_note": "Ray-2.55.1, released April 22, 2026 (GitHub). Ray joined the PyTorch Foundation (per Anyscale 2026 announcement). Confirmed to exist as of June 2026.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:Apache-2.0(OSI);source:public(all Ray libraries OSS);commercial-tier:Anyscale managed SaaS on top",
+    "sources": [
+     "https://github.com/ray-project/ray",
+     "https://www.anyscale.com/product/open-source/ray",
+     "https://www.anyscale.com/blog/ray-by-anyscale-joins-pytorch-foundation"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "reported_traction",
+    "note": "Widely used distributed-compute / serving substrate (Ray Serve, Ray Tune) across ML industry; under PyTorch Foundation with large contributor community. 42.8k stars. No single clean download/user count verified, so reported_traction; level 4 reflects broad industry-scale deployment claims rather than a precise count.",
+    "sources": [
+     "https://github.com/ray-project/ray",
+     "https://www.ray.io/",
+     "https://www.anyscale.com/blog/ray-by-anyscale-joins-pytorch-foundation"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "note": "General distributed-compute + model-serving framework (Ray Core, Serve, Tune, Train, Data). No standardized inference/training benchmark (MLPerf) applies to Ray as a whole; scored on breadth of distributed-serving feature coverage. Not directly comparable to single-engine inference benchmarks.",
+    "sources": [
+     "https://www.anyscale.com/product/open-source/ray",
+     "https://docs.anyscale.com/get-started/what-is-ray"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Megatron-LM",
+   "type": "software",
+   "shelf": "training",
+   "version_note": "Megatron Core 0.17.1, released May 28, 2026 (GitHub releases). Companion Megatron-Bridge 0.4.0 (Apr 2026). Confirmed to exist as of June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:BSD-3-Clause(OSI, NVIDIA core)+Apache-2.0/MIT(OSI, vendored components);source:public;restriction:attribution/change-notice only",
+    "sources": [
+     "https://github.com/NVIDIA/Megatron-LM/blob/main/LICENSE",
+     "https://github.com/NVIDIA/Megatron-LM"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "reported_traction",
+    "note": "Foundational large-scale training library; directly inspired/underpins Colossal-AI, HuggingFace Accelerate, NVIDIA NeMo. Used to train models 2B-462B params across thousands of GPUs. User base is concentrated among large-model training teams (smaller absolute headcount than inference tools). 16.6k stars. Level 3 reflects specialist-but-influential reach; no clean download count verified.",
+    "sources": [
+     "https://github.com/NVIDIA/Megatron-LM",
+     "https://developer.nvidia.com/megatron-core"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "note": "State-of-the-art parallelism (TP/PP/DP/EP/CP), mixed precision FP16/BF16/FP8/FP4; benchmarked training of 462B-param model on 6144 H100 GPUs. Reference-grade large-scale transformer training infra. No MLPerf-Training submission verified for the library itself, so basis is feature_matrix plus NVIDIA-reported scaling benchmarks.",
+    "sources": [
+     "https://github.com/NVIDIA/Megatron-LM",
+     "https://developer.nvidia.com/megatron-core"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "TensorRT-LLM",
+   "type": "software",
+   "shelf": "inference",
+   "version_note": "Actively maintained; repo last updated 2026-06-01 with ongoing releases (AutoDeploy Q2/Q3 milestone). Confirmed to exist as of June 2026.",
+   "openness": {
+    "score": 4,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;caveat:runs only on NVIDIA GPUs (vendor-hardware lock, not a license restriction)",
+    "sources": [
+     "https://github.com/NVIDIA/TensorRT-LLM",
+     "https://github.com/NVIDIA/TensorRT-LLM/blob/main/LICENSE"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "reported_traction",
+    "note": "Production inference optimizer/runtime for NVIDIA GPUs; used in MLPerf submissions (HGX H100 GPT-J ~3x gains). Described in 2026 as the 'specialist's tool' \u2014 narrower adoption than vLLM/SGLang due to compilation overhead and NVIDIA-only scope. ~13.8k stars. Level 3 reflects significant but more specialized usage; no clean user/download count verified.",
+    "sources": [
+     "https://github.com/NVIDIA/TensorRT-LLM",
+     "https://www.yottalabs.ai/post/best-llm-inference-engines-in-2026-vllm-tensorrt-llm-tgi-and-sglang-compared",
+     "https://theaiengineer.substack.com/p/vllm-vs-ollama-vs-sglang-vs-tensorrt"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:MLPerf",
+    "note": "Maximum NVIDIA-hardware performance; featured in MLPerf Inference (HGX H100 ~3x GPT-J gain attributed to TensorRT-LLM). Top raw throughput/latency on NVIDIA silicon among 2026 contenders, at the cost of compilation overhead.",
+    "sources": [
+     "https://www.hpcwire.com/2024/03/28/mlperf-inference-4-0-results-showcase-genai-nvidia-still-dominates/",
+     "https://www.spheron.network/blog/vllm-vs-tensorrt-llm-vs-sglang-benchmarks/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "LiteLLM",
+   "type": "software",
+   "shelf": "gateway",
+   "version_note": "v1.84.5 (June 4, 2026)",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(core);enterprise-dir:LiteLLM-Commercial-License;source:public",
+    "sources": [
+     "https://github.com/BerriAI/litellm/blob/main/LICENSE",
+     "https://github.com/BerriAI/litellm",
+     "https://www.litellm.ai/"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "usage_volume",
+    "note": "Used-by 21.7k dependent repos on GitHub; ~49.2k stars, 1,342 releases. Treated as 100K-1M range on dependent/usage volume; stars not the basis.",
+    "sources": [
+     "https://github.com/BerriAI/litellm"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "note": "Unified gateway to 140+ LLM providers in OpenAI format with cost tracking, guardrails, load balancing, virtual keys/budgets, logging. No standard benchmark applies to a gateway; rated on breadth of provider coverage and production features.",
+    "sources": [
+     "https://github.com/BerriAI/litellm",
+     "https://docs.litellm.ai/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Ollama",
+   "type": "software",
+   "shelf": "serving",
+   "version_note": "Active 2026; ~170K+ GitHub stars, library of thousands of model builds (GGUF)",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT;source:public;no-feature-gated-core",
+    "sources": [
+     "https://github.com/ollama/ollama/blob/main/LICENSE",
+     "https://github.com/ollama/ollama",
+     "https://ollama.com/"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "Reported 52M+ monthly model pulls in early 2026; 170K+ GitHub stars. Pull/usage volume places it in the 1-10M+ active-user range; rated 4 conservatively on monthly pull volume (not stars).",
+    "sources": [
+     "https://github.com/ollama/ollama",
+     "https://www.ollama.com/"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "note": "Local model serving with one-command run, OpenAI-compatible REST API, broad model library (Llama, Qwen, Gemma, gpt-oss, DeepSeek). Serving-layer tool; no MLPerf result cited, rated on feature/coverage matrix.",
+    "sources": [
+     "https://github.com/ollama/ollama",
+     "https://ollama.com/library"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Dify",
+   "type": "software",
+   "shelf": "orchestration",
+   "version_note": "Active 2026; ~144K GitHub stars",
+   "openness": {
+    "score": 3,
+    "class": "source_available",
+    "components": "license:Dify-Open-Source-License(Apache-2.0-based,non-OSI,added-conditions:multi-tenant/branding-restrictions);source:public;cloud+enterprise-tiers",
+    "sources": [
+     "https://github.com/langgenius/dify",
+     "https://dify.ai/"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "stars_fallback",
+    "note": "~144K GitHub stars plus Dify Cloud managed tier; no honest active-user/download volume figure verified, so capped at 3 on stars fallback.",
+    "sources": [
+     "https://github.com/langgenius/dify"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "note": "Production agentic-workflow builder: visual workflow, RAG pipeline, agent capabilities, model management across hundreds of LLMs, and built-in observability (Langfuse, Opik, Arize Phoenix). Rated on feature breadth.",
+    "sources": [
+     "https://github.com/langgenius/dify",
+     "https://dify.ai/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "CrewAI",
+   "type": "software",
+   "shelf": "agents",
+   "version_note": "Active 2026; ~52.4k GitHub stars (late May 2026)",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(framework);source:public;CrewAI-Enterprise/AMP-managed-platform-tier",
+    "sources": [
+     "https://github.com/crewAIInc/crewAI/blob/main/LICENSE",
+     "https://github.com/crewaiinc/crewai",
+     "https://crewai.com/open-source"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "27M+ cumulative PyPI downloads with ~5M in the last month, 2B+ agent executions in past 12 months. Monthly download volume places it in the 1-10M range.",
+    "sources": [
+     "https://www.getpanto.ai/blog/crewai-platform-statistics",
+     "https://automationatlas.io/tools/crewai/"
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "note": "Role-based multi-agent orchestration framework (crews/flows). No first-party SWE-bench/GAIA score verified for the framework itself; rated on feature matrix as an opinionated agent-orchestration library.",
+    "sources": [
+     "https://github.com/crewaiinc/crewai",
+     "https://docs.crewai.com/en/concepts/agents"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "OpenHands",
+   "type": "software",
+   "shelf": "agents",
+   "version_note": "Active 2026 (All-Hands AI); ~75.8k GitHub stars; SWE-bench Verified ~77.6",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(core);enterprise-dir:separate-license;source:public;OpenHands-Cloud-managed-tier",
+    "sources": [
+     "https://github.com/All-Hands-AI/OpenHands",
+     "https://docs.openhands.dev/sdk"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "reported_traction",
+    "note": "~75.8k GitHub stars, $18.8M Series A, contributors from major firms, OpenHands Cloud with multi-user/Slack/Jira/Linear integrations. No precise active-user/download count verified; rated 3 on reported traction.",
+    "sources": [
+     "https://github.com/All-Hands-AI/OpenHands",
+     "https://theaiagentindex.com/agents/openhands"
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench Verified",
+    "note": "Reported 77.6% on SWE-bench Verified, at or above proprietary coding agents; model-agnostic (100+ LLM providers, BYOK).",
+    "sources": [
+     "https://github.com/All-Hands-AI/OpenHands",
+     "https://theaiagentindex.com/agents/openhands",
+     "https://www.marktechpost.com/2026/05/15/best-ai-agents-for-software-development-ranked-a-benchmark-driven-look-at-the-current-field/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "MLflow",
+   "type": "software",
+   "shelf": "observability",
+   "version_note": "Active 2026; Apache 2.0; observability/tracing for agents+LLMs+ML",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0;source:public;core-fully-OSS(Databricks-Managed-MLflow is third-party hosting, not gated core)",
+    "sources": [
+     "https://github.com/mlflow/mlflow/blob/master/LICENSE.txt",
+     "https://github.com/mlflow/mlflow",
+     "https://mlflow.org/"
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "signal_type": "usage_volume",
+    "note": "Reported 25-30M+ monthly package downloads, trusted by 5,000+ organizations, 800+ contributors. Monthly download volume places it in the 1-10M+ range.",
+    "sources": [
+     "https://mlflow.org/",
+     "https://github.com/mlflow/mlflow"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "note": "Single open platform combining distributed tracing, prompt versioning, automated evaluation, and trace replay for agents/LLMs plus classic ML tracking. No standard benchmark for observability; rated on feature matrix.",
+    "sources": [
+     "https://mlflow.org/genai/",
+     "https://mlflow.org/top-5-agent-observability-tools/"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Langfuse",
+   "type": "software",
+   "shelf": "observability",
+   "version_note": "Active 2026; acquired by ClickHouse Mar 2026; MIT core",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(core:tracing/integrations/API/data-model/exports/evals/playground/SSO);commercial:enterprise-security(SCIM,audit-logs,data-retention);source:public",
+    "sources": [
+     "https://github.com/langfuse/langfuse",
+     "https://langfuse.com/blog/2025-06-04-open-sourcing-langfuse-product",
+     "https://clickhouse.com/blog/clickhouse-acquires-langfuse-open-source-llm-observability"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "reported_traction",
+    "note": "Described as the most widely adopted open-source LLM engineering platform; acquired by ClickHouse Mar 2026. No precise verified download/active-user count, rated 3 on reported traction.",
+    "sources": [
+     "https://github.com/langfuse/langfuse",
+     "https://clickhouse.com/blog/clickhouse-acquires-langfuse-open-source-llm-observability"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "note": "End-to-end tracing, prompt management, evals (incl. LLM-as-judge), datasets, annotation queues, playground; OpenTelemetry + LangChain/OpenAI/LiteLLM integrations. Rated on feature matrix.",
+    "sources": [
+     "https://github.com/langfuse/langfuse",
+     "https://langfuse.com/docs/observability/overview"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "LangChain",
+   "type": "software",
+   "shelf": "orchestration",
+   "version_note": "Active 2026; MIT core (langchain-core, langgraph, integrations); LangSmith is commercial",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(langchain-core,langgraph,integrations);commercial:LangSmith-platform/cloud;source:public",
+    "sources": [
+     "https://github.com/langchain-ai/langchain",
+     "https://www.langchain.com/langchain",
+     "https://rvernica.github.io/2026/03/langchain-license"
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "signal_type": "usage_volume",
+    "note": "LangChain + LangGraph open-source frameworks surpassed 1B cumulative downloads with 90M+ combined monthly downloads. Monthly volume exceeds 10M, placing it at the top band.",
+    "sources": [
+     "https://www.langchain.com/langchain",
+     "https://grokipedia.com/page/LangChain"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "note": "Broadest LLM/agent orchestration ecosystem: chains, LangGraph stateful agent graphs, hundreds of model/tool integrations. No single benchmark for the framework; rated on feature breadth.",
+    "sources": [
+     "https://github.com/langchain-ai/langchain",
+     "https://www.langchain.com/langchain"
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Milvus",
+   "type": "software",
+   "shelf": "vector DB",
+   "version_note": "v2.6.x stable (late 2025); v3.0 RC published May 2026; LF AI & Data project",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0;source:public;LF-AI&Data-governed(Zilliz-Cloud is managed hosting, not gated core)",
+    "sources": [
+     "https://github.com/milvus-io/milvus/blob/master/LICENSE",
+     "https://github.com/milvus-io/milvus",
+     "https://en.wikipedia.org/wiki/Milvus_(vector_database)"
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "reported_traction",
+    "note": "Described as the default open-source engine for billion-scale semantic search; LF AI & Data graduate. No precise verified deployment/download count, rated 3 on reported traction.",
+    "sources": [
+     "https://github.com/milvus-io/milvus",
+     "https://zilliz.com/what-is-milvus"
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:ANN-Benchmarks",
+    "note": "High-performance cloud-native vector ANN search; covered by independent ANN-Benchmarks and first-party VectorDBBench. v2.6 adds Storage Format V2, advanced JSON, BM25 full-text search. Rated on ANN benchmark coverage / scale.",
+    "sources": [
+     "https://github.com/milvus-io/milvus",
+     "https://milvus.io/"
+    ]
+   },
+   "flags": []
+  }
+ ],
+ "verify": {
+  "ghost_unverifiable": [
+   "Gemini 3.5"
+  ],
+  "disputed_openness": [],
+  "verdicts": [
+   {
+    "product": "OLMo 2 (Ai2)",
+    "version_exists": true,
+    "openness_defensible": true,
+    "issue": "",
+    "suggested_fix": ""
+   },
+   {
+    "product": "Pythia (EleutherAI)",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Llama 4 Scout / Maverick (Meta)",
+    "version_exists": true,
+    "openness_defensible": true,
+    "issue": "The license sub-component is partly inaccurate. The claim includes a \"no-compete/no-train-competing-LLM clause\" in the Llama 4 Community License. Verified directly against the license text (llama.com/llama4/license): Section 2 contains the 700M MAU commercial cap (confirmed), and Section 1.b.i requires derivative models to include \"Llama\" in their name plus \"Built with Llama\" attribution \u2014 but there is NO clause prohibiting use of outputs to train a competing/other LLM. That no-train-competitor restriction existed in the Llama 2 license and was dropped/relaxed in Llama 3.x and Llama 4; the claim appears to conflate Llama 2 terms. Everything else verifies: model released Apr 5, 2025 (not forward-dated); HF page meta-llama/Llama-4-Scout-17B-16E exists with downloadable BF16 safetensors weights (~16K downloads/month, plus int4/fp8 quants); data is closed (only high-level ~40T-token description, no dataset); code is partial (inference/utils via llama-models/llama-cookbook, no training code); license is non-OSI. The overall \"restricted\" class is defensible regardless of the clause error, since the non-OSI MAU cap plus naming/attribution requirements alone justify it.",
+    "suggested_fix": "In the license component, replace \"no-compete/no-train-competing-LLM clause\" with the accurate Llama 4 restrictions: \"700M MAU commercial cap (Section 2) + mandatory 'Llama' naming for derivatives and 'Built with Llama' attribution (Section 1.b.i)\". Do not attribute a no-train-competitor clause to Llama 4 (that was Llama 2). Keep the \"restricted\" class. Sources are largely good; the royfactory.net link is a third-party blog \u2014 recommend anchoring the license claim on the primary source https://www.llama.com/llama4/license/ or https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE."
+   },
+   {
+    "product": "DeepSeek-V3.2 (DeepSeek)",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "DeepSeek-V4-Pro (DeepSeek)",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Qwen 3.6 (Alibaba)",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Kimi K2.6 (Moonshot AI)",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Mistral Large 3",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Gemma 3 (Google)",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "GLM-5.1 (Zhipu / Z.ai)",
+    "version_exists": true,
+    "openness_defensible": true,
+    "issue": "No blocking issue. Entry verified against the authoritative Hugging Face model card (zai-org/GLM-5.1), which confirms MIT license and downloadable open Safetensors weights, with no public training data or training code released (only weights plus a technical report and inference repo) \u2014 consistent with the claimed open_weights class (weights:open(MIT); data:closed; code:closed). Released April 7, 2026 by Z.ai (formerly Zhipu AI); not forward-dated/hallucinated. Two caveats worth noting: (1) the three claimed sources are SEO/aggregator blogs (buildfastwithai, mlhive, llm-stats) rather than primary sources, and one (mlhive) could not be independently confirmed; (2) a minor parameter-count inconsistency appears across sources (744B vs 754B), with HF/llm-stats reporting 754B MoE / 40B active \u2014 this does not affect the openness classification.",
+    "suggested_fix": "Add primary sources to strengthen citations: the Hugging Face model card (https://huggingface.co/zai-org/GLM-5.1) and the official Z.ai blog (https://z.ai/blog/glm-5.1). Optionally drop or downgrade the mlhive source, which could not be verified, and standardize the parameter count to 754B (40B active) per the model card."
+   },
+   {
+    "product": "Phi-4 (Microsoft)",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Falcon 3 (TII)",
+    "version_exists": true,
+    "openness_defensible": true,
+    "issue": "Minor: the claimed license string is written as \"TII-Falcon-License-2.0\" but the official/exact name is \"TII Falcon-LLM License 2.0\" (the \"LLM\" token is missing). This is cosmetic and does not affect the classification.",
+    "suggested_fix": "Normalize the license label to the exact official name \"TII Falcon-LLM License 2.0\" (Apache 2.0-based + Acceptable Use Policy, non-OSI). All else confirmed: Falcon3 family (1B/3B/7B/10B Base+Instruct) released Dec 2024 by Technology Innovation Institute; weights open on Hugging Face (safetensors), training data and training code not released \u2014 consistent with \"restricted\" / weights:open;data:closed;code:closed."
+   },
+   {
+    "product": "MiniMax M3",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Nemotron 3 (NVIDIA)",
+    "version_exists": true,
+    "openness_defensible": true,
+    "issue": "Minor (non-blocking): the \"data:open\" claim slightly overstates completeness. NVIDIA explicitly states it releases only \"all the data for which we hold redistribution rights,\" so the pretraining/post-training corpora are substantially but not fully released. Everything else (weights open on HF in BF16/FP8/NVFP4, code/recipes + 21 RL env configs on the Nemotron Developer GitHub repo, NVIDIA Nemotron Open Model License = permissive, commercial, non-OSI) is fully corroborated by NVIDIA's own newsroom/blog/research-labs/technical-report and independent coverage (VentureBeat, Artificial Analysis, OpenRouter, Decrypt). Model is real and released (Nemotron 3 Super launched March 11, 2026 at GTC; Nano available; Ultra unveiled June 1, 2026 at Computex) \u2014 not a hallucinated or forward-dated version.",
+    "suggested_fix": "Soften the data component from \"data:open\" to \"data:mostly-open (subject to NVIDIA redistribution rights)\" to precisely reflect that not 100% of the training corpus is released. No change to the \"open_weights\" class, which is correct given the non-OSI permissive license."
+   },
+   {
+    "product": "GPT-5",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Claude Opus 4.7",
+    "version_exists": true,
+    "openness_defensible": true
+   },
+   {
+    "product": "Gemini 3.5",
+    "version_exists": false,
+    "openness_defensible": true,
+    "issue": "The bare \"Gemini 3.5\" is not a released model SKU. The cited Google blog post and Gemini API docs describe Gemini 3.5 as a model *family*; the only generally-available released model is \"Gemini 3.5 Flash\" (GA May 19, 2026, API ID gemini-3.5-flash). \"Gemini 3.5 Pro\" was announced as internal-only with a planned rollout the following month and is not confirmed GA as of early June 2026. The entry conflates the family name with a shippable version. The openness class itself is correct: all Gemini 3.5 models are API-only/proprietary with weights, data, and code closed (in contrast to Google's open-weights Gemma line), so closed;weights:closed;data:closed;code:closed;Proprietary(API-only) is accurate.",
+    "suggested_fix": "Rename the entry to \"Gemini 3.5 Flash\" (the GA SKU, API ID gemini-3.5-flash, released 2026-05-19) and keep the closed/proprietary classification. Optionally add a separate \"Gemini 3.5 Pro\" row only once it is confirmed publicly released. Update the primary source link to the model-specific docs page (https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash) alongside the blog announcement."
+   },
+   {
+    "product": "Grok 4.20",
+    "version_exists": true,
+    "openness_defensible": true
+   }
+  ]
+ }
+}
