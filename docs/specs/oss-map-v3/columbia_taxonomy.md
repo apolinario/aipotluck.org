@@ -1,8 +1,8 @@
-# v3 Taxonomy — Columbia-aligned product shelves
+# v3 Taxonomy — Columbia-aligned product categories
 
-The v3 map is organized on the openness framework from the Columbia Convening on Openness in AI ([arXiv:2405.15802](https://arxiv.org/abs/2405.15802); follow-on [arXiv:2506.22183](https://arxiv.org/abs/2506.22183)). Products sit in recognizable product categories (the shelves below), each aligned to its home in the framework's stack. Five of the eleven sit under the system Product/UX layer — that is expected; the framework's depth is carried by the **openness scoring rubric** ([`scoring-rubric-v3.md`](./scoring-rubric-v3.md)), not by adding more shelves.
+The v3 map is organized on the openness framework from the Columbia Convening on Openness in AI ([arXiv:2405.15802](https://arxiv.org/abs/2405.15802); follow-on [arXiv:2506.22183](https://arxiv.org/abs/2506.22183)). Products sit in recognizable product categories (below), each aligned to its home in the framework's stack. Five of the eleven sit under the system Product/UX layer — that is expected; the framework's depth is carried by the **openness scoring rubric** ([`scoring-rubric-v3.md`](./scoring-rubric-v3.md)), not by adding more categories.
 
-| # | Shelf | Framework home | Product type | Citation |
+| # | Category | Framework home | Product type | Citation |
 |---|---|---|---|---|
 | 1 | Base / pretrained models | `model.weights.pretrained` | model | Appendix I, Model Weights |
 | 2 | Fine-tuned / chat models | `model.weights.downstream_adapted` | model | Appendix I, Model Weights |
@@ -18,4 +18,4 @@ The v3 map is organized on the openness framework from the Columbia Convening on
 
 **Note on `model.code.evaluation` (#5):** the framework's Code family does not enumerate an evaluation-code component (evaluation appears under datasets and documentation). We keep evaluation code as an explicit, flagged extension because it is a real product category worth tracking; it can be removed if reviewers prefer strict fidelity to the paper.
 
-Litmus tests per shelf are inlined alongside each category in the data registry.
+Litmus tests per category are inlined alongside each category in the data registry.

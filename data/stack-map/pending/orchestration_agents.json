@@ -1,0 +1,1164 @@
+{
+ "category": "orchestration_agents",
+ "products": [
+  {
+   "product": "Aider (Aider AI)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Aider v0.86.2 (PyPI aider-chat, Feb 12 2026); GitHub repo Aider-AI/aider active, 45.8k stars. Terminal AI pair-programming agent that plans edits across a repo and applies git commits. Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(GitHub);no feature-gated core; model-agnostic (Claude/DeepSeek/OpenAI/local)",
+    "confidence": "high",
+    "note": "Verified Apache-2.0 OSI, full source public, no managed/enterprise tier gating the core. Repo owner Aider-AI/aider, 45.8k stars confirmed via primary GitHub source.",
+    "sources": [
+     {
+      "url": "https://github.com/Aider-AI/aider",
+      "shows": "Apache-2.0 license, public source, 45.8k stars (verified)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://pypi.org/project/aider-chat/",
+      "shows": "aider-chat v0.86.2 published Feb 12 2026",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "GitHub 'used by' ~605 dependent projects and broad terminal-CLI install base; 45.8k stars corroborate but are not the basis. No published download/user count in the millions, so placed at 3 on dependent/usage-volume signal.",
+    "sources": [
+     {
+      "url": "https://github.com/Aider-AI/aider",
+      "shows": "~605 dependent repos ('used by')",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:SWE-bench Verified",
+    "value": "SWE-bench Verified ~31.4% (architect mode, Claude Sonnet 4.5)",
+    "confidence": "medium",
+    "note": "Mid-tier on SWE-bench Verified; well below OpenHands (68.4%) and Cline (59.8%). NOTE: headline figure sourced from aggregator leaderboard (awesomeagents.ai), not a primary SWE-bench publication; kept at medium confidence.",
+    "sources": [
+     {
+      "url": "https://awesomeagents.ai/leaderboards/swe-bench-coding-agent-leaderboard/",
+      "shows": "Aider (architect mode) SWE-bench Verified 31.4% (aggregator)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "benchmark_from_aggregator"
+   ]
+  },
+  {
+   "product": "Cline (Cline)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Cline (Cline Bot Inc.), CLI v3.0.17 (Jun 4 2026); GitHub cline/cline 62.7k stars. Autonomous coding agent in IDE/terminal — plans tasks, edits files, runs commands with human approval. Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "confidence": "high",
+    "components": "license:Apache-2.0(OSI, (c)2026 Cline Bot Inc.);source:public;no feature-gated core; model-agnostic (30+ providers + MCP)",
+    "note": "Verified Apache-2.0 OSI, full source public; free extension with no proprietary core gating. License/version/stars confirmed via primary GitHub source.",
+    "sources": [
+     {
+      "url": "https://github.com/cline/cline",
+      "shows": "Apache 2.0 license, public source, CLI v3.0.17 Jun 4 2026, 62.7k stars (verified)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "4,191,569 installs on the VS Code Marketplace (primary). One of the most-installed agentic coding extensions; firmly in the 1-10M reach band on install volume (not stars).",
+    "sources": [
+     {
+      "url": "https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev",
+      "shows": "4,191,569 VS Code Marketplace installs",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:SWE-bench Verified",
+    "value": "SWE-bench Verified 59.8% (Autonomous Mode, Claude Sonnet 4.6)",
+    "confidence": "medium",
+    "note": "Second only to OpenHands (68.4%) among open coding agents on the April 2026 leaderboard; above SWE-agent and Aider. NOTE: figure from aggregator leaderboard (awesomeagents.ai), not primary; kept at medium confidence.",
+    "sources": [
+     {
+      "url": "https://awesomeagents.ai/leaderboards/swe-bench-coding-agent-leaderboard/",
+      "shows": "Cline (Autonomous Mode) SWE-bench Verified 59.8% (aggregator)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "benchmark_from_aggregator"
+   ]
+  },
+  {
+   "product": "SWE-agent (Princeton NLP)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "SWE-agent (Princeton/Stanford), latest release v1.1.0 (May 22 2025); GitHub SWE-agent/SWE-agent 19.4k stars. Research agent that lets an LLM autonomously fix GitHub issues. Last tagged release >12mo old at scoring time (foundational research tool, repo still referenced).",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "confidence": "high",
+    "components": "license:MIT(OSI);source:public;no managed tier; model-agnostic",
+    "note": "Verified MIT OSI, full source public; academic project with no proprietary tier. License/stars/release date confirmed via primary GitHub source.",
+    "sources": [
+     {
+      "url": "https://github.com/SWE-agent/SWE-agent/blob/main/LICENSE",
+      "shows": "MIT License text",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/SWE-agent/SWE-agent",
+      "shows": "19.4k stars, v1.1.0 May 22 2025, Princeton/Stanford (verified)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "Primarily a research/benchmark agent; 19.4k stars in the research community. No published download/user volume; capped per stars-fallback rule. Adoption is research-circle, not production end-user scale.",
+    "sources": [
+     {
+      "url": "https://github.com/SWE-agent/SWE-agent",
+      "shows": "19.4k stars, 2.1k forks (research adoption)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:SWE-bench Verified",
+    "value": "SWE-bench Verified 43.2% (SWE-agent v1, Claude Sonnet 4.5)",
+    "confidence": "medium",
+    "note": "Originator of the SWE-bench agent scaffold; mid-tier on the 2026 leaderboard (43.2%), above Aider but below Cline/OpenHands. NOTE: figure from aggregator (awesomeagents.ai), not primary.",
+    "sources": [
+     {
+      "url": "https://awesomeagents.ai/leaderboards/swe-bench-coding-agent-leaderboard/",
+      "shows": "SWE-agent v1 SWE-bench Verified 43.2% (aggregator)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stale",
+    "benchmark_from_aggregator"
+   ]
+  },
+  {
+   "product": "Goose (Block / Agentic AI Foundation)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Goose, v1.37.0 (Jun 3 2026). VERIFIED: repo has moved from block/goose to aaif-goose/goose under the Agentic AI Foundation (AAIF) at the Linux Foundation; 46.4k stars. General-purpose on-machine AI agent (Rust) with 70+ MCP extensions, 15+ LLM providers. Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "confidence": "high",
+    "components": "license:Apache-2.0(OSI);source:public;governance:Agentic AI Foundation/Linux Foundation (neutral foundation); model-agnostic; MCP-native; no feature-gated core",
+    "note": "Verified Apache-2.0 OSI, now under Linux Foundation (AAIF) governance; full source public, no proprietary tier. Repo confirmed relocated to aaif-goose/goose (block/goose redirects).",
+    "sources": [
+     {
+      "url": "https://github.com/aaif-goose/goose",
+      "shows": "Apache-2.0, v1.37.0 Jun 3 2026, repo moved from block/goose to AAIF/Linux Foundation, 46.4k stars (verified)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "46.4k stars and active multi-surface distribution (desktop/CLI/API), backed by Block and now Linux Foundation. No published download/MAU figure found, so capped at level 3 on stars-fallback; directional.",
+    "sources": [
+     {
+      "url": "https://github.com/aaif-goose/goose",
+      "shows": "46.4k stars, active development",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Autonomy: yes (autonomous task execution); tool-use: 70+ MCP extensions; multi-agent: limited; model-agnostic: 15+ providers; eval/reliability tooling: limited. No headline SWE-bench/GAIA leaderboard placement found.",
+    "confidence": "medium",
+    "note": "Broad general-purpose agent with strong MCP tool breadth and model-agnosticism, but no published SWE-bench/GAIA number; scored on feature matrix. Below benchmark-frontier coding agents.",
+    "sources": [
+     {
+      "url": "https://github.com/aaif-goose/goose",
+      "shows": "70+ MCP extensions, 15+ LLM providers, autonomous agent features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "renamed_per_verify"
+   ]
+  },
+  {
+   "product": "Codex CLI (OpenAI)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "OpenAI Codex CLI v0.137.0 (Jun 4 2026); GitHub openai/codex 88.6k stars, built in Rust. Open-source terminal coding agent (the agent itself is OSS; it calls OpenAI models). Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "confidence": "high",
+    "components": "license:Apache-2.0(OSI, the CLI agent);source:public(GitHub);note:agent is OSS but optimized for/defaults to OpenAI models (provider-leaning, not license-restricted)",
+    "note": "Verified Apache-2.0 OSI with public Rust source (96.1% Rust); OpenAI's own docs call it open source. Backing models are proprietary, but the orchestration agent scored here is fully open. License/version/stars confirmed via primary GitHub source.",
+    "sources": [
+     {
+      "url": "https://github.com/openai/codex",
+      "shows": "Apache-2.0 license, public Rust source, v0.137.0 Jun 4 2026, 88.6k stars (verified)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://developers.openai.com/codex/cli",
+      "shows": "OpenAI describes Codex CLI as open source",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "high",
+    "note": "OpenAI confirmed Codex surpassed 4M weekly developers (Apr 21 2026 announcement; 5M+ reported more recently). Firmly in the 1-10M+ reach band on disclosed developer count. Primary OpenAI announcement now cited as the basis (was previously sourced only to a distribution page).",
+    "sources": [
+     {
+      "url": "https://openai.com/index/scaling-codex-to-enterprises-worldwide/",
+      "shows": "OpenAI: Codex surpassed 4M weekly developers (Apr 2026)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/openai/codex",
+      "shows": "88.6k stars, broad active install base (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Autonomy: full terminal coding agent (plan/edit/run/commit); tool-use: shell+MCP; multi-agent: yes (parallel sessions); model-agnostic: largely OpenAI-locked; reliability: sandboxed exec. No agent-attributed SWE-bench number on the April 2026 leaderboard.",
+    "confidence": "medium",
+    "note": "Capable, heavily-used coding agent backed by frontier OpenAI models, but no standalone agent SWE-bench placement published. Scored on feature matrix; high but not the open-agent benchmark frontier-definer (OpenHands 68.4%).",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/codex/cli",
+      "shows": "autonomous terminal agent: plan, edit, run commands, MCP, sandboxed exec",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "AutoGPT (Significant Gravitas)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "AutoGPT (Significant-Gravitas/AutoGPT), latest autogpt-platform-beta-v0.6.62 (May 28 2026); 185k GitHub stars. The original autonomous-agent project; now centered on the AutoGPT Platform (low-code agent builder). Confirmed live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "source_available",
+    "confidence": "high",
+    "components": "license:DUAL — autogpt_platform/ under PolyForm Shield (non-OSI, source-available, anti-compete); everything else (Classic, Forge, agbenchmark) MIT(OSI);source:public",
+    "note": "Verified dual license: the current flagship — the AutoGPT Platform — is PolyForm Shield (source-available, non-OSI), while legacy components stay MIT. Mixed-tier: scored source_available because the active product is non-OSI. Confirmed via primary GitHub source.",
+    "sources": [
+     {
+      "url": "https://github.com/Significant-Gravitas/AutoGPT",
+      "shows": "dual license: PolyForm Shield for autogpt_platform, MIT for the rest (verified); 185k stars; autogpt-platform-beta-v0.6.62 May 28 2026",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "185k stars (one of the most-starred repos on GitHub) reflects huge historical interest, but stars cannot exceed level 3 and recent production-usage signal is unclear. No published platform MAU/download volume found; capped at 3, directional.",
+    "sources": [
+     {
+      "url": "https://github.com/Significant-Gravitas/AutoGPT",
+      "shows": "185k stars, autogpt-platform-beta-v0.6.62 May 28 2026",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "feature_matrix",
+    "value": "Autonomy: yes (continuous agents); tool-use: block/connector library; multi-agent: workflow blocks; model-agnostic: yes; eval/reliability: agbenchmark + monitoring. No headline SWE-bench/GAIA placement.",
+    "confidence": "medium",
+    "note": "Pioneering but the autonomous loop has been surpassed; the low-code platform is its current value. No competitive agent-benchmark number published; scored low-mid on feature matrix.",
+    "sources": [
+     {
+      "url": "https://github.com/Significant-Gravitas/AutoGPT",
+      "shows": "Agent Builder, workflow blocks, marketplace, monitoring features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "mixed_tier_openness",
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "GPT Researcher (Assaf Elovic)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "GPT Researcher (assafelovic/gpt-researcher), v3.5.0 (May 28 2026); 27.5k stars, Apache-2.0. Autonomous deep-research agent that plans sub-queries, searches web/local sources, and writes cited reports. Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "confidence": "high",
+    "components": "license:Apache-2.0(OSI);source:public;no feature-gated core; model-agnostic; Docker + frontend included",
+    "note": "Verified Apache-2.0 OSI, full source public, no proprietary tier. License/version/stars confirmed via primary GitHub source.",
+    "sources": [
+     {
+      "url": "https://github.com/assafelovic/gpt-researcher",
+      "shows": "Apache-2.0, public source, v3.5.0 May 28 2026, 27.5k stars (verified)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "~105,483 PyPI downloads last month (gpt-researcher); 'used by' 261 dependent repos; 27.5k stars corroborate. Places it in the 100K-1M reach band on monthly download volume.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/gpt-researcher",
+      "shows": "105,483 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/assafelovic/gpt-researcher",
+      "shows": "261 dependent repos, 27.5k stars",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Autonomy: deep-research loop (tree exploration); tool-use: web + local retrieval; multi-agent: yes (research sub-agents); model-agnostic: yes; reliability: cited multi-source reports. No GAIA/agent-benchmark placement published.",
+    "confidence": "medium",
+    "note": "Solid, focused deep-research agent; no headline GAIA/benchmark number, scored on feature matrix. Narrower than general coding/multi-tool agents; mid-tier.",
+    "sources": [
+     {
+      "url": "https://github.com/assafelovic/gpt-researcher",
+      "shows": "deep research, tree exploration, multi-source cited reports, local+web",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Suna (Kortix AI)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Suna / Kortix (kortix-ai/suna), v0.9.19 (Jun 4 2026); 19.8k stars. Open generalist AI agent / 'AI command center' with isolated-sandbox specialist agents and 3,000+ connectors. Confirmed live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "source_available",
+    "confidence": "high",
+    "components": "license:Elastic License 2.0(non-OSI, source-available, restricts hosting as a managed service);source:public;managed cloud + self-host tiers",
+    "note": "Verified Elastic License 2.0 in the LICENSE file — source-available, NOT OSI; restricts providing the software as a hosted/managed service. Marketed as 'open source' but carries managed-service restrictions; flagged open_washed.",
+    "sources": [
+     {
+      "url": "https://github.com/kortix-ai/suna/blob/main/LICENSE",
+      "shows": "Elastic License 2.0 text (verified, non-OSI)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/kortix-ai/suna",
+      "shows": "v0.9.19 Jun 4 2026, 19.8k stars, cloud + self-host",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "19.8k stars and a managed cloud offering, but no published download/user-count figure; capped on stars fallback. Placed at 2 given the relatively young, smaller community vs the leading agents; directional.",
+    "sources": [
+     {
+      "url": "https://github.com/kortix-ai/suna",
+      "shows": "19.8k stars, 44 releases",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Autonomy: yes (specialist agents in isolated sandboxes, change-request workflow); tool-use: 3,000+ connectors; multi-agent: yes (parallel branches); model-agnostic: yes; reliability: review-before-merge gating. No public agent-benchmark placement.",
+    "confidence": "medium",
+    "note": "Feature-rich generalist agent platform with broad integrations and a novel review/merge workflow, but no published benchmark; scored on feature matrix.",
+    "sources": [
+     {
+      "url": "https://github.com/kortix-ai/suna",
+      "shows": "isolated sandboxes, 3,000+ connectors, parallel agents, change requests",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_washed"
+   ]
+  },
+  {
+   "product": "Claude Code (Anthropic)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Claude Code (Anthropic), agentic coding tool across terminal/IDE/desktop/web; GA May 2025, actively shipping June 2026. Proprietary/SaaS — requires a Claude subscription or Anthropic Console account. Confirmed live June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "license:Proprietary(closed-source CLI/app, requires Claude subscription or Console account);model:Claude(proprietary, API-only);note:Agent SDK published but the product is closed SaaS",
+    "note": "Closed/proprietary product gated behind an Anthropic subscription; the coding agent itself is not open source.",
+    "sources": [
+     {
+      "url": "https://code.claude.com/docs/en/overview",
+      "shows": "requires Claude subscription or Anthropic Console account; proprietary surfaces",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Reuters (Feb 2026): Claude Code exceeded ~$2.5B run-rate revenue, with business subscriptions quadrupled since the start of 2026 and enterprise now >half of Claude Code revenue. No clean user-count, so reported_traction; revenue scale implies well into the 1-10M+ developer band.",
+    "sources": [
+     {
+      "url": "https://code.claude.com/docs/en/overview",
+      "shows": "broad multi-surface paid product (terminal/IDE/desktop/web/CI)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.saastr.com/anthropic-just-hit-14-billion-in-arr-up-from-1-billion-just-14-months-ago/",
+      "shows": "Anthropic $14B ARR Feb 2026; Claude Code a major component (corroborating Reuters)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench Verified",
+    "value": "Backed by frontier Claude Opus models leading SWE-bench Verified (Claude Opus 4.8 ~88.6%, 4.7 ~87.6%); Claude Code is the reference agent harness for these scores.",
+    "confidence": "medium",
+    "note": "Frontier-defining coding agent — pairs the leading SWE-bench Verified models with a mature multi-surface agent harness (sub-agents, hooks, MCP, scheduling). One of the 1-2 capability frontier-definers in this category.",
+    "sources": [
+     {
+      "url": "https://llm-stats.com/benchmarks/swe-bench-verified",
+      "shows": "Claude Opus 4.8 88.6% / 4.7 87.6% lead SWE-bench Verified",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Cursor (Anysphere)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Cursor (Anysphere Inc.), AI coding IDE with agent mode (Composer 2.5) + Background Agent + CLI; proprietary SaaS. ~$2B ARR (Feb 2026), 1M+ DAU. Confirmed live June 2026. Scored here for its autonomous agent mode (chat-editor surface would be ui_api).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "license:Proprietary(closed SaaS IDE, no public source);model:multi-provider (OpenAI/Anthropic/Gemini/xAI) but the product is proprietary",
+    "note": "Fully proprietary commercial product; no open-source license or public source.",
+    "sources": [
+     {
+      "url": "https://www.cursor.com/",
+      "shows": "proprietary commercial IDE, no OSS licensing, enterprise/Fortune-500 positioning",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "active_users",
+    "confidence": "high",
+    "note": "1M+ daily active users (reported 2025, sustained Dec 2025) and ~$2B ARR by Feb 2026; ~64% of Fortune 500 active. Confirmed via press coverage of company-reported figures. 1M+ DAU puts it in the 1-10M band (not yet a confirmed >10M mass-market count).",
+    "sources": [
+     {
+      "url": "https://www.cursor.com/",
+      "shows": "'trusted by over half of the Fortune 500', enterprise positioning",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://research.contrary.com/company/cursor",
+      "shows": "Cursor 1M+ DAU, ~$2B ARR Feb 2026 (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:SWE-bench Verified",
+    "value": "Cursor Background Agent SWE-bench Verified 65.7% (April 2026 coding-agent leaderboard)",
+    "confidence": "medium",
+    "note": "High-tier autonomous coding agent (Background Agent 65.7%), just below OpenHands (68.4%); mature Composer/agent UX. NOTE: figure from aggregator leaderboard (awesomeagents.ai), not primary; kept at medium confidence.",
+    "sources": [
+     {
+      "url": "https://awesomeagents.ai/leaderboards/swe-bench-coding-agent-leaderboard/",
+      "shows": "Cursor Background Agent SWE-bench Verified 65.7% (aggregator)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "benchmark_from_aggregator"
+   ]
+  },
+  {
+   "product": "Devin (Cognition)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Devin by Cognition AI, autonomous SaaS software-engineering agent (web IDE + CLI). Verified live June 2026 at docs.devin.ai and devin.ai/pricing; Individual/Teams/Enterprise plans. Devin 2.0 generation.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary(SaaS-only);self-host:no",
+    "confidence": "high",
+    "note": "Proprietary subscription SaaS; no source or self-hosting, matching the recipe's 'closed' example (Devin).",
+    "sources": [
+     {
+      "url": "https://docs.devin.ai",
+      "shows": "proprietary SaaS coding agent, app.devin.ai signup, Individual/Teams plans",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://devin.ai/pricing",
+      "shows": "paid tiers Free/$20 Pro/$200 Max/Teams/Enterprise — proprietary SaaS",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Widely adopted commercial coding agent with paid Individual/Teams/Enterprise tiers, but Cognition discloses no hard user count. Placed at 3 on reported commercial traction; no verified usage_volume figure.",
+    "sources": [
+     {
+      "url": "https://devin.ai/pricing",
+      "shows": "multiple commercial tiers incl. Teams/Enterprise indicating broad paid adoption",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:SWE-bench Verified",
+    "value": "Cognition's own technical report: 13.86% (2024, 570-problem subset); Devin 2.0 ~45.8% SWE-bench Verified (unassisted single-agent, vendor-reported and corroborated)",
+    "confidence": "medium",
+    "note": "Devin 2.0 at 45.8% SWE-bench Verified is independently corroborated (single-agent, no human-in-loop) — mid-tier, well below the OpenHands SWE-bench-Verified SOTA anchor. Scored 3.",
+    "sources": [
+     {
+      "url": "https://cognition.ai/blog/swe-bench-technical-report",
+      "shows": "Cognition-reported 13.86% SWE-bench, unassisted end-to-end methodology",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.tembo.io/blog/devin-alternatives-2025",
+      "shows": "Devin 2.0 scores 45.8% on SWE-Bench Verified, standard unassisted single-agent eval (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Antigravity (Google)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Google Antigravity 2.0, agent-first AI development platform (desktop app + CLI + SDK) powered by Gemini 3.5 Flash; launched at Google I/O 2026 (May 2026), public preview free for individuals. Verified live June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary(Google product, free public preview);self-host:no",
+    "confidence": "high",
+    "note": "Proprietary Google agentic dev platform; free in preview but not open source and locked to Google's stack.",
+    "sources": [
+     {
+      "url": "https://antigravity.google",
+      "shows": "Google Antigravity product page (agentic development platform)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://developers.googleblog.com/all-the-news-from-the-google-io-2026-developer-keynote/",
+      "shows": "Google's own I/O 2026 keynote announcement of Antigravity 2.0 desktop app/CLI/SDK as a proprietary agentic dev platform",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "low",
+    "note": "Free public preview launched at I/O 2026 (~weeks old at scoring); Google discloses no user count for Antigravity specifically. No honest adoption signal yet.",
+    "sources": [
+     {
+      "url": "https://blog.google/innovation-and-ai/technology/developers-tools/google-io-2026-developer-highlights/",
+      "shows": "Antigravity available in public preview, no usage figures disclosed",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Multi-agent orchestration (plan/code/test-in-browser/deploy), Agent Manager, Gemini 3.5 Flash backbone, deep Google-surface integration, desktop app + CLI + SDK; no first-party SWE-bench number published for the platform itself",
+    "confidence": "medium",
+    "note": "Strong agentic feature breadth (autonomous multi-agent plan-code-test-deploy) on a frontier Gemini backbone; no published SWE-bench for the platform so scored on feature matrix. Below the OpenHands benchmark anchor absent a verified score.",
+    "sources": [
+     {
+      "url": "https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/",
+      "shows": "multi-agent plan/code/test/deploy autonomy and Gemini integration features",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://blog.google/innovation-and-ai/technology/developers-tools/google-io-2026-developer-highlights/",
+      "shows": "Antigravity 2.0 + Gemini 3.5 Flash agentic capabilities",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Windsurf (Codeium)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Windsurf (formerly Codeium) acquired by Cognition (def. agreement July 2025) and rebranded 'Devin Desktop' on June 2 2026 — windsurf.com redirects to devin.ai/desktop. Agent manager wrapped in a full IDE; Cascade legacy, successor Devin Local (Rust). Verified June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary(SaaS, Cognition);self-host:no",
+    "confidence": "high",
+    "note": "Proprietary agentic IDE; now part of Cognition's Devin Desktop. Closed source, subscription SaaS.",
+    "sources": [
+     {
+      "url": "https://devin.ai/desktop",
+      "shows": "Windsurf rebranded as Devin Desktop, proprietary agentic IDE (Cognition)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://cognition.ai/blog/windsurf",
+      "shows": "Cognition's own acquisition announcement of Windsurf (IP, product, trademark, brand)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Devin Desktop (Windsurf) page reports '1M+ Users' and '4000+ Enterprise Customers'. Vendor-reported headline count places it in the 1-10M band. Cognition-reported Windsurf ARR ~$82M corroborates commercial scale.",
+    "sources": [
+     {
+      "url": "https://devin.ai/desktop",
+      "shows": "vendor-stated '1M+ Users' and '4000+ Enterprise Customers'",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://cognition.ai/blog/windsurf",
+      "shows": "Windsurf reached $82M ARR, enterprise ARR doubling QoQ (corroborating scale)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Command Center (plan/delegate/review), multi-agent + multi-model via Agent Client Protocol (ACP, run Codex/Claude side-by-side), Devin Local (Rust), Spaces shared context, in-house SWE-1.6 model; no public SWE-bench number for the IDE",
+    "confidence": "medium",
+    "note": "Mature agentic-IDE feature set (multi-agent orchestration, model-agnostic via ACP) but no first-party SWE-bench score published; scored on feature matrix, a notch below the benchmark anchor.",
+    "sources": [
+     {
+      "url": "https://devin.ai/desktop",
+      "shows": "Command Center, multi-agent ACP support (Codex/Claude), Spaces, SWE-1.6 features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "renamed_per_verify"
+   ]
+  },
+  {
+   "product": "Amazon Q Developer (Amazon Web Services)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Amazon Q Developer, AWS's agentic GenAI software-development assistant across IDEs/CLI/Console/chat. Free tier (50 agentic chats/mo) + Pro tier. Verified live June 2026 at aws.amazon.com/q/developer.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary(AWS managed service);self-host:no",
+    "confidence": "high",
+    "note": "Proprietary AWS managed service; free and Pro tiers but no source or self-hosting.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/q/developer/",
+      "shows": "AWS proprietary agentic coding assistant, Free/Pro tiers, enterprise security controls",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Distributed across AWS's large developer base via IDEs/CLI/Console with free + Pro tiers and enterprise case studies, but AWS discloses no hard Q Developer user count. Placed at 3 on reported traction.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/q/developer/",
+      "shows": "enterprise case studies and Free/Pro distribution, no disclosed user count",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Agentic autonomy (implement/document/test/review/refactor), AWS-stated top SWE-Bench Leaderboard/Lite scores; specific 2026 SWE-bench Verified number not independently on a public leaderboard",
+    "confidence": "medium",
+    "note": "AWS claims top SWE-Bench Leaderboard placement but no clean current SWE-bench Verified figure is independently verifiable, so the benchmark claim is downgraded to vendor-stated and capability scored on feature matrix at 4 — strong agentic breadth, below a verified-benchmark ceiling.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/q/developer/",
+      "shows": "agentic task autonomy + AWS-stated SWE-Bench leaderboard claim (vendor-stated, not independently confirmed)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "unverified_metric"
+   ]
+  },
+  {
+   "product": "GitHub Copilot (Agent Mode) (GitHub (Microsoft))",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "GitHub Copilot Agent Mode — assigns autonomous background coding tasks (plan/explore/execute), supports first-party Copilot agent plus Claude (Anthropic) and Codex (OpenAI). Verified live June 2026 at github.com/features/copilot.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary(GitHub/Microsoft SaaS);self-host:no",
+    "confidence": "high",
+    "note": "Proprietary GitHub/Microsoft product; agent mode is a closed SaaS feature, model-agnostic on the backend but not open source.",
+    "sources": [
+     {
+      "url": "https://github.com/features/copilot",
+      "shows": "GitHub Copilot proprietary product, agent mode autonomous task execution, third-party model support",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "high",
+    "note": "GitHub Copilot surpassed 20M+ all-time users (Microsoft July 2025 earnings) — 'world's most widely adopted AI developer tool.' Agent mode is the autonomous surface of that base. >10M band. Note: 20M is all-time, not active; agent-mode-specific count not disclosed, but base scale firmly supports level 5.",
+    "sources": [
+     {
+      "url": "https://github.com/features/copilot",
+      "shows": "'world's most widely adopted AI developer tool', millions of users and tens of thousands of business customers",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://techcrunch.com/2025/07/30/github-copilot-crosses-20-million-all-time-users/",
+      "shows": "20M+ all-time users confirmed on Microsoft earnings call (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Autonomous background agents (plan/explore/execute), multi-model orchestration (Copilot + Claude + Codex), deep GitHub/PR/CI integration; no first-party SWE-bench number on the agent-mode page",
+    "confidence": "medium",
+    "note": "Broad agentic feature set with frontier-model backends and best-in-class repo integration; no published SWE-bench for Copilot agent mode itself, so feature_matrix at 4 — strong but below a verified-benchmark ceiling.",
+    "sources": [
+     {
+      "url": "https://github.com/features/copilot",
+      "shows": "agent-mode autonomy + multi-model (Claude/Codex) orchestration features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Replit Agent (Replit)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Replit Agent (Agent 4 generation), autonomous AI app-building agent in the Replit cloud IDE — parallel multi-task build, design + functionality in parallel. Verified live June 2026 at replit.com/agent; proprietary, consumption-priced on top of Replit subscriptions.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary(Replit cloud SaaS);self-host:no",
+    "confidence": "high",
+    "note": "Proprietary cloud agent embedded in Replit's hosted IDE; no source or self-hosting.",
+    "sources": [
+     {
+      "url": "https://replit.com/agent",
+      "shows": "Replit Agent 4 proprietary AI app-building product within Replit's cloud platform",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Replit reported 50M+ platform users with agent-driven consumption as primary growth driver (ARR ~$250M). User count is platform-wide, not agent-specific, so placed conservatively at 4 on reported traction rather than treating the 50M as an agent active-user figure.",
+    "sources": [
+     {
+      "url": "https://replit.com/agent",
+      "shows": "Replit Agent as flagship product driving platform usage",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://sacra.com/c/replit/",
+      "shows": "Replit 50M+ users, ~$250M ARR driven by AI agents (corroborating traction)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Autonomous parallel multi-task app building, design+build concurrency, task-based team workflows, end-to-end deploy on Replit infra; no published SWE-bench/GAIA number",
+    "confidence": "low",
+    "note": "Capable autonomous app-builder but oriented to full-app generation/deploy rather than benchmark-graded SWE tasks; no first-party benchmark, scored 3 on feature matrix.",
+    "sources": [
+     {
+      "url": "https://replit.com/agent",
+      "shows": "parallel multi-task autonomy, design+functionality build, deploy features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "v0 (Vercel)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "v0 by Vercel (v0.app), agentic full-stack web app builder ('agentic by default', autonomous plan/code/DB), powered by Claude Opus 4.8; web + iOS. Verified live June 2026 (v0.dev redirects to v0.app).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary(Vercel SaaS);self-host:no",
+    "confidence": "high",
+    "note": "Proprietary Vercel product; closed source, subscription SaaS tied to Vercel deploy infra.",
+    "sources": [
+     {
+      "url": "https://v0.app/",
+      "shows": "proprietary Vercel agentic app builder, 'agentic by default', Opus 4.8 backbone",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Vercel reports multi-million (4M+) cumulative v0 users since GA. Falls in the 1-10M band; reported_traction since the figure is vendor cumulative-user rather than a hard active-user metric.",
+    "sources": [
+     {
+      "url": "https://v0.app/",
+      "shows": "v0 product with large template marketplace / active usage",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://vercel.com/blog/introducing-the-new-v0",
+      "shows": "Vercel-reported multi-million v0 user base (corroborating 4M+)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Autonomous plan/code/DB management, NL-to-app generation, visual design mode, GitHub integration, one-click Vercel deploy; frontier model (Opus 4.8) backbone; no published SWE-bench/GAIA",
+    "confidence": "low",
+    "note": "Strong UI/full-stack generation autonomy on a frontier backbone but scoped to web-app building; no benchmark, scored 3 on feature matrix.",
+    "sources": [
+     {
+      "url": "https://v0.app/",
+      "shows": "agentic plan/code/DB autonomy, design mode, deploy features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Lovable (Lovable (fka GPT Engineer))",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Lovable (formerly GPT Engineer), proprietary agentic AI app/website builder ('chat to build', autonomous prototype-to-deploy). Verified live June 2026 at lovable.dev; includes a Lovable Agent and MCP server.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary(SaaS);self-host:no",
+    "confidence": "high",
+    "note": "Proprietary SaaS app builder; closed source. (GPT Engineer, its open-source predecessor, is a separate legacy repo — the scored product is the proprietary Lovable platform.)",
+    "sources": [
+     {
+      "url": "https://lovable.dev",
+      "shows": "proprietary SaaS AI app builder, chat-to-build, one-click deploy",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Lovable reports millions of projects built and 100K+ new projects/day; ~8M users reported late 2025; $400M ARR (Feb/Mar 2026, 146 employees). Usage volume in the 1-10M band.",
+    "sources": [
+     {
+      "url": "https://lovable.dev",
+      "shows": "millions of projects built, thousands created daily",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://techcrunch.com/2026/03/11/lovable-says-it-added-100m-in-revenue-last-month-alone-with-just-146-employees/",
+      "shows": "$400M ARR, ~8M users (corroborating scale)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Autonomous chat-to-app generation, screenshot/doc input, real-time prototype build, one-click deploy, MCP server, integrations; no published SWE-bench/GAIA",
+    "confidence": "low",
+    "note": "Capable autonomous app builder targeted at non-developers; full-app generation rather than benchmark SWE work, no first-party benchmark — scored 3 on feature matrix.",
+    "sources": [
+     {
+      "url": "https://lovable.dev",
+      "shows": "autonomous build-from-prompt, MCP server, integrations features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Vellum (Vellum)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Vellum (vellum.ai) — a PERSONAL AI ASSISTANT/agent ('does your work 24/7', 8-type memory, multi-channel autonomous action across Mac/Web/iOS/Slack/Telegram/phone), proprietary with credential isolation; self-host migration offered. Confirmed it positions itself vs Hermes/OpenClaw/Claude Cowork — this is the personal-assistant Vellum, which is now the primary identity at vellum.ai. Verified live June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "source:closed;license:proprietary;self-host:offered(migration), but core agent is proprietary",
+    "confidence": "medium",
+    "note": "Vellum's own comparison table marks itself 'Proprietary' against open-source peers (Hermes, OpenClaw). Self-hosting offered but the agent itself is closed source — class 'closed'. Confirmed correct product identity (not the unrelated LLM-app-dev tool).",
+    "sources": [
+     {
+      "url": "https://www.vellum.ai",
+      "shows": "personal AI assistant, proprietary (per its own comparison vs open-source Hermes/OpenClaw), self-host + cloud",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.vellum.ai/blog/best-hermes-agent-alternatives",
+      "shows": "Vellum positioning itself as a personal assistant vs Hermes/OpenClaw (confirms entity)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "low",
+    "note": "No download count, user count, or usage volume disclosed on the product site; a newer entrant in the personal-agent space. No honest adoption signal available.",
+    "sources": [
+     {
+      "url": "https://www.vellum.ai",
+      "shows": "landing page with no disclosed user/usage numbers",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Autonomous always-on personal agent: 8-type memory, real-world action via managed OAuth connections, multi-channel (Mac/Web/iOS/Slack/Telegram/phone), out-of-process credential isolation, ambient/proactive engine; no benchmark",
+    "confidence": "low",
+    "note": "Solid personal-agent feature breadth (memory + multi-channel autonomous action + credential isolation) but no benchmark and no differentiating frontier capability evidence; scored 3 on feature matrix.",
+    "sources": [
+     {
+      "url": "https://www.vellum.ai",
+      "shows": "8-type memory, multi-channel autonomous action, credential isolation, ambient engine features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "smolagents (Hugging Face)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "smolagents by Hugging Face — minimal (~1k-LOC core) code-writing agent framework ('agents that think in code'). Apache-2.0. Verified live June 2026 on GitHub.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(github.com/huggingface/smolagents);no-feature-gated-core;model-agnostic",
+    "confidence": "high",
+    "note": "Fully OSI-licensed (Apache-2.0), entire library public, no proprietary/managed core — top openness, above open-core framework anchors (CrewAI/LangChain).",
+    "sources": [
+     {
+      "url": "https://github.com/huggingface/smolagents",
+      "shows": "Apache-2.0 license, full public source, ~1k-LOC code-agent framework",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "694,642 PyPI downloads in the last month (pypistats, confirmed). Monthly download volume in the 100K-1M band — meaningful but below heavyweight framework anchors (LangChain, CrewAI).",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/smolagents",
+      "shows": "694,642 downloads in the last month (verified)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/huggingface/smolagents",
+      "shows": "GitHub stars (corroborating, not the basis)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Code-as-action agents, model-agnostic (local/OpenAI/Anthropic + others), sandboxed execution (E2B/Modal/Docker), MCP + LangChain tool import, multi-agent support; no first-party SWE-bench/GAIA headline for the framework",
+    "confidence": "medium",
+    "note": "Deliberately lightweight: strong on model-agnosticism, tool-use, and sandboxing but thinner orchestration/eval surface than heavier frameworks; no benchmark, scored 3 on feature matrix.",
+    "sources": [
+     {
+      "url": "https://github.com/huggingface/smolagents",
+      "shows": "code-action agents, sandboxed exec, MCP/LangChain tools, multi-model features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Hermes Agent (Nous Research)",
+   "type": "software",
+   "category": "orchestration_agents",
+   "version_note": "Hermes Agent by Nous Research — open-source self-improving autonomous agent (auto-generates skills, persistent memory, 40+ tools, subagent delegation, NL cron, multi-channel). MIT. Released ~Feb 2026; verified live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT(OSI);source:public(github.com/NousResearch/hermes-agent);no-feature-gated-core;model-agnostic(multi-provider);self-host-by-design",
+    "confidence": "high",
+    "note": "Fully MIT-licensed, complete public source, self-hosted by design, no proprietary core — top openness, above open-core framework anchors.",
+    "sources": [
+     {
+      "url": "https://github.com/NousResearch/hermes-agent",
+      "shows": "MIT LICENSE, full public source, self-improving multi-channel agent (Python)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://hermes-agent.nousresearch.com",
+      "shows": "open-source MIT autonomous agent product page",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Real usage signal beyond stars (per adoption!=stars rule): reported #1 on OpenRouter's global token rankings — ~271B tokens processed (announced May 6 2026), surpassing OpenClaw's ~186B; corroborated as 'most-used open-source AI agent.' [Corrected from record's '224B tokens/day, May 10' which conflicts with primary reporting — the figure is ~271B and the date ~May 6.] GitHub stars (~175K in <4 months) corroborate. Token-volume mapped to 1-10M-equivalent reach (inference, not a disclosed installed-user count), hence level 4 / medium confidence.",
+    "sources": [
+     {
+      "url": "https://github.com/NousResearch/hermes-agent",
+      "shows": "active releases, large community; ~175K stars in under 4 months (corroborating, not basis)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://chatforest.com/builders-log/hermes-agent-nous-research-openrouter-number-one-self-improving-builder-guide/",
+      "shows": "Hermes Agent #1 on OpenRouter global token rankings, ~271B tokens, surpassing OpenClaw's 186B (May 6 2026) — usage signal",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Self-improving learning loop (auto skill creation + refinement), persistent cross-session memory, 40+ tools, subagent delegation, NL cron scheduling, containerized sandboxing, web/browser control, multi-channel, model-agnostic; no first-party SWE-bench/GAIA headline",
+    "confidence": "medium",
+    "note": "Distinctive autonomy (self-improvement loop + persistent memory + subagent delegation) and very broad tool/channel coverage place it high on the feature matrix; no published benchmark so scored 4, just below a verified-benchmark ceiling.",
+    "sources": [
+     {
+      "url": "https://github.com/NousResearch/hermes-agent",
+      "shows": "self-improving skills, persistent memory, 40+ tools, subagents, cron, sandboxing features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  }
+ ]
+}

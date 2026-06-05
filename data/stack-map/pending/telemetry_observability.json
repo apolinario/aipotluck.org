@@ -1,0 +1,1344 @@
+{
+ "category": "telemetry_observability",
+ "products": [
+  {
+   "product": "Phoenix (Arize AI)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "arize-phoenix v17.2.0 (released 3 Jun 2026, GitHub); confirmed live June 2026. Open-source-positioned companion to the closed Arize AX platform.",
+   "openness": {
+    "score": 3,
+    "class": "source_available",
+    "components": "license:Elastic-License-2.0(ELv2, non-OSI: prohibits offering as a managed/hosted service to third parties);source:public;self-hostable;commercial:Arize-AX-SaaS-is-separate-closed-product",
+    "confidence": "high",
+    "note": "LICENSE file is ELv2 verbatim, not an OSI license; Arize markets Phoenix as 'the open-source platform' (open_washed). Source-available + self-hostable, but not OSI open_source.",
+    "sources": [
+     {
+      "url": "https://github.com/Arize-ai/phoenix/blob/main/LICENSE",
+      "shows": "Elastic License 2.0 (ELv2) full text",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://arize.com/phoenix/",
+      "shows": "marketed as 'the open-source platform'; 'ELv2 licensed. 9k+ GitHub stars'",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "arize-phoenix ~2.46M PyPI downloads/month; broad OTel-based framework integrations; ~10k GitHub stars corroborates only.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/arize-phoenix",
+      "shows": "~2,458,129 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/Arize-ai/phoenix",
+      "shows": "~10k stars; OTel tracing, evals, datasets, prompt mgmt, playground",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "tracing(OTel-native), evals(LLM-as-judge response+retrieval), datasets/experiments, prompt management+playground, cost/latency, broad framework integrations (OpenAI/Claude/LangGraph/LlamaIndex/CrewAI)",
+    "confidence": "high",
+    "note": "Full-coverage observability/eval platform across all six feature-matrix dimensions; on par with MLflow/Langfuse anchors (C4).",
+    "sources": [
+     {
+      "url": "https://github.com/Arize-ai/phoenix",
+      "shows": "tracing, evals, datasets, prompt management, playground, OTel integrations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_washed"
+   ]
+  },
+  {
+   "product": "Arize (Arize AI)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Arize AX — the enterprise AI engineering / LLM observability SaaS platform (distinct from open-source Phoenix). Confirmed live via arize.com June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:n/a;source:closed(proprietary SaaS);self-host:none for core AX features;note:open-source Phoenix is a separate companion product, not the AX platform",
+    "confidence": "high",
+    "note": "Arize AX is closed/proprietary SaaS with no self-hostable core; only the separate Phoenix project is source-available.",
+    "sources": [
+     {
+      "url": "https://arize.com/",
+      "shows": "'enterprise AI engineering platform'; closed AX with proprietary Alyx agent + adb datastore; Phoenix described as the separate self-hostable OSS counterpart",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Vendor discloses ~1 trillion spans/month and ~1 billion evals/month plus named enterprise customers (DoorDash, Roblox, PepsiCo, Atlassian, Booking.com, Reddit); no per-account user count, so reported_traction rather than active_users.",
+    "sources": [
+     {
+      "url": "https://arize.com/",
+      "shows": "'1 trillion spans per month', '1 billion evals per month', named customers",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "observe(agent trace) + evaluate(spans/traces/sessions) + improve(prompt/config testing), Alyx embedded AI engineering agent, adb GenAI datastore, alerting/monitoring at trillion-span scale",
+    "confidence": "medium",
+    "note": "Frontier-tier closed observability platform for this category; enterprise-scale managed tracing/eval/monitoring exceeding the OSS feature sets. A 5 reflects category-leading closed capability.",
+    "sources": [
+     {
+      "url": "https://arize.com/",
+      "shows": "Observe/Evaluate/Improve workflow, Alyx, adb, trillion-span scale",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "OpenLLMetry (Traceloop)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "traceloop-sdk v0.61.0 (released 31 May 2026, PyPI/GitHub); confirmed live June 2026. OTel-based instrumentation SDK; Traceloop hosted backend is the optional commercial destination.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;no-feature-gated-core(SDK is fully OSS; Traceloop dashboard is an optional external export target, not gated core)",
+    "confidence": "high",
+    "note": "Apache-2.0 instrumentation library; exports to any OTel backend (Datadog, Honeycomb, etc.), so the OSS is genuinely standalone.",
+    "sources": [
+     {
+      "url": "https://pypi.org/project/traceloop-sdk/",
+      "shows": "License: Apache-2.0; v0.61.0 (31 May 2026)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/traceloop/openllmetry",
+      "shows": "Apache-2.0; OTel-based GenAI instrumentation",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "traceloop-sdk ~3.15M PyPI downloads/month; 15+ LLM providers, 7 vector DBs, 25+ tested export destinations; ~7.2k stars corroborates only.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/traceloop-sdk",
+      "shows": "~3,149,787 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/traceloop/openllmetry",
+      "shows": "~7.2k stars; 15+ providers, 25+ destinations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "deep OTel instrumentation(15+ LLM providers, 7 vector DBs, framework hooks), multi-destination export(25+ platforms); NO native prompt management, evals/LLM-as-judge, or datasets/annotation in the OSS layer",
+    "confidence": "high",
+    "note": "Strong on tracing + integrations but narrow vs full platforms — it is an instrumentation layer, not an eval/prompt/dataset suite. Below the MLflow/Langfuse/Phoenix/Opik feature breadth (C4).",
+    "sources": [
+     {
+      "url": "https://github.com/traceloop/openllmetry",
+      "shows": "instrumentation/integration-focused feature set; evals/prompt mgmt are Traceloop-platform features not OSS SDK",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Opik (Comet ML)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "opik v2.0.57 (released 4 Jun 2026, PyPI/GitHub); confirmed live June 2026. Self-hostable OSS platform; Comet.com cloud is optional hosting.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;self-hostable-full-stack;commercial:Comet-cloud-hosting(not a gated core)",
+    "confidence": "high",
+    "note": "Apache-2.0, full platform self-hostable; cloud is managed hosting rather than a feature-gated proprietary core.",
+    "sources": [
+     {
+      "url": "https://pypi.org/project/opik/",
+      "shows": "License: Apache 2.0; v2.0.57 (4 Jun 2026)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/comet-ml/opik",
+      "shows": "Apache-2.0; self-hosted + cloud deployment",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "opik ~6.19M PyPI downloads/month (highest in this batch); 60-70+ framework integrations; platform reports 40M+ traces/day; ~19.4k stars corroborates only.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/opik",
+      "shows": "~6,192,885 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/comet-ml/opik",
+      "shows": "~19.4k stars; 70+ integrations; 40M+ traces/day",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "tracing(OTel-native + 70+ integrations), evals(datasets/experiments, pytest CI/CD), LLM-as-judge metrics(hallucination/moderation/relevance/context-precision), prompt playground, datasets, cost tracking",
+    "confidence": "high",
+    "note": "Covers all six feature-matrix dimensions; on par with MLflow/Langfuse anchors (C4). Not scored 5 — closed Arize AX leads category capability.",
+    "sources": [
+     {
+      "url": "https://github.com/comet-ml/opik",
+      "shows": "tracing, evals, LLM-as-judge, prompt management, datasets, OTel",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "AgentOps (AgentOps AI)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "agentops v0.4.21 (last release 29 Aug 2025, PyPI) — no 2026 release at scoring time (>9 months stale). SDK MIT-licensed; primary product is the app.agentops.ai SaaS dashboard.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(OSI, SDK);source:public(SDK + self-hostable app dir);commercial:app.agentops.ai-SaaS-dashboard-is-the-primary-product",
+    "confidence": "medium",
+    "note": "SDK is MIT/OSI and self-host is possible, but the hosted dashboard is the product surface — closer to open_core than pure open_source. Scored 4.",
+    "sources": [
+     {
+      "url": "https://github.com/AgentOps-AI/agentops",
+      "shows": "MIT-licensed SDK; complementary SaaS dashboard at app.agentops.ai; self-host option",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "agentops ~585k PyPI downloads/month; multi-framework integrations (CrewAI, AG2, OpenAI Agents SDK, LangChain, Camel); ~5.6k stars corroborates only. 100K-1M monthly-download band.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/agentops",
+      "shows": "~584,603 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/AgentOps-AI/agentops",
+      "shows": "~5.6k stars; agent tracing + cost tracking + integrations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "agent execution tracing + session replays, LLM cost tracking, multi-framework integrations, monitoring/debug dashboards, custom eval metrics; lighter on prompt versioning + dataset/annotation than full platforms",
+    "confidence": "medium",
+    "note": "Solid agent-tracing + cost + basic evals, but narrower feature matrix than MLflow/Langfuse/Opik/Phoenix; stale SDK (no 2026 release) reinforces a mid score.",
+    "sources": [
+     {
+      "url": "https://github.com/AgentOps-AI/agentops",
+      "shows": "tracing, session replays, cost tracking, eval metrics, integrations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stale"
+   ]
+  },
+  {
+   "product": "Agenta (Agenta AI)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "agenta v0.101.1 (released 4 Jun 2026, GitHub); confirmed live June 2026. LLMOps platform; self-hostable OSS + Agenta Cloud managed tier.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(OSI, core);source:public;self-hostable;commercial:Agenta-Cloud-managed-tier(free tier available)",
+    "confidence": "high",
+    "note": "MIT/OSI core, self-hostable via GitHub, with a managed cloud tier — open_core. (Borderline open_source; scored open_core for the hosted commercial tier.)",
+    "sources": [
+     {
+      "url": "https://github.com/Agenta-AI/agenta",
+      "shows": "MIT license; self-host + Agenta Cloud managed tier",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "agenta ~16k PyPI downloads/month (10K-100K band); ~4.2k GitHub stars corroborates only. Early-adopter scale, smallest in this batch.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/agenta",
+      "shows": "~16,370 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/Agenta-AI/agenta",
+      "shows": "~4.2k stars; LLMOps platform",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "prompt management+versioning(branching/environments, 50+ models), evals(20+ evaluators, UI+API, test cases from prod/CSV), observability/tracing(OTel-native, OpenLLMetry/OpenInference compatible, cost/latency), multi-model playground",
+    "confidence": "high",
+    "note": "Broad feature matrix across prompt mgmt, evals, and OTel observability — comparable to Langfuse anchor (C4). Capability is decoupled from its lower adoption.",
+    "sources": [
+     {
+      "url": "https://github.com/Agenta-AI/agenta",
+      "shows": "prompt management, 20+ evaluators, OTel tracing, playground",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Laminar (Laminar AI)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "lmnr Python SDK v0.7.52 (27 May 2026); platform/repo lmnr-ai/lmnr at v0.1.46 (31 May 2026). Confirmed live on GitHub + PyPI June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(Rust core + TS UI);SDKs:Apache-2.0;no feature-gated core observed in repo;managed Laminar Cloud is hosting not a gated tier",
+    "confidence": "medium",
+    "note": "Repo and SDKs Apache-2.0 with full source; a hosted cloud exists but no enterprise-gated module split was visible in the repo (less explicit open-core boundary than Langfuse/LangWatch).",
+    "sources": [
+     {
+      "url": "https://github.com/lmnr-ai/lmnr",
+      "shows": "Apache-2.0 license; Rust+TS source public; OTel-native tracing/evals/datasets features",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://pypi.org/project/lmnr/",
+      "shows": "lmnr v0.7.52 (27 May 2026), open-source LLM engineering platform SDK",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "low",
+    "note": "pypistats reports ~17M lmnr downloads/mo, but this is anomalously high for a ~3k-star project and almost certainly CI/mirror-inflated (common for OTel auto-instrumentation SDKs pulled transitively); discounting to level 3 rather than treating 17M as honest end-user reach. GitHub ~3k stars corroborates a smaller real user base. Treat as directional.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/lmnr",
+      "shows": "~17.06M lmnr downloads in last month (flagged as likely mirror-inflated)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Has: OTel-native tracing (Vercel AI SDK, Browser Use, LangChain, OpenAI/Anthropic/Gemini); evals (SDK+CLI, CI/CD); datasets + annotation UI; SQL query over traces; dashboards. Lighter on: prompt versioning/management and explicit cost tracking (not surfaced in repo).",
+    "confidence": "medium",
+    "note": "Solid tracing+evals+datasets coverage with a differentiated SQL/dashboard layer; below Langfuse/MLflow (C4 anchors) on prompt management and cost-tracking breadth, hence 3.",
+    "sources": [
+     {
+      "url": "https://github.com/lmnr-ai/lmnr",
+      "shows": "feature list: tracing, evals SDK/CLI, datasets/annotation, SQL editor, dashboards",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "OpenLIT (OpenLIT)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "openlit PyPI v1.42.0 (8 May 2026); OTel GPU Collector 0.0.6 (3 Jun 2026). Confirmed live on GitHub + PyPI June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;OTel-native SDKs(Python/TS/Go);no enterprise-gated core observed",
+    "confidence": "high",
+    "note": "Fully Apache-2.0, OpenTelemetry-native, no feature-gated core; vendor-neutral by design (exports to any OTel backend).",
+    "sources": [
+     {
+      "url": "https://github.com/openlit/openlit",
+      "shows": "Apache-2.0 license; OTel-native SDKs; full feature source",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "~590K openlit PyPI downloads/mo; modest but real. As an OTel auto-instrumentation lib some downloads are CI/transitive, so placed conservatively at level 2 (early adopters). ~2.5k GitHub stars corroborates a smaller community vs Langfuse/MLflow.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/openlit",
+      "shows": "~590,377 openlit downloads in last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Has: OTel-native tracing+metrics (LLMs, vector DBs, GPUs); 11 built-in eval types (hallucination/bias/toxicity); Prompt Hub (versioning); cost tracking incl custom/fine-tuned pricing; guardrails; secrets Vault; 50+ provider/framework integrations.",
+    "confidence": "high",
+    "note": "Broad feature matrix covering all six recipe dimensions (tracing, prompt mgmt, evals, datasets/annotation-adjacent, cost, OTel+integrations) plus GPU observability; comparable to Langfuse C4. Held at 4 (not 5) as no observability product is a clear frontier-definer over MLflow/Langfuse anchors.",
+    "sources": [
+     {
+      "url": "https://github.com/openlit/openlit",
+      "shows": "feature list: tracing/metrics, 11 eval types, Prompt Hub, cost tracking, guardrails, vault, 50+ integrations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Langtrace (Scale3 Labs)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Langtrace app v4.0.11 (17 Apr 2026); langtrace-python-sdk v3.8.12 (8 Apr 2026). Active and maintained as of June 2026 (initial fetch misread release year; corrected via release pages).",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:app=AGPL-3.0(OSI, copyleft);SDKs=Apache-2.0(OSI);source:public;OTel-built;hosted Langtrace Cloud tier exists",
+    "confidence": "high",
+    "note": "App is AGPL-3.0 (OSI-approved but strong copyleft, which deters proprietary embedding) and SDKs Apache-2.0; a managed cloud tier exists. Scored open_core/4 rather than 5 given the AGPL copyleft + hosted commercial offering.",
+    "sources": [
+     {
+      "url": "https://github.com/Scale3-Labs/langtrace",
+      "shows": "AGPL-3.0 app license, Apache-2.0 SDKs, OTel-based observability",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/Scale3-Labs/langtrace/releases",
+      "shows": "app v4.0.11 release 17 Apr 2026 (active)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "~34.5K langtrace-python-sdk downloads/mo; ~1.2k GitHub stars. Real but small footprint; early-adopter tier.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/langtrace-python-sdk",
+      "shows": "~34,497 langtrace-python-sdk downloads in last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Has: OTel-native real-time tracing (LLMs, frameworks, vector DBs); evaluations; latency/cost/usage analytics; broad integrations (OpenAI/Anthropic/Cohere, LangChain/LlamaIndex, Pinecone/Chroma/Weaviate). Lighter/unclear on: prompt versioning and dataset/annotation workflows.",
+    "confidence": "medium",
+    "note": "Strong tracing+cost+integration breadth but thinner prompt-mgmt/datasets surface than Langfuse C4; scored 3.",
+    "sources": [
+     {
+      "url": "https://github.com/Scale3-Labs/langtrace",
+      "shows": "feature list: tracing, evaluations, cost/latency analytics, OTel, wide integrations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "LangWatch (LangWatch)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "langwatch/langwatch monorepo active June 2026 (skills component v0.6.0, 3 Jun 2026). Confirmed live on GitHub.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:Apache-2.0(core)+MIT(SDKs);enterprise modules(SCIM,audit-logs,license/billing) under langwatch/ee/ require commercial license for production;source:public",
+    "confidence": "high",
+    "note": "Explicit open-core: Apache-2.0 core + MIT SDKs, with an /ee enterprise directory (SCIM, audit logs, billing) commercially licensed — same pattern as the Langfuse O4 anchor.",
+    "sources": [
+     {
+      "url": "https://github.com/langwatch/langwatch",
+      "shows": "Apache-2.0 core, MIT SDKs, langwatch/ee/ enterprise modules requiring commercial license",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No verified download/active-user figure located this run; ~3.3k GitHub stars is the only honest signal, so capped at level 2 via stars fallback (cannot exceed 3 on stars regardless).",
+    "sources": [
+     {
+      "url": "https://github.com/langwatch/langwatch",
+      "shows": "~3.3k GitHub stars; no disclosed usage numbers",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Has: OTel/OTLP-native tracing; LLM evals (offline + production monitoring); agent simulations/scenario testing; prompt management with GitHub integration; dataset creation + annotation; AI Gateway (cost control, failover); broad framework/provider integrations.",
+    "confidence": "high",
+    "note": "Full feature matrix across all six recipe dimensions plus distinctive agent-simulation/scenario testing and a built-in gateway; on par with Langfuse C4. Held at 4 (no frontier-definer claim over the anchors).",
+    "sources": [
+     {
+      "url": "https://github.com/langwatch/langwatch",
+      "shows": "feature list: tracing, evals, simulations, prompt mgmt, datasets/annotation, AI Gateway, OTel",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "LangSmith (LangChain)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "LangSmith proprietary SaaS by LangChain; managed cloud + BYOC + self-hosted enterprise deployment. Confirmed live (langchain.com/langsmith) June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "platform:proprietary(no public source for LangSmith itself);self-hosting=licensed enterprise deployment of closed software, not OSS;OSS siblings(LangChain/LangGraph) are separate products not scored here",
+    "confidence": "high",
+    "note": "LangSmith the observability/eval platform is closed/proprietary; only the LangChain/LangGraph frameworks (separate registry entries) are open. Self-host/BYOC are licensed deployments of closed software, not source-available.",
+    "sources": [
+     {
+      "url": "https://www.langchain.com/langsmith",
+      "shows": "LangSmith described as managed SaaS with BYOC/self-host enterprise options; open-source items are LangChain/LangGraph frameworks, not LangSmith",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Default observability/eval platform for the very widely used LangChain ecosystem; vendor lists 25+ named enterprise customers (Klarna, Lyft, Cloudflare, LinkedIn, Coinbase, Nvidia, Workday, etc.). No quantitative user count disclosed, so reported_traction; placed at 4 on ecosystem reach + enterprise roster (directional).",
+    "sources": [
+     {
+      "url": "https://www.langchain.com/langsmith",
+      "shows": "25+ named enterprise customers; positioned as the LangChain-ecosystem observability platform",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Has: framework-native tracing (Python/TS/Go/Java SDKs); monitoring with cost tracking, LLM-as-judge evals, alerts; evaluation/scoring; prompt + dataset workflows; deployment/fleet/sandbox tooling for agents.",
+    "confidence": "medium",
+    "note": "Mature, broad feature matrix across tracing/evals/prompt/datasets/cost plus agent deployment surface; comparable to the C4 anchors. Closed-source, but capability is assessed independently of openness.",
+    "sources": [
+     {
+      "url": "https://www.langchain.com/langsmith",
+      "shows": "feature list: tracing, monitoring/cost, LLM-as-judge evals, evaluation, deployment/fleet/sandboxes",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Helicone (Helicone)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Helicone/helicone monorepo active June 2026 (5,477 commits on main). Confirmed live on GitHub; hosted cloud + self-host.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:Apache-2.0(OSI);source:public;self-host supported;hosted Helicone Cloud with paid tiers(free=10k req/mo) = commercial SaaS layer atop OSS core",
+    "confidence": "high",
+    "note": "Apache-2.0 OSS core with a hosted commercial cloud (tiered pricing) — classic open-core, same shelf as Langfuse/LangWatch (O4).",
+    "sources": [
+     {
+      "url": "https://github.com/Helicone/helicone",
+      "shows": "Apache-2.0 license; full source; hosted cloud paid tiers + self-host",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No verified request/customer count disclosed (site says 'world's fastest-growing AI companies rely on Helicone' but no numbers); ~5.8k GitHub stars is the only honest signal, so capped at level 3 via stars fallback. Treat as directional.",
+    "sources": [
+     {
+      "url": "https://github.com/Helicone/helicone",
+      "shows": "~5.8k GitHub stars; no disclosed usage figures",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.helicone.ai/",
+      "shows": "no quantitative usage/customer numbers disclosed",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Has: observability + agent tracing; prompt management (version using production data); cost/latency/quality analytics; LLM routing via AI Gateway (100+ models) with automatic fallbacks; datasets & fine-tuning; caching.",
+    "confidence": "high",
+    "note": "Broad feature matrix with a strong gateway/routing + caching angle on top of tracing, prompt mgmt, cost, and datasets; on par with Langfuse C4. Held at 4 (no frontier-definer claim over anchors).",
+    "sources": [
+     {
+      "url": "https://github.com/Helicone/helicone",
+      "shows": "feature list: observability/agent tracing, prompt mgmt, cost analytics, AI Gateway/routing, datasets/fine-tuning, fallbacks",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Datadog LLM Observability (Datadog)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Datadog LLM Observability, proprietary SaaS module of the Datadog platform. Confirmed live (docs.datadoghq.com/llm_observability) June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "platform:proprietary SaaS(no source);only the ddtrace instrumentation SDK is open;product itself closed",
+    "confidence": "high",
+    "note": "Closed proprietary SaaS; only Datadog's tracing client libraries are open, the LLM Observability product and backend are closed.",
+    "sources": [
+     {
+      "url": "https://docs.datadoghq.com/llm_observability/",
+      "shows": "Datadog LLM Observability described as a proprietary cloud SaaS platform for monitoring LLM apps/agents",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Rides the large installed base of Datadog APM (a major enterprise observability vendor); LLM Observability is a newer add-on with no disclosed standalone user/usage count. Placed at 4 on parent-platform enterprise reach as a directional estimate, not a measured figure for this module specifically.",
+    "sources": [
+     {
+      "url": "https://docs.datadoghq.com/llm_observability/",
+      "shows": "shipped product within the Datadog enterprise platform; no standalone usage numbers in docs",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Has: end-to-end trace capture (tokens, errors, latency, workflows); built-in + custom evaluations; cost/latency/usage dashboards; sensitive-data scan/redaction + prompt-injection detection; topic clustering (Patterns); anomaly detection (Insights); framework integrations (OpenAI, LangChain, Bedrock, Anthropic) via auto-instrumentation.",
+    "confidence": "medium",
+    "note": "Broad enterprise-grade feature matrix (tracing, evals, cost, security/redaction, clustering, anomaly detection) integrated with the wider Datadog APM suite; comparable to C4 anchors. Closed, but capability scored independently.",
+    "sources": [
+     {
+      "url": "https://docs.datadoghq.com/llm_observability/",
+      "shows": "feature list: tracing, evaluations, cost dashboards, data redaction/prompt-injection detection, Patterns clustering, Insights anomaly detection",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Weave (Weights & Biases)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "W&B Weave; OSS SDK v0.52.42 (Jun 2, 2026) confirmed live on GitHub (wandb/weave). LLM tracing + evaluation + monitoring layered onto the commercial W&B platform.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:Apache-2.0(OSI, SDK/client repo wandb/weave);source:public;backend:commercial(W&B SaaS platform hosts traces/evals; full platform is proprietary, self-host is enterprise);eval+tracing-client:OSS",
+    "confidence": "high",
+    "note": "Apache-2.0 OSS instrumentation SDK (@weave.op tracing + eval scoring) but the trace store / dashboards / monitoring backend is the proprietary W&B SaaS platform — open-core, calibrated below MLflow O5 (fully-OSS core) and at/with Langfuse O4 (OSS core + commercial backend).",
+    "sources": [
+     {
+      "url": "https://github.com/wandb/weave",
+      "shows": "Apache-2.0 license on the Weave SDK repo; LLM logging/tracing/eval toolkit",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~1.03M PyPI downloads in the last month for the `weave` package (primary: pypistats); rides the established W&B install base (ML teams adding LLM observability without leaving W&B). 1-10M monthly-download band.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/weave",
+      "shows": "1,028,914 downloads last month for the weave package",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "tracing(auto-logs OpenAI/Anthropic calls incl inputs/outputs/tokens/cost); evals(LLM-as-judge + code scorers, experiments vs datasets); datasets/annotation; cost tracking; integrations(OpenAI/Anthropic + framework hooks). Missing dedicated prompt-management/versioning depth vs MLflow/Langfuse.",
+    "confidence": "medium",
+    "note": "Competent end-to-end tracing+eval suite; rated 4 = at the MLflow/Langfuse anchor tier on feature breadth, just short of frontier (lighter prompt-versioning + OTel story than Langfuse/MLflow per 2026 comparisons).",
+    "sources": [
+     {
+      "url": "https://github.com/wandb/weave",
+      "shows": "logging/debugging LLM traces + rigorous evaluations feature set",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Braintrust (Braintrust)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Braintrust AI eval/observability platform (braintrust.dev); SDK v3.16.0 (Jun 3, 2026, Apache-2.0) confirmed live; platform backend (Brainstore) proprietary SaaS with hybrid enterprise deploy.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:Apache-2.0(OSI, client SDKs only — Python/TS/Go/Ruby/C#);platform:proprietary(Brainstore custom DB, evals/tracing/automation all SaaS);self-host:enterprise-only(hybrid)",
+    "confidence": "high",
+    "note": "Open SDKs but a closed SaaS core (Brainstore backend, dashboards, automation are proprietary) — no OSS core, so 'closed' (not open_core) like LangSmith/Galileo per recipe's closed examples. The Apache-2.0 client SDK is instrumentation only and does not open the product.",
+    "sources": [
+     {
+      "url": "https://github.com/braintrustdata/braintrust-sdk",
+      "shows": "Apache-2.0 license on client SDK; platform itself at braintrust.dev",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.braintrust.dev/",
+      "shows": "proprietary backend (Brainstore custom DB), SaaS + hybrid enterprise deployment",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~6.08M PyPI downloads in the last month for the `braintrust` package (primary: pypistats); named production users incl. Vercel, Notion, Coursera, Dropbox, Replit. 1-10M monthly-download band; strongest adoption of the closed-platform set here.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/braintrust",
+      "shows": "6,080,857 downloads last month for the braintrust package",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.braintrust.dev/",
+      "shows": "named customers Vercel, Notion, Coursera, Dropbox, Replit",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "tracing(real-time inspection across millions of logs, tool calls); evals(LLM/code/human scorers, experiments vs datasets); prompt mgmt + playground; automation(Topics pattern discovery, continuous scoring, quality gates blocking releases); datasets/annotation; OTel + MCP + framework-agnostic SDKs(5 langs). Quality-gate/automation depth exceeds the anchor tier.",
+    "confidence": "high",
+    "note": "Deepest eval+automation feature surface in this batch (CI-style quality gates, Topics auto-clustering, continuous scoring) — a frontier-definer for eval-first LLM observability; rated 5 above the MLflow/Langfuse C4 anchors on feature breadth.",
+    "sources": [
+     {
+      "url": "https://www.braintrust.dev/",
+      "shows": "tracing, evals (LLM/code/human), automation (Topics, quality gates), prompt mgmt, OTel/MCP integrations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Humanloop (Humanloop)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "DISCONTINUED. Humanloop team acquired by Anthropic (announced Aug 13-14, 2025); standalone platform (UI + API) sunset Sept 8, 2025 and is offline. No live product to score as of June 2026.",
+   "openness": {
+    "score": 0,
+    "class": "closed",
+    "components": "platform:proprietary-SaaS(discontinued);weights:n/a;source:closed;status:sunset-2025-09-08(UI+API offline);IP not acquired by Anthropic, team absorbed",
+    "confidence": "high",
+    "note": "Was a proprietary SaaS LLM eval/prompt-mgmt platform; ceased to exist as an operating product after the Sept 8, 2025 sunset. Scored 0/closed because there is no accessible product — openness is moot.",
+    "sources": [
+     {
+      "url": "https://humanloop.com/",
+      "shows": "'Humanloop joins Anthropic'; platform sunset, customers directed to migration guide",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://news.ycombinator.com/item?id=44592216",
+      "shows": "Humanloop acquired, sunsetting Sept 8th (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "high",
+    "note": "Product offline since Sept 8, 2025 — no current users by definition. Pre-sunset traction not scored on a live-usage axis for a dead product.",
+    "sources": [
+     {
+      "url": "https://humanloop.com/",
+      "shows": "platform sunset announcement, no current operation",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Not assessable — discontinued product, no live instance to evaluate features against.",
+    "sources": [
+     {
+      "url": "https://humanloop.com/",
+      "shows": "platform being sunset; no live product",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "unverifiable_product",
+    "discontinued_acquired_anthropic_sunset_2025-09-08"
+   ]
+  },
+  {
+   "product": "PromptLayer (PromptLayer)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "PromptLayer prompt-management + logging/observability SaaS (promptlayer.com), founded 2021, active 2026. Official `promptlayer` Python lib (Apache-2.0, 764 stars, MagnivOrg) confirmed live; platform itself is a managed SaaS.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:Apache-2.0(OSI, client library MagnivOrg/prompt-layer-library only);platform:proprietary-SaaS(API-key gated, hosted prompt registry/logging/evals);self-host:no(managed only)",
+    "confidence": "high",
+    "note": "Open client SDK over a closed hosted backend (prompt CMS, logging, evals are SaaS) — no OSS core, so 'closed' alongside the Braintrust/LangSmith pattern; the open library is instrumentation only.",
+    "sources": [
+     {
+      "url": "https://github.com/MagnivOrg/prompt-layer-library",
+      "shows": "Apache-2.0 official PromptLayer Python library; platform at promptlayer.com requiring API key",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "~289K PyPI downloads in the last month for the `promptlayer` package (primary: pypistats) → 100K-1M band. Recognized but lighter-weight (no-code prompt CMS for non-technical teams) vs the deeper platforms; no harder user count disclosed.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/promptlayer",
+      "shows": "289,237 downloads last month for the promptlayer package",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "prompt mgmt/versioning(registry-based CMS, visual no-code editor, A/B testing); tracing(logs every request/response); evals(basic, regression sets); cost/monitoring(narrower than full-stack). Missing: deep LLM-as-judge eval + broad OTel/framework observability vs anchors.",
+    "confidence": "medium",
+    "note": "Strong prompt-lifecycle/versioning focus but shallower eval + production observability than MLflow/Langfuse (C4) per 2026 comparisons — rated 3, mid-tier.",
+    "sources": [
+     {
+      "url": "https://github.com/MagnivOrg/prompt-layer-library",
+      "shows": "version/test/monitor prompts and agents with evals, tracing, regression sets",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "New Relic AI Monitoring (New Relic)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "New Relic AI Monitoring (AIM), the GenAI/LLM observability module of the proprietary New Relic platform; confirmed active 2026 (vendor product page + Feb 2026 platform announcement). Module of a general APM/observability suite.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "platform:proprietary-SaaS(closed);license:commercial(Standard/Pro/Enterprise tiers);ingestion:OpenTelemetry-compatible(open standard, not open product);source:closed",
+    "confidence": "high",
+    "note": "Fully proprietary SaaS observability platform; AI Monitoring is a commercial module. OTel ingestion support does not make the product open. Scored closed (1).",
+    "sources": [
+     {
+      "url": "https://newrelic.com/platform/ai-monitoring",
+      "shows": "proprietary SaaS AI observability with Standard/Pro/Enterprise tiers; OTel ingestion",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "New Relic platform reported at ~6.6M platform users / 75,000+ businesses in 2026 (1-10M band). Figure is platform-wide, not AIM-specific, and the hard numbers came from aggregators (landbase/zoominfo) — vendor product page confirms the AIM module and broad enterprise tiers but I did not fetch a primary user count; treat level as platform-attributed and directional.",
+    "sources": [
+     {
+      "url": "https://newrelic.com/platform/ai-monitoring",
+      "shows": "AI Monitoring module of the broad New Relic observability platform; enterprise tiers",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "tracing(full AI-stack distributed tracing, MCP request lifecycle, agent/tool call latency); cost(token usage tracking + alerts, model cost/perf/quality comparison); quality(bias/hallucination/toxicity detection, response analysis, user feedback); OTel + OpenAI/Pinecone/LangChain integrations; 'no new instrumentation'. Lacks dedicated prompt-versioning/dataset-eval depth of eval-first tools.",
+    "confidence": "medium",
+    "note": "Broad full-stack AI observability (traces, cost, quality, agentic spans) at the anchor C4 tier on feature breadth; not an eval/prompt-mgmt frontier-definer, so 4 not 5.",
+    "sources": [
+     {
+      "url": "https://newrelic.com/platform/ai-monitoring",
+      "shows": "AI-stack tracing, token cost tracking, bias/hallucination/toxicity detection, OTel + LangChain/OpenAI/Pinecone integrations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "adoption_count_is_platform_wide_not_aim_specific",
+    "general_apm_parent_borderline_scope"
+   ]
+  },
+  {
+   "product": "Dynatrace AI Observability (Dynatrace)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Dynatrace AI Observability, the GenAI/LLM/agentic observability capability of the proprietary Dynatrace platform; docs updated Jan 28, 2026 ('Latest Dynatrace') confirm it live. Module of a general full-stack APM suite.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "platform:proprietary-SaaS(Grail-powered, Davis AI);license:commercial;ingestion:OpenTelemetry+OpenLLMetry(via Traceloop)+GenAI-semconv(open standards, not open product);source:closed",
+    "confidence": "high",
+    "note": "Fully proprietary Dynatrace platform; AI Observability is a commercial app/module. OTel + OpenLLMetry ingestion are open standards consumed by a closed product. Scored closed (1).",
+    "sources": [
+     {
+      "url": "https://docs.dynatrace.com/docs/observe/dynatrace-for-ai-observability",
+      "shows": "proprietary Dynatrace platform AI Observability; Grail/Davis AI; OTel + OpenLLMetry ingestion",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "low",
+    "note": "Dynatrace is a large public observability vendor, but I found no primary, AI-Observability-specific usage figure this run (vendor docs confirm the product exists but disclose no module adoption count). Declining to assign a level rather than attribute platform-wide numbers I could not source primarily.",
+    "sources": [
+     {
+      "url": "https://docs.dynatrace.com/docs/observe/dynatrace-for-ai-observability",
+      "shows": "product exists and is part of the Dynatrace platform; no module usage count disclosed",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "tracing(end-to-end prompt-flow tracing/debugging, root-cause, prompt latency + model-level metrics); cost(predictive cost mgmt via Davis AI, token/service-fee tracking, no-sampling full capture); OTel + OpenLLMetry(Traceloop) + GenAI semconv; providers OpenAI/Bedrock/NIM/Ollama/Gemini/Azure AI Foundry + LangChain/CrewAI. Lacks dedicated eval/LLM-as-judge + prompt-versioning depth.",
+    "confidence": "medium",
+    "note": "Strong full-stack AI observability (no-sampling capture, predictive cost, agentic tracing) at the anchor C4 tier; not an eval/prompt-mgmt frontier-definer, so 4.",
+    "sources": [
+     {
+      "url": "https://docs.dynatrace.com/docs/observe/dynatrace-for-ai-observability",
+      "shows": "end-to-end tracing, token/cost metrics, predictive cost (Davis AI), OTel/OpenLLMetry, multi-provider + agentic framework support",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "no_primary_module_adoption_signal",
+    "general_apm_parent_borderline_scope"
+   ]
+  },
+  {
+   "product": "WhyLabs (WhyLabs)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "WhyLabs ML/LLM observability. COMPANY DISCONTINUED: whylabs.ai states 'WhyLabs, Inc. is discontinuing operations' and open-sourced the full platform plus whylogs and LangKit. The hosted SaaS observability platform is no longer operating; the OSS libraries remain on GitHub (whylogs Apache-2.0, 2.8k stars, latest release v1.6.4 Dec 2024).",
+   "openness": {
+    "score": 4,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI, whylogs + LangKit + open-sourced platform);source:public(github.com/whylabs);hosted-SaaS:discontinued;status:company-ceased-ops, platform open-sourced on closure",
+    "confidence": "high",
+    "note": "Scored on what remains accessible: the OSS stack. whylogs (data logging) + LangKit (LLM monitoring) are Apache-2.0 OSI, and WhyLabs open-sourced its platform on shutdown. Not 5 because the hosted monitoring backend is no longer maintained/operating and the OSS pieces are libraries rather than a turnkey live observability product.",
+    "sources": [
+     {
+      "url": "https://whylabs.ai/langkit",
+      "shows": "'WhyLabs, Inc. is discontinuing operations'; platform/whylogs/LangKit open-sourced",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/whylabs/whylogs",
+      "shows": "whylogs Apache-2.0, 2.8k stars, public source",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "Hosted SaaS shut down (no active platform users). Remaining signal is the OSS libraries: whylogs ~2.8k GitHub stars, last release Dec 2024 — stars_fallback caps at 3; placed at 2 given the dead commercial product and stalled release cadence. Honest signal is modest residual OSS usage, not a live platform.",
+    "sources": [
+     {
+      "url": "https://github.com/whylabs/whylogs",
+      "shows": "2.8k stars, latest release v1.6.4 (Dec 3, 2024)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "feature_matrix",
+    "value": "whylogs(data logging/profiling, drift + data-quality monitoring, privacy-preserving) + LangKit(LLM text-quality/safety metrics: sentiment, toxicity, prompt-injection signals). No live tracing backend, no eval-experiment/prompt-mgmt platform (open-sourced but unmaintained). Narrow vs anchor C4 tools.",
+    "confidence": "medium",
+    "note": "As living, usable capability it is a pair of monitoring libraries (drift + LLM safety metrics), not a full tracing/eval/prompt platform; with the hosted backend gone and releases stalled since Dec 2024, rated 2 — well below the MLflow/Langfuse C4 anchors.",
+    "sources": [
+     {
+      "url": "https://github.com/whylabs/whylogs",
+      "shows": "whylogs data-logging/drift/data-quality monitoring library feature set; release cadence stalled Dec 2024",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "company_discontinued_platform_open_sourced",
+    "stars_fallback",
+    "stale"
+   ]
+  },
+  {
+   "product": "Galileo",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Galileo AI observability & eval-engineering platform; verified live June 2026 at galileo.ai. Proprietary SaaS / VPC / on-prem; Luna-2 small eval models. Not open source.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary;source:closed;deploy:SaaS/VPC/on-prem(managed);no-OSS-core(open-source contributions exist as separate tools/benchmarks, not the product)",
+    "confidence": "high",
+    "note": "Proprietary platform; recipe lists Galileo explicitly as a closed example. No OSI-licensed core product.",
+    "sources": [
+     {
+      "url": "https://galileo.ai/",
+      "shows": "proprietary platform; SaaS/VPC/on-prem deploy, no open-source core product",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Vendor states 'trusted by leading enterprises' but discloses no named customers or quantitative user/usage figures on the homepage. Level 3 reflects established commercial traction without a verified count; treat as directional.",
+    "sources": [
+     {
+      "url": "https://galileo.ai/",
+      "shows": "'Trusted by leading enterprises' marketing claim, no quantitative figures",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "tracing (agent behavior/failure-mode analysis) + evals (20+ out-of-box for RAG/agents/safety/security + custom) + production guardrails + cost optimization (Luna-2 eval models, sub-200ms, ~$0.02/M tokens) + data capture (synthetic/dev/prod datasets). Distinctive guardrail layer turning offline evals into runtime intervention.",
+    "confidence": "medium",
+    "note": "Strong feature coverage across the recipe matrix; the offline-eval-to-production-guardrail loop and purpose-built Luna eval models are differentiators. OTel support not confirmed on the homepage. Capped at 4 (MLflow/Langfuse anchors hold C4); not a frontier-definer over the OSS anchors.",
+    "sources": [
+     {
+      "url": "https://galileo.ai/",
+      "shows": "evals, guardrails, tracing, cost optimization (Luna), data capture features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Confident AI",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Confident AI = the proprietary cloud quality platform built by the creators of DeepEval (the separate OSI Apache-2.0 OSS eval framework). Verified live June 2026. The platform layers tracing/datasets/monitoring on top of DeepEval; self-hosted enterprise option exists.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(platform);source:closed(platform);note:companion OSS framework DeepEval is Apache-2.0 but is a separate registry-scope product;self-host:enterprise-tier",
+    "confidence": "high",
+    "note": "The scored entity is the Confident AI platform itself, which is proprietary SaaS. DeepEval (the open Apache-2.0 framework, ~15.9k stars) is a distinct product; do not credit the platform with the framework's openness.",
+    "sources": [
+     {
+      "url": "https://www.confident-ai.com/",
+      "shows": "proprietary cloud platform distinct from open-source DeepEval; self-hosted enterprise option",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/confident-ai/deepeval",
+      "shows": "DeepEval (the separate framework) is Apache-2.0; platform is the integrated paid companion",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Vendor discloses '500+ leading AI companies' incl. Panasonic, Samsung, Epic Games, Humach. Corroborated by the strong pull of its open-source funnel DeepEval (~15.9k GitHub stars, used-by 1.3k repos), which drives platform signups. Level 3 on disclosed named-customer traction; no precise active-user/usage-volume number for the platform itself.",
+    "sources": [
+     {
+      "url": "https://www.confident-ai.com/",
+      "shows": "'500+ leading AI companies' incl Panasonic, Samsung, Epic Games, Humach",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/confident-ai/deepeval",
+      "shows": "~15.9k stars, used-by 1.3k repos (OSS funnel corroboration)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "tracing (full prod call capture: inputs/outputs/tool calls/latency/token cost) + evals (50+ research-backed DeepEval metrics incl G-Eval/LLM-as-judge) + dataset mgmt (auto-curation of traces) + prompt mgmt (git-based versioning/branching) + monitoring/alerts (regression detection) + red teaming (OWASP) + annotations. Covers the full recipe matrix.",
+    "confidence": "medium",
+    "note": "Broad coverage across all recipe dimensions; the deep DeepEval metric library (50+ incl LLM-as-judge) and red-teaming are strengths. Capped at 4 alongside the OSS anchors; not a frontier-definer over MLflow/Langfuse.",
+    "sources": [
+     {
+      "url": "https://www.confident-ai.com/",
+      "shows": "tracing, evals, datasets, prompt mgmt, monitoring, red teaming, annotations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "MLflow Tracking (Databricks)",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "MLflow Tracking/Tracing is a component of open-source MLflow (Apache-2.0, copyright Databricks). 'MLflow Tracing' is the OpenTelemetry-compatible LLM/agent observability layer; MLflow Tracking is the classic runs/params/metrics/artifacts logging layer. Verified live June 2026. NOTE: overlaps the frozen flagship anchor 'MLflow'.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;core-fully-OSS(self-hostable, '100% free, no SaaS cost'; Databricks Managed MLflow is third-party hosting, not a gated core);OTel-compatible;mlflow-tracing prod SDK",
+    "confidence": "high",
+    "note": "Fully OSI Apache-2.0, no feature-gated core. Calibrated identically to the frozen MLflow anchor (O5 open_source).",
+    "sources": [
+     {
+      "url": "https://github.com/mlflow/mlflow/blob/master/LICENSE.txt",
+      "shows": "Apache License 2.0, copyright Databricks",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://mlflow.org/docs/latest/genai/tracing/",
+      "shows": "OpenTelemetry-compatible observability; 'MLflow is open source and 100% FREE'; mlflow-tracing prod SDK",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "Tracking is the canonical MLflow component; inherits MLflow's package adoption (reported 25-30M+ monthly downloads, 5,000+ orgs). Calibrated to the MLflow anchor (A4, 1-10M+ band on monthly download volume).",
+    "sources": [
+     {
+      "url": "https://github.com/mlflow/mlflow/blob/master/LICENSE.txt",
+      "shows": "MLflow repo (the package whose downloads drive Tracking adoption)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://mlflow.org/docs/latest/genai/tracing/",
+      "shows": "MLflow tracing/tracking as a core, widely-deployed MLflow component",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "OTel-compatible tracing (inputs/outputs/spans per step, latency, token usage, quality metrics, user feedback/annotations) + run/param/metric/artifact tracking + prompt versioning + automated evaluation; framework integrations (OpenAI, LangChain, LlamaIndex, DSPy, Pydantic AI); production tracing SDK (95% smaller footprint).",
+    "confidence": "high",
+    "note": "Broad coverage across the recipe matrix (tracing depth, prompt versioning, evals, OTel + integrations). Calibrated to the MLflow anchor at C4.",
+    "sources": [
+     {
+      "url": "https://mlflow.org/docs/latest/genai/tracing/",
+      "shows": "OTel-compatible tracing, latency/token metrics, quality metrics, annotations, framework integrations, prod SDK",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "duplicate_of_anchor_mlflow"
+   ]
+  },
+  {
+   "product": "Vertex AI Model Observability",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Vertex AI / Agent Engine observability: tracing via Cloud Trace (OpenTelemetry-built), Cloud Monitoring, Cloud Logging, plus integrated Gen AI Evaluation service. Proprietary Google Cloud managed service. Verified live June 2026 in GCP docs.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(Google Cloud managed service);source:closed;note:tracing is built on the open OTel standard but the observability product/service itself is proprietary and cloud-locked",
+    "confidence": "high",
+    "note": "Proprietary GCP managed offering (Agent Engine + Cloud Trace/Monitoring/Logging). OTel is the wire standard but the service is closed and tied to Google Cloud.",
+    "sources": [
+     {
+      "url": "https://docs.cloud.google.com/agent-builder/agent-engine/manage/tracing",
+      "shows": "Cloud Trace tracing for Agent Engine as a managed Google Cloud service",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "A feature surface within Vertex AI Agent Engine on Google Cloud; no standalone usage figures published for the observability capability specifically. Level 3 reflects availability inside a large cloud platform's agent stack, not a measured user count; directional.",
+    "sources": [
+     {
+      "url": "https://docs.cloud.google.com/agent-builder/agent-engine/manage/tracing",
+      "shows": "observability shipped as part of the managed Vertex AI Agent Engine platform",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "tracing (traces/spans for LLM calls, tool calls, agent decisions via Cloud Trace/OTel) + perf monitoring dashboard (token consumption, latency, error rates, tool calls) + quality/evaluation (integrated Gen AI Evaluation service incl User Simulator) + Cloud Logging. Cost/token tracking present; prompt management and dedicated annotation queues not evidenced as native.",
+    "confidence": "medium",
+    "note": "Solid tracing + monitoring + integrated eval, but the observability matrix is thinner than the dedicated OSS platforms on prompt versioning/datasets/annotation; scored 3 below the C4 anchors.",
+    "sources": [
+     {
+      "url": "https://docs.cloud.google.com/agent-builder/agent-engine/manage/tracing",
+      "shows": "Cloud Trace traces/spans, perf dashboard, Gen AI Evaluation integration",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Azure AI Foundry Observability",
+   "type": "software",
+   "category": "telemetry_observability",
+   "version_note": "Microsoft Foundry (formerly Azure AI Foundry) Observability: evaluations + monitoring + tracing reached general availability March 2026. OpenTelemetry-based tracing via Azure Monitor / Application Insights. Proprietary Azure managed service. Verified live June 2026 in Microsoft Learn docs.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(Azure managed service);source:closed;note:tracing built on open OTel standard + Azure Monitor App Insights, but the observability product is proprietary and Azure-locked",
+    "confidence": "high",
+    "note": "Proprietary Microsoft Azure managed offering. OTel is the wire standard (trace data is portable) but the service itself is closed.",
+    "sources": [
+     {
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/concepts/observability",
+      "shows": "Microsoft Foundry observability (eval/monitoring/tracing) as a managed Azure service built on OpenTelemetry + Azure Monitor",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "GA March 2026 as a feature surface within Microsoft Foundry on Azure; no standalone usage figures published for the observability capability specifically. Level 3 reflects availability inside a large cloud AI platform, not a measured user count; directional.",
+    "sources": [
+     {
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/concepts/observability",
+      "shows": "observability GA (Mar 2026) shipped within the managed Microsoft Foundry platform",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "tracing (OTel distributed tracing of LLM calls, tool invocations, agent decisions, cross-agent handoffs; inputs/outputs/latency/token usage via Azure Monitor App Insights) + monitoring + evaluations; auto-instrumentation across Semantic Kernel, LangChain, LangGraph, OpenAI Agents SDK. Strong tracing + framework breadth; prompt mgmt/datasets/annotation not evidenced as first-class native features.",
+    "confidence": "medium",
+    "note": "Three pillars (eval/monitoring/tracing) with strong OTel + framework coverage, but matrix breadth on prompt versioning/datasets/annotation is thinner than the dedicated OSS platforms; scored 3 below the C4 anchors.",
+    "sources": [
+     {
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/concepts/observability",
+      "shows": "OTel tracing, monitoring, evaluations; auto-instrumentation for Semantic Kernel/LangChain/LangGraph/OpenAI Agents SDK",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  }
+ ]
+}

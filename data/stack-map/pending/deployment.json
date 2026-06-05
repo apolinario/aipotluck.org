@@ -1,0 +1,1125 @@
+{
+ "category": "deployment",
+ "products": [
+  {
+   "product": "E2B Sandbox (E2B)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "E2B open-source sandbox infra for running AI-generated code; CLI @e2b/cli@2.10.3 (Jun 3 2026) confirmed live on GitHub June 2026. Isolation via Firecracker microVMs. OSS core + managed cloud (e2b.dev).",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:Apache-2.0(OSI);source:public(SDKs+infra, Terraform self-host);managed-tier:e2b.dev hosted sandbox cloud (proprietary)",
+    "confidence": "high",
+    "note": "Apache-2.0 OSS core (SDKs + self-hostable infra) with a proprietary managed cloud; classic open-core per recipe (E2B named as open-core example).",
+    "sources": [
+     {
+      "url": "https://github.com/e2b-dev/E2B",
+      "shows": "Apache-2.0 license; open-source sandbox infra + Terraform self-host; managed cloud at e2b.dev",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "PyPI: ~4.58M downloads last month for the e2b package (primary). Vendor reports 1B+ sandboxes started, 94% of Fortune 100 as customers; named users incl. Perplexity, Hugging Face, Manus, Groq. Solidly 1M-10M monthly install band.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/e2b",
+      "shows": "~4,583,328 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://e2b.dev/",
+      "shows": "1B+ sandboxes started; named production customers (Perplexity, Hugging Face, Manus, Groq)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation:VM (Firecracker microVM, strong); cold-start:fast (sub-second class); language/runtime breadth:Python+JS/TS code interpreter + custom templates; persistence:filesystem; scale:1B+ sandboxes started",
+    "confidence": "high",
+    "note": "VM-grade isolation (Firecracker) is the strongest tier in the feature matrix; broad SDK/runtime support and proven scale. Below the frontier-definer Firecracker itself (which it builds on), so 4 not 5.",
+    "sources": [
+     {
+      "url": "https://e2b.dev/",
+      "shows": "each sandbox powered by Firecracker microVM; 1B+ sandboxes started",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Daytona Sandbox (Daytona)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Daytona secure/elastic runtime for AI-generated code execution; v0.184.0 (Jun 3 2026) live on GitHub June 2026. Repo now AGPL-3.0 (note: Daytona pivoted from dev-environments to agent code-execution sandboxes). Sub-90ms sandbox spin-up; managed cloud at app.daytona.io.",
+   "openness": {
+    "score": 3,
+    "class": "open_core",
+    "components": "license:AGPL-3.0(OSI, copyleft);source:public;managed-tier:app.daytona.io hosted cloud + hybrid (proprietary)",
+    "confidence": "high",
+    "note": "AGPL-3.0 (OSI-approved but strong copyleft) core plus a proprietary managed cloud => open_core. Scored 3 rather than 4: AGPL copyleft constrains commercial reuse vs the permissive-Apache open-core peers, tempering effective openness.",
+    "sources": [
+     {
+      "url": "https://github.com/daytonaio/daytona",
+      "shows": "AGPL-3.0 license; secure runtime for AI-generated code; managed cloud at app.daytona.io",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "PyPI: ~8.31M downloads last month for the daytona package (primary). Note part of this volume is inherited from the prior dev-environment product line, but the package now ships the sandbox SDK. Solidly 1M-10M band.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/daytona",
+      "shows": "~8,313,410 downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation:dedicated kernel/filesystem/network stack per sandbox (VM-class, 'full composable computer'); cold-start:<90ms; language/runtime breadth:Python+TypeScript+JS; persistence:persistent state across sessions; scale:elastic",
+    "confidence": "high",
+    "note": "Strong isolation (dedicated kernel + isolated net/fs, allocated vCPU/RAM/disk) with sub-90ms cold-start and persistent sessions; among the strongest agent-runtime feature sets, just below the kernel/microVM frontier-definers.",
+    "sources": [
+     {
+      "url": "https://github.com/daytonaio/daytona",
+      "shows": "dedicated kernel/filesystem/network stack per sandbox; <90ms spin-up; persistent state; Python/TS/JS",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Firecracker (AWS (Firecracker project))",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Firecracker microVM virtualization; v1.16.0 (Jun 4 2026) confirmed live on GitHub. Rust microVM monitor (KVM) for secure multi-tenant function/container workloads; powers AWS Lambda + Fargate.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(Rust 78.7%);governance:AWS-led open project;no-feature-gated-core",
+    "confidence": "high",
+    "note": "Fully Apache-2.0, source public, no gated core; AWS-developed but openly governed (recipe lists Firecracker as an open_source exemplar).",
+    "sources": [
+     {
+      "url": "https://github.com/firecracker-microvm/firecracker",
+      "shows": "Apache-2.0 license; v1.16.0 (Jun 4 2026); powers AWS Lambda and Fargate",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "Underpins AWS Lambda and AWS Fargate — among the highest-volume serverless platforms in the world (trillions of invocations) — plus downstream use in Kata Containers, Flintlock, and E2B. Production reach far exceeds >10M end-equivalent. (34.8k stars corroborate only.)",
+    "sources": [
+     {
+      "url": "https://github.com/firecracker-microvm/firecracker",
+      "shows": "developed at AWS; powers AWS Lambda and AWS Fargate; integrated into Kata Containers and Flintlock",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "isolation:hardware-virtualized microVM (KVM) — strongest isolation tier; cold-start:~125ms boot, <5MiB memory overhead per microVM; language/runtime breadth:runs any OCI/container or function workload (kernel-level, language-agnostic); scale:powers Lambda/Fargate fleets",
+    "confidence": "high",
+    "note": "Frontier-definer for the deployment category: hardware-VM isolation at container-like speed/density, the reference microVM that the managed sandbox layer (E2B, others) builds on. Defines the strongest point on the isolation x cold-start x scale matrix.",
+    "sources": [
+     {
+      "url": "https://github.com/firecracker-microvm/firecracker",
+      "shows": "lightweight microVMs combining hardware virtualization security with container speed; minimal memory footprint/attack surface",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "gVisor (Google (gVisor project))",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "gVisor application-kernel sandbox; repo live June 2026 (rolling date-tagged releases, no GitHub Releases page). Go userspace kernel intercepting syscalls (Sentry + Gofer); powers Google Cloud Run.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(Go);governance:Google-led open project;no-feature-gated-core",
+    "confidence": "high",
+    "note": "Fully Apache-2.0 application kernel, source public, no gated core (recipe lists gVisor as an open_source exemplar).",
+    "sources": [
+     {
+      "url": "https://github.com/google/gvisor",
+      "shows": "Apache-2.0 license; application kernel implementing Linux-like interface in userspace (Go)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "Underpins Google Cloud Run ('Powered by gVisor' on gvisor.dev) and is the sandbox layer for GKE Sandbox / App Engine / Cloud Functions — billions of container executions across Google Cloud. Reach far exceeds >10M end-equivalent. (18.5k stars corroborate only.)",
+    "sources": [
+     {
+      "url": "https://gvisor.dev/docs/",
+      "shows": "'Powered by gVisor' linking to Google Cloud Run as a production user",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/google/gvisor",
+      "shows": "Google-developed sandbox application kernel in production",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "isolation:application-kernel (userspace syscall interception, defense-in-depth) — distinct strong-isolation third approach between seccomp and full VM; cold-start:fast userspace startup; language/runtime breadth:any Linux container workload (kernel-level); scale:powers Cloud Run/GKE Sandbox",
+    "confidence": "high",
+    "note": "Frontier-definer: a novel application-kernel isolation model giving VM-class security at userspace footprint/startup, the reference sandbox for Google Cloud's serverless containers. Co-frontier with Firecracker (different isolation philosophy).",
+    "sources": [
+     {
+      "url": "https://github.com/google/gvisor",
+      "shows": "intercepts syscalls as a userspace application kernel; VM-class security benefits at userspace footprint and startup",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Kata Containers (Kata Containers (OpenInfra Foundation))",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Kata Containers — lightweight VMs that feel like containers; v3.31.0 (May 19 2026) confirmed live on GitHub. OpenInfra Foundation governed (governance not explicit on repo landing page but established as an OpenInfra project). Can use Firecracker/QEMU as the VMM.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;governance:open community (OpenInfra Foundation);no-feature-gated-core",
+    "confidence": "high",
+    "note": "Fully Apache-2.0, source public, vendor-neutral open-foundation governance, no managed-tier gating from the project itself.",
+    "sources": [
+     {
+      "url": "https://github.com/kata-containers/kata-containers",
+      "shows": "Apache-2.0 license; lightweight VMs with container UX + VM isolation; v3.31.0 (May 19 2026)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Established CNCF/OpenInfra-adjacent container-runtime project integrated into Kubernetes runtimeclass deployments; broad but operator-concentrated infrastructure adoption rather than a mass per-user count. No clean download/user figure verified; ~8k stars (corroborate only, not the basis). Level 3 reflects specialist infra reach.",
+    "sources": [
+     {
+      "url": "https://github.com/kata-containers/kata-containers",
+      "shows": "standard implementation of lightweight VM containers; integrated runtime; 8k stars",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation:hardware VM (pluggable VMM — QEMU/Firecracker/Cloud Hypervisor) — strong VM-class isolation; cold-start:VM boot (slower than pure userspace); language/runtime breadth:any OCI container (language-agnostic, K8s-native); persistence:container lifecycle; scale:K8s clusters",
+    "confidence": "high",
+    "note": "VM-grade isolation with OCI/Kubernetes compatibility and pluggable hypervisors; very strong isolation but higher cold-start than microVM/userspace frontier-definers, so 4.",
+    "sources": [
+     {
+      "url": "https://github.com/kata-containers/kata-containers",
+      "shows": "lightweight VMs performing like containers with VM workload-isolation/security; integrated with Firecracker",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Beta9 (Beam Cloud)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Beta9 — open-source serverless AI runtime (sandboxes, serverless inference endpoints, task queues); worker v0.1.597 (Jun 4 2026) confirmed live on GitHub. OSS engine powering managed Beam cloud (beam.cloud).",
+   "openness": {
+    "score": 3,
+    "class": "open_core",
+    "components": "license:AGPL-3.0(OSI, copyleft);source:public;managed-tier:Beam (beam.cloud) fully-managed GPU cloud (proprietary)",
+    "confidence": "high",
+    "note": "AGPL-3.0 (OSI but strong copyleft) engine plus proprietary managed Beam cloud => open_core. Scored 3 (vs 4) for AGPL copyleft tempering commercial reuse, consistent with Daytona's treatment.",
+    "sources": [
+     {
+      "url": "https://github.com/beam-cloud/beta9",
+      "shows": "AGPL-3.0 license; open-source serverless AI runtime; engine powering managed Beam cloud (beam.cloud)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No PyPI/usage figure for the OSS runtime surfaced and no disclosed Beam customer/usage count; only ~1.7k GitHub stars available as a signal. stars_fallback caps level at 3; placed at 2 given the small star base and absence of any volume signal. Low confidence.",
+    "sources": [
+     {
+      "url": "https://github.com/beam-cloud/beta9",
+      "shows": "1.7k stars; no published download/usage figures",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation:container (serverless containers, not VM/microVM per repo description); cold-start:fast container launch; language/runtime breadth:Python AI workloads + GPU (4090/H100); persistence:volume storage; scale:parallelize across hundreds of containers + autoscaling",
+    "confidence": "medium",
+    "note": "Capable serverless container runtime with GPU support, volumes, autoscaling and sandbox primitives, but container-level (not VM/microVM) isolation places it below the VM-grade peers on the isolation-strength dimension; mid-tier.",
+    "sources": [
+     {
+      "url": "https://github.com/beam-cloud/beta9",
+      "shows": "serverless runtime: rapid container launches, parallelize across hundreds of containers, GPU support, volume storage, sandboxes",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "OpenSandbox (Alibaba)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Alibaba OpenSandbox — general-purpose sandbox platform for AI agents (coding agents, GUI agents, agent eval, RL training); open-sourced Mar 2026; components/execd 1.0.18 (May 25 2026) confirmed live on GitHub. Go execd daemon; Docker/Kubernetes runtimes; multi-language SDKs (Python/TS/Go/Java); MCP server. Self-host only (no managed tier observed).",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(Go execd + multi-language SDKs);runtimes:Docker/Kubernetes;no-managed-tier-observed;no-feature-gated-core",
+    "confidence": "high",
+    "note": "Apache-2.0, fully self-hostable, no managed/enterprise gating observed => open_source (not open_core). Alibaba says it open-sourced the sandbox infra used internally.",
+    "sources": [
+     {
+      "url": "https://github.com/alibaba/OpenSandbox",
+      "shows": "Apache-2.0 license; general-purpose AI-agent sandbox; Docker/K8s runtimes; multi-language SDKs; self-host",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "Only ~2-3 months old; no PyPI/download or named-deployment figures surfaced. ~11.3k GitHub stars (3,845 within 72h of launch) is the only signal — stars_fallback, which caps level at 3. Placed at 2: rapid early stars but no usage volume yet. Revisit as usage data emerges.",
+    "sources": [
+     {
+      "url": "https://github.com/alibaba/OpenSandbox",
+      "shows": "11.3k GitHub stars; released Mar 2026; no usage/download figures",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation:container (Docker/Kubernetes runtimes, not VM/microVM); cold-start:container launch; language/runtime breadth:Python/TS/Go/Java SDKs, unified sandbox API, MCP server (Claude Code/Cursor); persistence:file ops; scale:K8s",
+    "confidence": "medium",
+    "note": "Broad multi-language SDK surface and MCP integration with K8s scale, but container-level isolation (no VM/microVM tier observed) keeps it mid-tier on the isolation-strength dimension vs Firecracker/gVisor/Kata. Strong breadth, moderate isolation.",
+    "sources": [
+     {
+      "url": "https://github.com/alibaba/OpenSandbox",
+      "shows": "Docker/Kubernetes runtimes; multi-language SDKs (Python/TS/Go/Java); unified API; MCP server",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Agent Infra Sandbox (Agent Infra)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "AIO Sandbox (agent-infra/sandbox), v1.9.3 released 29 May 2026; all-in-one Docker container bundling Browser, Shell, File, MCP, Jupyter and VSCode Server for AI agents. Maintained by agent-infra org (ByteDance OSS; image hosted on volces.com/ByteDance registry). Verified live on GitHub June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(GitHub);packaging:self-hostable Docker image + K8s deploy examples;no feature-gated core observed",
+    "confidence": "high",
+    "note": "Apache-2.0, fully self-hostable single-container runtime; no separate proprietary/managed tier gating the core.",
+    "sources": [
+     {
+      "url": "https://github.com/agent-infra/sandbox",
+      "shows": "Apache-2.0 license, single-Docker-container all-in-one agent sandbox, self-hostable",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 1,
+    "reach": "<10K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No download/install or named-production-user figures disclosed; only signal is ~4.9k GitHub stars + 426 forks + 18 releases. Stars-fallback caps level; placed at 1 (hobbyist/early) on the absence of any usage_volume evidence.",
+    "sources": [
+     {
+      "url": "https://github.com/agent-infra/sandbox",
+      "shows": "~4.9k stars, 426 forks, 18 releases; no usage figures",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation:single Docker container (process/namespace, weaker than microVM/gVisor); runtime breadth:high (Python+Node sandboxes, browser/VNC, shell, Jupyter, VSCode, MCP servers); persistence:session-persistent within container; scale:K8s high-density deploy examples but no published concurrency limit",
+    "confidence": "medium",
+    "note": "Unusually broad multi-modal feature set (browser+shell+file+MCP+IDE in one) but isolation is container-level only, below the Firecracker/gVisor isolation strength of the frontier deployment runtimes; scored 3.",
+    "sources": [
+     {
+      "url": "https://github.com/agent-infra/sandbox",
+      "shows": "feature list: Browser/VNC, Shell, File, MCP, Jupyter, VSCode in one Docker container",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "sandbox-runtime (Anthropic)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "anthropic-experimental/sandbox-runtime (npm @anthropic-ai/sandbox-runtime), v0.0.53 released 4 Jun 2026. Lightweight OS-level sandbox (Linux bubblewrap + macOS sandbox-exec/Seatbelt) enforcing filesystem + network restrictions on arbitrary processes WITHOUT a container; used to sandbox the Claude Code bash tool. Research preview. Verified live on GitHub June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(GitHub);distribution:npm package;no managed/proprietary tier(it is a local library, not a service)",
+    "confidence": "high",
+    "note": "Apache-2.0 OS-level sandboxing library, fully open and self-contained; no feature-gated core or paid tier.",
+    "sources": [
+     {
+      "url": "https://github.com/anthropic-experimental/sandbox-runtime",
+      "shows": "Apache-2.0 license; OS-level (bubblewrap/seatbelt) sandbox library, no container required",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "npm @anthropic-ai/sandbox-runtime ~558.8k downloads in the last 30 days (npm registry API), plus 403 GitHub dependents and 4.3k stars. Package-manager pulls overstate distinct users (CI/mirror inflation) and it is a young research preview shipped alongside Claude Code, so reach placed conservatively at 10K-100K distinct users / level 2.",
+    "sources": [
+     {
+      "url": "https://api.npmjs.org/downloads/point/last-month/@anthropic-ai/sandbox-runtime",
+      "shows": "~558,800 downloads May 4-Jun 2 2026",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/anthropic-experimental/sandbox-runtime",
+      "shows": "403 dependents, 4.3k stars",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation:OS-level process sandbox (Linux bubblewrap namespaces+seccomp BPF, macOS Seatbelt) - weaker boundary than gVisor/microVM, no kernel isolation; cold-start:near-zero (no container/VM spin-up); runtime breadth:any local process (language-agnostic, host-defined); persistence:n/a (host fs, deny/allow rules); scale:per-host, no managed fleet",
+    "confidence": "medium",
+    "note": "Best-in-class for low-overhead, no-container process isolation with fine-grained fs+network allow/deny and pre-built seccomp filters; but a process-level sandbox is a weaker security boundary than the microVM/gVisor frontier and offers no managed scale, so 3.",
+    "sources": [
+     {
+      "url": "https://github.com/anthropic-experimental/sandbox-runtime",
+      "shows": "bubblewrap+seccomp / sandbox-exec isolation, filesystem+network restriction model, no container",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Coder OSS (Coder)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "coder/coder, v2.33.6 released 23 May 2026. Self-hosted Cloud Development Environment platform (Terraform-defined workspaces, Wireguard tunnel); now marketed as 'Secure environments for developers and their agents' with native AI-agent workspace support. Verified live on GitHub June 2026. NOTE: primarily a CDE/workspace manager rather than an ephemeral agent code-execution sandbox.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:AGPL-3.0(OSI, Community Edition);source:public(GitHub);commercial-tier:Premium/Enterprise paid features for large teams under separate Coder enterprise license",
+    "confidence": "high",
+    "note": "AGPL-3.0 OSI core (Community Edition) with a separate proprietary Premium/Enterprise tier => open_core, calibrated identically to the Ray anchor (O4 open_core).",
+    "sources": [
+     {
+      "url": "https://github.com/coder/coder",
+      "shows": "AGPL-3.0 Community Edition + Premium paid tier (compare-plans), self-hosted workspaces",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "signal_type": "stars_fallback",
+    "reach": "100K-1M",
+    "confidence": "low",
+    "note": "No published install/active-user count for the OSS edition; ~13.4k GitHub stars is the only concrete signal. Stars-fallback caps at level 3; placed at 3 (not higher) on broad enterprise positioning + star base, but reach is unverified by usage_volume.",
+    "sources": [
+     {
+      "url": "https://github.com/coder/coder",
+      "shows": "~13.4k stars; self-hosted CDE used by enterprises; no usage_volume figure",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation:workspace-level (Terraform-provisioned VMs/containers/k8s pods on user infra) - depends on the backing infra template, not a hardened ephemeral microVM sandbox; cold-start:workspace provisioning (seconds-minutes), not ms; runtime breadth:any (IaC-defined, full dev environments); persistence:persistent long-lived workspaces; scale:org-scale self-hosted",
+    "confidence": "medium",
+    "note": "Strong as a persistent governed dev-environment platform but a poor fit for the deployment litmus 'safely run arbitrary agent-generated code in an ephemeral sandbox' - isolation/cold-start depend on the infra template, not a purpose-built sandbox; scored 3. Belongs more in a dev-environment shelf than the agent-sandbox sub-segment.",
+    "sources": [
+     {
+      "url": "https://github.com/coder/coder",
+      "shows": "Terraform-defined persistent workspaces, Wireguard tunnel, AI-agent workspace support",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "category_fit_borderline: persistent CDE/workspace manager rather than ephemeral agent code-execution sandbox; kept in deployment per crosswalk + Coder's 'environments for agents' positioning, but flag for reviewer (could warrant a dev-environment sub-shelf)."
+   ]
+  },
+  {
+   "product": "AWS Lambda (Amazon (AWS))",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "AWS Lambda, GA serverless function service; runs on AWS Firecracker microVMs (open-sourced 2018, powers Lambda + Fargate). The Lambda service itself is proprietary/SaaS - scored as the closed counterpart per the deployment recipe (Lambda/Cloud Run = closed). Verified live (AWS docs/blog) June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "service:proprietary AWS-only SaaS (no self-host);underlying-microVM:Firecracker is Apache-2.0 OSS but the Lambda control/data plane is closed;weights:n/a;source:closed",
+    "confidence": "high",
+    "note": "Lambda is a proprietary managed serverless service (closed), per recipe's explicit 'Lambda as closed counterpart'. Firecracker (the microVM substrate) is separately open source but is a different artifact; Lambda itself is not self-hostable.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+      "shows": "Firecracker microVM powers Lambda; Lambda is AWS-managed proprietary service",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "AWS states Lambda 'processes trillions of executions for hundreds of thousands of active customers every month' - mass-market serverless deployment substrate, unambiguously >10M reach. (Adoption attributed to general serverless usage, not specifically agent-code-execution.)",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+      "shows": "trillions of executions / hundreds of thousands of active customers monthly",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "isolation:Firecracker microVM (per-invocation hardware-virtualized, KVM) - strongest isolation tier, ~125ms VM start, ~5MiB/VM; cold-start:ms-to-sub-second; runtime breadth:very high (managed runtimes Node/Python/Java/Go/Ruby/.NET + custom runtimes/container images, arbitrary code); persistence:stateless+attachable storage (EFS, /tmp); scale:trillions of executions/mo, effectively unbounded autoscale",
+    "confidence": "high",
+    "note": "Frontier-definer for this category: microVM-grade isolation, the widest runtime breadth, and the largest proven scale of any deployment runtime here. Scored 5.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/",
+      "shows": "Firecracker microVM isolation, ~125ms start, ~5MiB/VM, trillions of executions",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Modal Sandboxes (Modal Labs)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Modal Sandboxes - 'secure containers for executing untrusted user or agent code' on the Modal platform; gVisor-based isolation. Open Python/JS SDK + proprietary managed cloud (pay-per-CPU-cycle, $30/mo free credits on Starter). Docs verified live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_core",
+    "components": "sdk:open (modal Python/JS client libraries public);runtime/platform:proprietary managed cloud (no self-host of the gVisor execution plane);pricing:pay-as-you-go usage, free starter credits",
+    "confidence": "medium",
+    "note": "Treated as open_core per the recipe's explicit example (E2B, Modal = open_core: OSS runtime/SDK + managed cloud). The SDK is open but the execution substrate is a proprietary managed service; calibrated below the Ollama/full-OSS anchors. Confidence medium - the managed plane dominates the value and is closed.",
+    "sources": [
+     {
+      "url": "https://modal.com/pricing",
+      "shows": "Modal is a managed proprietary cloud platform, pay-per-CPU-cycle, $30/mo free credits",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://modal.com/docs/guide/sandbox",
+      "shows": "Sandboxes = secure containers for untrusted agent code, driven via Modal SDK",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "No disclosed Modal Sandboxes user/usage count on primary pages; Modal is a well-known managed AI-compute platform with broad developer use and a documented free tier. Placed at 3 on reported multi-customer traction, not a measured usage_volume figure (kept conservative absent a hard number).",
+    "sources": [
+     {
+      "url": "https://modal.com/docs/guide/sandbox",
+      "shows": "documented production sandbox feature on a widely-used managed platform",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation:gVisor user-space kernel (Sentry intercepts syscalls) - strong container isolation, below microVM but above plain containers; cold-start:optimized container stack, fast startup; runtime breadth:arbitrary images/dependencies (custom images, any deps, repo checkout); persistence:named/ID sandbox lookup, custom images; scale:reported 50,000+ concurrent sessions; timeouts default 5min up to 24h",
+    "confidence": "medium",
+    "note": "Strong, purpose-built agent sandbox: gVisor isolation + arbitrary images + high concurrency. Sits just below the Firecracker-microVM frontier (Lambda/Vercel) on isolation strength; scored 4, level with the Ray/Ollama capability anchors.",
+    "sources": [
+     {
+      "url": "https://modal.com/docs/guide/sandbox",
+      "shows": "sandbox lifecycle, custom images, timeouts up to 24h, untrusted-code execution",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://modal.com/resources/best-code-execution-sandboxes-ai-agents",
+      "shows": "gVisor user-space kernel isolation, 50,000+ concurrent sessions (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Vercel Sandbox (Vercel)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Vercel Sandbox - GA ephemeral compute primitive for running untrusted/AI-generated code in isolated Firecracker microVMs; docs last updated 29 May 2026. Open SDK/CLI (vercel/sandbox on GitHub, @vercel/sandbox npm + vercel.sandbox Python) over Vercel's proprietary managed cloud. Verified live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_core",
+    "components": "sdk:open (@vercel/sandbox JS + Python SDK + CLI, GitHub vercel/sandbox);runtime/platform:proprietary Vercel Fluid-compute managed cloud (no self-host);pricing:pay-for-active-CPU-time managed service",
+    "confidence": "medium",
+    "note": "open_core: SDK + CLI are public on GitHub, but sandboxes only execute on Vercel's proprietary Fluid-compute cloud (no self-host of the microVM plane). Calibrated alongside Modal as open_core.",
+    "sources": [
+     {
+      "url": "https://vercel.com/docs/sandbox",
+      "shows": "Firecracker microVM isolation; SDK/CLI on GitHub vercel/sandbox; managed Vercel cloud, pay-for-active-CPU",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "npm @vercel/sandbox ~9.06M downloads in the last 30 days (npm registry API). Package-manager pulls include CI/mirror inflation and overstate distinct human users, so reach is placed at the 1M-10M band (level 4) rather than >10M; GA status + large Vercel install base corroborate genuine production use.",
+    "sources": [
+     {
+      "url": "https://api.npmjs.org/downloads/point/last-month/@vercel/sandbox",
+      "shows": "~9,062,145 downloads May 4-Jun 2 2026",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://vercel.com/docs/sandbox",
+      "shows": "GA ephemeral compute primitive, JS+Python SDK",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation:Firecracker microVM with dedicated kernel (stronger than container/gVisor); cold-start:starts in milliseconds; runtime breadth:moderate (Amazon Linux 2023; node22/24/26 + python3.13 runtimes, sudo+root, install any package, can run Docker/VPN/FUSE); persistence:persistent-by-default (auto-save state on stop) + explicit snapshotting; scale:managed autoscale, up to 45min execution",
+    "confidence": "high",
+    "note": "Firecracker microVM isolation (top tier) + ms cold-start + persistence/snapshots make it a strong agent sandbox; held at 4 rather than 5 because the managed-runtime breadth is narrower (Node/Python first-class) than Lambda's any-runtime/any-image frontier and scale is not at Lambda's proven level.",
+    "sources": [
+     {
+      "url": "https://vercel.com/docs/sandbox",
+      "shows": "Firecracker microVM per sandbox, ms startup, persistent+snapshot, node/python runtimes, up to 45m",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Cloudflare Sandboxes (Dynamic Workers) (Cloudflare)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Two related 2026 offerings: (a) Cloudflare Sandbox SDK (cloudflare/sandbox-sdk, @cloudflare/sandbox v0.11.0, 1 Jun 2026) - container-backed sandboxes on Workers/Durable Objects; (b) Dynamic Workers / Worker Loader (open beta announced 24 Mar 2026) - V8-isolate-based per-runtime sandboxing, ~100x faster than containers. Open SDK over Cloudflare's proprietary edge network. Verified live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_core",
+    "components": "sdk:open (@cloudflare/sandbox Apache-2.0, cloudflare/sandbox-sdk on GitHub);runtime/platform:proprietary Cloudflare edge (Workers/Durable Objects/Dynamic Worker Loader - no self-host);pricing:Workers paid plan, Dynamic Workers $0.002/unique-worker/day post-beta",
+    "confidence": "high",
+    "note": "open_core: the Sandbox SDK is Apache-2.0 and public, but execution requires Cloudflare's proprietary managed edge network (no self-host of the isolate/container plane). Calibrated as open_core alongside Modal/Vercel.",
+    "sources": [
+     {
+      "url": "https://github.com/cloudflare/sandbox-sdk",
+      "shows": "Apache-2.0 SDK; runs on Cloudflare Containers/Workers/Durable Objects (managed edge)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://blog.cloudflare.com/dynamic-workers/",
+      "shows": "Dynamic Worker Loader open beta, isolate sandboxing, post-beta $0.002/worker/day pricing",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "npm @cloudflare/sandbox ~533k downloads in the last 30 days (npm registry API); Dynamic Workers in open beta to all paid Workers users with a named customer (Zite) reporting 'millions of execution requests daily.' Package pulls + young beta status => reach placed at 100K-1M (level 3); execution-request volume is per-customer, not distinct-user adoption.",
+    "sources": [
+     {
+      "url": "https://api.npmjs.org/downloads/point/last-month/@cloudflare/sandbox",
+      "shows": "~533,043 downloads May 4-Jun 2 2026",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://blog.cloudflare.com/dynamic-workers/",
+      "shows": "open beta to all paid Workers users; Zite millions of execution requests/day",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation:dual - V8 isolates (Dynamic Workers, ms start, MB memory, hardened second-layer sandbox) for JS/TS + container-backed Sandbox SDK for arbitrary commands/processes; cold-start:isolates start in a few ms (~100x faster than containers); runtime breadth:JS/TS native via isolates, broader via container sandbox; persistence:Durable Objects-backed state; scale:edge-global, unlimited dynamic workers",
+    "confidence": "medium",
+    "note": "Distinctive isolate-based approach gives best-in-class cold-start and density, plus a container path for arbitrary code; held at 4 because isolate sandboxing is JS/TS-centric (narrower than microVM any-image), Dynamic Workers is still open beta, and overall scale evidence is per-customer rather than category-leading. Scored as a combined product per the registry name.",
+    "sources": [
+     {
+      "url": "https://blog.cloudflare.com/dynamic-workers/",
+      "shows": "V8 isolate sandboxing, ~ms start, 100x faster/100x more memory-efficient than containers",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/cloudflare/sandbox-sdk",
+      "shows": "container-backed sandbox: run commands, manage files, background processes, expose services",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "composite_product: registry entry bundles the container Sandbox SDK and the isolate-based Dynamic Workers; scored together but reviewer may want to split."
+   ]
+  },
+  {
+   "product": "Google Cloud Run (Google)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Google Cloud Run, fully-managed serverless container platform. Confirmed live June 2026 via cloud.google.com/run. At Next '26 Google announced a built-in `sandbox` tool for agents to run AI-generated code in ephemeral, strictly-isolated environments; container isolation historically backed by gVisor. Scored as the proprietary/SaaS deployment counterpart per the recipe (Cloud Run = closed counterpart).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "service:proprietary(Google SaaS);source:closed;isolation-runtime:gVisor(open-source, github.com/google/gvisor) but the Cloud Run product/control-plane is proprietary;managed-only(no self-host)",
+    "confidence": "high",
+    "note": "Proprietary managed serverless platform; only the underlying gVisor sandbox runtime is OSS, not Cloud Run itself.",
+    "sources": [
+     {
+      "url": "https://cloud.google.com/run",
+      "shows": "Cloud Run described as fully-managed Google serverless container product (proprietary SaaS)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/google/gvisor",
+      "shows": "gVisor (Cloud Run's isolation runtime) is the open-source component, distinct from the closed product",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Google (Next '26 blog, primary): external active developers and apps on Cloud Run doubled YoY, with more new customers/apps in 2025 than its first 6 years combined; Replit alone runs >1M live projects on Cloud Run. As a hyperscaler serverless platform the served-workload reach is well into the >10M band. Headline cites Google's own blog; exact developer count not disclosed so confidence medium.",
+    "sources": [
+     {
+      "url": "https://cloud.google.com/blog/products/serverless/whats-new-for-cloud-run-at-next26",
+      "shows": "active developers/apps doubled YoY; more new customers in 2025 than first 6 years combined; Replit >1M live projects on Cloud Run",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation: container + gVisor syscall sandbox (now a dedicated `sandbox` agent tool for AI-generated code); cold-start: scale-to-zero with sub-second to low-second starts; language/runtime breadth: any OCI container (very broad); persistence: stateless request model + volume mounts; scale: 0 to thousands of instances autoscaling on a hyperscaler",
+    "confidence": "medium",
+    "note": "Very broad runtime/language coverage and hyperscaler scale; new agent `sandbox` tool adds first-class AI-code-execution. gVisor isolation is process/syscall-level rather than full microVM (Sprites/Northflank), so not the top isolation tier in this category. Strong but not the single frontier-definer.",
+    "sources": [
+     {
+      "url": "https://cloud.google.com/blog/products/serverless/whats-new-for-cloud-run-at-next26",
+      "shows": "built-in `sandbox` tool for agents to run AI-generated code in ephemeral isolated envs; container model, autoscale 0->thousands",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://cloud.google.com/run",
+      "shows": "OCI container deploy, scale-to-zero, broad runtime support",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "closed_counterpart"
+   ]
+  },
+  {
+   "product": "Fly Sprites (Fly.io)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Sprites (sprites.dev) by Fly.io, launched Jan 2026. Persistent, hardware-isolated Firecracker microVMs ('a persistent Linux computer') for running arbitrary code / AI agents, with 100GB NVMe persistence and sub-1s checkpoint/restore. Confirmed live June 2026 via sprites.dev. Proprietary managed service (Fly.io's E2B competitor).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "service:proprietary(Fly.io managed);source:closed;clients:CLI/REST/JS/Go SDKs (client libs only, no open runtime);isolation:Firecracker(Firecracker itself is OSS/AWS, but the Sprites product/orchestration is proprietary)",
+    "confidence": "high",
+    "note": "Proprietary managed sandbox SaaS; no open-source runtime published (only client SDKs). Underlying Firecracker is OSS but the product is not.",
+    "sources": [
+     {
+      "url": "https://sprites.dev/",
+      "shows": "Sprites = hardware-isolated Firecracker execution env for arbitrary code; managed service, CLI/REST/JS/Go clients; no self-hostable open runtime",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 1,
+    "reach": "<10K",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Launched Jan 2026 (~5 months at scoring time) as Fly.io's answer to E2B. No disclosed user/customer/usage counts on the product page or launch coverage; positioned for AI coding-agent sessions (Claude Code/Codex). Early-stage; placed at 1 on reported traction with low confidence pending real numbers.",
+    "sources": [
+     {
+      "url": "https://sprites.dev/",
+      "shows": "product live, usage-based pricing ($0.07/CPU-hr); no user/customer figures disclosed",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://simonwillison.net/2026/Jan/9/sprites-dev/",
+      "shows": "Sprites launched early Jan 2026 as Fly.io's E2B competitor (corroborating recency, not a usage figure)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation: Firecracker microVM (hardware-isolated, strongest tier); cold-start: 1-12s cold, warm restore <1s, checkpoint/restore <1s; persistence: persistent ext4 / 100GB NVMe surviving across sessions (a key differentiator); language/runtime breadth: arbitrary Linux ('any code blob'); scale: Fly.io global infra",
+    "confidence": "medium",
+    "note": "Top-tier microVM isolation plus persistent stateful sandboxes (explicitly anti-ephemeral) is a strong, differentiated feature set. Not a 5 only because it is brand-new with unproven scale vs incumbents; isolation + persistence are best-in-class.",
+    "sources": [
+     {
+      "url": "https://sprites.dev/",
+      "shows": "Firecracker isolation, persistent ext4 filesystem, sub-1s restore, arbitrary Linux code",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "closed_counterpart"
+   ]
+  },
+  {
+   "product": "Replit Agent / Code Execution API (Replit)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Replit Code Execution API for AI agents (replit.com/blog/ai-agents-code-execution) — a stateless sandboxed API for running untrusted (primarily Python) code, isolated via omegajail (Replit's unprivileged container sandbox) on Autoscale Deployments, ~100ms start. Confirmed live June 2026; `replit-code-exec` PyPI client exists. Proprietary service. NOTE: 'Replit Agent' is an autonomous coding agent (orchestration), but the deployment-relevant artifact here is the code-execution sandbox — scored as deployment per the recipe litmus.",
+   "openness": {
+    "score": 2,
+    "class": "open_core",
+    "components": "service:proprietary(Replit managed Autoscale Deployments);sandbox-runtime:omegajail(open-source, github.com/google/omegajail-style unprivileged container);client:replit-code-exec(PyPI);no self-hostable execution service",
+    "confidence": "medium",
+    "note": "The isolation primitive (omegajail) is open source and a thin client is published, but the code-execution service/agent is a proprietary managed offering — closest to open_core (open primitive under a closed service). No feature-gated OSS core product to self-host.",
+    "sources": [
+     {
+      "url": "https://replit.com/blog/ai-agents-code-execution",
+      "shows": "Code Execution API uses omegajail (open-source unprivileged container sandbox) on Replit's proprietary Autoscale Deployments; replit-code-exec PyPI client; Python-focused",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Replit platform serves >50M users (Replit docs/coverage) and runs >1M live projects on Cloud Run (Google Next '26, primary). The code-execution API specifically discloses no standalone usage figures, so adoption is attributed to the Replit Agent/platform surface it powers, not the raw API. Placed at 4 (platform-surface reach); the API alone would be lower.",
+    "sources": [
+     {
+      "url": "https://cloud.google.com/blog/products/serverless/whats-new-for-cloud-run-at-next26",
+      "shows": "Replit runs >1M live projects (on Cloud Run) — primary-source scale signal for the Replit surface",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://replit.com/products/agent",
+      "shows": "Replit Agent product page (the agent surface the code-exec API backs)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation: omegajail unprivileged container (process/container-level, weaker than microVM); cold-start: ~100ms (very fast); language/runtime breadth: primarily Python, customizable Docker image; persistence: stateless (prior stateful-Repl experiment discontinued); scale: Replit Autoscale Deployments",
+    "confidence": "medium",
+    "note": "Fast container-level execution tuned for agent code-eval, but container (not microVM) isolation, narrow language focus, and no persistence put it mid-tier in this category vs microVM-backed peers.",
+    "sources": [
+     {
+      "url": "https://replit.com/blog/ai-agents-code-execution",
+      "shows": "omegajail container sandbox, ~100ms start, Python-focused, stateless (stateful-Repl experiment discontinued)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "recategorize",
+    "open_core_primitive"
+   ]
+  },
+  {
+   "product": "WebContainers (StackBlitz)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "WebContainers by StackBlitz — a browser-based (WASM) runtime that executes Node.js / npm projects fully client-side in the browser tab. Distributed as @webcontainer/api on npm. Confirmed live June 2026 via webcontainers.io. The public github.com/stackblitz/webcontainer-core repo is MIT but is only an issue tracker / docs hub; the actual runtime is a proprietary StackBlitz service requiring a commercial license for for-profit production use.",
+   "openness": {
+    "score": 2,
+    "class": "source_available",
+    "components": "public-repo:webcontainer-core is MIT but issue-tracker only (no runtime source);actual-runtime:proprietary(StackBlitz);license-terms:free for OSS/prototypes, commercial license required for for-profit production (charge beyond 10k API req/mo);distribution:@webcontainer/api npm (proprietary binary)",
+    "confidence": "high",
+    "note": "The MIT 'open' repo holds no implementation — the runtime is closed and gated by a commercial license for production use. Best classed source_available leaning closed; flag open_washed for the MIT-issue-tracker-as-open-source framing.",
+    "sources": [
+     {
+      "url": "https://github.com/stackblitz/webcontainer-core",
+      "shows": "MIT repo is a central hub for issues/bug reports, not the runtime implementation",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.npmjs.com/package/@webcontainer/api",
+      "shows": "WebContainer API distributed as npm package; commercial license required for for-profit production use (free for OSS/POC, charge beyond 10k req/mo)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Powers StackBlitz's own IDE and is embedded by named projects (SvelteKit, Astro, Scrimba, egghead.io, Xata) for in-browser code experiences. No disclosed download/MAU figure on the primary pages; placed at 3 on named-integration reported traction. No hard usage_volume number found, so confidence low.",
+    "sources": [
+     {
+      "url": "https://webcontainers.io/",
+      "shows": "WebContainers used by SvelteKit, Astro, Scrimba, egghead.io, Xata (named integrations); no quantitative usage figure",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation: browser/WASM sandbox (client-side, inherently isolated from host but not a server execution env); cold-start: instant (no server provisioning); language/runtime breadth: Node.js + npm ecosystem, JS/TS focused, plus arbitrary WASM (narrow vs general Linux sandboxes); persistence: per-session in-browser; scale: runs on the end-user's device (no server cost, no server scale)",
+    "confidence": "medium",
+    "note": "Unique in-browser execution with instant start and zero server cost, but Node/JS-only and not a general-purpose server-side code sandbox for arbitrary languages — a different (narrower) capability profile than microVM/container peers. Mid-tier within deployment.",
+    "sources": [
+     {
+      "url": "https://webcontainers.io/",
+      "shows": "runs Node.js/npm and WASM fully in-browser, 'up to 10x faster than local', any modern framework",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_washed",
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "OpenAI Code Interpreter (OpenAI)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "OpenAI Code Interpreter — a tool (Assistants API, migrating to Responses API) that writes and runs Python in a proprietary OpenAI-managed sandbox; processes files up to 512MB, sessions billed at $0.03/session (1-hour default). Confirmed live June 2026 via OpenAI developer docs. Proprietary; isolation mechanism undisclosed.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "service:proprietary(OpenAI-managed sandbox);source:closed;isolation:undisclosed;access:API/tool only(no self-host, no open runtime)",
+    "confidence": "high",
+    "note": "Fully proprietary managed code-execution sandbox; OpenAI does not document the isolation mechanism or release any runtime.",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/assistants/tools/code-interpreter",
+      "shows": "Code Interpreter runs Python in a proprietary OpenAI-managed sandbox; $0.03/session; isolation details not disclosed",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "active_users",
+    "confidence": "low",
+    "note": "Code Interpreter ships inside ChatGPT (advanced data analysis) and the Assistants/Responses API; the ChatGPT surface it rides has ~1B weekly users (flagship anchor record, GPT-5). No standalone Code-Interpreter usage figure is disclosed, so adoption is attributed to the surface — placed conservatively at 4 (a fraction of ChatGPT users invoke code execution) with low confidence given no primary per-tool number.",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/assistants/tools/code-interpreter",
+      "shows": "Code Interpreter is a first-class tool in the Assistants/Responses API and underlies ChatGPT data analysis (the surface that drives usage)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation: undisclosed managed sandbox; cold-start: per-session (1hr persistence within session); language/runtime breadth: Python only; persistence: per-session file workspace, 512MB file handling; scale: OpenAI infra",
+    "confidence": "low",
+    "note": "Reliable Python-only data-analysis sandbox with iterative retry, but single-language, undisclosed isolation, and session-scoped — narrower than general-purpose deployment sandboxes. Mid-tier; capability detail limited because OpenAI does not document the isolation/scale internals.",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/assistants/tools/code-interpreter",
+      "shows": "Python sandbox, iterative code retry, 512MB files, 1-hour session",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "closed_counterpart",
+    "isolation_undisclosed"
+   ]
+  },
+  {
+   "product": "Northflank Sandboxes (Northflank)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Northflank Sandboxes — secure microVM/sandbox product for running untrusted / AI-generated code at scale (~200ms microVM spin-up), positioned for code-gen agents. Confirmed live June 2026 via northflank.com. Proprietary SaaS (Northflank Ltd).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "service:proprietary(Northflank managed SaaS);source:closed;isolation:microVM;no self-hostable open runtime",
+    "confidence": "high",
+    "note": "Proprietary managed deployment/sandbox platform; no open-source runtime published.",
+    "sources": [
+     {
+      "url": "https://northflank.com/",
+      "shows": "Northflank Sandboxes = secure microVM sandbox for untrusted/code-gen execution; proprietary commercial SaaS",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Northflank (platform-wide, primary): 2,000+ organizations, 80,000+ developers in production, 130B+ requests, millions of containers, 330+ availability zones. These are platform-level figures (not Sandboxes-specific); the Sandboxes product is newer. Placed at 3 on the developer/org base; the Sandboxes feature alone is likely lower.",
+    "sources": [
+     {
+      "url": "https://northflank.com/",
+      "shows": "2,000+ orgs, 80,000+ developers in production, 130B+ requests, millions of containers (platform-level)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "isolation: microVM (hardware-isolated, top tier) plus secure containers; cold-start: ~200ms microVM spin-up; language/runtime breadth: arbitrary containers/runtimes (broad); persistence: stateful workloads / long-running agents supported; scale: multi-cloud, 330+ AZs, millions of containers",
+    "confidence": "medium",
+    "note": "Strong: microVM isolation, ~200ms cold-start, broad runtime support, multi-cloud scale, and explicit support for untrusted code-gen at scale. Just below frontier on proven sandbox-specific scale vs the dedicated leaders; isolation+latency are top-tier.",
+    "sources": [
+     {
+      "url": "https://northflank.com/",
+      "shows": "microVM 200ms isolation, untrusted code at scale, millions of containers, 330+ AZs",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "closed_counterpart"
+   ]
+  },
+  {
+   "product": "Spaces (Hugging Face)",
+   "type": "software",
+   "category": "deployment",
+   "version_note": "Hugging Face Spaces — managed hosting/runtime for ML demo apps via Gradio, Streamlit, Docker (arbitrary Dockerfile), or static HTML, with CPU/GPU hardware tiers. Confirmed live June 2026 via huggingface.co and HF Hub docs. Proprietary managed platform built on OSS SDKs (Gradio is OSS); the Spaces hosting platform itself is closed.",
+   "openness": {
+    "score": 2,
+    "class": "open_core",
+    "components": "platform:proprietary(HF-managed hosting);SDKs:Gradio(Apache-2.0 OSS), Streamlit(OSS), Docker;runtime/control-plane:closed(no self-hostable Spaces);hardware-tiers:CPU free + paid GPU upgrades",
+    "confidence": "medium",
+    "note": "The app SDKs (Gradio etc.) are OSS and apps run as arbitrary Docker, but the Spaces hosting/orchestration platform is a closed managed service — open SDKs over a proprietary host = open_core-ish. Not self-hostable as Spaces.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/docs/hub/spaces",
+      "shows": "Spaces hosts apps via Gradio (OSS SDK), Streamlit, arbitrary Dockerfile, or static HTML on HF-managed infra with paid GPU upgrades",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Hugging Face homepage (primary): Spaces hosts 1M+ AI applications, on a platform used by 50,000+ organizations. 1M+ hosted apps plus the broad end-user traffic to those demos puts served reach into the >10M band. Headline (1M+ Spaces) cites HF's own homepage; per-Space user totals not individually disclosed so confidence medium.",
+    "sources": [
+     {
+      "url": "https://huggingface.co",
+      "shows": "Spaces = 1M+ AI applications hosted; 50,000+ organizations on Hugging Face",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "isolation: managed container per Space (Docker), not microVM-grade for untrusted multi-tenant code; cold-start: warm/sleep model (free tier sleeps), seconds; language/runtime breadth: Gradio/Streamlit/Docker/static (broad for app hosting); persistence: persistent storage tiers + dev mode; scale: CPU free tier + paid GPU upgrades on HF infra",
+    "confidence": "medium",
+    "note": "Excellent for hosting/demoing ML apps with broad SDK and GPU support, but it is an app-hosting platform rather than a hardened arbitrary-untrusted-code sandbox (container, not microVM isolation), and free Spaces sleep. Mid-tier within the deployment sandbox lens.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/docs/hub/spaces",
+      "shows": "Gradio/Streamlit/Docker/static hosting, GPU hardware upgrades, persistent storage and dev mode",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_core_sdks_closed_platform"
+   ]
+  }
+ ]
+}

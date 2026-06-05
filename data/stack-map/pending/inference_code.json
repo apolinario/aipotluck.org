@@ -1,0 +1,975 @@
+{
+ "category": "inference_code",
+ "products": [
+  {
+   "product": "llama.cpp",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Active 2026; latest release tag b9518 (June 4, 2026, GitHub). ggml.ai team joined Hugging Face full-time Feb 20, 2026; project stays open. Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT(OSI);source:public;governance:ggml-org/Hugging Face(community);no feature-gated core",
+    "confidence": "high",
+    "note": "Fully MIT-licensed C/C++ inference engine; entire source public, no proprietary tier.",
+    "sources": [
+     {
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/LICENSE",
+      "shows": "MIT License text, (c) 2023-2026 The ggml authors",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "De facto standard local/edge inference engine: GGUF (its native format) is >60% of all quantized models on HF, and llama.cpp powers Ollama, LM Studio, GPT4All, Jan.ai, and HF Inference Endpoints, which collectively serve millions. 115k GitHub stars (fastest OSS-AI project to 100k, Mar 2026) corroborates but is not the basis. No clean PyPI/user count for the C++ engine itself, so usage inferred from ecosystem dominance; placed at 4 (1-10M-equivalent).",
+    "sources": [
+     {
+      "url": "https://github.com/ggml-org/llama.cpp",
+      "shows": "115k stars; README lists Ollama/LM Studio/LocalAI/HF Inference Endpoints as downstream integrations",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/docs/hub/gguf-llamacpp",
+      "shows": "GGUF/llama.cpp as the standard local-inference path on the HF Hub",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Backends: Metal/CUDA/HIP/Vulkan/SYCL/OpenVINO/MUSA/WebGPU; quantization 1.5/2/3/4/5/6/8-bit integer; 100+ model architectures incl. multimodal (LLaVA); continuous batching + server. No standardized MLPerf Inference submission for the engine itself.",
+    "confidence": "high",
+    "note": "Frontier for portable/CPU/consumer-hardware inference and quantization breadth, but not the datacenter-GPU throughput frontier held by vLLM/SGLang/TensorRT-LLM; scored 4 on a category where C5 is reserved for the throughput-defining server engines.",
+    "sources": [
+     {
+      "url": "https://github.com/ggml-org/llama.cpp",
+      "shows": "README documents backend list, 1.5-8bit quantization, 100+ architectures, multimodal support",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Text Generation Inference (TGI)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Latest release v3.3.7 (Dec 19, 2025). Repo ARCHIVED Mar 21, 2026 and placed in maintenance mode; HF now recommends vLLM/SGLang/llama.cpp/MLX going forward. Verified live (archived) June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;note:was briefly under restrictive HFOIL license in 2023, reverted to Apache-2.0; current LICENSE confirmed Apache-2.0",
+    "confidence": "high",
+    "note": "Current LICENSE is standard Apache-2.0 (not HFOIL); fully open source despite being archived.",
+    "sources": [
+     {
+      "url": "https://github.com/huggingface/text-generation-inference/blob/main/LICENSE",
+      "shows": "Apache License 2.0 text, Copyright 2022 Hugging Face",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Ran in production at HF (Hugging Chat, Inference API, Inference Endpoints) and was widely deployed 2023-2025, but the repo is now archived/maintenance-mode with HF steering users to vLLM/SGLang, so adoption is declining. 10.9k stars (secondary). Level 3 reflects a real but shrinking, sunsetting footprint.",
+    "sources": [
+     {
+      "url": "https://github.com/huggingface/text-generation-inference",
+      "shows": "README: 'Used in production at Hugging Face to power Hugging Chat, the Inference API and Inference Endpoints'; archived Mar 21 2026, maintenance mode, recommends vLLM/SGLang",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Continuous batching, tensor parallelism, quantization (bitsandbytes/GPTQ/AWQ), distributed tracing (OpenTelemetry) + Prometheus metrics, OpenAI-compatible API. No active MLPerf submission; feature set frozen at v3.3.7.",
+    "confidence": "medium",
+    "note": "Was a capable production server, but development has stopped (archived); its feature set is frozen while vLLM/SGLang continue advancing, so it now sits mid-pack rather than at the C5 frontier.",
+    "sources": [
+     {
+      "url": "https://github.com/huggingface/text-generation-inference",
+      "shows": "README documents continuous batching, tensor parallelism, OpenTelemetry tracing, Prometheus metrics, production-ready feature set",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stale"
+   ]
+  },
+  {
+   "product": "Ollama",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Active 2026; latest release v0.30.4 (June 3, 2026, GitHub). 173k stars. Local model-serving wrapper built on llama.cpp/GGUF. Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT(OSI);source:public;no feature-gated core (Ollama Cloud is an optional hosted tier, not a license gate)",
+    "confidence": "high",
+    "note": "Fully MIT-licensed; entire source public with no proprietary core.",
+    "sources": [
+     {
+      "url": "https://github.com/ollama/ollama/blob/main/LICENSE",
+      "shows": "MIT License text",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Reported ~52M monthly downloads in Q1 2026 and >112M cumulative pulls for Llama 3.1 alone; most popular local LLM runtime. 173k GitHub stars + extensive named integrations (Claude Code, Open WebUI, LibreChat, Codex) corroborate. Level 4 (1-10M-equivalent) on download/pull volume, not stars. Note: the 52M figure is from a secondary roundup (dev.to); primary repo confirms scale via integrations but does not publish the count.",
+    "sources": [
+     {
+      "url": "https://github.com/ollama/ollama",
+      "shows": "173k stars; README lists dozens of named production integrations across chat UIs, editors, frameworks",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://dev.to/pooyagolchian/local-ai-in-2026-ollama-benchmarks-0-inference-and-the-end-of-per-token-pricing-32e7",
+      "shows": "~52M monthly downloads Q1 2026; >112M Llama 3.1 pulls (aggregator corroboration)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "One-command local run, OpenAI-compatible REST API, broad model library (Llama/Qwen/Gemma/gpt-oss/DeepSeek/Kimi/GLM/MiniMax), GGUF import, optional cloud offload for larger models. Inference engine is llama.cpp under the hood; no standalone MLPerf submission.",
+    "confidence": "high",
+    "note": "Frontier for developer-friendly local serving/UX, but it is a serving wrapper over llama.cpp rather than a throughput-optimized datacenter engine, so 4 not 5 against the vLLM/SGLang/TensorRT-LLM C5 anchors.",
+    "sources": [
+     {
+      "url": "https://github.com/ollama/ollama",
+      "shows": "README documents one-command run, OpenAI-compatible API, model library, integrations",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://ollama.com/",
+      "shows": "'The easiest way to build with open models'; local + cloud-scale serving",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "ONNX Runtime",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Latest release v1.26.0 (May 8, 2026, GitHub). Cross-platform inference + training accelerator for ONNX models (PyTorch/TF export + classical ML). Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT(OSI);source:public(Microsoft);no proprietary core; plugin execution providers (CUDA/WebGPU/etc.) in-repo",
+    "confidence": "high",
+    "note": "Fully MIT-licensed open source from Microsoft; no feature-gated tier.",
+    "sources": [
+     {
+      "url": "https://github.com/microsoft/onnxruntime/blob/main/LICENSE",
+      "shows": "MIT License text, Microsoft Corporation",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~74.7M PyPI downloads in the last month for the onnxruntime package; GitHub reports 'used by' ~89.9k repositories. Embedded across Microsoft products and the broader ML deployment stack. Well into the >10M band on download volume. (Note: onnxruntime spans general ML inference, not only LLM serving — see capability/recategorize note.)",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/onnxruntime",
+      "shows": "~74.7M downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/microsoft/onnxruntime",
+      "shows": "20.7k stars; 'used by 89.9k'; cross-platform inference accelerator description",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:MLPerf",
+    "value": "Appears in MLPerf Inference v5.0 submissions (ResNet50, RetinaNet, offline; multiple ORT versions v1.20.1-v1.23.2). Execution providers across CUDA/WebGPU/CPU/TensorRT/OpenVINO/CoreML; cross-framework (PyTorch/TF/scikit-learn/XGBoost). Quantization + graph optimization.",
+    "confidence": "medium",
+    "note": "Strong, MLPerf-present general-purpose inference accelerator, but its MLPerf coverage is vision/classical models, not LLM-serving throughput; for transformer/LLM serving it trails the purpose-built vLLM/SGLang/TensorRT-LLM (C5) frontier. Scored 4 within this category. Arguably broader than inference_code (a general ML runtime), but it does load weights and serve predictions, so it fits the litmus test; flagging for reviewer consideration without forcing a move.",
+    "sources": [
+     {
+      "url": "https://github.com/mlcommons/mlperf_inference_test_submissions_v5.0",
+      "shows": "ONNX Runtime (v1.20.1-v1.23.2) submissions for ResNet50/RetinaNet offline",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/microsoft/onnxruntime",
+      "shows": "cross-platform inference accelerator, plugin execution providers (CUDA/WebGPU)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "general_purpose_runtime_broader_than_llm_serving"
+   ]
+  },
+  {
+   "product": "LMDeploy (InternLM (Shanghai AI Lab))",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "LMDeploy v0.13.0 (released May 12, 2026, GitHub); Apache-2.0 OSS inference/serving toolkit (TurboMind + PyTorch engines). Confirmed live on GitHub + PyPI June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(InternLM/lmdeploy);no-feature-gated-core;quantization:weight-only+kv(AWQ/W4A16)",
+    "confidence": "high",
+    "note": "Fully OSI-licensed (Apache-2.0), source public, no proprietary core; broad model coverage (Llama/InternLM/Qwen/DeepSeek/Mixtral + VLMs).",
+    "sources": [
+     {
+      "url": "https://github.com/InternLM/lmdeploy",
+      "shows": "Apache-2.0 license, v0.13.0 (May 12 2026), weight-only+kv quantization, Llama/InternLM/Qwen/DeepSeek/Mixtral + VLM support",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "~165K PyPI downloads last month (pypistats); 352 GitHub dependents. Real usage volume in the 100K-1M band. Smaller footprint than vLLM/SGLang anchors (millions/mo) but well beyond hobbyist; especially used in the InternLM/Chinese-model ecosystem. 7.9k stars corroborate only.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/lmdeploy",
+      "shows": "~165,001 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/InternLM/lmdeploy",
+      "shows": "352 dependent projects, 7.9k stars",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "TurboMind + PyTorch engines; persistent/continuous batching, blocked KV cache, weight-only + kv (AWQ/W4A16) quantization, tensor parallelism, broad LLM + VLM architecture coverage; vendor-reported 4-bit inference ~2.4x FP16",
+    "confidence": "medium",
+    "note": "Strong, full-featured GPU inference engine (continuous batching, quantization, TP, VLM support). No standardized MLPerf submission confirmed, so feature_matrix not benchmark; a notch below the vLLM/SGLang/TensorRT-LLM C5 anchors on throughput-leadership/ecosystem breadth.",
+    "sources": [
+     {
+      "url": "https://github.com/InternLM/lmdeploy",
+      "shows": "TurboMind/PyTorch engines, continuous batching, AWQ/kv quantization, TP, VLM support, 2.4x 4-bit claim",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "llamafile (Mozilla AI (formerly Mozilla Ocho))",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "llamafile v0.10.3 (released June 2, 2026, GitHub); Apache-2.0 (MIT for llama.cpp/whisper.cpp changes). Single-file cross-platform LLM executable (llama.cpp + Cosmopolitan Libc). Mozilla Builders initiative, actively maintained June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI)+MIT(OSI, for llama.cpp/whisper.cpp deltas);source:public(Mozilla-Ocho/llamafile);no-feature-gated-core",
+    "confidence": "high",
+    "note": "Fully OSI-licensed, source public, single-file llama.cpp+Cosmopolitan distribution; no proprietary tier.",
+    "sources": [
+     {
+      "url": "https://github.com/Mozilla-Ocho/llamafile",
+      "shows": "Apache-2.0 (+ MIT deltas) license, v0.10.3 (June 2 2026), single-file executable, 24.7k stars, actively maintained",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No PyPI/download or pull-count signal available (distributed as single-file binaries, not a package); 24.7k GitHub stars + Mozilla backing is the only honest signal. Capped at 3 per stars_fallback rule. Popular local-inference convenience tool but no verified usage_volume figure.",
+    "sources": [
+     {
+      "url": "https://github.com/Mozilla-Ocho/llamafile",
+      "shows": "24.7k stars, 40 releases, Mozilla Builders initiative",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "Single-file cross-platform (Cosmopolitan Libc) llama.cpp-based local inference; CPU+GPU, GGUF models, OpenAI-compatible server, whisperfile STT; portability is the differentiator, not peak throughput",
+    "confidence": "medium",
+    "note": "Optimizes for portability/zero-install local inference rather than datacenter throughput; built on llama.cpp so no continuous-batching/TP server scaling like vLLM. Mid-tier on a capability axis whose frontier (C5) is the high-throughput serving engines.",
+    "sources": [
+     {
+      "url": "https://github.com/Mozilla-Ocho/llamafile",
+      "shows": "single-file llama.cpp + Cosmopolitan Libc, cross-OS, whisperfile STT",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "MAX (Modular Accelerated Xecution) (Modular)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "MAX 26.3 (stable, released May 7, 2026; Mojo 1.0.0b1). High-performance inference-serving framework (500+ open models, OpenAI-compatible endpoints) on NVIDIA/AMD/Apple GPUs + CPU. Source largely public (github.com/modular/modular) but under the non-OSI Modular Community License.",
+   "openness": {
+    "score": 3,
+    "class": "source_available",
+    "components": "license:Modular-Community-License(non-OSI; Apache-2.0-w/-LLVM-exceptions only for some components);source:public(~450k LOC incl MAX kernels + inference server + Mojo stdlib);commercial-tier:Modular enterprise/managed deployment",
+    "confidence": "high",
+    "note": "Large public codebase but MAX/Mojo usage and distribution are governed by the non-OSI Modular Community License (not OSI-approved), plus a commercial tier -> source_available, not open_source. Marketed as 'open'; flag open_washed (non-OSI license presented as open).",
+    "sources": [
+     {
+      "url": "https://github.com/modular/modular",
+      "shows": "Modular Community License (non-OSI) governs MAX/Mojo usage+distribution; ~450k LOC public; MAX 26.3 / Mojo 1.0.0b1 (May 7 2026)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://docs.modular.com/max/",
+      "shows": "MAX serves 500+ open models with OpenAI-compatible endpoints across NVIDIA/AMD/Apple GPUs",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No published download/user/tokens figure for MAX serving specifically. 26.3k GitHub stars on the modular/modular monorepo (covers MAX+Mojo) is the only signal; capped per stars_fallback and placed at 2 given no verified production-deployment count and a still-maturing serving ecosystem vs the established OSS engines.",
+    "sources": [
+     {
+      "url": "https://github.com/modular/modular",
+      "shows": "26.3k stars on modular/modular (MAX + Mojo)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "500+ open-model coverage out of the box, OpenAI-compatible serving, multi-vendor GPU support (NVIDIA/AMD/Apple) + CPU, custom-kernel authoring in Mojo, cloud deployment; designed as high-performance inference + hardware-abstraction layer",
+    "confidence": "medium",
+    "note": "Broad multi-hardware coverage and a high-performance serving stack with custom-kernel programmability; no standardized MLPerf/AA inference-engine submission verified independently, so feature_matrix. Strong (C4) but not a demonstrated throughput-frontier-definer like the C5 anchors.",
+    "sources": [
+     {
+      "url": "https://docs.modular.com/max/",
+      "shows": "500+ models, OpenAI-compatible endpoints, NVIDIA/AMD/Apple GPU + CPU, custom GPU kernels",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_washed",
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "Groq Inference (GroqCloud) (Groq)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "GroqCloud proprietary cloud inference on Groq LPU (Language Processing Unit) hardware; OpenAI-compatible API, serves open models (gpt-oss, Llama, etc.). Closed/managed-only service. Confirmed live June 2026 (groq.com).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "engine:proprietary(LPU stack);source:closed;access:managed-cloud-API-only;license:Proprietary",
+    "confidence": "high",
+    "note": "Proprietary cloud inference engine + custom LPU silicon, API-only; per recipe, cloud inference engines (Groq) are closed.",
+    "sources": [
+     {
+      "url": "https://groq.com/",
+      "shows": "GroqCloud proprietary managed inference on LPU hardware, API access via console, OpenAI-compatible",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Vendor reports '3m developers and teams' on GroqCloud; named enterprise users incl. Dropbox, Vercel, Canva, Robinhood, Volkswagen, Workday, Ramp. Developer-count is vendor-self-reported (reported_traction), placing it in the 1-10M band.",
+    "sources": [
+     {
+      "url": "https://groq.com/",
+      "shows": "'3m developers and teams' use Groq; named customers Dropbox/Vercel/Canva/Robinhood/Workday/Ramp",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:ArtificialAnalysis(provider-speed)",
+    "value": "Groq LPU is among the top tokens/sec providers on the Artificial Analysis provider leaderboard (purpose-built inference silicon); listed among the fastest-class providers for open models, though Cerebras leads on gpt-oss-120b. Speed/latency frontier among inference engines.",
+    "confidence": "medium",
+    "note": "Capability for an inference engine = throughput/latency frontier (the MLPerf analog here is the Artificial Analysis provider-speed leaderboard). Groq LPU is a recognized speed-frontier provider class; C5 alongside the open-engine anchors. NOTE: could not pull Groq's exact t/s figure for gpt-oss-120b on the AA page this run (Groq present but not in the displayed top-5); score leans on its established speed-leadership positioning -> medium confidence.",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/models/gpt-oss-120b/providers",
+      "shows": "Artificial Analysis provider speed leaderboard for gpt-oss-120b (Groq listed among 22 providers; Cerebras top at 1,776.8 t/s)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://groq.com/",
+      "shows": "LPU purpose-built for inference; customer reports 7.41x chat-speed gain",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Cerebras Inference (Cerebras Systems)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Cerebras Inference: proprietary cloud inference on Wafer-Scale Engine (WSE); OpenAI-compatible API, serves open models (GLM 4.7, gpt-oss-120b, Llama 4 Scout). Closed/managed service. Confirmed live June 2026 (cerebras.ai).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "engine:proprietary(WSE wafer-scale stack);source:closed;access:managed-cloud-API-only;license:Proprietary",
+    "confidence": "high",
+    "note": "Proprietary cloud inference on custom wafer-scale hardware, API-only; closed per recipe (cloud inference engines).",
+    "sources": [
+     {
+      "url": "https://www.cerebras.ai/inference",
+      "shows": "proprietary cloud inference on Wafer-Scale Engine, OpenAI-compatible API, serves GLM/gpt-oss/Llama Scout",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "No developer/user count disclosed on the inference page; named users GSK, Perplexity, AlphaSense, Meta (Llama partnership), DeepLearning.AI. Placed at 3 on reported enterprise traction (named-deployment signal) without a verified usage figure; smaller disclosed footprint than Groq's 3M-developer claim.",
+    "sources": [
+     {
+      "url": "https://www.cerebras.ai/inference",
+      "shows": "named users GSK, Perplexity, AlphaSense, Meta, DeepLearning.AI; no user-count figure",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:ArtificialAnalysis(provider-speed)",
+    "value": "Fastest provider on the Artificial Analysis gpt-oss-120b provider leaderboard at 1,776.8 output tokens/sec (~2.8x next-fastest Fireworks, ~51x slowest); vendor claims up to 15x faster than NVIDIA GPUs and >2,000 t/s on Llama 4 Scout.",
+    "confidence": "high",
+    "note": "Throughput frontier-definer in this category: #1 by output speed on the AA provider leaderboard for gpt-oss-120b. Clear C5 (the AA provider-speed leaderboard is the MLPerf analog for inference engines).",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/models/gpt-oss-120b/providers",
+      "shows": "Cerebras #1 output speed 1,776.8 t/s for gpt-oss-120b, ~2.8x Fireworks",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.cerebras.ai/inference",
+      "shows": "up to 15x faster than NVIDIA GPUs; >2,000 t/s on Llama 4 Scout",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Fireworks Inference (FireAttention) (Fireworks AI)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Fireworks AI cloud inference (proprietary FireAttention kernels) on NVIDIA GPUs; OpenAI-compatible API, serves many open models (DeepSeek V3.2/V4-Pro, Qwen 3.6, GLM-5.1, Kimi K2.6, Gemma 4, Llama, etc.). Closed/managed service. Confirmed live June 2026 (fireworks.ai).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "engine:proprietary(FireAttention kernels);source:closed;access:managed-cloud-API-only;license:Proprietary",
+    "confidence": "high",
+    "note": "Proprietary FireAttention inference engine offered only as a managed cloud service; closed per recipe.",
+    "sources": [
+     {
+      "url": "https://fireworks.ai/",
+      "shows": "managed cloud inference platform serving open models; engine not released publicly",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Strong named-customer roster including Cursor, Vercel, Notion, Sourcegraph, UiPath, Quora, Cresta, StackBlitz; serves top open models for many high-traffic AI products. No raw user count disclosed; reported_traction. Breadth of high-volume production customers supports the 1-10M-equivalent band.",
+    "sources": [
+     {
+      "url": "https://fireworks.ai/",
+      "shows": "customers Cursor, Vercel, Notion, Sourcegraph, UiPath, Quora, Cresta, StackBlitz; case-study latency/throughput gains",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:ArtificialAnalysis(provider-speed)",
+    "value": "3rd-fastest provider for gpt-oss-120b on the Artificial Analysis leaderboard at 641.7 output tokens/sec (top GPU-based provider; behind wafer/LPU-class Cerebras 1,776.8 and SambaNova 692.5). Customer case studies: Notion ~2s -> 350ms latency, Quora 3x speedup.",
+    "confidence": "medium",
+    "note": "Top-tier GPU-based inference (FireAttention) and fastest GPU provider on the AA gpt-oss-120b board, but below the wafer/LPU speed-frontier (Cerebras). C4 -> strong but not the throughput frontier-definer that gets a 5.",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/models/gpt-oss-120b/providers",
+      "shows": "Fireworks 641.7 t/s (3rd by output speed) for gpt-oss-120b",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://fireworks.ai/",
+      "shows": "Notion 2s->350ms, Quora 3x speedup case studies",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Together Inference Engine (Together AI)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Together AI Inference Engine: proprietary cloud inference (serverless/dedicated) for open models, OpenAI-compatible; built on Together's research stack (FlashAttention, ThunderKittens, ATLAS accelerators). Closed/managed service. Confirmed live June 2026 (together.ai).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "engine:proprietary(Together Inference Engine);source:closed(though Together publishes OSS research e.g. FlashAttention/ThunderKittens separately);access:managed-cloud-API-only;license:Proprietary",
+    "confidence": "high",
+    "note": "The inference engine/service itself is proprietary, API-only; closed per recipe. (Together open-sources research components like FlashAttention separately, but those are not the serving engine.)",
+    "sources": [
+     {
+      "url": "https://www.together.ai/",
+      "shows": "proprietary serverless/dedicated cloud inference for open models; engine not released; OSS research published separately",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Broad named-customer roster (Cursor, Cohere, DeepMind, ElevenLabs, Salesforce, Mozilla, Decagon, ~30+ orgs); widely used serverless inference for open models. No raw developer/user count disclosed; reported_traction at the 1-10M-equivalent band on enterprise breadth.",
+    "sources": [
+     {
+      "url": "https://www.together.ai/",
+      "shows": "named customers Cursor, Cohere, DeepMind, ElevenLabs, Salesforce, Mozilla, Decagon + ~30 orgs",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Research-optimized GPU inference (FlashAttention-4 up to 1.3x cuDNN on Blackwell, ATLAS accelerators up to 4x LLM inference, vendor 2x-faster claim); serverless + batch + dedicated serving across broad open-model catalog",
+    "confidence": "low",
+    "note": "Strong GPU-based inference with leading-research kernels, but no Together figure available on the AA gpt-oss-120b provider speed board this run (only TTFT ~4.19s shown, not output t/s), so capability rests on vendor-reported research speedups -> feature_matrix, low confidence. C4: strong GPU provider, not a demonstrated throughput frontier-definer.",
+    "sources": [
+     {
+      "url": "https://www.together.ai/",
+      "shows": "FlashAttention-4 1.3x cuDNN on Blackwell, ATLAS up to 4x LLM inference, 2x-faster claim",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://artificialanalysis.ai/models/gpt-oss-120b/providers",
+      "shows": "Together.ai present on provider board (TTFT ~4.19s); output t/s not in displayed ranking",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "AWS Neuron (Inferentia / Trainium Runtime) (Amazon Web Services)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Neuron SDK 2.30.0 (released ~May 22, 2026; 86 releases on GitHub). Serves LLM/DL inference on AWS Inferentia/Trainium accelerators (Inf2/Trn instances). Confirmed live June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:mixed/proprietary-core;runtime:proprietary(Neuron Runtime+Compiler not open-sourced);open-glue:Linux kernel driver(Apache-2.0),vLLM-Neuron integration(open, in vLLM org),NKI library, samples(MIT-0);hardware-lock:AWS-Inferentia/Trainium-only",
+    "confidence": "high",
+    "note": "Headline inference path (Neuron Compiler + Neuron Runtime) is proprietary AWS, only runnable on AWS silicon; surrounding glue (driver, vLLM integration, NKI, samples) is open but does not make the engine open_source. Scored closed.",
+    "sources": [
+     {
+      "url": "https://github.com/aws-neuron/aws-neuron-sdk",
+      "shows": "SDK repo lists samples/docs (MIT-0/Unknown) only; runtime+compiler not in an OSI-licensed repo; 2.30.0 release ~May 22 2026",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/what-is-neuron.html",
+      "shows": "open components (driver Apache-2.0, vLLM integration) named; Compiler/Runtime absent from open list; vLLM-V1 inference on Inferentia/Trainium",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Used across AWS Inf2/Trn fleet and integrated with HuggingFace/vLLM/PyTorch; no clean download or user count published. Level 3 reflects reported AWS-scale traction rather than a verified usage_volume figure.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/ai/machine-learning/neuron/",
+      "shows": "Neuron positioned as production SDK for Inferentia/Trainium with framework integrations",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "vLLM V1 API on Trainium/Inferentia with Expert Parallelism, disaggregated inference, speculative decoding; native PyTorch + JAX; compiler/runtime/profiler stack",
+    "confidence": "medium",
+    "note": "Strong large-scale LLM inference feature set on AWS silicon (EP, disaggregated serving, spec decode). No MLPerf Inference figure surfaced for Neuron this run, so feature_matrix not benchmark. Not a frontier C5 (hardware-locked, narrower than vLLM/SGLang/TensorRT-LLM coverage).",
+    "sources": [
+     {
+      "url": "https://awsdocs-neuron.readthedocs-hosted.com/en/latest/about-neuron/what-is-neuron.html",
+      "shows": "vLLM V1 with EP, disaggregated inference, speculative decoding on Trainium/Inferentia",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "mixed_tier_openness"
+   ]
+  },
+  {
+   "product": "Google Cloud TPU Inference (Pathways / TPU Runtime) (Google Cloud)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Pathways runtime (Google DeepMind distributed runtime) made available on Google Cloud and integrated into JetStream for multi-host/disaggregated TPU serving (2026, AI Hypercomputer). Proprietary managed cloud offering on Trillium v6 / Ironwood TPUs. Confirmed live June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary;runtime:Pathways(Google-internal distributed runtime, not open-sourced);hardware-lock:Google TPU-only;managed:Google Cloud/GKE;note:JetStream(separate, Apache-2.0 OSS) is the open serving frontend but the scored product is the proprietary Pathways/TPU runtime",
+    "confidence": "high",
+    "note": "The named product (Pathways / TPU Runtime managed inference) is proprietary, TPU-locked, and cloud-delivered. JetStream (open) is a distinct artifact and not what this SKU is; scored closed.",
+    "sources": [
+     {
+      "url": "https://cloud.google.com/blog/products/compute/ai-hypercomputer-inference-updates-for-google-cloud-tpu-and-gpu",
+      "shows": "Pathways runtime offered as managed Google Cloud component (not labeled open source); JetStream described as the open-source engine separately",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Powers Google internal + Cloud TPU inference via AI Hypercomputer/GKE; no standalone usage figure for the Pathways runtime offering. Level 3 = reported managed-cloud traction.",
+    "sources": [
+     {
+      "url": "https://cloud.google.com/blog/products/compute/ai-hypercomputer-inference-updates-for-google-cloud-tpu-and-gpu",
+      "shows": "Pathways/JetStream managed TPU inference on AI Hypercomputer, GKE-integrated, 3-yr CUD pricing",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "JetStream+Pathways: 1703 tok/s on Llama 3.1 405B on Trillium (multi-host), ~3x inference/$ vs TPU v5e; multi-host disaggregated serving",
+    "confidence": "medium",
+    "note": "High-throughput multi-host TPU inference (1703 tok/s Llama 405B on Trillium, primary Google figure). Strong but TPU-locked and not an independent MLPerf submission for the runtime; C4, below the open frontier engines' breadth.",
+    "sources": [
+     {
+      "url": "https://cloud.google.com/blog/products/compute/ai-hypercomputer-inference-updates-for-google-cloud-tpu-and-gpu",
+      "shows": "1703 tok/s Llama 3.1 405B on Trillium, ~3x inference/$ vs v5e",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Azure AI Model Inference (Microsoft Azure)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Microsoft Foundry Models unified inference endpoint (Azure AI Model Inference). Proprietary managed cloud service exposing many model deployments through one OpenAI-compatible endpoint; beta Azure AI Inference SDK deprecated, retiring Aug 26 2026 in favor of OpenAI/v1 API. Confirmed live (docs updated Apr 2026).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(Azure managed service);source:closed;interface:OpenAI-compatible REST endpoint over Foundry model deployments;hardware:Azure-managed",
+    "confidence": "high",
+    "note": "Fully proprietary managed Azure service; no source released. Scored closed.",
+    "sources": [
+     {
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/endpoints",
+      "shows": "single managed Azure inference endpoint over model deployments; proprietary Azure resource, OpenAI-compatible API",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Default inference surface for Microsoft Foundry across Azure's enterprise base; broad distribution but no published per-service usage number. Level 4 reflects Azure-enterprise scale (reported), not a measured count.",
+    "sources": [
+     {
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/endpoints",
+      "shows": "unified endpoint for all Foundry model deployments, enterprise Azure integration",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "unified OpenAI-compatible endpoint; multi-provider model deployments (OpenAI, DeepSeek, MAI-DS-R1, etc.); keyless Entra ID auth; content filtering, rate limiting, batch inference",
+    "confidence": "medium",
+    "note": "Capability is managed-endpoint breadth (multi-model routing, auth, governance), not raw engine throughput. This is closer to a managed API gateway over model deployments than a weight-loading inference engine; see recategorize flag.",
+    "sources": [
+     {
+      "url": "https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/endpoints",
+      "shows": "single endpoint switches between model deployments with content filtering, rate limiting, keyless auth",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "recategorize"
+   ],
+   "recategorize_to": "ui_api",
+   "recategorize_note": "recategorize -> ui_api: Azure AI Model Inference is a managed, OpenAI-compatible API surface that routes requests to Foundry model *deployments* through one endpoint with auth/governance, rather than a software engine that loads weights and runs the forward pass itself. Scored best-effort in inference_code per assignment."
+  },
+  {
+   "product": "Apple Core ML Runtime (Apple)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Apple Core ML on-device inference runtime (iOS/macOS/watchOS/tvOS, Neural Engine + GPU + CPU). Proprietary system framework; companion coremltools (conversion) is open (BSD-3-Clause). Confirmed live June 2026 via Apple Developer docs.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "runtime:proprietary(Apple system framework, closed);conversion-tooling:coremltools(BSD-3-Clause, OSI, open);model-format:.mlmodel/.mlpackage(documented);hardware:Apple-silicon-only(Neural Engine)",
+    "confidence": "high",
+    "note": "The inference runtime itself is a closed Apple framework; only coremltools (model conversion) is open BSD-3. Headline (the runtime) is closed; scored closed with open-tooling note.",
+    "sources": [
+     {
+      "url": "https://developer.apple.com/documentation/coreml",
+      "shows": "Core ML is Apple's proprietary on-device ML inference framework; runtime closed, runs models on Apple hardware",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "medium",
+    "note": "Core ML is the system on-device inference runtime shipped on every modern iPhone/iPad/Mac (>1B active Apple devices) and used by a large share of App Store ML features. Mass-market reach attributed to the Apple device install base the runtime ships on, not a developer download count.",
+    "sources": [
+     {
+      "url": "https://developer.apple.com/documentation/coreml",
+      "shows": "Core ML runs on-device across iOS/macOS/watchOS/tvOS, the default on-device inference framework for Apple platforms",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "on-device inference across CPU/GPU/Neural Engine; broad model coverage via coremltools (PyTorch/TF conversion); quantization/compression; transformer + diffusion support",
+    "confidence": "medium",
+    "note": "Best-in-class on-device/edge inference runtime (Neural Engine acceleration, quantization, broad converted-model coverage) but constrained to Apple silicon and on-device scale; C4 within this category (frontier C5 reserved for the large-scale server engines vLLM/SGLang/TensorRT-LLM).",
+    "sources": [
+     {
+      "url": "https://developer.apple.com/documentation/coreml",
+      "shows": "Neural Engine acceleration, on-device inference, model optimization features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "mixed_tier_openness"
+   ]
+  },
+  {
+   "product": "SambaNova Cloud (SN40L Inference) (SambaNova Systems)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "SambaNova Cloud, proprietary managed inference service on SN40L RDU hardware (cloud.sambanova.ai). Serves Llama / open models at high token/s. Confirmed as live commercial cloud offering June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary;software-stack:closed(SambaFlow compiler/runtime not open);hardware:SN40L-RDU-only;delivery:managed-cloud-API",
+    "confidence": "high",
+    "note": "Proprietary managed cloud inference on SambaNova's own RDU silicon; no open-source software disclosed. Scored closed.",
+    "sources": [
+     {
+      "url": "https://sambanova.ai/blog/sn40l-chip-best-inference-solution",
+      "shows": "SambaNova Cloud is a hosted proprietary inference service on SN40L; no OSS components disclosed; serves Llama 3.1 models",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Marketed as fast inference cloud with free tier; integrated by tools (Vellum) and benchmarked by third parties, but a niche specialized provider vs the hyperscalers. No verified user count; level 3 = reported traction.",
+    "sources": [
+     {
+      "url": "https://sambanova.ai/blog/sn40l-chip-best-inference-solution",
+      "shows": "public SambaNova Cloud with free try-it inference; positioned as commercial inference provider",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Llama 3.1 8B ~1,042 tok/s, 70B ~457 tok/s, 405B ~129 tok/s at full (16-bit) precision on SN40L; >1000 tok/s single-node milestone",
+    "confidence": "medium",
+    "note": "Among the fastest per-request token/s in market on its silicon (full-precision 405B at 129 tok/s, 8B >1000 tok/s). Vendor/3rd-party throughput figures; specialized hardware, narrower model/feature breadth than the open frontier engines, so C4 not C5.",
+    "sources": [
+     {
+      "url": "https://sambanova.ai/blog/sn40l-chip-best-inference-solution",
+      "shows": "Llama 3.1 405B 129 tok/s, 70B 457 tok/s, 8B 1042 tok/s at 16-bit on SN40L",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Qualcomm AI Engine Direct (QNN) (Qualcomm)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "Qualcomm AI Engine Direct SDK (aka Qualcomm AI Runtime / QNN) for on-device inference on Snapdragon NPU/HTP (Hexagon), GPU (Adreno), CPU (Kryo). Distributed as a proprietary SDK (separate Qualcomm download); open-source helper wrapper (quic/ai-engine-direct-helper, BSD-3) exists. Integrated as backend for LiteRT and ExecuTorch. Confirmed live June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "core-sdk:proprietary(Qualcomm AI Runtime SDK, separate EULA download from Qualcomm software center);open-wrapper:quic/ai-engine-direct-helper(BSD-3, OSI, only a convenience API layer);hardware-lock:Qualcomm Snapdragon NPU/HTP",
+    "confidence": "high",
+    "note": "The QNN runtime/SDK itself is proprietary (Qualcomm download + license); the open BSD-3 helper merely wraps it and requires the proprietary libraries. Headline engine closed; scored closed.",
+    "sources": [
+     {
+      "url": "https://github.com/quic/ai-engine-direct-helper",
+      "shows": "BSD-3 helper that 'is an extension of the Qualcomm AI Runtime SDK'; underlying QNN SDK is a separate proprietary download required to run inference on NPU/HTP",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "QNN is the on-device inference backend for the broad Snapdragon install base and is wired into LiteRT (Google AI Edge) and ExecuTorch as the Qualcomm NPU backend, giving it wide on-device reach. No clean developer/usage count; level 4 reflects Snapdragon-ecosystem distribution (reported), not a measured figure.",
+    "sources": [
+     {
+      "url": "https://github.com/quic/ai-engine-direct-helper",
+      "shows": "tooling for running models on Snapdragon NPU/HTP across Windows-on-Snapdragon and Linux ARM64",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "unified API across Hexagon HTP/NPU + Adreno GPU + Kryo CPU; AOT + on-device compilation; LiteRT CompiledModel + ExecuTorch backends; power-efficient on-device LLM/CV inference",
+    "confidence": "medium",
+    "note": "Leading mobile/edge on-device inference runtime (HTP acceleration, multi-accelerator, AOT compile) but Snapdragon-locked and edge-scale; C4 within this category, below the server frontier engines.",
+    "sources": [
+     {
+      "url": "https://github.com/quic/ai-engine-direct-helper",
+      "shows": "runs inference on NPU/HTP; multi-accelerator Qualcomm stack",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "mixed_tier_openness"
+   ]
+  },
+  {
+   "product": "OGX (Open GenAI Stack) (Meta)",
+   "type": "software",
+   "category": "inference_code",
+   "version_note": "OGX (Open GenAI Stack), formerly Meta's Llama Stack; renamed/rescoped to a model-agnostic, multi-SDK agentic API server. v1.0.2 (May 13, 2026), MIT-licensed, ~8.4k GitHub stars. NOT itself an inference engine: it composes/routes to inference backends (vLLM, Ollama, Bedrock) plus vector stores, safety, tools, file storage.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT(OSI);source:public;no-feature-gated-core;implements OpenAI + Anthropic API surfaces; 23 pluggable inference providers",
+    "confidence": "high",
+    "note": "Fully open (MIT, full source). Openness scored straightforwardly; the issue is category fit, not openness.",
+    "sources": [
+     {
+      "url": "https://github.com/ogx-ai/ogx",
+      "shows": "MIT license; v1.0.2 (May 13 2026); ~8.4k stars; agentic API server composing inference providers + vector stores + tools",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://ogx-ai.github.io/blog/from-llama-stack-to-ogx",
+      "shows": "renamed from Llama Stack; model-agnostic, multi-SDK, routes to inference backends rather than serving weights itself",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "Only ~8.4k GitHub stars and no published download/usage volume found this run; capped low on stars fallback (cannot exceed level 3). Recently renamed from Llama Stack, so historical signal is muddled.",
+    "sources": [
+     {
+      "url": "https://github.com/ogx-ai/ogx",
+      "shows": "~8.4k stars; no download/usage figure published",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "OpenAI + Anthropic + Responses API surfaces; 23 inference providers; composes vector stores, safety backends, tool runtimes, file/batch storage into one agentic API server",
+    "confidence": "medium",
+    "note": "Capability is gateway/agentic-server breadth (multi-API-surface, provider composition), not inference throughput. As an inference engine it scores low because it does no forward pass itself; scored on its actual feature set in its true category. See recategorize.",
+    "sources": [
+     {
+      "url": "https://github.com/ogx-ai/ogx",
+      "shows": "composes 23 inference providers + vector/safety/tool/file backends behind OpenAI/Anthropic-compatible API",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "recategorize",
+    "renamed_per_verify",
+    "stars_fallback"
+   ],
+   "recategorize_to": "ui_api",
+   "recategorize_note": "recategorize -> ui_api (or orchestration_agents): OGX does NOT load weights and run inference; per its own docs it routes/composes across inference backends (vLLM, Ollama, Bedrock) behind a unified OpenAI/Anthropic-compatible API server, with vector stores, safety, and tool runtimes. That is an API/gateway/agentic-server, not an inference engine. Also renamed from 'Llama Stack' (verify). Scored best-effort in inference_code per assignment."
+  }
+ ]
+}

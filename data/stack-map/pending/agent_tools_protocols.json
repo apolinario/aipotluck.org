@@ -1,0 +1,1090 @@
+{
+ "category": "agent_tools_protocols",
+ "products": [
+  {
+   "product": "Model Context Protocol (MCP) (Anthropic)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Open wire protocol for connecting LLMs/agents to tools and data; created by Anthropic (David Soria Parra, Justin Spahr-Summers), launched 25 Nov 2024. Reference spec + SDKs (Python/TypeScript/C#/Java/Go/Rust/Ruby) verified live on GitHub June 2026. Governance donated to the Linux Foundation's Agentic AI Foundation (AAIF) Dec 2025.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "spec+reference-SDKs:public;license:Apache-2.0(OSI, new code/spec)+MIT(OSI, legacy contributions)+CC-BY-4.0(docs);governance:Linux-Foundation/AAIF(open, co-founded Anthropic/Block/OpenAI)",
+    "confidence": "high",
+    "note": "Open protocol with OSI-licensed reference implementations and open foundation governance; no feature-gated core.",
+    "sources": [
+     {
+      "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/LICENSE",
+      "shows": "Apache-2.0 (new code/spec) + MIT (legacy) + CC-BY-4.0 (docs) license text",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+      "shows": "Anthropic origin; donated to Linux Foundation AAIF Dec 2025",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "De facto standard agent tool protocol. ~97M monthly SDK downloads in Mar 2026 (up from ~2M at Nov 2024 launch); adopted natively by OpenAI (ChatGPT), Google DeepMind (Gemini), Microsoft, AWS; >16,000 MCP servers in the wild (Nerq Q1 2026 census indexed 17,468). Native client/agent support breadth is the headline MCP signal per recipe.",
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+      "shows": "adoption by OpenAI/Google DeepMind/Microsoft/AWS; SDKs across 7+ languages",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://zuplo.com/blog/one-year-of-mcp",
+      "shows": "~97M monthly SDK downloads Mar 2026, 4,750% growth since launch (corroborating aggregator)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "A wire protocol is not benchmarked; capability is not a meaningful axis per recipe. Openness + adoption carry the signal.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "Firecrawl (Mendable)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Web scrape/crawl/search API that returns LLM-ready data (markdown/JSON/structured). Self-hostable OSS + managed cloud (firecrawl.dev). v2.10 released 15 May 2026; verified live on GitHub June 2026. Copyright Sideguide Technologies Inc.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:AGPL-3.0(OSI, self-host core);source:public;managed-cloud:firecrawl.dev with 'additional features' beyond OSS = open-core split",
+    "confidence": "high",
+    "note": "AGPL-3.0 OSI core is fully open, but the managed cloud carries features beyond the OSS build, making this open-core rather than pure open_source.",
+    "sources": [
+     {
+      "url": "https://github.com/mendableai/firecrawl/blob/main/LICENSE",
+      "shows": "AGPL-3.0 license text, Sideguide Technologies Inc.",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.firecrawl.dev/pricing",
+      "shows": "6 paid managed-cloud tiers (Free/Hobby/Standard/Growth/Scale/Enterprise)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No verified download/API-volume or customer count disclosed on repo or pricing page; only ~129k GitHub stars available as an honest signal. Capped at level 3 per stars_fallback rule. Widely integrated as an agent scrape tool (LangChain, etc.) but no primary usage figure found this run.",
+    "sources": [
+     {
+      "url": "https://github.com/mendableai/firecrawl",
+      "shows": "~129k GitHub stars, v2.10 (15 May 2026)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "scrape + crawl + map + search + agent extract + batch; JS-rendered pages, rotating proxies, rate-limit handling; markdown/JSON/screenshot/structured output; P95 latency 3.4s, claims 96% web coverage",
+    "confidence": "medium",
+    "note": "Broad scrape/browse feature coverage (the recipe's search/scrape dimensions: coverage, freshness, structured output, rate limits) — among the most capable open scrape tools; not a 5 (no benchmark, and frontier reserved for category-definers).",
+    "sources": [
+     {
+      "url": "https://github.com/mendableai/firecrawl",
+      "shows": "feature list: search/scrape/crawl/map/agent/batch, LLM-ready output formats",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Playwright MCP (Microsoft)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "MCP server providing browser automation to LLMs via Playwright using structured accessibility snapshots (not screenshots). Apache-2.0. Latest v0.0.75 (7 May 2026, 65 releases); verified live on GitHub June 2026. Integrates with VS Code, Cursor, Claude Desktop and other MCP clients.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(Microsoft repo);no-feature-gated-core;no-managed-tier",
+    "confidence": "high",
+    "note": "Fully OSI-licensed Microsoft repo, no open-core split.",
+    "sources": [
+     {
+      "url": "https://github.com/microsoft/playwright-mcp",
+      "shows": "Apache-2.0 license, v0.0.75 (7 May 2026)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "@playwright/mcp is a widely distributed npm package and the de facto browser-automation MCP server, shipped/recommended across major MCP clients (VS Code, Cursor, Claude Desktop). npm download page returned HTTP 403 this run so an exact weekly-download figure could not be fetched; level 4 rests on broad multi-client native integration plus 33.5k stars (corroborating, not basis). Confidence medium pending a clean download number.",
+    "sources": [
+     {
+      "url": "https://github.com/microsoft/playwright-mcp",
+      "shows": "33.5k stars, integration list across VS Code/Cursor/Claude Desktop and many MCP clients",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "structured accessibility-snapshot navigation, click/type/fill-form, screenshots, network requests, console, tabs, file upload, code-eval; cross-browser via Playwright",
+    "confidence": "medium",
+    "note": "Deep, broad browser-control surface (the leading agentic browser tool); scored 4 on the scrape/browse feature matrix — strong coverage but no standardized benchmark and not the single category-definer.",
+    "sources": [
+     {
+      "url": "https://github.com/microsoft/playwright-mcp",
+      "shows": "browser automation feature set via structured snapshots",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "LangChain Tools (LangChain)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "The tools/integrations layer of LangChain (langchain-community + integration packages): chat/embedding models, tools & toolkits, vector stores, retrievers used BY agents. MIT-licensed. langchain-core 1.4.0 released 11 May 2026; verified live June 2026. NOTE: the LangChain framework itself is the frozen flagship anchor in orchestration_agents (the planner/runtime); this record scopes only the tools/integrations sub-segment to this category.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT(OSI);source:public;tools/integrations modules fully open (the open-core/LangSmith tier is observability, not the tools layer)",
+    "confidence": "high",
+    "note": "The tools/integrations packages are MIT and fully open; the proprietary LangSmith tier sits at the platform layer, not in the tool integrations themselves, so this sub-segment is open_source.",
+    "sources": [
+     {
+      "url": "https://github.com/langchain-ai/langchain",
+      "shows": "MIT license; integrations component (tools & toolkits, vector stores, retrievers)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "langchain ~293.6M PyPI downloads in the last month; used-by ~281k GitHub projects. The tool/integration ecosystem is the most widely depended-on agent-tooling layer in the category. Mass-market reach.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/langchain",
+      "shows": "~293.6M monthly PyPI downloads",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/langchain-ai/langchain",
+      "shows": "used by ~281k projects, 139k stars",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "vast integration catalog: tools & toolkits, chat/embedding model providers, vector stores, retrievers, document loaders — the broadest agent-tool integration surface available",
+    "confidence": "medium",
+    "note": "Frontier of the tool-integration sub-segment on breadth/coverage; 5 reflects category-defining integration breadth (no standardized benchmark, so feature_matrix). Flagged for the orchestration_agents overlap.",
+    "sources": [
+     {
+      "url": "https://github.com/langchain-ai/langchain",
+      "shows": "integration breadth: tools, model providers, vector stores, retrievers",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "overlaps_orchestration_agents_anchor: LangChain framework is the frozen orchestration_agents anchor (O4 open_core/A5/C4); this record scopes only its MIT tools/integrations layer to agent_tools_protocols. Reconciler should dedupe if both surfaces are not wanted."
+   ]
+  },
+  {
+   "product": "FastMCP (Prefect)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Pythonic framework for building MCP servers and clients (FastMCP 1.0 was upstreamed into the official MCP Python SDK in 2024; FastMCP 2.0/3.x is the standalone successor). Maintained by Prefect. Apache-2.0. v3.4.0 released 3 Jun 2026; verified live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;no-feature-gated-core;maintained-by-Prefect",
+    "confidence": "high",
+    "note": "Fully OSI-licensed, no open-core split observed on the repo.",
+    "sources": [
+     {
+      "url": "https://github.com/jlowin/fastmcp",
+      "shows": "Apache-2.0 license, v3.4.0 (3 Jun 2026), maintained by Prefect",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "fastmcp ~72.7M PyPI downloads in the last month; README reports ~1M downloads/day, used by ~10k dependent projects, and powering ~70% of MCP servers across languages. Mass-market reach for MCP server tooling.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/fastmcp",
+      "shows": "~72.7M monthly PyPI downloads",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/jlowin/fastmcp",
+      "shows": "~25.5k stars, ~10k dependents, README claims ~1M downloads/day and ~70% of MCP servers",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "auto schema generation/validation, tool/resource/prompt primitives, server+client, auth, deployment, protocol lifecycle management; the standard high-level MCP server framework",
+    "confidence": "medium",
+    "note": "Most feature-complete framework for authoring the tool-protocol layer (MCP); scored 4 on protocol-tooling feature breadth — a 5 is reserved for the protocol/category-definer (MCP itself).",
+    "sources": [
+     {
+      "url": "https://github.com/jlowin/fastmcp",
+      "shows": "framework feature set: schema gen/validation, server+client, auth, deployment",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Qdrant (Qdrant)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "High-performance Rust vector database / vector search engine (dense, sparse, multi-vector, hybrid search, quantization). Apache-2.0 core + Qdrant Cloud managed tier (free tier available). v1.18.2 released 4 Jun 2026; verified live June 2026. Calibrated against frozen anchor Milvus (O5 open_source/A3/C4).",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:Apache-2.0(OSI, engine core);source:public(Rust);managed-tier:Qdrant Cloud (hosted, paid + free tier)",
+    "confidence": "high",
+    "note": "Engine core is Apache-2.0 OSI, but a managed Qdrant Cloud tier sits on top — recipe explicitly classes Qdrant Cloud as open_core, so scored 4 rather than the pure-OSS 5 the Milvus anchor carries.",
+    "sources": [
+     {
+      "url": "https://github.com/qdrant/qdrant/blob/master/LICENSE",
+      "shows": "Apache-2.0 license text",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/qdrant/qdrant",
+      "shows": "v1.18.2 (4 Jun 2026); Qdrant Cloud managed tier with free option",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "qdrant-client ~26.1M PyPI downloads in the last month — a strong, primary usage_volume signal placing it in the 1-10M+ monthly band; a leading open vector DB for RAG/agent retrieval. Sits one above the Milvus anchor's A3 on download volume (Milvus anchored at A3); reasonable given Qdrant's very high client-download count.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/qdrant-client",
+      "shows": "~26.1M monthly PyPI downloads",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:ANN-Benchmarks",
+    "value": "Included in ANN-Benchmarks (37 algorithms incl. Qdrant/Milvus/faiss/scann). Vendor benchmark: highest RPS and lowest latency in almost all scenarios vs Milvus/Weaviate/Elasticsearch/Redis at matched precision; advanced filtered-search query planning.",
+    "confidence": "medium",
+    "note": "Top-tier ANN engine on RPS/latency; tied with the Milvus anchor at C4 (frontier vector-DB capability). Headline comparison is vendor-run (qdrant.tech/benchmarks); ANN-Benchmarks corroborates inclusion but its interactive plots did not yield a clean ranking number this run, hence medium confidence.",
+    "sources": [
+     {
+      "url": "https://ann-benchmarks.com/",
+      "shows": "Qdrant included among 37 benchmarked ANN algorithms",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://qdrant.tech/benchmarks/",
+      "shows": "Qdrant highest RPS/lowest latency vs Milvus/Weaviate/Elasticsearch/Redis (vendor benchmark)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Jina Reader (Jina AI)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Open-source branch of the r.jina.ai / s.jina.ai URL-to-markdown reader service; repo jina-ai/reader re-synced with the SaaS codebase Apr 2026 (MongoDB layer decoupled, local Docker deploy enabled). Confirmed live on GitHub June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(TypeScript, stateless mode self-hostable via Docker);managed-tier:r.jina.ai/s.jina.ai hosted SaaS (free tier + paid API key) on top of the same OSS core",
+    "confidence": "high",
+    "note": "Repo is Apache-2.0 with the full reader pipeline public and self-hostable; hosted Jina API is convenience hosting, not a gated core.",
+    "sources": [
+     {
+      "url": "https://github.com/jina-ai/reader",
+      "shows": "Apache-2.0 license, public source, self-host Docker instructions, ~11k stars",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No verified download or API-call volume found from a primary source. ~11k GitHub stars on the OSS repo plus a widely-used hosted r.jina.ai endpoint; capped at 3 on stars/reported-traction fallback in the absence of a measured usage figure.",
+    "sources": [
+     {
+      "url": "https://github.com/jina-ai/reader",
+      "shows": "~11k stars, active maintenance (550 commits), production SaaS backing",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "URL->LLM-friendly markdown; handles HTML/PDF/MS-Office/images (AI captioning); web search via s.jina.ai; stateless + optional caching; self-host or hosted",
+    "confidence": "medium",
+    "note": "Solid single-purpose reader/scrape tool with multi-format coverage and a search mode; mid-tier on the {coverage, freshness, structured output, rate limits} feature matrix vs full agentic browse/search platforms.",
+    "sources": [
+     {
+      "url": "https://github.com/jina-ai/reader",
+      "shows": "feature list: HTML/PDF/Office/image input, markdown output, search mode, caching",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stars_fallback"
+   ]
+  },
+  {
+   "product": "Agent2Agent Protocol (A2A)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "A2A open protocol for inter-agent interoperability; contributed by Google, hosted by the Linux Foundation (launched June 2025). Spec v1.0.1 released May 28, 2026 (v1.0 = first stable spec, adds Signed Agent Cards). SDKs in Python/Go/JS/Java/.NET/Rust. Verified live on GitHub June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public(spec + reference SDKs in 6 languages);governance:Linux Foundation (vendor-neutral, Google-contributed)",
+    "confidence": "high",
+    "note": "Reference spec and SDKs are Apache-2.0 under neutral LF governance; for a protocol this is the openness ceiling.",
+    "sources": [
+     {
+      "url": "https://github.com/a2aproject/A2A",
+      "shows": "Apache-2.0 license, LF-hosted open protocol, spec v1.0.1 + 6-language SDKs, ~24k stars",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Protocol adoption-breadth signal (per recipe): LF press (Apr 2026 one-year mark) reports 150+ supporting organizations, in-production use at Microsoft (Azure AI Foundry, Copilot Studio), AWS (Bedrock AgentCore), Salesforce, SAP, ServiceNow, and embedding into Google Cloud. Breadth across the three major clouds + enterprise production puts effective downstream reach in the 1-10M band; this is a breadth/traction count, not a measured per-user figure.",
+    "sources": [
+     {
+      "url": "https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year",
+      "shows": "150+ orgs supporting; Azure/AWS Bedrock/Google Cloud production integrations",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/a2aproject/A2A",
+      "shows": "6-language SDKs, ~24k stars corroborating developer uptake",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "A2A is a wire protocol for agent interoperability; per the recipe, capability is not a meaningful axis for a protocol. The signal lives in openness and adoption-breadth.",
+    "sources": [
+     {
+      "url": "https://github.com/a2aproject/A2A",
+      "shows": "described as an open protocol/spec, not a benchmarkable runtime",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Composio (Composio)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Agent tool-integration SDK + managed platform: 1000+ toolkits, tool search, auth, sandboxed workbench; Rube MCP server connects 500+ apps. Python SDK v0.13.1 (May 14, 2026); @composio/claude-agent-sdk 0.9.2 (May 13, 2026). Verified live on GitHub/PyPI June 2026.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(OSI, SDK/core public on GitHub);source:public(Python + TypeScript SDKs);managed-tier:Composio hosted platform + Rube MCP server (auth, hosted tool execution) is the commercial layer",
+    "confidence": "high",
+    "note": "SDK/core is MIT and public; the hosted multi-app integration/auth platform is the proprietary tier — classic open-core.",
+    "sources": [
+     {
+      "url": "https://github.com/ComposioHQ/composio",
+      "shows": "MIT LICENSE, public SDK source, 1000+ toolkits, ~28.6k stars",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No primary download or API-call count obtained (PyPI page did not surface a download figure). ~28.6k GitHub stars + framework integrations (OpenAI, Anthropic, LangChain, LlamaIndex) and a hosted platform; capped at 3 on stars fallback pending a measured usage figure.",
+    "sources": [
+     {
+      "url": "https://github.com/ComposioHQ/composio",
+      "shows": "~28.6k stars, integrations across major agent frameworks",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://pypi.org/project/composio/",
+      "shows": "active package, latest v0.13.1 (May 2026) — confirms maintenance, no download count shown",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "1000+ toolkits / 500+ apps (Rube MCP), tool search, managed OAuth/auth, sandboxed workbench, multi-framework SDKs (OpenAI/Anthropic/LangChain/LlamaIndex)",
+    "confidence": "medium",
+    "note": "Broad tool-coverage and auth/sandbox feature set make it one of the most capable agent tool-integration layers; strong on the {coverage, structured output, breadth} matrix, just short of a frontier-defining 5.",
+    "sources": [
+     {
+      "url": "https://github.com/ComposioHQ/composio",
+      "shows": "1000+ toolkits, tool search, auth, sandboxed workbench, Rube MCP 500+ apps",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "mixed_tier_openness",
+    "stars_fallback"
+   ]
+  },
+  {
+   "product": "Tavily Search API (Tavily)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Proprietary web-access API for agents: search, extract, crawl, map, research endpoints; Python/JS SDKs. Tavily acquired by Nebius Group (Feb 2026). Verified live via docs.tavily.com + tavily.com June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:Proprietary(API-only);source:closed(no self-hostable core; only thin client SDKs are public);managed:cloud SaaS with API keys, credits, rate limits",
+    "confidence": "high",
+    "note": "Closed search/scrape API (the recipe's closed counterpart to Milvus/Qdrant); only client SDKs are open, the search service itself is proprietary.",
+    "sources": [
+     {
+      "url": "https://docs.tavily.com/",
+      "shows": "API keys, credits, rate limits, hosted endpoints — no self-hostable open core",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "Tavily's own homepage states 2M+ developers and 300M+ monthly requests, billions of pages crawled; it is the default search provider wired into LangChain/CrewAI/LlamaIndex agent stacks. Developer reach solidly in 1-10M band; request volume is far higher.",
+    "sources": [
+     {
+      "url": "https://www.tavily.com/",
+      "shows": "vendor-stated 2M+ developers, 300M+ monthly requests, billions of pages crawled",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "search + extract + crawl + map + research endpoints; real-time freshness; structured/LLM-ready output; SLA + rate limits; default integration across major agent frameworks",
+    "confidence": "medium",
+    "note": "Full {coverage, freshness, structured output, rate limits} feature set purpose-built for agents and the de-facto default in agent frameworks; near-frontier among agent search APIs but not the single category-definer.",
+    "sources": [
+     {
+      "url": "https://docs.tavily.com/",
+      "shows": "search/extract/crawl/map/research endpoints with rate limits and credits",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Exa Search API (Exa)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Proprietary neural/web search API (formerly Metaphor): search + contents + Websets (verified, enriched entity lists). Series C $250M at ~$2.2B valuation (May 2026). Verified live via exa.ai docs + about page June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:Proprietary(API-only);source:closed(neural search models + index proprietary; only client SDKs public);managed:cloud SaaS with API keys, usage-based pricing",
+    "confidence": "high",
+    "note": "Closed neural-search API; no self-hostable core, the index and ranking models are proprietary.",
+    "sources": [
+     {
+      "url": "https://exa.ai/about",
+      "shows": "search-as-a-service, API dashboard, no self-host/open-source option",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "Exa's own about page states it powers search for Cursor, Cognition, HubSpot, OpenRouter, Monday.com and 400,000+ developers. Developer reach in the 100K-1M band; large enterprise/agent customers but below the 1M-developer Tavily tier.",
+    "sources": [
+     {
+      "url": "https://exa.ai/about",
+      "shows": "vendor-stated 400,000+ developers; named customers Cursor, Cognition, HubSpot, OpenRouter, Monday.com",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "neural/semantic web search + contents retrieval + Websets (search, verify-against-criteria, enrich entity lists); positioned for high-compute complex queries; scaling to hundreds of thousands of searches/sec (vendor)",
+    "confidence": "medium",
+    "note": "Strong on {coverage, structured output} — Websets' verify-and-enrich pipeline is a differentiated capability beyond plain search; near-frontier among agent search APIs.",
+    "sources": [
+     {
+      "url": "https://exa.ai/about",
+      "shows": "neural search + Websets verify/enrich; high-compute search positioning",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Browserbase (Browserbase)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Proprietary cloud headless-browser platform for agents: Browser API, Search API, Fetch API, Functions, Model Gateway. Ships the open-source Stagehand SDK (browser-agent framework) on top. Verified live via docs.browserbase.com June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:Proprietary(API-only managed browser infra);source:closed(cloud browser fleet/session infra);note:companion Stagehand SDK IS open source (Apache/MIT) but the Browserbase service being scored is the closed managed platform",
+    "confidence": "high",
+    "note": "The scored product is the managed browser-infrastructure service, which is closed/proprietary; only the separate Stagehand client SDK is open — do not let the open SDK reclassify the closed service.",
+    "sources": [
+     {
+      "url": "https://docs.browserbase.com/",
+      "shows": "one API key for cloud browsers/search/fetch/runtime — managed proprietary platform; Stagehand SDK noted as the open-source client",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "No primary usage figure for the Browserbase managed service itself was published. Best primary proxy is its own SDK, Stagehand, which Browserbase docs cite at 22k GitHub stars and 700k+ weekly downloads — a strong open-SDK adoption signal that approximates the platform's developer reach (100K-1M band). The closed service's own user/session count is undisclosed.",
+    "sources": [
+     {
+      "url": "https://docs.browserbase.com/",
+      "shows": "vendor-stated Stagehand SDK 22k stars, 700k+ weekly downloads (proxy for Browserbase developer reach)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "Browser API (session control), Search API, Fetch API (markdown), Functions (agent deploy/schedule), Model Gateway (100+ LLM providers); Stagehand: natural-language selectors, self-healing actions, caching at scale",
+    "confidence": "medium",
+    "note": "Broad browser-automation-for-agents feature set (control + search + fetch + deploy + model routing) plus a capable agent SDK; near-frontier among agent browser/scrape platforms.",
+    "sources": [
+     {
+      "url": "https://docs.browserbase.com/",
+      "shows": "5-component platform: Browser/Search/Fetch/Functions/Model Gateway + Stagehand features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Perplexity Sonar API (Perplexity AI)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Proprietary search-grounded API: Sonar / Sonar Pro models, plus Search API (ranked web results) and Embeddings API; 2026 adds a multi-model Agent API marketplace. Verified live via docs.perplexity.ai June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:Proprietary(API-only);source:closed(Sonar models, search index, ranking all proprietary);managed:cloud SaaS, token + per-request pricing",
+    "confidence": "high",
+    "note": "Fully closed search-grounded API; no weights, source, or self-host path.",
+    "sources": [
+     {
+      "url": "https://docs.perplexity.ai/",
+      "shows": "Sonar/Search/Embeddings APIs, token + per-request pricing — proprietary hosted service",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "No standalone Sonar-API request/developer count is published by a primary source; Perplexity docs confirm the API exists and is a core developer surface. Platform-level scale is large (45M+ MAU, ~1B+ queries/month per 2026 reporting) but that is the consumer app, not the API specifically. Rated 4 on reported developer-API traction within a clearly mass-scale parent platform; flagged that the headline platform numbers are aggregator-reported and not API-specific.",
+    "sources": [
+     {
+      "url": "https://docs.perplexity.ai/",
+      "shows": "Sonar API is a documented developer surface (Agent/Search/Embeddings)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.perplexity.ai/api-platform",
+      "shows": "vendor API-platform page positioning Sonar for developers",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "search-grounded Q&A with real-time web retrieval; Sonar + Sonar Pro tiers (context-depth pricing); ranked Search API with filtering; Embeddings API for RAG; Agent API routes to external models (e.g. GPT-5.x)",
+    "confidence": "medium",
+    "note": "Strong {coverage, freshness, structured output} — grounded answers + raw search + embeddings in one API; near-frontier among agent search/retrieval APIs but a wrapper-plus-search rather than a category-defining 5.",
+    "sources": [
+     {
+      "url": "https://docs.perplexity.ai/",
+      "shows": "Sonar/Sonar Pro grounded search, Search API filtering, Embeddings, Agent API model routing",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "adoption_not_api_specific"
+   ]
+  },
+  {
+   "product": "Pinecone",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Pinecone serverless vector database, verified live June 2026 (pricing + docs). Proprietary managed SaaS; BYOC option added 2025/2026. Sub-segment: retrieval/RAG infra (vector DB).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(SaaS);source:closed;self-host:none(BYOC runs Pinecone-managed in customer VPC, not OSS);managed:Pinecone-Cloud",
+    "confidence": "high",
+    "note": "Fully proprietary managed vector DB; no open-source core (contrast Milvus/Qdrant which are OSI-licensed). BYOC is still closed-source software run in customer cloud.",
+    "sources": [
+     {
+      "url": "https://www.pinecone.io/pricing/",
+      "shows": "proprietary tiered SaaS pricing (Starter/Builder/Standard/Enterprise/BYOC); no OSS/self-host license",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://docs.pinecone.io/guides/get-started/overview",
+      "shows": "described as 'fully managed vector database', billions of items searched in ms",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Leading managed vector DB; production deployments cited at 1.4B vectors / 5,700 QPS for a single e-commerce customer and 135M vectors / 2,200 QPS load-tested for another. Broad enterprise/developer base via serverless + AWS Marketplace PAYG. No single hard user count published; placed at 4 on aggregate production usage_volume. (Some churn noted, e.g. Notion left over cost.)",
+    "sources": [
+     {
+      "url": "https://siliconangle.com/2025/12/01/pinecone-scales-vector-database-support-demanding-workloads/",
+      "shows": "billion-scale production workloads, multi-thousand QPS customer deployments",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://aws.amazon.com/marketplace/pp/prodview-xhgyscinlz4jk",
+      "shows": "Pinecone PAYG distribution via AWS Marketplace (broad enterprise availability)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:ANN-Benchmarks",
+    "value": "P50 latency ~26-60ms at 1.4B-vector scale, 5,700 QPS; serverless auto-indexing, dedicated read nodes",
+    "confidence": "medium",
+    "note": "Top-tier managed ANN search at billion-vector scale with strong latency/QPS. No independent ANN-Benchmarks/VectorDBBench submission found (closed system, vendor-reported figures); rated 4 (peer to Milvus C4), reserving 5 for benchmark-proven frontier.",
+    "sources": [
+     {
+      "url": "https://www.infoq.com/news/2025/12/pinecone-drn-vector-workloads/",
+      "shows": "dedicated read nodes for predictable vector workloads, serverless scaling",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://siliconangle.com/2025/12/01/pinecone-scales-vector-database-support-demanding-workloads/",
+      "shows": "26-60ms P50 latency, thousands of QPS at billion-vector scale",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Serper",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Serper.dev Google Search API, verified live June 2026. Proprietary closed search API (web/images/news/maps/shopping/video/scholar). Sub-segment: search APIs (Tavily/Exa peer, closed counterpart).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(API-only);source:closed;managed:Serper-Cloud(key-gated)",
+    "confidence": "high",
+    "note": "Proprietary commercial SERP API; no source or self-host. Closed counterpart to OSS-adjacent search tools, like Tavily/Exa per the recipe.",
+    "sources": [
+     {
+      "url": "https://serper.dev",
+      "shows": "commercial key-gated Google Search API, JSON output, 2,500 free queries then paid; no OSS license",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "low",
+    "note": "Popular low-cost SERP API widely wired into agent stacks (LangChain/CrewAI tool integrations), but vendor publishes no hard user/query-volume figure and no primary download/API-call count is verifiable. Declining to score adoption rather than rely on marketing 'fastest & cheapest' claims.",
+    "sources": [
+     {
+      "url": "https://serper.dev",
+      "shows": "no published user/query-volume figures, only marketing speed/price claims",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "coverage: web/images/news/maps/shopping/video/scholar/patents/autocomplete; structured JSON output; ~1-2s latency; freshness=live Google index",
+    "confidence": "medium",
+    "note": "Broad search-type coverage with structured output and live freshness — solid feature matrix for a search API, but thinner than full agent-search tools (no built-in extraction/answer synthesis like Tavily/Exa). Rated 3 on coverage/freshness/structured-output dimensions.",
+    "sources": [
+     {
+      "url": "https://serper.dev",
+      "shows": "9 search verticals, structured JSON, 1-2s latency",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Google Grounding API (Vertex AI)",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Grounding with Google Search in Vertex AI / Gemini Enterprise Agent Platform, verified live June 2026 (Google Cloud docs). Proprietary managed grounding API that anchors Gemini responses in Google Search/web. Sub-segment: search/retrieval grounding tool for agents.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(GCP-managed API);source:closed;managed:Vertex-AI/Gemini-Agent-Platform",
+    "confidence": "high",
+    "note": "Fully proprietary Google Cloud managed grounding service; no open-source component or self-host. Tied to Gemini + Google Search index.",
+    "sources": [
+     {
+      "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/grounding/overview",
+      "shows": "Grounding with Google Search listed as a managed grounding option in the Gemini Enterprise Agent Platform; proprietary GCP feature",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "low",
+    "note": "Bundled feature of Vertex AI / Gemini Enterprise Agent Platform with no standalone usage figure disclosed. The broad Vertex AI / Gemini surface is large, but no honest grounding-API-specific adoption signal is verifiable; not scoring on the parent platform's reach.",
+    "sources": [
+     {
+      "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/grounding/overview",
+      "shows": "feature documented but no usage/customer figures for the grounding API itself",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "coverage: full Google Search index grounding; freshness=live web; structured grounding metadata + citations/grounding-support attribution returned to the model",
+    "confidence": "medium",
+    "note": "Grounds LLM output in the full Google Search index with citation/grounding-support metadata — best-in-class web freshness/coverage for agent grounding. Rated 4 on the coverage/freshness/structured-output matrix; capped below 5 as detailed per-feature confirmation came from the overview page only (deeper feature docs not fetched this run).",
+    "sources": [
+     {
+      "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/grounding/overview",
+      "shows": "grounds responses in Google Search/web within the agent platform",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Apify",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Apify full-stack web scraping/extraction platform, verified live June 2026. Proprietary SaaS (35,000+ Actors store) with open-source Crawlee library (Apache-2.0) as its scraping SDK. Sub-segment: browser/scrape infra for agents.",
+   "openness": {
+    "score": 2,
+    "class": "open_core",
+    "components": "platform:proprietary(Apify-Cloud,Actor-store,managed);oss-sdk:Crawlee(Apache-2.0,OSI, JS+Python);license:mixed(platform closed, SDK open)",
+    "confidence": "high",
+    "note": "The product proper (Apify platform/Actor store) is proprietary SaaS; Apify also maintains the OSS Crawlee scraping library (Apache-2.0). Scored open_core but low (2): the open piece is an adjacent SDK, not the platform core, so most value is gated behind the managed cloud.",
+    "sources": [
+     {
+      "url": "https://apify.com",
+      "shows": "proprietary full-stack scraping platform with 35,000+ Actors; Crawlee called out as their OSS contribution",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/apify/crawlee",
+      "shows": "Crawlee Apache-2.0 license (OSI), Apify's open-source scraping library",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Crawlee at 23.7k GitHub stars (corroborating, not basis); platform serves named enterprises (T-Mobile, Microsoft, Accenture) and a 15,000+ member Discord. 35,000+ published Actors implies a sizable active developer base. No precise account/API-call count published; placed at 3 on combined developer/usage signal across platform + OSS SDK.",
+    "sources": [
+     {
+      "url": "https://apify.com",
+      "shows": "35,000+ Actors, named enterprise users (T-Mobile, Microsoft, Accenture), 15,000+ Discord members",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/apify/crawlee",
+      "shows": "23.7k stars on the OSS Crawlee library (corroborating signal)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "coverage: 35,000+ prebuilt Actors; HTTP + headless (Playwright/Puppeteer/Selenium); proxy rotation/session mgmt; structured output; serverless custom Actors; MCP-client integration",
+    "confidence": "high",
+    "note": "Broad scrape/browse feature matrix — multi-engine crawling, proxy/anti-block, structured extraction, serverless deploy, and MCP integration for agents. Among the most complete scrape platforms; rated 4 (frontier-adjacent for the browser/scrape sub-segment).",
+    "sources": [
+     {
+      "url": "https://apify.com",
+      "shows": "multi-engine crawling, proxy rotation, Actor store, MCP-client integration",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/apify/crawlee",
+      "shows": "Crawlee multi-engine (Playwright/Puppeteer/Cheerio/JSDOM), proxy + session management",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "mixed_tier_openness"
+   ]
+  },
+  {
+   "product": "Cohere Rerank API",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Cohere Rerank API, verified live June 2026 (Cohere docs). Latest model Rerank 4.0 (fast/pro variants); prior 3.5 and 3.0 (English + multilingual). Proprietary hosted reranking API for RAG/retrieval; also available via Azure AI Foundry, AWS SageMaker/OpenSearch, Oracle GenAI. Sub-segment: retrieval/RAG infra (reranker).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(hosted-API; also cloud-marketplace deploy);source:closed;weights:not-released;managed:Cohere+Azure/AWS/Oracle",
+    "confidence": "high",
+    "note": "Proprietary closed reranking models served via API and cloud marketplaces; no open weights or source. Marketed as 'open' in search-relevance contexts but is not OSS.",
+    "sources": [
+     {
+      "url": "https://docs.cohere.com/docs/rerank-overview",
+      "shows": "commercial Rerank API; models 4.0/3.5/3.0, no source or weight release",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://docs.cohere.com/changelog/rerank-v3.5",
+      "shows": "Rerank v3.5 announced as a hosted proprietary model",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "De facto default managed reranker for RAG, distributed across Azure AI Foundry, AWS SageMaker JumpStart / OpenSearch, and Oracle GenAI in addition to Cohere's API. No hard call-volume/user count published; placed at 3 on broad multi-cloud distribution (reported_traction).",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/blogs/big-data/enhancing-search-relevancy-with-cohere-rerank-3-5-and-amazon-opensearch-service/",
+      "shows": "Rerank 3.5 integrated/distributed via Amazon OpenSearch Service",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://ai.azure.com/catalog/models/Cohere-rerank-v3.5",
+      "shows": "Rerank v3.5 available in Azure AI Foundry model catalog",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "SOTA on BEIR + multilingual retrieval (nDCG@10), 100+ languages with SOTA on 10 business languages; up to ~25% gain over embedding-only retrieval; multimodal/long-context in newer variants",
+    "confidence": "medium",
+    "note": "Vendor reports SOTA on BEIR and multilingual nDCG@10; widely treated as the reference managed reranker. Concrete nDCG numbers not disclosed on primary pages (claims are vendor-run, not an independent leaderboard), so rated 4 rather than 5. Capability basis is feature_matrix as no standard public reranker leaderboard applies.",
+    "sources": [
+     {
+      "url": "https://cohere.com/blog/rerank-3pt5",
+      "shows": "vendor SOTA claims on BEIR + multilingual retrieval, ~25% gain over embedding search",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://docs.cohere.com/changelog/rerank-v3.5",
+      "shows": "multilingual 100+ language reranking, nDCG@10 evaluation",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Algolia AI Search",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Algolia AI Search, verified live June 2026. Proprietary API-first hosted search platform (keyword + semantic/vector hybrid, NeuralSearch). Open-source client libraries (InstantSearch etc.) but closed core. Sub-segment: search/retrieval infra. Note: primarily a human-facing site-search product; usable as an agent retrieval tool.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(SaaS, API-first);source:closed(search engine core);oss:client/UI-libraries-only(InstantSearch);managed:Algolia-Cloud",
+    "confidence": "high",
+    "note": "Closed proprietary hosted search engine; only client/UI integration libraries are open. Core ranking/index engine is not OSS or self-hostable.",
+    "sources": [
+     {
+      "url": "https://www.algolia.com/products/ai-search/",
+      "shows": "proprietary API-first cloud search platform; OSS limited to client/integration libraries",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "18,000+ customers across 150+ countries; processes over 1 billion queries every 5 seconds at sub-20ms average latency. Named users incl. Stripe, Decathlon, Ubisoft. Query volume is enormous; end-user reach (consumers hitting Algolia-powered search) is effectively mass-scale, but as a B2B tool the direct customer base sits in the heavy-trending band — placed at 4 on verified query-volume.",
+    "sources": [
+     {
+      "url": "https://www.algolia.com/products/ai-search/",
+      "shows": "18,000+ customers, 1B+ queries/5s, sub-20ms latency, named enterprise users",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "hybrid vector+keyword (NeuralSearch), NLP/typo-tolerance/autocomplete, AI ranking + personalization, sub-20ms latency at 1B+ queries/5s, multi-content-type",
+    "confidence": "high",
+    "note": "Mature hybrid search feature matrix (semantic + keyword, personalization, AI ranking) at very low latency and massive scale — frontier-adjacent for managed site/retrieval search. Rated 4; closed system so no independent ANN-Benchmarks number, basis is feature_matrix.",
+    "sources": [
+     {
+      "url": "https://www.algolia.com/products/ai-search/",
+      "shows": "hybrid vector+keyword NeuralSearch, AI ranking, personalization, sub-20ms at 1B+ queries/5s",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Browser Use",
+   "type": "software",
+   "category": "agent_tools_protocols",
+   "version_note": "Browser Use, verified live June 2026 (GitHub + PyPI). OSS Python library making websites accessible to AI agents (navigate/click/fill/extract). MIT license. Recategorized into agent_tools_protocols (browser/scrape sub-segment) per assignment. Managed Browser Use Cloud tier also exists.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(OSI, library core fully open);source:public;managed-tier:Browser-Use-Cloud(proxies/stealth/captcha/hosted browsers, proprietary)",
+    "confidence": "high",
+    "note": "Core library is fully MIT/OSI open (no feature-gated core); a separate proprietary Browser Use Cloud adds managed infra. Scored open_core at 4 because the OSS core is complete and the cloud is optional hosting, not a gated core.",
+    "sources": [
+     {
+      "url": "https://github.com/browser-use/browser-use",
+      "shows": "MIT (OSI) license, full public source; Browser Use Cloud as optional managed tier",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~27M PyPI downloads in the last month (browser-use) — strong real install/usage volume, not stars. 97.2k GitHub stars corroborate but are not the basis. Solidly in the 1-10M+ monthly-download band; one of the most-used agent browser-automation libraries.",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/browser-use",
+      "shows": "~26.96M PyPI downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/browser-use/browser-use",
+      "shows": "97.2k GitHub stars (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "agent browser control: navigate/click/fill-forms/extract/multi-step tasks; LLM-driven DOM interaction; cloud infra adds proxy rotation, stealth fingerprinting, CAPTCHA solving, 1000+ integrations",
+    "confidence": "medium",
+    "note": "Leading OSS browser-automation-for-agents library with broad action coverage and a production cloud tier; widely adopted as the default agent browsing layer. Rated 4 on feature_matrix (multi-step web tasks, structured extraction, anti-block infra); no standard benchmark applies to a browser-control library.",
+    "sources": [
+     {
+      "url": "https://github.com/browser-use/browser-use",
+      "shows": "agent browser automation feature set + cloud capabilities (proxies, stealth, CAPTCHA, integrations)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  }
+ ]
+}

@@ -1,0 +1,1353 @@
+{
+ "category": "ui_api",
+ "products": [
+  {
+   "product": "Open WebUI",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "v0.9.6 (June 1, 2026), confirmed live on GitHub June 2026. Self-hosted chat UI (Ollama + OpenAI-compatible APIs).",
+   "openness": {
+    "score": 3,
+    "class": "source_available",
+    "components": "license:Open-WebUI-License(BSD-3-Clause-based + non-OSI branding clause: branding may not be removed above 50 end-users/30d without enterprise license or written permission);source:public;enterprise-tier:commercial license to remove branding",
+    "confidence": "high",
+    "note": "Source-available, not OSI: a branding-retention clause caps free branding removal at <=50 users/30d, which fails the OSS Definition; widely marketed as open source.",
+    "sources": [
+     {
+      "url": "https://github.com/open-webui/open-webui/blob/main/LICENSE",
+      "shows": "BSD-3-Clause-derived license with Section 4 branding-retention clause (<=50 users/30d), non-OSI",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/open-webui/open-webui",
+      "shows": "v0.9.6 latest release, self-hosted AI interface",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~1.72M PyPI downloads last month (pypistats, primary); vendor reports 290M cumulative downloads and 420K community members. De facto leading self-hosted LLM chat UI; firmly in 1-10M band on monthly install volume (stars 140k corroborate only).",
+    "sources": [
+     {
+      "url": "https://pypistats.org/packages/open-webui",
+      "shows": "1,717,371 downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "model breadth (Ollama + any OpenAI-compatible API, multi-model conversations); RAG (9 vector DB options, 15+ web-search providers); multimodal (STT/TTS, image gen via DALL-E/Gemini/ComfyUI/A1111); multi-user (RBAC, groups, LDAP/SCIM/SSO); plugins (Pipelines framework)",
+    "confidence": "high",
+    "note": "Broadest feature surface among open self-hosted chat UIs: hits all five recipe dimensions (model breadth, RAG, multimodal, plugins, multi-user) with enterprise auth. Top-tier for the category.",
+    "sources": [
+     {
+      "url": "https://github.com/open-webui/open-webui",
+      "shows": "feature list: RAG with 9 vector DBs, multimodal voice/image, RBAC/LDAP/SCIM/SSO, Pipelines plugins",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_washed",
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "LibreChat",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Active 2026 (changelog/releases current); MIT-licensed self-hosted multi-provider chat UI. Acquired by ClickHouse in 2025. Confirmed live on GitHub June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT(OSI);source:public;no-feature-gated-core(RAG API is a separate companion OSS repo)",
+    "confidence": "high",
+    "note": "Fully OSI (MIT), full source public, no paid feature-gated core. Enterprise backing via ClickHouse acquisition has not introduced a closed core.",
+    "sources": [
+     {
+      "url": "https://github.com/danny-avila/LibreChat",
+      "shows": "MIT license; full-featured self-hosted chat UI",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "23M+ cumulative Docker pulls by early 2026 (includes CI/upgrades, so a soft upper bound); 38.1k GitHub stars, 6,800+ forks, 9,000+ Discord members; ClickHouse acquisition signals enterprise deployment. Placed at 4 on Docker-pull volume; medium confidence because pulls overcount unique deployments.",
+    "sources": [
+     {
+      "url": "https://github.com/danny-avila/LibreChat",
+      "shows": "38.1k stars; MIT self-hosted chat platform with broad provider support",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "model breadth (Anthropic/OpenAI/Azure/Google/Bedrock/Ollama/Groq/Mistral/DeepSeek + 15 via custom endpoints); RAG (companion RAG API); multimodal (vision, file chat); multi-user (OAuth2/LDAP/email auth, moderation, token-spend tools); code interpreter (8 langs), MCP tools, agents+subagents, code artifacts (React/HTML/Mermaid), web search",
+    "confidence": "high",
+    "note": "Frontier feature surface for the category: code interpreter, MCP, agents/subagents and artifacts on top of the standard chat-UI matrix. At/above Open WebUI on breadth.",
+    "sources": [
+     {
+      "url": "https://github.com/danny-avila/LibreChat",
+      "shows": "feature list: multi-provider, code interpreter, MCP, agents/subagents, artifacts, OAuth2/LDAP",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Lobe Chat",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "v2.2.2 (June 4, 2026); repo rebranded lobehub/lobehub. License changed from MIT to a non-OSI 'LobeHub Community License' (Apache-2.0 based + derivative-distribution commercial restriction). Product now markets agent-team orchestration but remains a human-driven chat UI at core.",
+   "openness": {
+    "score": 3,
+    "class": "source_available",
+    "components": "license:LobeHub-Community-License(Apache-2.0-based, non-OSI: commercial license required to develop+distribute a derivative work; CLA lets LobeHub relicense contributions for cloud editions);source:public;cloud-tier:LobeHub Cloud",
+    "confidence": "high",
+    "note": "Source-available, not OSI: the derivative-work commercial-license requirement and contributor relicensing terms exceed Apache-2.0; still presented publicly as open source.",
+    "sources": [
+     {
+      "url": "https://github.com/lobehub/lobe-chat/blob/main/LICENSE",
+      "shows": "LobeHub Community License (Apache-2.0 based) requiring a commercial license to distribute derivative works; non-OSI",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/lobehub/lobehub",
+      "shows": "v2.2.2 latest; 78.2k stars; self-host + LobeHub Cloud tiers",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "78.2k GitHub stars, 15.4k forks; Docker image (lobehub/lobehub) and LobeHub Cloud exist but no verified pull/MAU figure was obtainable from a primary source this run. Capped at 3 on stars fallback per rubric.",
+    "sources": [
+     {
+      "url": "https://github.com/lobehub/lobehub",
+      "shows": "78.2k stars, 15.4k forks; Docker + Cloud deployment",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "model breadth (multi-model/multi-provider 'Unified Intelligence'); plugins (10,000+ skills, MCP-compatible); multi-user/agent-groups for team collaboration; knowledge base/RAG; multimodal; agent memory + scheduling",
+    "confidence": "medium",
+    "note": "Strong feature surface across model breadth, MCP plugins, knowledge base and multi-user. Below Open WebUI/LibreChat on enterprise auth/RAG depth verifiability; agent-orchestration framing edges toward orchestration_agents but core remains human-driven chat.",
+    "sources": [
+     {
+      "url": "https://github.com/lobehub/lobehub",
+      "shows": "feature list: multi-model, 10,000+ MCP skills, agent groups, knowledge base, memory",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_washed",
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "AnythingLLM",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "v1.13.0 (May 26, 2026); MIT-licensed all-in-one local-first Desktop + Docker AI app (document chat, RAG, agents). Confirmed live on GitHub June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:MIT(OSI);source:public;no-feature-gated-core;optional hosted instance tier (managed convenience, not a gated core)",
+    "confidence": "high",
+    "note": "Fully OSI (MIT), full source public; a hosted instance is offered but the self-hosted Desktop/Docker app is the complete product.",
+    "sources": [
+     {
+      "url": "https://github.com/Mintplex-Labs/anything-llm",
+      "shows": "MIT license; all-in-one local-first RAG/agent app, v1.13.0",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Docker Hub mintplexlabs/anythingllm shows 1M+ total pulls and ~46k pulls/week (primary); 53-61k GitHub stars; Desktop distributed standalone. Placed at 4 on cumulative pull volume; medium confidence as exact all-time count isn't published and Desktop installs aren't separately counted.",
+    "sources": [
+     {
+      "url": "https://hub.docker.com/r/mintplexlabs/anythingllm",
+      "shows": "1M+ total Docker pulls; ~45,859 pulls this week",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "model breadth (40+ LLM providers, multiple vector DBs, dynamic model routing); RAG (document ingestion core use case); multimodal; multi-user (instance with permissioning); agents (no-code builder, web browsing); recent meeting-recording/summarization features",
+    "confidence": "high",
+    "note": "Strong full-stack chat+RAG+agent surface hitting all category dimensions; provider/vector-DB breadth and no-code agents put it on par with LibreChat/Open WebUI. Reserved 5 for the OSI leaders on raw breadth.",
+    "sources": [
+     {
+      "url": "https://github.com/Mintplex-Labs/anything-llm",
+      "shows": "40+ LLM providers, RAG, multi-user permissioning, no-code agents with web browsing",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "NextChat (ChatGPT-Next-Web)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "v2.16.1 latest release (~mid-2025; release notes cite OpenAI o3/o4-mini + Claude 3.7 support); MIT core. ~6-12mo since last release as of June 2026 -> freshness flag. Cross-platform (web/desktop/mobile) chat client; Enterprise Edition adds permissions/RAG.",
+   "openness": {
+    "score": 4,
+    "class": "open_core",
+    "components": "license:MIT(core, public source);enterprise-tier:NextChat Enterprise (permission controls, team resource mgmt, internal knowledge base/RAG)",
+    "confidence": "high",
+    "note": "OSI MIT core with a separate proprietary Enterprise Edition for multi-user permissions and internal-KB RAG -> open_core (calibrated to the LiteLLM open_core anchor).",
+    "sources": [
+     {
+      "url": "https://github.com/ChatGPTNextWeb/NextChat",
+      "shows": "MIT license; cross-platform chat client; Enterprise Edition (permissions, team mgmt, internal knowledge base)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "88.2k GitHub stars and one-click Vercel deploy indicate broad lightweight use, but no verified download/MAU figure from a primary source this run, and last release ~6-12mo ago. Capped at 3 on stars fallback; momentum appears to have slowed.",
+    "sources": [
+     {
+      "url": "https://github.com/ChatGPTNextWeb/NextChat",
+      "shows": "88.2k stars; v2.16.1 latest release; cross-platform deployment",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "model breadth (Claude/DeepSeek/GPT-4/Gemini/Azure/Baidu/ByteDance/Alibaba etc.); plugins (v2.15.0+); multimodal (vision); MCP support; artifacts; realtime chat; multi-user + RAG only in Enterprise Edition",
+    "confidence": "medium",
+    "note": "Solid lightweight cross-platform client with plugins/MCP/vision, but RAG and multi-user are gated to Enterprise; thinner OSS feature surface than Open WebUI/LibreChat/AnythingLLM.",
+    "sources": [
+     {
+      "url": "https://github.com/ChatGPTNextWeb/NextChat",
+      "shows": "multi-provider, plugins, vision, MCP, artifacts; RAG/multi-user in Enterprise Edition",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stale"
+   ]
+  },
+  {
+   "product": "HuggingChat / chat-ui (Hugging Face)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "chat-ui v0.10.0 (May 11, 2026), Apache-2.0, powers HuggingChat at hf.co/chat. Original HuggingChat was sunset July 1, 2025, then relaunched as 'HuggingChat Omni' (Omni Router + 115-123 open models, 15 inference providers, MCP). Confirmed live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "components": "license:Apache-2.0(OSI);source:public;no-feature-gated-core(self-hostable SvelteKit app, MongoDB backend)",
+    "confidence": "high",
+    "note": "Fully OSI (Apache-2.0); the public codebase is exactly what powers the hosted HuggingChat, self-hostable end to end.",
+    "sources": [
+     {
+      "url": "https://github.com/huggingface/chat-ui",
+      "shows": "Apache-2.0; 'open source codebase powering HuggingChat'; v0.10.0",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Hosted HuggingChat served 1M+ users and 100k+ assistants over its lifetime (HF announcement) before the July 2025 sunset; relaunched as HuggingChat Omni and live again on hf.co/chat. chat-ui repo itself is a modest 10.7k stars (self-host base is niche). Placed at 3 on the disclosed lifetime user reach of the hosted product; the discontinuity + relaunch lowers confidence.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/chat",
+      "shows": "live HuggingChat Omni interface, Omni router, 123+ open-source models, MCP",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.startuphub.ai/ai-news/startup-news/2025/hugging-face-closes-huggingchat-to-make-way-for-next-generation-ai-tools",
+      "shows": "HuggingChat served 1M+ users / 100k+ assistants before July 2025 sunset",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "model breadth (115-123 open models via 15 inference providers, Omni smart-router on Arch-Router-1.5B); multimodal input; MCP tools; OpenAI-compatible API; multi-user (hosted). Current branch removed legacy provider-specific integrations and GGUF discovery",
+    "confidence": "medium",
+    "note": "Good model breadth + smart routing + MCP, but the rebuilt v0.10 deliberately stripped RAG/provider integrations present in the legacy branch, so the self-host feature surface is leaner than Open WebUI/LibreChat. Mid-tier for the category.",
+    "sources": [
+     {
+      "url": "https://github.com/huggingface/chat-ui",
+      "shows": "OpenAI-compatible API, MCP tools, multimodal, Omni routing; legacy provider integrations + GGUF discovery removed",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/chat",
+      "shows": "Omni router selecting among 123+ open models, MCP enabled",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "renamed_per_verify"
+   ]
+  },
+  {
+   "product": "Jan",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Jan v0.8.2 (released 1 Jun 2026). Open-source local-first ChatGPT alternative (desktop chat UI) by Menlo Research / janhq; runs local GGUF models plus pluggable cloud providers, ships an OpenAI-compatible local API server. Verified live on GitHub + jan.ai June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "confidence": "high",
+    "components": "license:Apache-2.0(OSI);source:public(github.com/janhq/jan);no-feature-gated-core;self-host:primary(desktop app, 100% offline-capable)",
+    "note": "Fully OSI-licensed (Apache-2.0), full source public, no proprietary feature-gated core — a true open chat UI.",
+    "sources": [
+     {
+      "url": "https://github.com/janhq/jan/blob/dev/LICENSE",
+      "shows": "Apache-2.0 license text",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/janhq/jan",
+      "shows": "public source; Apache-2.0; v0.8.2 (1 Jun 2026)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Vendor site reports 5.7M+ cumulative downloads of the desktop app; 42.9k GitHub stars corroborates but is not the basis. Cumulative-download volume places it in the 1-10M band, though these are lifetime installs not active users.",
+    "sources": [
+     {
+      "url": "https://jan.ai/",
+      "shows": "5.7M+ downloads stated on vendor homepage",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/janhq/jan",
+      "shows": "42.9k stars (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "model breadth: yes (local GGUF + OpenAI/Anthropic/Google/Mistral/DeepSeek/Qwen/Kimi cloud providers); multimodal: limited; RAG: limited; plugins/extensions: yes; multi-user: no (single-user desktop); OpenAI-compatible local API: yes",
+    "confidence": "medium",
+    "note": "Solid open desktop chat UI with broad model selection and a local OpenAI-compatible server, but single-user and lighter on RAG/multimodal than the frontier consumer apps in this category. Mid-tier on the chat-UI feature matrix.",
+    "sources": [
+     {
+      "url": "https://jan.ai/",
+      "shows": "open + cloud model providers, OpenAI-compatible API, local-first",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/janhq/jan",
+      "shows": "feature set: local LLMs, cloud integration, custom assistants, OpenAI-compatible API",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Continue",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Continue (continuedev/continue); VS Code extension v1.2.22 (Mar 2026), JetBrains plugin, and open-source `cn` CLI. Open-source AI code assistant — chat + inline edit + autocomplete in the IDE, now also marketing 'AI code agent' (agent mode) and CI checks. Verified live on GitHub + VS Marketplace June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "confidence": "high",
+    "components": "license:Apache-2.0(OSI);source:public(github.com/continuedev/continue);clients:VSCode+JetBrains+CLI;hub:continue.dev(hosted config/model hub adjacent, core OSS)",
+    "note": "Apache-2.0, full source public for the IDE extensions and CLI; no feature-gated core in the editor itself (a hosted Hub exists alongside but the assistant is OSS).",
+    "sources": [
+     {
+      "url": "https://github.com/continuedev/continue",
+      "shows": "Apache-2.0; public source; AI code assistant (chat/edit/autocomplete + agent)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://marketplace.visualstudio.com/items?itemName=Continue.continue",
+      "shows": "open-source AI code agent extension listing",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "VS Code Marketplace shows ~3.21M installs of the Continue extension; plus JetBrains plugin and CLI installs on top. Install volume places it solidly in the 1-10M band. 33.5k GitHub stars corroborates only.",
+    "sources": [
+     {
+      "url": "https://marketplace.visualstudio.com/items?itemName=Continue.continue",
+      "shows": "3,209,395 installs",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/continuedev/continue",
+      "shows": "33.5k stars (corroborating)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "model breadth: yes (model-agnostic, any provider/local); chat: yes; inline edit: yes; autocomplete/tab: yes; agent mode: yes; RAG over codebase: yes; multimodal: partial; multi-IDE: VSCode+JetBrains+CLI",
+    "confidence": "medium",
+    "note": "Leading open-source in-IDE AI assistant; broad model-agnostic coverage with chat/edit/autocomplete/agent and codebase RAG. Strong feature breadth for an open editor assistant, just below the polished closed frontier (Copilot/Cursor).",
+    "sources": [
+     {
+      "url": "https://marketplace.visualstudio.com/items?itemName=Continue.continue",
+      "shows": "agent, chat, edit, autocomplete features",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/continuedev/continue",
+      "shows": "model-agnostic AI code assistant feature set",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "recategorize"
+   ],
+   "note": "recategorize: borderline ui_api/orchestration_agents. Scored here as an in-IDE assistant where the human drives (chat/edit/autocomplete = ui_api per litmus), but Continue now markets itself as an 'AI code agent' with autonomous agent mode + CI checks. If the agent/autonomy surface is judged primary, reconciliation should move it to orchestration_agents."
+  },
+  {
+   "product": "SillyTavern",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "SillyTavern v1.18.0 (released 3 May 2026). Self-hosted local chat front-end (NodeJS) for text-gen LLMs, originally a TavernAI fork (Feb 2023); connects to many backends (KoboldAI, OpenAI, Claude, Mistral, etc.) with character/roleplay focus, image-gen + TTS integration, extensions. Verified live on GitHub June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open_source",
+    "confidence": "high",
+    "components": "license:AGPL-3.0(OSI, copyleft);source:public(github.com/SillyTavern/SillyTavern);self-host:only(local install);no-managed-tier;extensions:third-party",
+    "note": "AGPL-3.0 (OSI-approved copyleft), full source public, self-host only — fully open. No proprietary/SaaS tier.",
+    "sources": [
+     {
+      "url": "https://github.com/SillyTavern/SillyTavern",
+      "shows": "AGPL-3.0; public source; v1.18.0 (3 May 2026); local UI for LLM/image/TTS backends",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "stars_fallback",
+    "confidence": "low",
+    "note": "No published download/install or active-user counts found (self-hosted desktop app, no telemetry). Falling back to 28.9k GitHub stars + 300+ contributors as the only honest signal — capped at level 3 per the stars-fallback rule. Likely a large enthusiast/roleplay community but unverified.",
+    "sources": [
+     {
+      "url": "https://github.com/SillyTavern/SillyTavern",
+      "shows": "28.9k stars, 300+ contributors; no install/usage count published",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "model breadth: yes (many LLM APIs: KoboldAI/OpenAI/Claude/Mistral/local); multimodal: yes (image-gen + TTS integration); RAG/lorebooks: yes; plugins/extensions: yes (third-party); multi-user: no (single-user local)",
+    "confidence": "medium",
+    "note": "Feature-rich for its niche — broad backend coverage, image-gen/TTS, extensions, character/roleplay tooling (Visual Novel mode). Specialized toward roleplay rather than general-purpose assistant work; mid-tier on the general chat-UI matrix.",
+    "sources": [
+     {
+      "url": "https://github.com/SillyTavern/SillyTavern",
+      "shows": "multi-backend, image-gen, TTS, extensions, Visual Novel mode",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stars_fallback"
+   ]
+  },
+  {
+   "product": "ChatGPT",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "ChatGPT (OpenAI) consumer chat app — web + iOS/Android + desktop. Proprietary/closed UI scored as the closed counterpart in this category. Live and verified June 2026; default model GPT-5 family. (The model SKU is scored separately under base/finetuned categories; this record scores the chat surface.)",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "source:closed;self-host:none;license:proprietary(SaaS app + API)",
+    "note": "Proprietary, SaaS-only consumer app; no source, no self-host. Closed counterpart in the ui_api shelf.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/how-people-are-using-chatgpt/",
+      "shows": "OpenAI's proprietary ChatGPT product page/usage report",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "high",
+    "note": "OpenAI officially announced ~900M weekly active users (27 Feb 2026), up from 800M (Oct 2025), with 50M paying subscribers. Mass-market scale, far above the >10M threshold. Attributed to the ChatGPT surface.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2026/02/27/chatgpt-reaches-900m-weekly-active-users/",
+      "shows": "OpenAI official announcement of 900M weekly active users, Feb 2026",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "model breadth: frontier (GPT-5 family + variants); RAG/file upload: yes; multimodal: yes (vision, voice, image-gen); plugins/tools: yes (tools, code interpreter, web search, connectors); multi-user: yes (Team/Enterprise); memory + custom GPTs",
+    "confidence": "high",
+    "note": "Frontier consumer chat product within ui_api: full multimodal, code execution, web search, custom GPTs, memory, Team/Enterprise multi-user. Sets the bar for the category's chat-UI feature matrix.",
+    "sources": [
+     {
+      "url": "https://openai.com/index/how-people-are-using-chatgpt/",
+      "shows": "ChatGPT capabilities/usage report",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "GitHub Copilot",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "GitHub Copilot (GitHub / Microsoft) — proprietary in-IDE AI coding assistant (inline suggestions, chat, agent mode) across VS Code/JetBrains/etc. Closed counterpart in ui_api. Verified live on github.com/features/copilot June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "source:closed;self-host:none;license:proprietary(subscription SaaS)",
+    "note": "Proprietary, closed-source subscription product; no self-host. Closed counterpart in the ui_api shelf.",
+    "sources": [
+     {
+      "url": "https://github.com/features/copilot",
+      "shows": "proprietary GitHub Copilot product page; closed source",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "high",
+    "note": "Microsoft CEO confirmed 20M all-time Copilot users (earnings call, 30 Jul 2025); free tier opened to 150M GitHub developers (Dec 2024); ~4.7M paid subscribers by Jan 2026. All-time user base exceeds the >10M mass-market threshold. (All-time vs active distinction noted; still clearly level 5.)",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/07/30/github-copilot-crosses-20-million-all-time-users/",
+      "shows": "GitHub-confirmed 20M all-time users, announced by Satya Nadella Jul 2025",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/features/copilot",
+      "shows": "'millions of individual users and tens of thousands of business customers'",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "model breadth: yes (multi-model: GPT/Claude/Gemini selectable); chat: yes; inline/autocomplete: yes; agent mode: yes; codebase context/RAG: yes; multimodal: partial; multi-IDE + GitHub-native; enterprise multi-user: yes",
+    "confidence": "high",
+    "note": "Most widely adopted, feature-complete AI developer assistant: chat + inline + agent mode + multi-model selection, deeply IDE/GitHub-integrated, enterprise controls. Frontier of the in-IDE-assistant slice of ui_api.",
+    "sources": [
+     {
+      "url": "https://github.com/features/copilot",
+      "shows": "inline suggestions, chat, agent, code explanations; 'world's most widely adopted AI developer tool'",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Claude.ai",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Claude.ai (Anthropic) consumer chat app — web + macOS/Windows + iOS/Android. Proprietary/closed UI scored as the closed counterpart. Verified live June 2026 (product page now at claude.com/product/overview, redirected from anthropic.com/claude). Uses Claude Opus/Sonnet/Haiku.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "source:closed;self-host:none;license:proprietary(SaaS app + API)",
+    "note": "Proprietary, SaaS-only consumer app; no source, no self-host. Closed counterpart in the ui_api shelf.",
+    "sources": [
+     {
+      "url": "https://claude.com/product/overview",
+      "shows": "Anthropic's proprietary Claude consumer product page (artifacts, projects, web search, code execution)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "active_users",
+    "confidence": "low",
+    "note": "Anthropic does NOT disclose official Claude.ai MAU. Third-party estimates (no primary vendor figure available) put consumer MAU ~18.9M web at start of 2026 rising toward ~30M by mid-2026 — i.e. comfortably above 1M but well below the >10M-billion scale of ChatGPT/Gemini app. Placed at level 4 on best-available estimate; confidence low because the headline number is an estimate, not a vendor primary disclosure (flagged).",
+    "sources": [
+     {
+      "url": "https://claude.com/product/overview",
+      "shows": "consumer chat product exists (web/desktop/mobile apps)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.demandsage.com/claude-ai-statistics/",
+      "shows": "third-party estimate ~18.9M web MAU early 2026 (corroborating, not primary)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "model breadth: frontier (Opus/Sonnet/Haiku); RAG/file upload: yes (PDF/Word/Excel/image); multimodal: yes (vision, voice mode); tools/plugins: yes (MCP connectors, web search, code execution, Google Workspace); artifacts + projects; multi-user: yes (Team/Enterprise)",
+    "confidence": "high",
+    "note": "Frontier consumer chat product within ui_api: Artifacts, Projects, web search, code execution, MCP connectors, voice, multimodal file analysis, Team/Enterprise. Among the category's most capable chat surfaces.",
+    "sources": [
+     {
+      "url": "https://claude.com/product/overview",
+      "shows": "Artifacts, Projects, Web Search, Voice, Code Execution, integrations, multimodal upload",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "adoption_estimate_not_vendor_disclosed"
+   ]
+  },
+  {
+   "product": "Gemini (app)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Gemini app (Google) — consumer chat app (web + Android/iOS), proprietary/closed UI scored as the closed counterpart. Verified live June 2026; powered by Gemini 3.x model family. (Model SKUs scored separately; this record scores the app surface.)",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "source:closed;self-host:none;license:proprietary(SaaS app)",
+    "note": "Proprietary, SaaS-only consumer app; no source, no self-host. Closed counterpart in the ui_api shelf.",
+    "sources": [
+     {
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/",
+      "shows": "Google's proprietary Gemini app/model product page",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "high",
+    "note": "Google CEO Sundar Pichai officially stated the Gemini app surpassed 750M monthly active users (Q4 2025 earnings, 4 Feb 2026), up from 450M earlier in 2025. Mass-market scale, far above >10M (broader AI Overviews surface reaches ~2B, but the app itself is the cited figure).",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2026/02/04/googles-gemini-app-has-surpassed-750m-monthly-active-users/",
+      "shows": "Pichai official statement: Gemini app >750M MAU, Feb 2026",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "model breadth: frontier (Gemini 3.x family); RAG/file upload: yes; multimodal: yes (vision, audio, image-gen, voice/Live); tools: yes (web/Search grounding, Workspace, extensions); multi-user: yes (Workspace/Enterprise); deep Google ecosystem integration",
+    "confidence": "high",
+    "note": "Frontier consumer chat product within ui_api: full multimodal (Live voice, image-gen), Search grounding, Workspace integration, extensions, enterprise. Sets the category bar alongside ChatGPT.",
+    "sources": [
+     {
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/",
+      "shows": "Gemini app multimodal capabilities + Search/AI Mode integration",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Microsoft Copilot (Microsoft)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Microsoft Copilot consumer + M365 Copilot chat assistant surfaces (Windows, Edge, M365, Bing, mobile), live June 2026 per Microsoft Learn admin/usage docs. Proprietary chat UI over OpenAI + Microsoft models; human-in-the-loop assistant (Copilot Studio agents are a separate product). Scored as the chat-UI surface.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(SaaS/embedded);source:closed;self-host:none;model:OpenAI+Microsoft(closed)",
+    "confidence": "high",
+    "note": "Fully proprietary, SaaS/embedded — the closed counterpart on the UI/API shelf.",
+    "sources": [
+     {
+      "url": "https://learn.microsoft.com/en-us/microsoft-365/admin/activity-reports/microsoft-copilot-usage?view=o365-worldwide",
+      "shows": "Microsoft 365 Copilot Chat is a Microsoft-operated proprietary product (admin usage reporting docs)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "medium",
+    "note": "~420M monthly active users across all Copilot surfaces (Windows/Edge/M365/Bing/mobile) reported Q1 2026, with ~160M enterprise-licensed; far above the >10M threshold. Actively-engaged M365 seats are much lower (~33M), but the consumer + embedded surface reach is mass-market. Headline aggregated figure traces to Microsoft disclosures via aggregators — primary per-surface breakdown not directly fetched, so medium confidence.",
+    "sources": [
+     {
+      "url": "https://www.businessofapps.com/data/microsoft-copilot-statistics/",
+      "shows": "~420M MAU all surfaces Q1 2026; ~160M enterprise-licensed (aggregator compiling Microsoft disclosures)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://learn.microsoft.com/en-us/microsoft-365/admin/activity-reports/microsoft-365-copilot-usage?view=o365-worldwide",
+      "shows": "Microsoft's own active-usage reporting surface for M365 Copilot (confirms scale of deployed product)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "chat-UI matrix: broad model access (GPT family + Microsoft models), deep RAG/grounding over M365 Graph (mail/docs/Teams), multimodal (vision/image gen), Copilot Pages/canvas, plugins/connectors + Copilot Studio extensibility, enterprise multi-user/admin. Missing: model-agnostic provider breadth (locked to OpenAI/Microsoft).",
+    "confidence": "medium",
+    "note": "Feature-rich chat UI with class-leading enterprise grounding/integration; not frontier-defining within this category because it is locked to one model provider and not self-hostable.",
+    "sources": [
+     {
+      "url": "https://learn.microsoft.com/en-us/microsoft-365/admin/activity-reports/microsoft-365-copilot-usage?view=o365-worldwide",
+      "shows": "M365 Copilot chat features incl. Graph grounding across apps",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Perplexity (consumer chat) (Perplexity AI)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Perplexity consumer AI answer/search chat product (web + apps), live June 2026 (perplexity.ai homepage confirms product). Proprietary chat UI routing over multiple closed + open models; human-in-the-loop search/answer assistant. Comet browser + Computer agent are adjacent surfaces (agentic, scored elsewhere if at all).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(SaaS);source:closed;self-host:none;models:multi-provider(closed orchestration)",
+    "confidence": "high",
+    "note": "Proprietary SaaS chat/answer engine; closed counterpart on the shelf.",
+    "sources": [
+     {
+      "url": "https://www.perplexity.ai/",
+      "shows": "consumer AI answer/search chat product, proprietary SaaS (no source/self-host)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "medium",
+    "note": "CEO Aravind Srinivas (cited Apr 2026) reports 100M+ MAU across all products; standalone chatbot ~33M MAU; ~780M queries/mo (May 2025) growing >20% MoM to an estimated 1.2-1.5B/mo by mid-2026. Even the standalone-chat figure (33M) clears >10M. Headline user count is CEO-attributed via aggregators (Sacra), not a directly-fetched primary disclosure — medium confidence.",
+    "sources": [
+     {
+      "url": "https://www.businessofapps.com/data/perplexity-ai-statistics/",
+      "shows": "100M+ MAU all products / ~33M standalone chatbot (CEO-attributed, compiled)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.perplexity.ai/",
+      "shows": "live consumer product confirming scale of surface",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "chat-UI matrix: multi-model access (selectable frontier models incl. GPT/Claude/Gemini + own Sonar), strong web-grounded RAG with citations (its core differentiator), multimodal input, file upload, Spaces/collections, multi-user/enterprise. Search-grounded answering is best-in-class for the category.",
+    "confidence": "medium",
+    "note": "Differentiated, capable consumer chat UI (citation-grounded answers, model choice); high feature breadth but not the single category frontier-definer.",
+    "sources": [
+     {
+      "url": "https://www.perplexity.ai/",
+      "shows": "multi-model selection, web-grounded cited answers, file/multimodal features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Poe (Quora)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Poe by Quora — multi-model chat aggregator app (web + mobile/desktop), live June 2026 (poe.com confirms). Single UI fronting many providers' bots (ChatGPT, Claude, Gemini, DeepSeek) + image/video/audio models + millions of user-created bots. Human-in-the-loop chat aggregator; proprietary.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(SaaS);source:closed;self-host:none;models:multi-provider aggregation(closed)",
+    "confidence": "high",
+    "note": "Proprietary multi-model chat aggregator; closed counterpart on the shelf.",
+    "sources": [
+     {
+      "url": "https://poe.com/about",
+      "shows": "proprietary multi-model chat aggregator (no source/self-host), Quora-affiliated",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "10M-100M",
+    "signal_type": "active_users",
+    "confidence": "low",
+    "note": "Reported ~18M MAU in 2026 (~40% using paid features), Poe subscription ~$65M ARR per Quora figures. In the 1-10M+ band (placed at level 4 / 10K-100K mapping does not apply — 18M sits in 10M-100M reach). Figure is aggregator-sourced (Quora does not publish a primary Poe MAU page), so low confidence on the exact number though the order of magnitude is consistent across sources.",
+    "sources": [
+     {
+      "url": "https://originality.ai/blog/poe-statistics",
+      "shows": "~18M Poe MAU, ~$65M subscription revenue (compiled from Quora reporting)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://poe.com/about",
+      "shows": "live product confirming consumer-scale aggregator surface",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "chat-UI matrix: very broad model breadth (text + image + video + audio across many providers in one UI), user-created bots / custom bot builder, multimodal, points-based unified billing, multi-platform clients. Lighter on enterprise/RAG vs Copilot/Perplexity.",
+    "confidence": "medium",
+    "note": "Strongest pure model-breadth in the consumer aggregator slot (text/image/video/audio + custom bots); high feature breadth, not the frontier-definer (LiteLLM anchors the gateway side at C4).",
+    "sources": [
+     {
+      "url": "https://poe.com/about",
+      "shows": "multi-provider model access incl. image/video/audio + user-created bots",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "OpenRouter (OpenRouter)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "OpenRouter unified LLM API gateway/router, live June 2026 (openrouter.ai homepage). Routes/aggregates API calls across 400+ models and 60+ providers behind one OpenAI-compatible API; not a chat UI but a routing gateway — squarely the ui_api gateway slot alongside the LiteLLM anchor. Proprietary hosted service.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(hosted gateway);source:closed(SDK present, core service closed);self-host:none",
+    "confidence": "high",
+    "note": "Proprietary hosted routing gateway — the closed counterpart to open gateways (LiteLLM); listed as closed in the recipe.",
+    "sources": [
+     {
+      "url": "https://openrouter.ai/",
+      "shows": "hosted unified API gateway across 400+ models/60+ providers; proprietary service (no self-host)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "Vendor homepage (primary) reports 100T monthly tokens processed and 8M+ global users; ~250k+ apps. Token volume corroborated by external coverage (~25T tokens/week, ~1.5 quadrillion/yr run-rate; Menlo, TechCrunch on $1.3B valuation / $113M raise May 2026). Reach placed at 1M-10M on the 8M user figure; usage-volume signal is genuinely massive.",
+    "sources": [
+     {
+      "url": "https://openrouter.ai/",
+      "shows": "vendor headline: 100T monthly tokens, 8M+ global users, 400+ models / 60+ providers",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://techcrunch.com/2026/05/26/openrouter-more-than-doubles-valuation-to-1-3b-in-a-year/",
+      "shows": "corroborates ~100T tokens/mo and $1.3B valuation (May 2026)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "feature_matrix",
+    "value": "gateway matrix: provider/model coverage 400+ models across 60+ providers (category-leading breadth); automatic routing/fallback/load-balancing across providers; per-request cost tracking + credits; auth/keys + data policies; OpenAI-compatible drop-in API; provider/model ranking analytics. Hits every gateway feature-matrix dimension at the top of the category.",
+    "confidence": "high",
+    "note": "Frontier-defining for the gateway slot — broadest provider coverage + routing/fallback at the largest measured token scale; the closed counterpart that sets the bar LiteLLM (C4) approaches on the open side.",
+    "sources": [
+     {
+      "url": "https://openrouter.ai/",
+      "shows": "400+ models, 60+ providers, routing/fallback, cost tracking, OpenAI-compat",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Character.AI (Character.AI)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Character.AI consumer companion/roleplay chat app (web + mobile), live June 2026. Proprietary chat UI over its own models + (post-Google-deal) licensed models; human-in-the-loop character chat. MAU peaked ~28M mid-2024, declined amid competition.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(SaaS);source:closed;self-host:none;models:own+licensed(closed)",
+    "confidence": "high",
+    "note": "Proprietary consumer chat app; closed counterpart on the shelf.",
+    "sources": [
+     {
+      "url": "https://www.businessofapps.com/data/character-ai-statistics/",
+      "shows": "Character.AI is a proprietary consumer companion-chat app (product/company profile)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "10M-100M",
+    "signal_type": "active_users",
+    "confidence": "low",
+    "note": "Reported ~20M MAU and ~180M monthly site visits (Apr 2026); peaked ~28M MAU mid-2024 then declined. Clears >10M but figures are aggregator-compiled (no first-party MAU disclosure fetched) and sources disagree (20M vs higher visit-based counts), so low confidence. Reach mapped to 10M-100M on monthly-visit volume; level 4 on the conservative MAU read.",
+    "sources": [
+     {
+      "url": "https://www.businessofapps.com/data/character-ai-statistics/",
+      "shows": "~20M MAU, ~180M monthly visits, peak ~28M mid-2024 (compiled)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "feature_matrix",
+    "value": "chat-UI matrix: narrow/specialized — strong character-creation + persona/roleplay + voice + multi-user community, but no model selection (single-provider, own models), limited RAG/grounding, limited multimodal/document tooling vs general assistants. Deep in its niche, narrow on the general chat-UI feature set.",
+    "confidence": "medium",
+    "note": "Specialized companion-chat UI; rich in persona/voice features but narrow on the general feature matrix (no model breadth, weak grounding) — low capability relative to the general-assistant frontier in this category.",
+    "sources": [
+     {
+      "url": "https://www.businessofapps.com/data/character-ai-statistics/",
+      "shows": "companion/roleplay chat product with character-creation focus",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "headline_metric_aggregator_fallback"
+   ]
+  },
+  {
+   "product": "Grok (xAI)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Grok consumer AI chat assistant by xAI — the app/UI surface (grok.com + X integration + mobile), live June 2026 (x.ai). Scored here as the chat-UI product, NOT the Grok 4.x model SKU (the model is scored in base_pretrained as Grok 4.20). Proprietary; human-in-the-loop assistant with image gen + X-grounded search.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(SaaS/embedded in X);source:closed;self-host:none;model:xAI Grok(closed weights)",
+    "confidence": "high",
+    "note": "Proprietary chat UI (and its underlying model is closed); closed counterpart on the shelf.",
+    "sources": [
+     {
+      "url": "https://x.ai/news/grok-4-1",
+      "shows": "xAI Grok is a proprietary assistant/product (official xAI release notes)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "low",
+    "note": "App reported ~60-64M MAU and ~8-10M DAU early 2026, plus default availability to X Premium subscribers within X's ~350-400M MAU base. Clears >10M as a surface. Figures are aggregator-compiled (xAI does not publish a primary MAU page) and the X-embedded reach is hard to attribute cleanly, so low confidence on the exact number; reach band is robust.",
+    "sources": [
+     {
+      "url": "https://seoprofy.com/blog/grok-ai-statistics/",
+      "shows": "~60-64M Grok app MAU, ~8-10M DAU early 2026; X Premium default access (compiled)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://x.ai/news/grok-4-1",
+      "shows": "official product confirming the consumer Grok assistant surface",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "chat-UI matrix: frontier-class own model (reasoning/multi-agent), real-time X-grounded search (differentiator), image generation, voice mode, multimodal, large context; multi-user via X/SuperGrok. Locked to xAI models (no provider breadth), lighter enterprise/RAG-over-private-data story.",
+    "confidence": "medium",
+    "note": "Capable general assistant UI with a unique real-time X-search edge; high feature breadth but single-provider-locked, so not the category frontier-definer.",
+    "sources": [
+     {
+      "url": "https://x.ai/news/grok-4-1",
+      "shows": "Grok assistant features: reasoning model, real-time search, multimodal",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "headline_metric_aggregator_fallback"
+   ]
+  },
+  {
+   "product": "Le Chat (Mistral AI)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Le Chat by Mistral AI — consumer AI chat assistant (web + mobile; app rebranded toward 'Mistral Vibe' by 2026), live June 2026 (mistral.ai). Proprietary chat UI primarily over Mistral's own models; human-in-the-loop assistant. ~1.7M app downloads by May 2026; EU MAU stated below 45M.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "license:proprietary(SaaS app);source:closed(the Le Chat product; underlying Mistral models are open-weights but the chat UI/service is not);self-host:none",
+    "confidence": "high",
+    "note": "The Le Chat product/service is proprietary SaaS (closed) — distinct from Mistral's open-weight models scored elsewhere; closed counterpart on the shelf.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/02/19/mistrals-le-chat-tops-1m-downloads-in-just-14-days/",
+      "shows": "Le Chat is Mistral's proprietary consumer chat app (product profile)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "active_users",
+    "confidence": "medium",
+    "note": "~1.7M app downloads by May 2026 (TechCrunch reported 1M in 14 days at Feb 2025 launch); Mistral states EU monthly active recipients below 45M (a DSA ceiling, not a measured MAU); ~10.8M desktop visits to mistral.ai Mar 2026. Honest read places real active users in the 1-10M band — level 4. The <45M is a regulatory cap not an actual count, so not used as the headline.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/02/19/mistrals-le-chat-tops-1m-downloads-in-just-14-days/",
+      "shows": "1M downloads in 14 days at launch (primary-press milestone)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.businessofapps.com/data/perplexity-ai-statistics/",
+      "shows": "context: peer consumer-chat scale for calibration",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "chat-UI matrix: multimodal (vision, image gen via Flux), web search, code interpreter/canvas, document/Flash answers (fast inference), connectors/agents, enterprise (Le Chat Enterprise) + flash-fast responses on Cerebras. Locked primarily to Mistral models (limited provider breadth).",
+    "confidence": "medium",
+    "note": "Feature-broad general assistant UI (search, multimodal, code, enterprise) with a speed differentiator; high breadth but single-provider-leaning, not the category frontier-definer.",
+    "sources": [
+     {
+      "url": "https://techcrunch.com/2025/02/19/mistrals-le-chat-tops-1m-downloads-in-just-14-days/",
+      "shows": "Le Chat consumer assistant feature set (web search, multimodal, fast answers)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "DeepSeek Chat (DeepSeek)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Hosted consumer chat UI at chat.deepseek.com (web + iOS/Android apps), currently fronting DeepSeek-V4 Preview (stronger agent + reasoning). Verified live June 2026. Note: the underlying DeepSeek-V3/V4 model weights are open (MIT) and scored separately in base_pretrained; this record scores the CHAT PRODUCT/UI itself, which is a proprietary free hosted service, not open-source software.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "client:proprietary(no public source for chat.deepseek.com app);backend:hosted-SaaS;note:underlying models open(MIT) but the chat application/service is closed",
+    "note": "The DeepSeek chat surface is a proprietary hosted service; openness of the V3/V4 weights it serves is a separate (model-layer) score. Scored as closed counterpart per ui_api recipe.",
+    "sources": [
+     {
+      "url": "https://www.deepseek.com/en/",
+      "shows": "Free hosted chat at chat.deepseek.com serving DeepSeek-V4 Preview; no source release for the chat app itself",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "medium",
+    "note": "DeepSeek's consumer app was one of the most-downloaded global AI apps after the early-2025 surge; the hosted chat surface remains a top-tier global assistant. No clean current MAU figure published on the vendor's own page, so confidence medium; reach >10M is well-supported by app-store ranking history. Attributed to the chat surface, not the model SKU.",
+    "sources": [
+     {
+      "url": "https://play.google.com/store/apps/details?id=com.deepseek.chat&hl=en_US",
+      "shows": "Official DeepSeek AI Assistant Android app listing (consumer chat surface, mass-market distribution)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "chat UI feature set: single-vendor model breadth (DeepSeek V3/V4 family only); file upload + long-context; web/app multimodal; agent capabilities (V4 Preview); no multi-provider model hub; consumer single-user (no enterprise multi-user/RAG-over-corp-data)",
+    "confidence": "medium",
+    "note": "Capable single-vendor consumer chat UI with strong underlying model, but narrow on the ui_api feature axes (one provider, limited enterprise/RAG/plugin breadth) vs frontier multi-model chat UIs. Not a category frontier-definer.",
+    "sources": [
+     {
+      "url": "https://www.deepseek.com/en/",
+      "shows": "Chat product features: file reading, long-context, V4 agent capabilities, single-vendor model",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Meta AI (Meta)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Meta's consumer AI assistant embedded across WhatsApp, Instagram, Messenger, Facebook + standalone meta.ai app. Proprietary; powered by Meta's Llama family (the underlying weights are use-restricted and scored separately at the model layer). Verified live June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "client:proprietary(closed consumer app/embedded surface);backend:hosted-SaaS;note:underlying Llama weights are restricted (non-OSI) and model-layer scored elsewhere; the assistant product is closed",
+    "note": "Meta AI the assistant/UI is a closed proprietary consumer product; scored as closed counterpart. (Llama-the-model openness is a separate restricted-class score.)",
+    "sources": [
+     {
+      "url": "https://www.demandsage.com/meta-ai-users/",
+      "shows": "Meta AI described as proprietary consumer assistant embedded across Meta apps + meta.ai",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "high",
+    "note": "Zuckerberg (May 2025 shareholder meeting, primary) stated Meta AI passed 1B monthly active users; reported growing to ~1.2B MAU by Q1 2026, ~63% of interactions on WhatsApp. Far above the >10M threshold. CAVEAT: a portion of these MAU reflect surfaced/embedded exposure inside WhatsApp/IG rather than deliberate assistant use (one analyst, Kantrowitz, argues engaged usage is far lower than OpenAI's). Attributed honestly to the embedded surface, not a standalone assistant count.",
+    "sources": [
+     {
+      "url": "https://www.facebook.com/yahoofinance/posts/zuck-says-meta-ai-has-more-than-one-billion-monthly-active-users-/1194397235888386/",
+      "shows": "Zuckerberg statement: Meta AI has more than one billion monthly active users",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://finance.yahoo.com/news/meta-virtually-no-ai-users-144058392.html",
+      "shows": "Analyst caveat: embedded MAU overstate engaged assistant usage vs OpenAI's ~900M",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "consumer assistant feature set: single-vendor (Llama family) model breadth; multimodal (text + image gen); embedded across messaging surfaces; consumer single-user (no enterprise RAG / multi-provider model hub / org-data grounding); limited plugin/tool breadth vs frontier chat UIs",
+    "confidence": "medium",
+    "note": "Broad-reach consumer assistant but narrow on the ui_api feature axes — one provider, consumer-only, limited enterprise/RAG/plugin depth. Not a category frontier-definer on capability.",
+    "sources": [
+     {
+      "url": "https://www.demandsage.com/meta-ai-users/",
+      "shows": "Feature scope: embedded multimodal consumer assistant across Meta apps, Llama-powered",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Doubao (ByteDance Seed / Volcano Engine)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "ByteDance's consumer AI assistant (chatbot app: iOS/Android/web), launched Aug 2023, running on Volcano Engine (Doubao models). Proprietary closed product. Introduced a paid Pro subscription tier ~May/Jun 2026. Verified live June 2026 (Wikipedia + China-market app trackers).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "client:proprietary(closed consumer app);backend:hosted-SaaS on Volcano Engine;models:proprietary Doubao(closed);license:Proprietary",
+    "note": "Doubao is a closed proprietary consumer assistant; no public source for the app and the Doubao models are not open-weight. Closed counterpart per ui_api recipe.",
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Doubao",
+      "shows": "Doubao is a proprietary ByteDance AI chatbot app (iOS/Android/web) on Volcano Engine",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "high",
+    "note": "~330M MAU as of May 2026 (down ~1.8% / 6.1M after signalling paid subscription), per China-market app trackers; ~345M in Mar 2026; most-popular AI mobile app in China. Volcano Engine reportedly serves ~120T tokens/day. Well above >10M. Counts are China-market MAU; sourced via aggregators rather than a single ByteDance primary disclosure, but corroborated across multiple trackers + Wikipedia.",
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Doubao",
+      "shows": "Doubao ~330M users by May 2026; China's most popular AI chatbot; 120T tokens/day",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://pandaily.com/bytedance-s-doubao-introduces-paid-pro-tier-as-user-base-dip-jun2026",
+      "shows": "MAU ~330M May 2026, down 6.1M after paid-tier signal; corroborating figure",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "feature_matrix",
+    "value": "consumer assistant feature set: single-vendor (Doubao models) breadth; multimodal; mobile-first consumer chat; beta AI e-commerce/agent features; consumer single-user (no enterprise RAG / multi-provider hub); China-market focused",
+    "confidence": "medium",
+    "note": "Feature-rich consumer assistant with multimodal + emerging agentic e-commerce, but narrow on the ui_api feature axes (single provider, consumer-only). Not a category frontier-definer on capability.",
+    "sources": [
+     {
+      "url": "https://news.aibase.com/news/26405",
+      "shows": "Doubao multimodal consumer assistant adding agentic AI e-commerce/order features",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Glean Assistant (Glean)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Enterprise AI assistant / 'AI coworker' grounded in the Glean Enterprise Graph (RAG over 100+ enterprise connectors), with a Model Hub (multiple frontier LLMs), multimodal output (images/slides/pages), and agentic sub-features (Skills, sub-agent orchestration). Proprietary single-tenant SaaS. May-2026 'enterprise AI coworker' launch verified live June 2026. BORDERLINE: agentic/Skills features touch orchestration_agents, but the product is primarily a human-in-driver enterprise chat/assistant UI grounded in company data, so kept in ui_api per the litmus (AI presented as a tool to the human).",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "client:proprietary;deployment:single-tenant SaaS;source:closed;license:Proprietary",
+    "note": "Glean Assistant is a proprietary enterprise SaaS — no public source, no open-core/self-host OSS tier. Closed.",
+    "sources": [
+     {
+      "url": "https://www.glean.com/product/assistant",
+      "shows": "Proprietary SaaS enterprise assistant; RAG over Enterprise Graph; not open source",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Glean surpassed $300M ARR (28 May 2026, vendor press), 15 months after $100M; nearly doubled Fortune 500 customer count YoY; 85%+ of customers use it across 5+ departments; 45% wDAU/wMAU engagement ratio; operating in 28 countries. ARR/enterprise-seat scale implies low-millions of enterprise seats — placed at 4 on reported enterprise traction. No raw seat/user count disclosed, so confidence medium and signal_type reported_traction (revenue + deployment breadth, not a measured user count).",
+    "sources": [
+     {
+      "url": "https://www.glean.com/press/glean-surpasses-300m-arr-unrivaled-enterprise-context-fuels-ai-adoption",
+      "shows": "$300M ARR (May 2026); Fortune 500 count ~doubled YoY; 85%+ across 5+ depts; 45% wDAU/wMAU; 28 countries",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "enterprise chat-UI feature set: model breadth (Model Hub, multiple frontier LLMs + adaptive model selection); RAG (Enterprise Graph over 100+ connectors); multimodal output (images/slides/interactive pages); plugins/actions (workflow triggers, record updates, Skills); multi-user/enterprise (single-tenant, permissions-aware) — strong across all five ui_api chat-UI axes; plus agentic sub-agent orchestration",
+    "confidence": "high",
+    "note": "Among the most feature-complete enterprise assistant UIs — multi-model hub, deep enterprise RAG, multimodal, actions, permissions-aware multi-user. Top-tier within ui_api for enterprise context; scored 4 (reserving 5 for an unambiguous category frontier-definer).",
+    "sources": [
+     {
+      "url": "https://www.glean.com/product/assistant",
+      "shows": "Model Hub multi-LLM, Enterprise Graph RAG over 100+ connectors, multimodal output, task execution/actions, agentic sub-agents",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "borderline_orchestration_agents"
+   ]
+  },
+  {
+   "product": "Glean Workplace Search AI (Glean)",
+   "type": "software",
+   "category": "ui_api",
+   "version_note": "Glean Search ('the foundation of enterprise AI') — AI-powered enterprise/workplace search UI built on the Enterprise Graph + Personal Graph, hybrid search across 100+ connectors (Slack, Teams, Zoom, ServiceNow, Zendesk, GitHub, etc.), permissions-aware. Proprietary single-tenant SaaS. Verified live June 2026. The search layer underpins Glean Assistant; scored here as the human-facing search UI/API product.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "client:proprietary;deployment:single-tenant SaaS;source:closed;license:Proprietary",
+    "note": "Glean Search is proprietary enterprise SaaS — no public source, no OSS/self-host tier. Closed.",
+    "sources": [
+     {
+      "url": "https://www.glean.com/product/overview",
+      "shows": "Glean Search as proprietary single-tenant SaaS enterprise search on Enterprise Graph",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Search is the foundational layer of the same Glean platform that crossed $300M ARR (May 2026) with near-doubled Fortune 500 count and 85%+ multi-department usage; effectively co-extensive with Glean's deployed seat base. Same caveat as Glean Assistant: no raw user count disclosed, so reported_traction at confidence medium. Adoption shared with the Assistant record (same platform) — not an independent measurement.",
+    "sources": [
+     {
+      "url": "https://www.glean.com/press/glean-surpasses-300m-arr-unrivaled-enterprise-context-fuels-ai-adoption",
+      "shows": "$300M ARR; Fortune 500 count ~doubled YoY; 85%+ across 5+ depts; search is platform foundation",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "feature_matrix",
+    "value": "enterprise search feature set: 100+ connector breadth (Slack/Teams/Zoom/ServiceNow/Zendesk/GitHub/...); Enterprise Graph + Personal Graph relevance/personalization; hybrid (semantic+keyword) search; permissions-aware results; single-tenant security; AI-assistant-grounding output",
+    "confidence": "high",
+    "note": "Best-in-class enterprise search on connector breadth, knowledge-graph relevance, and permissions-aware retrieval — a recognized leader in the enterprise-search-for-AI space. Scored 4 (top-tier; 5 reserved for an unambiguous frontier-definer).",
+    "sources": [
+     {
+      "url": "https://www.glean.com/product/overview",
+      "shows": "Enterprise Graph + Personal Graph, hybrid search, 100+ connectors, permissions-aware enterprise search",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  }
+ ]
+}

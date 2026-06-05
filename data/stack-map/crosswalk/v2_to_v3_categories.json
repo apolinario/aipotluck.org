@@ -1,0 +1,23 @@
+{
+  "_note": "Mechanical prior (C0) for OSS Map v3 re-scoring. The v2 stack-map category slugs and the v3 category slugs are IDENTICAL — only the ordinal prefix changed (v3 reorders the 11 categories into the Columbia framework arcs: model weights -> model code -> model datasets -> system/Product-UX). This map is 1:1: no merges, no splits. Use it to carry each v2 product's category forward; the scoring agent only reassigns on a clear litmus-test miss (playbook 5.1).",
+  "generated": "2026-06-04",
+  "layers": {
+    "model_weights": ["base_pretrained", "finetuned_chat"],
+    "model_code": ["inference_code", "finetuning_code", "evaluation_code"],
+    "model_datasets": ["benchmark_eval_data"],
+    "system_product_ux": ["orchestration_agents", "ui_api", "telemetry_observability", "agent_tools_protocols", "deployment"]
+  },
+  "map": {
+    "orchestration_agents":     {"v2_num": 1,  "v3_num": 7,  "layer": "system_product_ux"},
+    "base_pretrained":          {"v2_num": 2,  "v3_num": 1,  "layer": "model_weights"},
+    "finetuned_chat":           {"v2_num": 3,  "v3_num": 2,  "layer": "model_weights"},
+    "inference_code":           {"v2_num": 4,  "v3_num": 3,  "layer": "model_code"},
+    "finetuning_code":          {"v2_num": 5,  "v3_num": 4,  "layer": "model_code"},
+    "evaluation_code":          {"v2_num": 6,  "v3_num": 5,  "layer": "model_code"},
+    "deployment":               {"v2_num": 7,  "v3_num": 11, "layer": "system_product_ux"},
+    "ui_api":                   {"v2_num": 8,  "v3_num": 8,  "layer": "system_product_ux"},
+    "telemetry_observability":  {"v2_num": 9,  "v3_num": 9,  "layer": "system_product_ux"},
+    "benchmark_eval_data":      {"v2_num": 10, "v3_num": 6,  "layer": "model_datasets"},
+    "agent_tools_protocols":    {"v2_num": 11, "v3_num": 10, "layer": "system_product_ux"}
+  }
+}

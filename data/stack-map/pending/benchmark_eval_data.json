@@ -1,0 +1,1086 @@
+{
+ "category": "benchmark_eval_data",
+ "products": [
+  {
+   "product": "The Stack v2 (BigCode / Hugging Face)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "The Stack v2 (bigcode/the-stack-v2), BigCode x Software Heritage/INRIA. 3.28B unique files across 658 languages, ~67.5 TB uncompressed (32.1 TB deduped). Tech report arXiv:2402.19173. Verified live on HF June 2026 (~17k downloads last month).",
+   "openness": {
+    "score": 3,
+    "class": "gated",
+    "components": "license:Other(per-file permissive SPDX licenses, deduped);redistributability:gated(file IDs in parquet; actual content fetched from Software Heritage S3 after agreeing to ToU);datasheet:yes(comprehensive card + arXiv:2402.19173);access:login+Terms-of-Use acceptance + contact-info sharing required",
+    "confidence": "high",
+    "note": "Gated, not open: requires accepting Terms of Use, sharing contact info, and a separate Software Heritage/INRIA agreement for bulk content; the HF artifact ships only file IDs, content lives behind the SWH S3 bucket. Strong datasheet but the access wall puts it in gated.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/bigcode/the-stack-v2",
+      "shows": "GATED: must accept Terms of Use + share contact info; bulk content requires SWH/INRIA agreement; license 'Other'; 3.28B files / 658 langs; datasheet present",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "De-facto standard code pretraining corpus for the open-model ecosystem (basis for StarCoder2; cited in code-model release reports). HF shows only ~17k downloads/month for the gated base config, but its role as a standard pretraining source for frontier open code models gives it real reach beyond the raw download count. Note: this is a pretraining corpus more than an eval benchmark — see recategorize flag.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/bigcode/the-stack-v2",
+      "shows": "~17k downloads last month; StarCoder2 training source; multiple train/dedup variants",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "A dataset is not 'capable'; openness + adoption carry this category. Quality proxy not meaningfully scorable for a pretraining corpus.",
+    "sources": []
+   },
+   "flags": [
+    "gated",
+    "recategorize",
+    "recategorize → out_of_scope/pretraining_corpus: The Stack v2 is a code PRETRAINING corpus (Common-Crawl/RedPajama class), not a benchmark/eval dataset per the litmus test; reconciliation should consider dropping or recategorizing. Scored best-effort on the data-openness path."
+   ]
+  },
+  {
+   "product": "HumanEval (OpenAI)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "HumanEval (openai/openai_humaneval), 164 hand-written Python problems (prompt + canonical solution + unit tests), single test split, ~92 kB. From 'Evaluating LLMs Trained on Code' (Codex paper, arXiv:2107.03374). Verified live on HF June 2026 (~287k downloads last month).",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "license:MIT(OSI-style permissive, fully redistributable);redistributability:full(downloadable parquet, no gating);datasheet:yes(dataset card);size:164 problems/test split;contamination:hand-written to avoid GitHub-dump overlap (per design)",
+    "confidence": "high",
+    "note": "Fully open: MIT license, ungated, downloadable, with a dataset card. Textbook open-data case for this category.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/openai/openai_humaneval",
+      "shows": "MIT license; not gated; 164 problems; dataset card present; ~287k downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "Foundational code-generation benchmark cited as a standard in code-model release reports for years (pass@k metric originated here). ~287k HF downloads/month on the canonical config alone, plus heavy mirrored/forked use; sustained 1M+/yr equivalent. The reference code-gen eval despite being partially saturated by frontier models.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/openai/openai_humaneval",
+      "shows": "~287k downloads last month on canonical HumanEval config",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "A dataset is not 'capable'. Worth noting it is now largely saturated/contaminated as a discriminator, but per recipe capability is n/a here.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "GSM8K (OpenAI)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "GSM8K (openai/gsm8k), 8.5K grade-school math word problems (7,473 train / 1,319 test), ~5.9 MB, 'main' + 'socratic' configs. From 'Training Verifiers to Solve Math Word Problems' (arXiv:2110.14168). Verified live on HF June 2026 (~948k downloads last month).",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "license:MIT(OSI-style permissive, fully redistributable);redistributability:full(downloadable parquet, ungated);datasheet:yes(dataset card);size:8.5K problems;splits:train/test public",
+    "confidence": "high",
+    "note": "Fully open: MIT, ungated, downloadable, with a dataset card. Clean open-data case.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/openai/gsm8k",
+      "shows": "MIT license; not gated; 8.5K problems (7473 train/1319 test); dataset card; ~948k downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "The standard grade-school math-reasoning benchmark, cited near-universally in LLM release reports for years. ~948k HF downloads/month on the canonical config — the highest in this batch — puts annualized usage comfortably into the 1-10M band.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/openai/gsm8k",
+      "shows": "~948k downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset, not 'capable'. Now largely saturated by frontier models but per recipe capability is n/a.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "SWE-bench Verified (Princeton NLP / OpenAI)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "SWE-bench Verified (princeton-nlp/SWE-bench_Verified), 500 human-validated GitHub issue-resolution task instances (~2.1 MB) curated by OpenAI from the SWE-bench test set. Leaderboard at swebench.com. Verified live on HF June 2026 (~914k downloads last month).",
+   "openness": {
+    "score": 4,
+    "class": "open",
+    "components": "license:undeclared on HF dataset card (underlying SWE-bench harness repo is MIT);redistributability:full(downloadable parquet, ungated);datasheet:yes(dataset card + arXiv:2310.06770);held-out:no hidden split in Verified itself (the public 500-instance set is fully released; gold patches + tests included);data-source:real GitHub PR/issue pairs",
+    "confidence": "medium",
+    "note": "Effectively open — ungated, downloadable, full gold patches and tests, datasheet present — but the HF dataset card declares NO explicit license field, so the data-license class is inferred from the MIT harness repo and public redistribution rather than a stated data license. Scored 4 not 5 on that ambiguity. (Distinct from SWE-bench's broader/hidden variants which can carry held-out splits.)",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified",
+      "shows": "500 instances, ~2.1 MB, not gated, dataset card present, gold patch + FAIL_TO_PASS/PASS_TO_PASS tests included, leaderboard swebench.com",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/SWE-bench/SWE-bench/blob/main/LICENSE",
+      "shows": "MIT License for the SWE-bench harness",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/blob/main/README.md",
+      "shows": "dataset card metadata has no license field declared",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "The de-facto standard agentic-coding benchmark of 2025-2026: cited as the headline coding metric in nearly every frontier model release (GPT-5, Claude Opus, DeepSeek, Qwen, Kimi all report SWE-bench Verified). ~914k HF downloads/month plus a live, heavily-submitted leaderboard at swebench.com. Strongest 'citation-as-standard' signal in the batch.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified",
+      "shows": "~914k downloads last month; leaderboard at swebench.com",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset, not 'capable'. Notably high contamination-resistance and discriminating power for coding agents (real repo state, executable tests), but per recipe capability is n/a; the quality proxy is noted, not numerically scored.",
+    "sources": []
+   },
+   "flags": [
+    "near_open_source_non_osi_license",
+    "undeclared_dataset_license"
+   ]
+  },
+  {
+   "product": "CodeContests (Google DeepMind)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "CodeContests (deepmind/code_contests), competitive-programming dataset built for AlphaCode (arXiv:2203.07814). 13,328 train / 117 valid / 165 test problems, ~7.6 GB, with public/private/generated test cases and correct+incorrect human solutions in multiple languages. Verified live on HF June 2026 (~56k downloads last month).",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "license:CC-BY-4.0(open data license, attribution-only);redistributability:full(downloadable, ungated);datasheet:yes(comprehensive dataset card + arXiv:2203.07814);size:~4k problems w/ rich test cases;sources:Codeforces/AtCoder/CodeChef/Aizu/HackerEarth + Description2Code(MIT)+CodeNet(Apache-2.0)",
+    "confidence": "high",
+    "note": "Fully open: CC-BY-4.0, ungated, downloadable, with a thorough datasheet documenting provenance. Clean open-data case on the dataset-openness path.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/deepmind/code_contests",
+      "shows": "CC-BY-4.0 license; not gated; ~4k problems (13328 train/117 val/165 test); dataset card present; ~56k downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Well-known competitive-programming benchmark (the AlphaCode dataset) and a recurring reference for code-reasoning evals, but materially less ubiquitous than HumanEval/GSM8K/SWE-bench in current release reports. ~56k HF downloads/month — lowest in the batch — places it in the 100K-1M annualized band. Honest signal: solid research adoption, not headline-eval scale.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/deepmind/code_contests",
+      "shows": "~56k downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset, not 'capable'. High difficulty / good discriminating power for code reasoning, but per recipe capability is n/a.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "MBPP (Google Research)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "MBPP (google-research-datasets/mbpp), ~974 crowd-sourced basic Python problems (full) + 427 hand-verified (sanitized); splits train/test/validation/prompt. From 'Program Synthesis with LLMs' (Austin et al., arXiv:2108.07732). Verified live on HF June 2026 (~198k downloads last month).",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "license:CC-BY-4.0(open data license);redistributability:full(downloadable, ungated);datasheet:yes(extensive dataset card);size:~974 full / 427 sanitized problems w/ test_list;splits:train/test/validation/prompt public",
+    "confidence": "high",
+    "note": "Fully open: CC-BY-4.0, ungated, downloadable, with an extensive dataset card. Clean open-data case; the standard companion to HumanEval for basic Python code-gen eval.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/google-research-datasets/mbpp",
+      "shows": "CC-BY-4.0 license; not gated; ~974 full/427 sanitized problems; dataset card present; ~198k downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Standard basic-Python code-generation benchmark, routinely paired with HumanEval and cited in code-model release reports. ~198k HF downloads/month on the canonical config; widely mirrored/forked. Annualized usage and citation-as-standard support a 4, just below the HumanEval/GSM8K tier.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/google-research-datasets/mbpp",
+      "shows": "~198k downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset, not 'capable'. Largely saturated by frontier models; per recipe capability is n/a.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "LiveCodeBench",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "LiveCodeBench code_generation_lite, release_v5 = 880 problems (May 2023-Jan 2025); a 'live', continuously-updated contamination-free coding benchmark (problems from LeetCode/AtCoder/Codeforces) covering code generation, self-repair, test-output prediction, execution. HF dataset verified live June 2026 (71,393 monthly downloads).",
+   "openness": {
+    "score": 4,
+    "class": "open",
+    "components": "data:downloadable(HF parquet);license:cc(generic CC tag, specific variant unspecified on dataset card);datasheet:present(README documents versions/sources/structure);redistributable:yes;splits:public problems with hidden test cases bundled",
+    "confidence": "medium",
+    "note": "Open and downloadable with a datasheet, but the HF card declares only a generic 'cc' license (no specific CC variant), so the exact reuse terms are ambiguous — scored open but not a clean CC-BY; capped at 4.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/livecodebench/code_generation_lite",
+      "shows": "license:cc, 880 problems (release_v5), 71,393 monthly downloads, datasheet/README",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/datasets/livecodebench/code_generation_lite/blob/main/README.md",
+      "shows": "YAML metadata license: cc",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "71,393 monthly HF downloads (primary). De facto standard contamination-free coding benchmark — LiveCodeBench appears as a headline coding metric in frontier model release reports (e.g. DeepSeek-V4-Pro reports LiveCodeBench Pass@1 93.5 in the frozen flagship set). 'Usage' here is downloads + benchmark citation, not end-users; placed at 4 on download volume plus release-report standard status, which is the top adoption signal for a benchmark.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/livecodebench/code_generation_lite",
+      "shows": "71,393 monthly downloads",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://livecodebench.github.io/",
+      "shows": "contamination-free coding benchmark across generation/self-repair/execution",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "A dataset is not 'capable'. Contamination-resistance (the 'live' continuously-updated design) is a quality strength but not scored on the 1-5 capability axis per the recipe; openness + adoption carry this category.",
+    "sources": []
+   },
+   "flags": [
+    "ambiguous_license_generic_cc"
+   ]
+  },
+  {
+   "product": "EvalPlus (HumanEval+ / MBPP+)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "EvalPlus framework + datasets: HumanEval+ (164 problems, 80x more tests than original HumanEval) and MBPP+ (35x more tests than original MBPP), plus EvalPerf. Apache-2.0. HumanEval+ HF dataset verified live June 2026 (25,817 monthly downloads). Published NeurIPS 2023 (EvalPlus) / COLM 2024 (EvalPerf).",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "data:downloadable(HF parquet, evalplus/humanevalplus + mbppplus);license:Apache-2.0(OSI/open, on both framework and datasets);datasheet:present(card documents structure: task_id/prompt/canonical_solution/test);redistributable:yes;framework-code:open(Apache-2.0)",
+    "confidence": "high",
+    "note": "Clean open data: Apache-2.0 on both datasets and the evaluation framework, downloadable with a documented schema — full open class.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/evalplus/humanevalplus",
+      "shows": "Apache-2.0 license, 164 problems, 25,817 monthly downloads, documented schema",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/evalplus/evalplus",
+      "shows": "Apache-2.0 framework; HumanEval+/MBPP+ described",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "HumanEval+ alone: 25,817 monthly HF downloads (MBPP+ adds more). Top adoption signal for a benchmark = citation as a standard in frontier model release reports: EvalPlus is reported adopted by Meta (Llama 3.1/3.3), Alibaba (Qwen2.5-Coder/CodeQwen), DeepSeek, Allen AI (Tulu), Snowflake Arctic, StarCoder2. De facto standard for rigorous code-correctness eval. Level 4 on combined download volume + release-report standard status.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/evalplus/humanevalplus",
+      "shows": "25,817 monthly downloads",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/evalplus/evalplus",
+      "shows": "adopted by Meta/Qwen/DeepSeek/AllenAI/StarCoder2 for code eval; NeurIPS 2023",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset — not capability-scored. Its distinguishing quality (far denser test suites that catch overfitting vs base HumanEval/MBPP) is a quality strength, noted but not on the 1-5 axis.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "MultiPL-E",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "MultiPL-E: translations of HumanEval (161 problems) and MBPP (397 problems) into 22-23 programming languages (Ada, Clojure, C++, C#, D, Dart, Elixir, Go, Haskell, Java, Julia, JS, Lua, OCaml, PHP, Perl, R, Ruby, Racket, Rust, Scala, Shell, Swift, TS). HF dataset (nuprl/MultiPL-E, 47 subsets) verified live June 2026; integrated into the BigCode evaluation harness. arXiv 2208.08227 (IEEE TSE).",
+   "openness": {
+    "score": 4,
+    "class": "open",
+    "components": "data:downloadable(HF parquet, 47 subsets);license:MIT(on HF dataset card);datasheet:present(card documents prompts/doctests/tests/stop-tokens);redistributable:yes(HF);caveat:GitHub repo LICENSE is a non-OSI 'BSD-3-Clause + no-ML-training' modified license, conflicting with the MIT on the HF data artifact",
+    "confidence": "medium",
+    "note": "The scored artifact (HF dataset) is MIT and openly downloadable with a datasheet — open class. But the source repo carries a modified BSD-3 with an explicit 'may not be used as training data for ML' clause (non-OSI), a conflict worth flagging; scored on the data artifact's MIT terms, capped at 4 for the licensing inconsistency.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/nuprl/MultiPL-E",
+      "shows": "MIT license, 47 subsets across 22-23 languages, downloadable parquet, documented schema",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/nuprl/MultiPL-E/blob/main/LICENSE",
+      "shows": "modified BSD-3-Clause with no-ML-training-data restriction (non-OSI)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "The standard multilingual code-generation benchmark: integrated into the BigCode Code Generation LM Harness and HF's multilingual code-model evaluation, cited in multilingual code-model release reports (e.g. StarCoder2/CodeQwen). HF page did not surface a clean monthly-download count this run (showed likes only), and GitHub stars (~308) are last-resort and cannot exceed 3. Level 3 on harness-adoption / release-report traction; no verified usage_volume number, hence low confidence.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/nuprl/MultiPL-E",
+      "shows": "BigCode harness integration; multilingual code eval standard",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/nuprl/MultiPL-E",
+      "shows": "BigCode harness integration; ~308 stars (last-resort signal)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset/translation framework — not capability-scored.",
+    "sources": []
+   },
+   "flags": [
+    "mixed_tier_openness",
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "APPS",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "APPS (Hendrycks et al., NeurIPS 2021, arXiv 2105.09938): 10,000 coding problems (5,000 train / 5,000 test) with 131,777 test cases, Introductory/Interview/Competition difficulty, Python solutions. HF dataset (codeparrot/apps) verified live June 2026 (13,834 monthly downloads, MIT).",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "data:downloadable(HF parquet, codeparrot/apps);license:MIT(OSI/open);datasheet:present(card documents 10k problems, 131,777 tests, difficulty levels, schema);redistributable:yes;paper:public(NeurIPS 2021)",
+    "confidence": "high",
+    "note": "Clean open data: MIT, downloadable, documented datasheet, public paper — full open class.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/codeparrot/apps",
+      "shows": "MIT license, 10,000 problems, 131,777 test cases, 13,834 monthly downloads",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "13,834 monthly HF downloads (primary). A well-established code-generation benchmark cited widely since 2021, but by 2026 partly superseded by harder/contamination-free suites (LiveCodeBench, SWE-bench) for frontier evaluation. Level 3 on download volume + sustained-but-not-headline citation; honest read is a foundational-but-aging standard.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/codeparrot/apps",
+      "shows": "13,834 monthly downloads",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset — not capability-scored.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "MATH",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "MATH (Hendrycks et al., NeurIPS 2021, arXiv 2103.03874): 12,500 competition math problems (7,500 train / 5,000 test) with step-by-step LaTeX solutions, Level 1-5, 7 subjects. Original HF dataset (hendrycks/competition_math) verified June 2026 but ACCESS DISABLED via DMCA takedown — no longer redistributable from the canonical registry; license tag is MIT.",
+   "openness": {
+    "score": 2,
+    "class": "gated",
+    "components": "data:NOT downloadable from canonical HF repo (access disabled, DMCA takedown);license:MIT(declared);datasheet:present(card still documents schema);redistributability:BLOCKED on the primary registry — problems sourced from AMC/AIME competitions, takedown reflects unresolved rights",
+    "confidence": "medium",
+    "note": "Declared MIT, but the canonical HF dataset is access-disabled under a DMCA takedown, so it is not currently redistributable from the primary registry — scored gated/blocked rather than open. Mirrors and eval harnesses still embed it, but the primary source is walled; revisit if the takedown is resolved.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/hendrycks/competition_math",
+      "shows": "MIT tag, 12,500 problems, but 'Access Disabled' DMCA takedown notice (discussions/5)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "MATH is one of the most-cited math-reasoning standards — MATH / MATH-500 appears as a headline metric across frontier model release reports (the top adoption signal for a benchmark). Despite the canonical HF repo being takedown-walled, the benchmark itself remains pervasively used via mirrors and eval harnesses. Level 4 on release-report standard status; no clean current download count obtainable from the primary repo (disabled), hence reported_traction not usage_volume.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/hendrycks/competition_math",
+      "shows": "12,500-problem MATH benchmark, NeurIPS 2021, the standard competition-math eval",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset — not capability-scored.",
+    "sources": []
+   },
+   "flags": [
+    "dataset_access_disabled_dmca_takedown",
+    "redistributability_blocked"
+   ]
+  },
+  {
+   "product": "MMLU",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "MMLU (Massive Multitask Language Understanding; Hendrycks et al., ICLR 2021, arXiv 2009.03300): 57 subjects, ~14,042 test questions (231,400 total rows incl. auxiliary_train), 4-option multiple choice. HF dataset (cais/mmlu) verified live June 2026 (541,723 monthly downloads, MIT). Note: now largely saturated (top models 88-94%) and largely superseded by MMLU-Pro for frontier differentiation.",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "data:downloadable(HF parquet, cais/mmlu);license:MIT(OSI/open);datasheet:present(card documents 57 subjects, splits dev/val/test, schema);redistributable:yes;paper:public(ICLR 2021)",
+    "confidence": "high",
+    "note": "Clean open data: MIT, downloadable, documented datasheet, public paper — full open class.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/cais/mmlu",
+      "shows": "MIT license, 57 subjects, 231,400 rows / 14,042 test, 541,723 monthly downloads, documented splits",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "541,723 monthly HF downloads (primary) — highest in this batch. MMLU is the canonical general-knowledge LLM benchmark, reported in essentially every frontier model release (OpenAI, Anthropic, Google, Meta, DeepSeek, Qwen) since 2021 — the strongest possible release-report standard signal. Even post-saturation it remains a universal reference. Level 5 on download volume + ubiquitous release-report citation.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/cais/mmlu",
+      "shows": "541,723 monthly downloads",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.lxt.ai/blog/llm-benchmarks/",
+      "shows": "MMLU listed among the standard LLM benchmarks (corroborating, not headline)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset — not capability-scored. Saturation/contamination (top models 88-94%, superseded by MMLU-Pro for differentiation) is a quality caveat noted in version_note, not an openness or capability deduction.",
+    "sources": []
+   },
+   "flags": [
+    "benchmark_saturated"
+   ]
+  },
+  {
+   "product": "Scale SEAL Leaderboard (internal eval sets)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "Scale AI SEAL Leaderboards (Safety, Evaluations, and Alignment Lab); launched 2024, regularly updated with new domains (instruction-following, math, coding, multilinguality, etc.). The scored artifact is the private held-out eval sets behind the leaderboard. Verified live June 2026 via labs.scale.com/leaderboard (redirect from scale.com/leaderboard) and scale.com/blog/leaderboard.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "data:closed(proprietary held-out prompt sets, ~1,000 examples/domain, deliberately unpublished to prevent contamination/training-set leakage);datasheet:no(methodology described but examples not redistributable);license:none(not distributed);access:held-out(results visible on leaderboard, dataset not downloadable)",
+    "confidence": "high",
+    "note": "Intentionally private/held-out eval sets per the data-openness rubric (closed = proprietary held-out test suite); only the leaderboard results are public, the data itself is not.",
+    "sources": [
+     {
+      "url": "https://scale.com/blog/leaderboard",
+      "shows": "Scale states SEAL datasets remain private/unpublished, combining proprietary held-out sets (~1,000 examples) with some open-source sets",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "SEAL is a widely-referenced expert-driven private leaderboard cited across the LLM evaluation community as a contamination-resistant ranking; broad press and industry attention but no published download/usage count (the data is held-out by design). Reported-traction tier as an industry-standard reference rather than a measured usage_volume figure.",
+    "sources": [
+     {
+      "url": "https://scale.com/blog/leaderboard",
+      "shows": "SEAL positioned as a trusted, tamper-proof frontier-model leaderboard used to rank major LLMs",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Capability is not a meaningful axis for an eval dataset; openness + adoption carry this category per the recipe.",
+    "sources": []
+   },
+   "flags": [
+    "held_out_private_dataset"
+   ]
+  },
+  {
+   "product": "OpenAI Internal Evals (Preparedness Framework)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "OpenAI internal dangerous-capability evaluations referenced in the Preparedness Framework (v2, updated 15 Apr 2025). The scored artifact is the internal eval sets used for Tracked Categories. Verified via the OpenAI Preparedness Framework v2 PDF (cdn.openai.com) and openai.com/index/updating-our-preparedness-framework. NOT the separate open-source openai/evals harness (that is evaluation_code, not a dataset).",
+   "openness": {
+    "score": 0,
+    "class": "closed",
+    "components": "data:closed(internal eval sets for frontier-risk Tracked Categories, never published);datasheet:no;license:none;access:internal-only(only summarized/redacted results released alongside major deployments)",
+    "confidence": "high",
+    "note": "Fully internal/private eval datasets; only redacted result summaries are published, the underlying example sets are not redistributable.",
+    "sources": [
+     {
+      "url": "https://cdn.openai.com/pdf/18a02b5d-6b67-4cec-ab64-68cdfbddebcd/preparedness-framework-v2.pdf",
+      "shows": "Preparedness Framework v2 describes internal capability evaluations per Tracked Category with disclosures redacted/summarized to protect IP and safety",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "high",
+    "note": "Internal-only eval sets used solely by OpenAI for its own deployment decisions; no external users, no downloads, no third-party citation as a runnable standard. No honest external adoption signal exists.",
+    "sources": [
+     {
+      "url": "https://cdn.openai.com/pdf/18a02b5d-6b67-4cec-ab64-68cdfbddebcd/preparedness-framework-v2.pdf",
+      "shows": "evaluations are internal to OpenAI's deployment process, not a shared/usable external dataset",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Capability not a meaningful axis for an eval dataset.",
+    "sources": []
+   },
+   "flags": [
+    "held_out_private_dataset",
+    "internal_only_no_external_adoption"
+   ]
+  },
+  {
+   "product": "Anthropic Internal Coding Evals",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "Anthropic internal coding evaluations / benchmarks referenced (not released) in Claude model launches and system cards (e.g. Claude Opus 4.5, Nov 2025; partners GitHub Copilot cite 'internal coding benchmarks'). The scored artifact is the internal coding eval sets. Verified via anthropic.com/news/claude-opus-4-5. These are distinct from the public benchmarks (SWE-bench Verified, Aider Polyglot) Anthropic also reports.",
+   "openness": {
+    "score": 0,
+    "class": "closed",
+    "components": "data:closed(internal coding eval/take-home exam sets, never published);datasheet:no;license:none;access:internal-only(referenced in announcements/system cards, not distributed)",
+    "confidence": "high",
+    "note": "Internal proprietary coding eval sets; only narrative results are mentioned, the data is not redistributable.",
+    "sources": [
+     {
+      "url": "https://www.anthropic.com/news/claude-opus-4-5",
+      "shows": "references to internal coding benchmarks and an internal performance-engineering take-home exam, described as proprietary/internal, alongside (separately) public benchmarks",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "high",
+    "note": "Internal-only eval sets used solely by Anthropic; no external users, downloads, or third-party citation as a runnable standard. No honest external adoption signal.",
+    "sources": [
+     {
+      "url": "https://www.anthropic.com/news/claude-opus-4-5",
+      "shows": "evaluations described as internal benchmarks, not a shared external dataset",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Capability not a meaningful axis for an eval dataset.",
+    "sources": []
+   },
+   "flags": [
+    "held_out_private_dataset",
+    "internal_only_no_external_adoption"
+   ]
+  },
+  {
+   "product": "CRUXEval",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "CRUXEval (Code Reasoning, Understanding, and eXecution Evaluation) by Meta/FAIR (Gu, Roziere, Leather, Solar-Lezama, Synnaeve, Wang; arXiv 2401.03065, 2024). 800 Python functions with input/output pairs; two tasks: CRUXEval-I (input prediction) + CRUXEval-O (output prediction). Verified live June 2026 on github.com/facebookresearch/cruxeval.",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "data:open(800 samples public on GitHub + HF);license:MIT(permissive, redistributable);datasheet:yes(README + arXiv paper documenting construction);access:public(downloadable, fully released, not held-out)",
+    "confidence": "high",
+    "note": "Fully open public benchmark dataset under MIT with documented construction methodology.",
+    "sources": [
+     {
+      "url": "https://github.com/facebookresearch/cruxeval",
+      "shows": "MIT-licensed 800-sample Python code-reasoning benchmark, publicly downloadable with CRUXEval-I/-O tasks",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "medium",
+    "note": "Established code-reasoning benchmark cited in code-model evaluations and research since 2024; from Meta FAIR with a dedicated leaderboard. Solid research/eval-standard traction but a specialist code-execution benchmark, not mass-scale; placed at 3 on reported research/citation traction rather than a measured download figure.",
+    "sources": [
+     {
+      "url": "https://github.com/facebookresearch/cruxeval",
+      "shows": "maintained Meta FAIR benchmark repo with leaderboard, used as a code reasoning/execution evaluation standard",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Capability not a meaningful axis for an eval dataset.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "AI2 ARC",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "AI2 Reasoning Challenge (ARC), Allen Institute for AI (Clark et al. 2018, arXiv:1803.05457). 7,787 grade-school science multiple-choice questions: ARC-Challenge (2,590) + ARC-Easy (5,197). Foundational LLM commonsense/reasoning benchmark, still a standard in 2026 model release reports. Verified live June 2026 on huggingface.co/datasets/allenai/ai2_arc.",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "data:open(7,787 questions, downloadable on HF);license:CC-BY-SA-4.0(open data license, redistributable);datasheet:yes(HF dataset card + arXiv paper);access:public(train/val/test splits all released, not held-out)",
+    "confidence": "high",
+    "note": "Fully open under CC-BY-SA-4.0 with dataset card; the canonical open-data benchmark profile.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/allenai/ai2_arc",
+      "shows": "CC-BY-SA-4.0, 7,787 questions, public splits, dataset card, ~479K downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~479K HF downloads in the last month alone (so >1M cumulative) and one of the most-cited standard reasoning benchmarks routinely reported in frontier model release cards. Strong usage_volume signal as an entrenched evaluation standard.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/allenai/ai2_arc",
+      "shows": "~479,090 downloads in the last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Capability not a meaningful axis for an eval dataset.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "HellaSwag",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "HellaSwag (Zellers et al., ACL 2019) — commonsense NLI sentence-completion benchmark. 59,950 examples (39,905 train / 10,042 val / 10,003 test); 4-way multiple-choice over ActivityNet-derived contexts. Canonical commonsense benchmark reported in nearly every LLM release. Verified live June 2026 on huggingface.co/datasets/Rowan/hellaswag. Registry attributes to AI2/Allen Institute; primary authors are UW/AI2 (Rowan Zellers).",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "data:open(59,950 examples, downloadable on HF);license:MIT(permissive, redistributable);datasheet:yes(HF dataset card + ACL 2019 paper);access:public(train/val/test all released, not held-out)",
+    "confidence": "high",
+    "note": "Fully open under MIT with dataset card; canonical open-data benchmark profile.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/Rowan/hellaswag",
+      "shows": "MIT license, 59,950 examples, public splits, dataset card, ~270K downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~270K HF downloads last month (>1M cumulative) and a near-ubiquitous commonsense benchmark cited across LLM release reports and the Open LLM Leaderboard. Strong usage_volume signal as an entrenched standard.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/Rowan/hellaswag",
+      "shows": "~270,262 downloads in the last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Capability not a meaningful axis for an eval dataset.",
+    "sources": []
+   },
+   "flags": [
+    "registry_attribution_note: registry lists Allen Institute; primary authorship is Zellers et al. (UW/AI2) per ACL 2019"
+   ]
+  },
+  {
+   "product": "GPQA (Rein et al. (NYU))",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "GPQA (Graduate-Level Google-Proof Q&A), 448 expert-written multiple-choice questions in biology/physics/chemistry; the 198-question 'GPQA Diamond' high-quality subset is the headline benchmark cited in most 2025-2026 frontier model reports. Paper arXiv:2311.12022. HF dataset Idavidrein/gpqa verified live June 2026.",
+   "openness": {
+    "score": 4,
+    "class": "gated",
+    "components": "license:CC-BY-4.0(open,redistributable+attribution);access:gated(HF login + click-through agreement NOT to publish examples in plaintext, to limit training-corpus contamination);datasheet:present(paper+card);splits:public(no hidden held-out test)",
+    "confidence": "high",
+    "note": "Open CC-BY-4.0 license and fully redistributable, but access is login-walled with an anti-contamination click-through agreement, so the headline class is gated rather than open.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/Idavidrein/gpqa",
+      "shows": "CC-BY-4.0 license, gated access with anti-leakage agreement, 448 questions, dataset card present",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://arxiv.org/abs/2311.12022",
+      "shows": "GPQA paper documenting 448 expert questions + Diamond subset",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~129,881 HF downloads in the trailing month (primary, from the dataset page); GPQA Diamond is a de-facto-standard reasoning benchmark cited across frontier model release reports (appears as a capability basis throughout the v3 flagship set), which is the top adoption signal for a benchmark.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/Idavidrein/gpqa",
+      "shows": "129,881 downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Per recipe, a benchmark dataset is not 'capable'; openness and adoption carry this category. No capability axis assessed.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "IFEval (Google)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "IFEval (Instruction-Following Eval), 541 prompts with ~25 verifiable instruction types for programmatic (rule-based) scoring of LLM instruction-following. Paper arXiv:2311.07911. A core component of the HF Open LLM Leaderboard. HF dataset google/IFEval verified live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "license:Apache-2.0(OSI/open,redistributable);access:public(not gated);datasheet:present(card+structure+citation);splits:public(single train split, no held-out)",
+    "confidence": "high",
+    "note": "Fully open: Apache-2.0, ungated, redistributable, with a complete dataset card.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/google/IFEval",
+      "shows": "Apache-2.0 license, not gated, 541 examples, dataset card present",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~110,541 HF downloads in the trailing month (primary); a core benchmark on the HF Open LLM Leaderboard and routinely cited as the standard instruction-following eval, the top adoption signal for a benchmark.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/google/IFEval",
+      "shows": "110,541 downloads last month; described as core Open LLM Leaderboard benchmark",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset, not 'capable'; openness and adoption carry this category per recipe.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "MMLU-Pro (TIGER-Lab)",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "MMLU-Pro, ~12,032 questions across 14 disciplines with 10 answer options (vs MMLU's 4), expert-reviewed and contamination-hardened; test split (12,000) + small validation (70). Paper arXiv:2406.01574. HF dataset TIGER-Lab/MMLU-Pro verified live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "license:MIT(OSI/open,redistributable);access:public(not gated);datasheet:present(comprehensive card+leaderboard);splits:public(test+validation, no hidden held-out)",
+    "confidence": "high",
+    "note": "Fully open: MIT, ungated, redistributable, comprehensive card.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro",
+      "shows": "MIT license, not gated, 12,032 questions, dataset card + leaderboard present",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://arxiv.org/abs/2406.01574",
+      "shows": "MMLU-Pro paper documenting 14 disciplines, 10-option robust benchmark",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~154,919 HF downloads in the trailing month (primary, the highest of this batch); MMLU-Pro is a de-facto-standard knowledge/reasoning benchmark cited across frontier model reports (appears as a capability basis throughout the v3 flagship set).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro",
+      "shows": "154,919 downloads last month; active leaderboard with 27+ models",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset, not 'capable'; openness and adoption carry this category per recipe.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "MMMU (Yue et al. (MMMU Team))",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "MMMU (Massive Multi-discipline Multimodal Understanding), ~11,550 college-level multimodal (image+text) questions across 30 subjects/183 subfields, 30 image types. Splits: dev 150 / validation 900 / test 10,500 (test answers held out, scored via EvalAI). CVPR 2024, paper arXiv:2311.16502. HF dataset MMMU/MMMU verified live June 2026.",
+   "openness": {
+    "score": 4,
+    "class": "open",
+    "components": "license:Apache-2.0(OSI/open,redistributable);access:public(not gated);datasheet:present(comprehensive card);splits:dev+validation public, test answers held out (graded on EvalAI) to resist contamination",
+    "confidence": "high",
+    "note": "Open Apache-2.0 and ungated, but the test-set answers are held out behind EvalAI scoring (a partial held-out element), so scored a notch below a fully-public benchmark; class remains open since the data itself is redistributable.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/MMMU/MMMU",
+      "shows": "Apache-2.0 license, not gated, 11,550 questions, dev/val public + 10,500-question test, EvalAI scoring",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://arxiv.org/abs/2311.16502",
+      "shows": "MMMU paper documenting 30 subjects, 183 subfields, multimodal benchmark",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "high",
+    "note": "~86,107 HF downloads in the trailing month (primary); MMMU / MMMU-Pro is the de-facto-standard multimodal-understanding benchmark cited in frontier multimodal model reports (e.g. GPT-5 reports MMMU; Gemini reports MMMU-Pro in the v3 flagship set).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/MMMU/MMMU",
+      "shows": "86,107 downloads last month; EvalAI evaluation infrastructure",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset, not 'capable'; openness and adoption carry this category per recipe.",
+    "sources": []
+   },
+   "flags": []
+  },
+  {
+   "product": "TruthfulQA (Lin et al. (Oxford))",
+   "type": "dataset",
+   "category": "benchmark_eval_data",
+   "version_note": "TruthfulQA, 817 questions across 38 categories crafted to elicit imitative falsehoods/misconceptions; generation + multiple_choice configs. Paper arXiv:2109.07958 (2021). Now relatively dated and saturated by frontier models but still a widely-cited truthfulness benchmark. HF dataset truthfulqa/truthful_qa verified live June 2026.",
+   "openness": {
+    "score": 5,
+    "class": "open",
+    "components": "license:Apache-2.0(OSI/open,redistributable);access:public(not gated);datasheet:present(card+creation methodology+citation);splits:public(817 Qs, two configs, no hidden held-out)",
+    "confidence": "high",
+    "note": "Fully open: Apache-2.0, ungated, redistributable, complete card with creation methodology.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/truthfulqa/truthful_qa",
+      "shows": "Apache-2.0 license, not gated, 817 questions, dataset card present",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://arxiv.org/abs/2109.07958",
+      "shows": "TruthfulQA paper documenting 817 questions, 38 categories",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "~97,282 HF downloads in the trailing month (primary); long-standing widely-cited truthfulness benchmark. Medium confidence on the level because the benchmark is older (2021) and increasingly saturated, so download volume may overstate its current role in frontier evaluation vs GPQA/MMLU-Pro.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/datasets/truthfulqa/truthful_qa",
+      "shows": "97,282 downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "Dataset, not 'capable'; openness and adoption carry this category per recipe.",
+    "sources": []
+   },
+   "flags": []
+  }
+ ]
+}

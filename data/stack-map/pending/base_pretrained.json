@@ -1,0 +1,1066 @@
+{
+ "category": "base_pretrained",
+ "products": [
+  {
+   "product": "Llama 3.1 (Meta)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Llama 3.1 base/pretrained family (8B/70B/405B), released 23 Jul 2024, 128K context, ~15T training tokens. Base SKU (meta-llama/Llama-3.1-8B) verified live on Meta's HF org June 2026; superseded by Llama 3.2/3.3/4 but still listed and widely used. VERIFIED: Meta HF org shows Llama 4 (Scout/Maverick) as latest; 3.1 family (8B-405B) still listed.",
+   "openness": {
+    "score": 2,
+    "class": "restricted",
+    "components": "weights:open(downloadable on HF, gated/terms acceptance);data:closed;code:partial(inference utils via llama-models, no training code);license:Llama-3.1-Community-License(non-OSI: 700M MAU commercial cap + acceptable-use policy)",
+    "confidence": "high",
+    "note": "Weights open but Llama 3.1 Community License is non-OSI with a 700M MAU cap (confirmed in the actual Llama 3.1 license, Section 2); marketed as 'open' so flagged open_washed. Corrected source: the record originally cited the Llama 2 license text as a proxy; replaced with the actual Llama 3.1 Community License.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/meta-llama/Llama-3.1-8B",
+      "shows": "base pretrained 8B (page states base, not instruct), Llama 3.1 Community License, downloadable weights behind terms acceptance",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE",
+      "shows": "Llama 3.1 Community License Section 2 — 700M MAU commercial threshold requiring a separate Meta license (verified, replaces the prior Llama 2 proxy)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Foundational base family. CORRECTED: HF page for the 3.1 8B base shows ~1.29M downloads/month (not the 'tens of thousands' the record claimed) — the single base SKU alone is in the millions/mo. Family-level reach (Llama ~476M cumulative HF downloads per ATOM, second only to Qwen) well into 1-10M+ band. Calibrated to Llama 4 anchor (A4).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/meta-llama/Llama-3.1-8B",
+      "shows": "live HF page for 3.1 8B base, 1.29M+ downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/meta-llama",
+      "shows": "Meta Llama org lists 3.1 (8B-405B) among active families; latest is Llama 4",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:Artificial Analysis Intelligence Index",
+    "value": "Llama 3.1 405B: AA Intelligence Index 17, ranked #29/43, 'below average' vs current peers (peer average 23); mid-2024 non-reasoning model surpassed by 2026 frontier.",
+    "confidence": "medium",
+    "note": "Capable for its 2024 generation but clearly mid-tier in 2026; AA Index 17 / rank #29/43 confirmed on primary AA source. Matches Llama 4 anchor C3.",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/models/llama-3-1-instruct-405b",
+      "shows": "AA Intelligence Index 17, rank #29/43, below-average vs peers (avg 23)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_washed"
+   ]
+  },
+  {
+   "product": "Llama 5 (Meta)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "No Llama 5 exists. CONFIRMED via Meta's HF org (huggingface.co/meta-llama): latest family is Llama 4 (Scout/Maverick); families listed are Llama 4, 3.3, 3.2/3.2 Vision, 3.1 — no Llama 5 repo. Reject per adversarial version-existence check.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "confidence": "high",
+    "components": "weights:none(product does not exist);data:n/a;code:n/a;license:n/a",
+    "note": "Product does not exist; cannot be open. Defaulted to closed/low per reject path rather than fabricating a score. Verified absent from Meta's official model org.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/meta-llama",
+      "shows": "Meta Llama org shows Llama 4 as latest; no Llama 5 repo present",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": null,
+    "reach": null,
+    "signal_type": "unknown",
+    "confidence": "high",
+    "note": "Unverifiable product — no release, no weights, no usage signal possible.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/meta-llama",
+      "shows": "no Llama 5 listed in Meta's official model org (latest is Llama 4)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": null,
+    "basis": "n/a",
+    "value": null,
+    "confidence": "high",
+    "note": "No model exists to benchmark; declining to score.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/meta-llama",
+      "shows": "latest Meta release is Llama 4; Llama 5 absent",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "unverifiable_product"
+   ]
+  },
+  {
+   "product": "DeepSeek-V3 Base (DeepSeek)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "DeepSeek-V3-Base, 671B total / 37B active MoE (685B incl MTP module), 128K context, trained on 14.8T tokens. Released 27 Dec 2024 (arXiv 2412.19437). Base/pretrained SKU. VERIFIED live on HF June 2026: 671B/37B MoE base, MIT code + custom Model License, commercial use supported.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(downloadable on HF);data:closed;code:partial(inference code; no training pipeline/data);license:code MIT + model DeepSeek-Model-License(commercial OK with use-based AUP restrictions)",
+    "confidence": "high",
+    "note": "Weights open and commercially usable; model license is a custom non-OSI agreement (commercial use explicitly permitted per the card), so flagged near_open_source_non_osi_license. Verified: code MIT + custom model agreement.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-Base",
+      "shows": "671B/37B MoE base model, MIT code license + custom Model Agreement License, commercial use supported, 6,510 downloads/mo",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-Base/blob/main/LICENSE-MODEL",
+      "shows": "DeepSeek Model License — commercial use permitted with use-based restrictions",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Base checkpoint sees modest direct downloads (~6.5k/mo, confirmed), but it is the foundation of the heavily-served DeepSeek-V3 chat line and many derivatives; DeepSeek family is a primary driver of China open-model downloads. Placed at 4 on family/derivative reach, conservative vs the V3.2 chat anchor (A5).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-Base",
+      "shows": "live base repo with 6,510 downloads/mo + derivative interest",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:Artificial Analysis Intelligence Index",
+    "value": "DeepSeek-V3 (Dec 2024): AA Intelligence Index 16, ranked #31/43, 'below average' vs current frontier; strong open model at launch but surpassed by V3.1/V3.2/V4.",
+    "confidence": "medium",
+    "note": "Mid-tier in 2026; the base lacks instruct alignment so direct chat benchmarks reflect the chat sibling. Sits below the V3.2 anchor (C4).",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/models/deepseek-v3",
+      "shows": "AA Intelligence Index 16, rank #31/43, below-average; newer V3.1 recommended",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "DeepSeek-V4-Pro-Base (DeepSeek)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "CORRECTED NAME: record was titled 'DeepSeek-V4-Base' which does not exist as a repo. DeepSeek's HF org ships base SKUs as DeepSeek-V4-Pro-Base (1.6T total MoE) and DeepSeek-V4-Flash-Base (292B), updated Apr 27 2026 (V4 family released ~24 Apr 2026). Scored on DeepSeek-V4-Pro-Base as the flagship base. VERIFIED live June 2026.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(downloadable on HF, both Pro-Base and Flash-Base);data:closed;code:partial(inference/serving; no training pipeline);license:MIT(permissive, no use restrictions)",
+    "confidence": "medium",
+    "note": "MIT-licensed open weights (confirmed via the repo's LICENSE blob — note the HF page itself shows 'No model card', so license relied on the LICENSE file directly), data/training pipeline closed. Matches the DeepSeek-V4-Pro anchor (O3 open_weights). Confidence held at medium because the model card is empty.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-Base",
+      "shows": "1.6T base model, 24,567 downloads/mo, live repo, but 'No model card'",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-Base/blob/main/LICENSE",
+      "shows": "MIT License text, dated 2023 DeepSeek (LICENSE blob exists, 1.08 kB)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Base released ~6 weeks before scoring; ~24.5k base-checkpoint downloads/mo (confirmed) and broad serving of the V4-Pro chat line across providers. Calibrated to the DeepSeek-V4-Pro anchor (A4) — strong early traction, too recent to confirm >10M independently.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-Base",
+      "shows": "live base repo 24,567 downloads/mo",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/deepseek-ai",
+      "shows": "DeepSeek-V4 collection: V4-Pro (862B), V4-Flash (158B), V4-Pro-Base (1.6T), V4-Flash-Base (292B); confirms bare 'DeepSeek-V4-Base' does not exist",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench/MMLU-Pro/GPQA",
+    "value": "DeepSeek-V4-Pro (chat sibling of this base): SWE-bench Verified 80.6%, MMLU-Pro 87.5, GPQA Diamond 90.1, LiveCodeBench 93.5 — strongest open-source model at release (per frozen anchor).",
+    "confidence": "medium",
+    "note": "Frontier-tier for the category; benchmarks reflect the post-trained V4-Pro built on this base. Matches the DeepSeek-V4-Pro anchor (C5). Note: these figures are from the frozen anchor, not re-verified against a primary AA/vendor card in this pass (V4-Pro-Base card is empty).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-Base",
+      "shows": "1.6T V4-Pro base, the pretrained foundation of frontier V4-Pro",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "renamed_per_verify"
+   ]
+  },
+  {
+   "product": "Qwen 2.5 (Alibaba Cloud)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Qwen2.5 base/pretrained family (0.5B/1.5B/3B/7B/14B/32B/72B), released Sept 2024, 131K context, up to ~18T training tokens. Scored on flagship Qwen2.5-72B base SKU. VERIFIED live on HF June 2026: page states 'base 72B Qwen2.5 model', qwen license, 68,655 downloads/mo. Superseded by Qwen3/Qwen3.6.",
+   "openness": {
+    "score": 2,
+    "class": "restricted",
+    "components": "weights:open(downloadable on HF);data:closed;code:partial(inference; no training pipeline);license:mixed — 0.5B-14B Apache-2.0, but flagship 72B & 3B under Qwen-License-Agreement(non-OSI, 100M MAU commercial cap)",
+    "confidence": "high",
+    "note": "Flagship 72B base carries the Qwen License with a 100M MAU cap (CONFIRMED in license Section 4: >100M MAU commercial requires separate authorization), non-OSI, so the headline SKU is restricted; smaller sizes are Apache. Mixed-tier across the family.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/Qwen/Qwen2.5-72B/blob/main/LICENSE",
+      "shows": "Qwen License Agreement Section 4 — 100M MAU commercial cap requiring separate authorization",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/Qwen/Qwen2.5-72B",
+      "shows": "base 72B model (not instruct), qwen license tag, 68,655 downloads/mo",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Qwen family ~942M cumulative HF downloads (>50% of all global open-source downloads per ATOM); Qwen2.5 was the dominant fine-tune base through 2025. The 72B base alone shows 68,655 downloads/mo (confirmed). Family reach unambiguously >10M; calibrated to Qwen 3.6 anchor (A5).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/Qwen/Qwen2.5-72B",
+      "shows": "live 72B base repo, 68,655 downloads/mo",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:Artificial Analysis Intelligence Index",
+    "value": "Qwen2.5 72B: AA Intelligence Index 16, ranked #10/39, 'well above average' among similar-size open non-reasoning models — but a 2024 generation surpassed by Qwen3/Qwen 3.6.",
+    "confidence": "medium",
+    "note": "Strong for its generation, mid-tier in 2026; below the Qwen 3.6 anchor (C5).",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/models/qwen2-5-72b-instruct",
+      "shows": "AA Intelligence Index 16, rank #10/39, above-average for size",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "mixed_tier_openness",
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "Qwen3 (Alibaba Cloud)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Qwen3 base/pretrained family, released 2025 (tech report arXiv 2505.09388, May 2025), ~36T training tokens / 119 languages. Base SKUs incl Qwen3-30B-A3B-Base (30.5B total/3.3B active MoE) and Qwen3-235B-A22B-Base. VERIFIED live on HF June 2026: 30B-A3B-Base is Apache-2.0, 42,966 downloads/mo. Superseded by Qwen3.6.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(downloadable on HF);data:closed;code:partial(inference; no training pipeline/data);license:Apache-2.0(OSI) across base variants e.g. 30B-A3B-Base",
+    "confidence": "high",
+    "note": "Apache-2.0 base weights with no MAU cap (cleaner than Qwen2.5's flagship license, confirmed); data and training code closed -> open_weights, matching the Qwen 3.6 anchor (O3).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/Qwen/Qwen3-30B-A3B-Base",
+      "shows": "Qwen3 base MoE (30.5B/3.3B), Apache-2.0, 42,966 downloads/mo",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Current-generation flagship base of the dominant Qwen family (~942M cumulative HF downloads per ATOM). Qwen3 235B flagship line shows 480,710 downloads/mo (confirmed); base 30B-A3B ~43k/mo (confirmed). Unambiguously >10M; calibrated to Qwen 3.6 anchor (A5).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
+      "shows": "480,710 downloads/mo for the Qwen3 235B flagship line",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/Qwen/Qwen3-30B-A3B-Base",
+      "shows": "Qwen3 base 42,966 downloads/mo",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:Artificial Analysis Intelligence Index",
+    "value": "Qwen3 235B-A22B is a hybrid thinking/non-thinking MoE that was near-frontier among open models on release (mid-2025); strong reasoning + agentic coding, but surpassed by Qwen 3.6 (C5) and DeepSeek-V4 by mid-2026.",
+    "confidence": "medium",
+    "note": "Near-frontier for its 2025 generation, now just below the current open frontier; placed at C4 (one tier under the Qwen 3.6 anchor C5).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
+      "shows": "Qwen3 235B-A22B hybrid thinking model, tech report arXiv 2505.09388",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Mistral Large 2 (Mistral AI)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Mistral Large 2 (Large-Instruct-2407, July 2024; revised 2411), 123B dense, 128K context, 80+ languages. Mistral ships only the instruct SKU publicly — no separately released base/pretrained weights (CONFIRMED: HF page lists only the instruct variant). Verified live on HF June 2026; superseded by Mistral Large 3.",
+   "openness": {
+    "score": 2,
+    "class": "restricted",
+    "components": "weights:open(downloadable on HF);data:closed;code:closed;license:Mistral-Research-License(MRL, non-OSI: research/non-commercial only — commercial use requires a paid Mistral agreement)",
+    "confidence": "high",
+    "note": "Weights downloadable but under the Mistral Research License — non-commercial/research-only (CONFIRMED: card explicitly restricts to personal/scientific/academic non-profit use; commercial requires contacting Mistral). Notable contrast with Mistral Large 3's Apache-2.0. No base-only weights published; public SKU is instruct.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2407",
+      "shows": "123B instruct model, Mistral AI Research License (research/non-commercial only), 7,455 downloads/mo, no separate base release",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Modest direct HF downloads (~7.5k/mo, confirmed); the research-only license caps commercial deployment, limiting reach vs permissively-licensed peers. Placed at 3.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2407",
+      "shows": "live repo 7,455 downloads/mo",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:Artificial Analysis Intelligence Index",
+    "value": "Mistral Large 2 (Nov '24): AA Intelligence Index 15, ranked #11/39, 'above average' for similar-size open non-reasoning models; vendor card reports MMLU 84.0, HumanEval 92, GSM8K 93.",
+    "confidence": "medium",
+    "note": "Solid 2024-generation model, mid-tier in 2026; below the Mistral Large 3 anchor (C4).",
+    "sources": [
+     {
+      "url": "https://artificialanalysis.ai/models/mistral-large-2",
+      "shows": "AA Intelligence Index 15, rank #11/39, above-average for size",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2407",
+      "shows": "vendor card: MMLU 84.0, HumanEval 92, GSM8K 93",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Gemma 2 (Google DeepMind)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Gemma 2 family (9B, 27B), released 27 Jun 2024. Both pretrained (PT) and instruction-tuned (IT) weights released; scored on the 27B base (google/gemma-2-27b). 13T tokens (27B). VERIFIED live on HF June 2026: 27B base (PT), Gemma license, gated, 5,893 downloads/mo. Succeeded by Gemma 3.",
+   "openness": {
+    "score": 2,
+    "class": "restricted",
+    "components": "weights:open(gated, terms acceptance required);data:closed;code:closed;license:Gemma-License(non-OSI, Prohibited-Use-Policy)",
+    "confidence": "high",
+    "note": "Weights open but gated under the non-OSI Gemma License with a prohibited-use policy (CONFIRMED: repo requires accepting conditions to access files); marketed as 'open' so flagged open_washed. Matches the Gemma 3 anchor (O2 restricted).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/google/gemma-2-27b",
+      "shows": "27B base (PT, not instruct), Gemma license, gated access requiring terms acceptance, 5,893 downloads/mo, 13T tokens",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://blog.google/technology/developers/google-gemma-2/",
+      "shows": "Google release post: Gemma license, 9B/27B, 27 Jun 2024",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "Among the most-downloaded open model families; the 27B-IT shows ~133.6k downloads/mo and the family runs widely via HF, Ollama, Kaggle, Google AI tooling (27 finetunes, 14 quantizations, 10 adapters listed on the base card). Family-level reach in the tens-of-millions; calibrated to the Gemma 3 anchor (A5).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/google/gemma-2-27b-it",
+      "shows": "~133.6k downloads/mo for Gemma 2 27B-IT",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/google/gemma-2-27b",
+      "shows": "27B base 5,893 downloads/mo, 27 finetunes / 14 quantizations / 10 adapters, broad multi-platform distribution",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:MMLU",
+    "value": "Gemma 2 27B-IT: MMLU 75.2 (5-shot), HumanEval 51.8, GSM8K 74.0, MATH 42.3, BIG-Bench 74.9; 'best-in-class for size' at launch, competitive with 2x-larger 2024 models.",
+    "confidence": "medium",
+    "note": "Strong for size in 2024, mid-tier non-reasoning model in 2026; matches the Gemma 3 anchor (C3).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/google/gemma-2-27b-it",
+      "shows": "model card benchmarks: MMLU 75.2, HumanEval 51.8, GSM8K 74.0, MATH 42.3",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "open_washed"
+   ]
+  },
+  {
+   "product": "Yi-1.5 (01.AI)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Yi-1.5 base family (6B/9B/34B + 32K context variants), open-sourced 2024-05-13 by 01.AI. Continuously pre-trained on Yi with +500B tokens (3.6T total). Base SKUs (Yi-1.5-9B, Yi-1.5-34B) scored here; Yi-1.5-*-Chat are the instruct SKUs (finetuned_chat). Verified live on HF June 2026; a dated 2024-era generation vs 2026 frontier.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(Apache-2.0, on HF);data:closed(pretraining corpus not released);code:partial(inference/usage examples; no training pipeline);license:Apache-2.0(OSI, permissive, no use restrictions)",
+    "confidence": "high",
+    "note": "Permissive Apache-2.0 weights but training data and full training code are not released, so open_weights not open_source. Apache-2.0 confirmed on HF base cards 2026-06-04.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/01-ai/Yi-1.5-34B",
+      "shows": "Apache-2.0 license, 34B base model (base vs chat variants listed), downloadable weights",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/01-ai/Yi-1.5-9B",
+      "shows": "Apache-2.0 license, 9B base model, base/chat variants listed",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "HF monthly downloads are modest in 2026 (Yi-1.5-34B 10,925/mo, Yi-1.5-9B 16,052/mo, both confirmed 2026-06-04) as a 2024-era family superseded by Qwen/Llama/DeepSeek generations. Cumulative reach across variants + ModelScope/wisemodel mirrors lands in the early-adopter band; relevance has faded.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/01-ai/Yi-1.5-34B",
+      "shows": "10,925 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/01-ai/Yi-1.5-9B",
+      "shows": "16,052 downloads last month",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "benchmark:MMLU/GSM8K",
+    "value": "Yi-1.5-34B base: MMLU 76.3, C-Eval 81.4, BBH 54.3; 34B-Chat GSM8K 90.2. Competitive in 2024 mid-size class.",
+    "confidence": "medium",
+    "note": "Strong for a 2024 sub-35B model but well below 2026 frontier open models (DeepSeek-V4, Qwen 3.6); calibrates near Falcon 3 (C2) on the dated-generation ladder. Benchmarks from the 01-ai GitHub repo (not the HF card).",
+    "sources": [
+     {
+      "url": "https://arxiv.org/abs/2403.04652",
+      "shows": "Yi foundation-models tech report with benchmark methodology",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/01-ai/Yi-1.5",
+      "shows": "Yi-1.5 base benchmark results (MMLU 76.3, BBH 54.3, C-Eval 81.4)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "InternLM 2.5 (Shanghai AI Laboratory)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "InternLM2.5-7B base (~8B params, 1M-token context), released 2024 (InternLM2 tech report arXiv:2403.17297). Base SKU scored here; InternLM2.5-7B-Chat is the instruct SKU (finetuned_chat). Verified live on HF June 2026; a 2024-era 7B model.",
+   "openness": {
+    "score": 3,
+    "class": "open_weights",
+    "components": "weights:open(custom 'Free Commercial License' — academic free, commercial use free but requires an application form);data:closed(pretraining corpus not released);code:open(Apache-2.0 training/inference code on GitHub);license:Apache-2.0(code, OSI) + custom weights license(non-OSI, application step)",
+    "confidence": "medium",
+    "note": "Code is OSI (Apache-2.0) but the weights license is a custom non-OSI 'Free Commercial License' requiring a commercial-license application form (HF card confirms form link, 2026-06-04), so open_weights not open_source; flagged for the non-OSI weights term.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/internlm/internlm2_5-7b",
+      "shows": "model card: code Apache-2.0; weights fully open for academic research and free commercial usage via application form (QQ survey link)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/InternLM/InternLM/blob/main/model_cards/internlm2.5_7b.md",
+      "shows": "InternLM2.5-7B base model card with benchmark results",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "usage_volume",
+    "confidence": "medium",
+    "note": "HF monthly downloads modest in 2026 (3,521/mo for the 7B base, confirmed 2026-06-04) as a 2024-era model; distributed via HF, Ollama, ModelScope. Cumulative reach across the InternLM2.5 family + mirrors sits in the early-adopter band; specialist/research uptake, not production scale.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/internlm/internlm2_5-7b",
+      "shows": "3,521 downloads last month",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://ollama.com/internlm/internlm2.5",
+      "shows": "InternLM2.5 distributed via Ollama",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "benchmark:MMLU",
+    "value": "InternLM2.5-7B base: MMLU 71.6 (5-shot, OpenCompass); matches Yi-1.5-9B, beats Llama-3-8B (66.4).",
+    "confidence": "medium",
+    "note": "Strong sub-8B model for 2024 with 1M-context, but below 2026 frontier; calibrates near Falcon 3 (C2) / Yi-1.5 (C2) on the dated small-model ladder. MMLU 71.6 confirmed on HF card 2026-06-04.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/internlm/internlm2_5-7b",
+      "shows": "InternLM2.5-7B base MMLU 71.6 (OpenCompass)",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://github.com/InternLM/InternLM/blob/main/model_cards/internlm2.5_7b.md",
+      "shows": "InternLM2.5-7B base MMLU 71.6 (OpenCompass)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "near_open_source_non_osi_license"
+   ]
+  },
+  {
+   "product": "GPT-4o (base) (OpenAI)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "OpenAI GPT-4o, multimodal (text+image in, text out), 128K context; first snapshot gpt-4o-2024-05-13, knowledge cutoff Oct 2023. API-only, no released weights. Verified live in OpenAI's model docs June 2026 (developers.openai.com). A 2024-era flagship, since surpassed by the GPT-5 line but still served via API/ChatGPT.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "confidence": "high",
+    "note": "No downloadable weights; API/ChatGPT-only, like the GPT-5 anchor (O1 closed). Confirmed API-only with 128K context and Oct 2023 cutoff on OpenAI docs 2026-06-04.",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/models/gpt-4o",
+      "shows": "GPT-4o API-only model, 128K context, text+image input, no open weights, Oct 2023 cutoff",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "medium",
+    "note": "GPT-4o was the default ChatGPT model for much of 2024-2025 before GPT-5; ChatGPT crossed ~900M WAU (Feb 2026) and ~1B (May 2026). Attributed honestly to the ChatGPT surface GPT-4o powered, not a standalone GPT-4o count; well above the >10M threshold. WAU figure corroborated via aggregator (demandsage), not a primary OpenAI disclosure, but the threshold is not close so no downgrade.",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/models/gpt-4o",
+      "shows": "GPT-4o served as a primary OpenAI API/ChatGPT model",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://www.demandsage.com/chatgpt-statistics/",
+      "shows": "ChatGPT ~900M+ weekly active users (aggregator, corroborating surface scale)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:MMLU/MMMU",
+    "value": "GPT-4o launch-era external figures: MMLU ~88.7, MMMU ~69.1 (NOT confirmed on current OpenAI docs, which carry no benchmark numbers); a 2024 frontier non-reasoning multimodal model.",
+    "confidence": "medium",
+    "note": "Frontier in 2024 but surpassed by 2026 reasoning frontier (GPT-5 C5, Gemini 3.5 C5); per the recipe, a mid-2025-and-earlier model that has been surpassed scores 3, not 5. Caveat: the cited OpenAI docs page (verified 2026-06-04) shows NO benchmark figures — it only calls GPT-4o 'our most capable model outside our o-series'; the MMLU/MMMU values are launch-era external numbers and need a primary benchmark source to back the headline.",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/models/gpt-4o",
+      "shows": "GPT-4o positioned as 'most capable model outside o-series', 128K context, text+image; no benchmark figures present",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "headline_metric_unsourced"
+   ]
+  },
+  {
+   "product": "GPT-4.1 (base) (OpenAI)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "OpenAI GPT-4.1, snapshot gpt-4.1-2025-04-14, ~1M-token context (1,047,576), knowledge cutoff Jun 2024; OpenAI's 'smartest non-reasoning' model, strong at instruction-following/tool calling. API-only, no released weights. Verified live in OpenAI's model docs June 2026; positioned below the GPT-5 reasoning line.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "confidence": "high",
+    "note": "No downloadable weights; API-only, like the GPT-5 anchor (O1 closed). Confirmed API-only with 1M context (1,047,576) on OpenAI docs 2026-06-04.",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/models/gpt-4.1",
+      "shows": "GPT-4.1 API-only model, 1,047,576 context window, no open weights",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 4,
+    "reach": "1M-10M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Widely available developer API model (default API-tier non-reasoning model in the GPT-4.1 family, incl. mini/nano) but not the primary ChatGPT default surface (that's the GPT-5 line by 2026). No disclosed standalone user/usage count; placed at 4 on broad developer-API distribution rather than a verified figure. Directional.",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/models/gpt-4.1",
+      "shows": "GPT-4.1 served broadly via OpenAI API as the non-reasoning instruction/tool model",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:n/a",
+    "value": null,
+    "confidence": "low",
+    "note": "OpenAI's docs market GPT-4.1 as a strong non-reasoning model (instruction-following, tool calling, 1M context) but the docs page surfaces no SWE-bench/MMLU figure (confirmed 2026-06-04: no quantitative benchmarks present), and it explicitly recommends GPT-5 for complex tasks. A non-reasoning 2025 model below the 2026 reasoning frontier; scored 3 on positioning, with no headline benchmark number asserted (value null).",
+    "sources": [
+     {
+      "url": "https://developers.openai.com/api/docs/models/gpt-4.1",
+      "shows": "GPT-4.1 described as 'smartest non-reasoning model', recommends GPT-5 for complex tasks, no benchmark figures",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": []
+  },
+  {
+   "product": "Claude Sonnet 4.6 (base) (Anthropic)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Anthropic Claude Sonnet 4.6, released Feb 17 2026; API/claude.ai only, 1M-token context (beta). No 'base' (pre-instruct) weights exist; this is a closed proprietary chat model listed here as its closed counterpart. Cites primary vendor source (anthropic.com/news); product version is post-Jan-2026 and not independently re-verifiable by this run, but openness posture (closed API-only) is consistent with Anthropic's established practice.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "confidence": "high",
+    "note": "Fully closed API-only model; no downloadable weights of any kind.",
+    "sources": [
+     {
+      "url": "https://www.anthropic.com/news/claude-sonnet-4-6",
+      "shows": "Sonnet 4.6 launch, API/claude.ai only, no weights",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "medium",
+    "note": "Default model for Free/Pro on claude.ai + Claude Cowork; attributed to the claude.ai surface (>10M), not a standalone SKU count. Surface-attribution, not a measured per-model figure.",
+    "sources": [
+     {
+      "url": "https://www.anthropic.com/news/claude-sonnet-4-6",
+      "shows": "default model on Free/Pro claude.ai + Cowork; enterprise users",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:SWE-bench Verified",
+    "value": "SWE-bench Verified ~75% (80.2% with prompt modification); 'approaches Opus-level intelligence'",
+    "confidence": "medium",
+    "note": "Vendor-reported frontier-tier coding; calibrated to closed-frontier anchors. Not independently verified.",
+    "sources": [
+     {
+      "url": "https://www.anthropic.com/news/claude-sonnet-4-6",
+      "shows": "SWE-bench Verified ~75% / 80.2%, approaches Opus-level",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "post_cutoff_unverifiable_by_run"
+   ]
+  },
+  {
+   "product": "Gemini (base) (Google DeepMind)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Google DeepMind Gemini family; latest released Gemini 3.5 Flash (3.5 Pro 'coming soon'). Proprietary/API-only via Gemini app, AI Studio, Gemini API, Antigravity. No open base weights (distinct from open-weight Gemma); listed as closed counterpart. Cites primary vendor source; latest version is post-Jan-2026 and not independently re-verifiable by this run.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "confidence": "high",
+    "note": "Closed API-only; no open-weights Gemini version exists (distinct from open-weight Gemma).",
+    "sources": [
+     {
+      "url": "https://deepmind.google/models/gemini/",
+      "shows": "Gemini 3.5 Flash, proprietary/API-only, no open weights",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 5,
+    "reach": ">10M",
+    "signal_type": "active_users",
+    "confidence": "medium",
+    "note": "Powers Gemini app + AI Mode in Search; Gemini app reported ~750M MAU (TechCrunch Feb 2026). Surface-attribution, not a per-model count. Headline 750M figure is from an aggregator/press source (TechCrunch), not a Google primary disclosure — confidence downgraded high->medium.",
+    "sources": [
+     {
+      "url": "https://deepmind.google/models/gemini/",
+      "shows": "distributed via Gemini app / AI Studio / Search",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://techcrunch.com/2026/02/04/googles-gemini-app-has-surpassed-750m-monthly-active-users/",
+      "shows": "Gemini app >750M MAU (press source, not vendor primary)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 5,
+    "basis": "benchmark:Terminal-Bench 2.1",
+    "value": "Gemini 3.5 Flash: Terminal-Bench 2.1 76.2%, MCP Atlas 83.6%, CharXiv 84.2%",
+    "confidence": "medium",
+    "note": "Latest Gemini at closed frontier per vendor; not independently verified.",
+    "sources": [
+     {
+      "url": "https://deepmind.google/models/gemini/",
+      "shows": "Terminal-Bench 2.1 76.2%, MCP Atlas 83.6%, CharXiv 84.2%",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "post_cutoff_unverifiable_by_run"
+   ]
+  },
+  {
+   "product": "Grok (base) (xAI)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "xAI Grok family; latest Grok 4.20 (API GA Mar 2026; rev 4.20 0309 v2 Apr 7 2026), multi-agent, 2M-token context. Proprietary/API-only via x.ai + X; current generation has no open base weights (older Grok-1 weights were released). Listed as closed counterpart. Cites primary vendor docs; latest version is post-Jan-2026 and not independently re-verifiable by this run.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API-only)",
+    "confidence": "high",
+    "note": "Current Grok closed API-only; older Grok-1 weights were released but current generation is not.",
+    "sources": [
+     {
+      "url": "https://docs.x.ai/developers/release-notes",
+      "shows": "Grok 4.20 API release notes, proprietary API",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Selectable by free X users (rate-limited) + SuperGrok/X Premium+; available on OpenRouter. No clean standalone usage count; conservative tier per anchor. Directional.",
+    "sources": [
+     {
+      "url": "https://openrouter.ai/x-ai/grok-4.20",
+      "shows": "Grok 4.20 served via OpenRouter (aggregator)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 4,
+    "basis": "benchmark:Artificial Analysis Intelligence Index",
+    "value": "Grok 4.20: AA Intelligence Index v4.0 score 49, #24 of 150",
+    "confidence": "low",
+    "note": "Strong but below GPT-5/Gemini 3.5/Opus 4.7 leaders. NOTE: the cited capability value (AA Intelligence Index) is NOT shown on the cited primary source (docs.x.ai release notes), which only documents the multi-agent release — the AA index figure is unsourced here. Confidence downgraded medium->low pending an Artificial Analysis citation.",
+    "sources": [
+     {
+      "url": "https://docs.x.ai/developers/release-notes",
+      "shows": "Grok 4.20 multi-agent release (does NOT show the AA Index value)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "post_cutoff_unverifiable_by_run",
+    "headline_metric_unsourced"
+   ]
+  },
+  {
+   "product": "Amazon Nova (base) (Amazon)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Amazon Nova foundation models; current generation per live vendor page (June 2026): Nova 2 Lite, Nova 2 Pro (Preview), Nova 2 Sonic, plus Nova Multimodal Embedding (earlier Micro/Lite/Pro launched Dec 2024). Proprietary/API-only via Amazon Bedrock + SageMaker; no open weights. Listed as closed counterpart. Verified live June 2026.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(Bedrock/SageMaker API-only)",
+    "confidence": "high",
+    "note": "Closed proprietary models served only via AWS Bedrock/SageMaker; no downloadable weights. Confirmed on live vendor page.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/nova/models/",
+      "shows": "Nova 2 Lite/Pro(Preview)/Sonic + Multimodal Embedding via Bedrock/SageMaker, proprietary",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 3,
+    "reach": "100K-1M",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Distributed to AWS Bedrock customer base; vendor page cites named case studies (Securonix 33% faster, AWS Transform up to 60% tool-calling efficiency). CORRECTION: record cited 'Securonix, Guardoc Health' but the live page shows Securonix + AWS Transform, not Guardoc Health. No disclosed user count; level 3 reflects platform distribution, not a measured figure.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/nova/models/",
+      "shows": "Bedrock distribution + named case studies (Securonix, AWS Transform)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 3,
+    "basis": "benchmark:n/a",
+    "value": null,
+    "confidence": "low",
+    "note": "Live vendor page confirms NO standardized benchmark scores; positioning is price-performance + case studies. Mid-tier vs 2026 frontier; scored 3 directionally.",
+    "sources": [
+     {
+      "url": "https://aws.amazon.com/nova/models/",
+      "shows": "price-performance positioning, no standardized benchmark scores",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "source_attribution_corrected"
+   ]
+  },
+  {
+   "product": "Reka Core (Reka AI)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Reka Core, frontier-class multimodal LLM announced 15 Apr 2024; 128K context. Proprietary — API/on-prem/on-device; no open weights. Instruction/multimodal-chat model. Verified live: launch page confirms API/on-prem/on-device availability and the MMMU/Claude-3-Opus claims. NOTE: '~5T tokens / 32 languages / from scratch' details are NOT on the cited launch page (they originate in Reka's separate technical report) — verify against that source if retained. >12mo old; scored best-effort and flagged stale.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed(mix of public+licensed proprietary);code:closed;license:Proprietary(API/on-prem, no weights)",
+    "confidence": "high",
+    "note": "Proprietary multimodal model; API/on-prem/on-device deployment but no downloadable weights. Confirmed on launch page.",
+    "sources": [
+     {
+      "url": "https://reka.ai/news/reka-core-our-frontier-class-multimodal-language-model",
+      "shows": "Reka Core via API/on-prem/on-device, proprietary, no open weights",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Distributed via Reka API + Snowflake Cortex + Oracle Cloud Marketplace; a 2024 frontier-challenger now well behind. No disclosed usage; level 2 directional. (Snowflake/Oracle partnerships are not enumerated on the cited launch page itself.)",
+    "sources": [
+     {
+      "url": "https://reka.ai/news/reka-core-our-frontier-class-multimodal-language-model",
+      "shows": "availability via API/on-prem/on-device partnerships",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "benchmark:MMMU",
+    "value": "Comparable to GPT-4V on MMMU; outperforms Claude-3 Opus on multimodal human eval; surpasses Gemini Ultra on video (Apr 2024 claims)",
+    "confidence": "low",
+    "note": "Frontier-class for early 2024 (~GPT-4V tier) but ~2yr stale vs 2026 anchors. Headline claims CONFIRMED present on the primary launch page. Scored 2.",
+    "sources": [
+     {
+      "url": "https://reka.ai/news/reka-core-our-frontier-class-multimodal-language-model",
+      "shows": "MMMU ~GPT-4V, beats Claude-3 Opus on multimodal human eval, surpasses Gemini Ultra on video",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stale",
+    "version_note_overclaims_unsourced_details"
+   ]
+  },
+  {
+   "product": "Inflection 3.0 (base) (Inflection AI)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "Inflection 3.0 (Pi 3.0 + Productivity 3.0), released 11 Oct 2024 with 'Inflection for Enterprise'. Proprietary/API + enterprise-licensed; no open weights. Frontier research team absorbed by Microsoft (2024-25); pivot to B2B. Instruction/chat models. NOTE: existence/details sourced to an aggregator (Maginative) rather than an Inflection primary press page; status corroborated by Wikipedia. >12mo old; scored best-effort, flagged stale.",
+   "openness": {
+    "score": 1,
+    "class": "closed",
+    "components": "weights:closed;data:closed;code:closed;license:Proprietary(API/enterprise-licensed, no weights)",
+    "confidence": "high",
+    "note": "Closed proprietary models via API + enterprise licensing; no downloadable weights.",
+    "sources": [
+     {
+      "url": "https://www.maginative.com/article/inflection-ai-unveils-enterprise-offering-with-new-inflection-3-0-models-2/",
+      "shows": "Inflection 3.0 (Pi + Productivity), enterprise/API, proprietary (aggregator source)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 1,
+    "reach": "<10K",
+    "signal_type": "reported_traction",
+    "confidence": "low",
+    "note": "Post-Microsoft acqui-hire pivot to B2B; Pi consumer surface wound down. Enterprise API exists but no disclosed usage; effectively stalled. Level 1 directional.",
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Inflection_AI",
+      "shows": "team absorbed by Microsoft, pivot to enterprise, Pi sunset",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "benchmark:n/a",
+    "value": null,
+    "confidence": "low",
+    "note": "2024 EQ/productivity-focused model, never a leaderboard frontier model; development effectively halted after Microsoft talent move. Low vs 2026 anchors. No fresh independent benchmark. Scored 2.",
+    "sources": [
+     {
+      "url": "https://www.maginative.com/article/inflection-ai-unveils-enterprise-offering-with-new-inflection-3-0-models-2/",
+      "shows": "Pi (EQ) + Productivity positioning, no frontier-benchmark claims",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stale",
+    "existence_via_aggregator_only"
+   ]
+  },
+  {
+   "product": "GLM-4-9B (base) (Zhipu AI)",
+   "type": "model",
+   "category": "base_pretrained",
+   "version_note": "GLM-4-9B base (THUDM/glm-4-9b-hf), 9B dense, 8K context base version, released ~Jun 18 2024 (arXiv 2406.12793). VERIFIED on HF: genuine pretrained base (chat variant GLM-4-9B-Chat separate). Weights downloadable. >12mo old but a foundational open base; scored best-effort, flagged stale.",
+   "openness": {
+    "score": 2,
+    "class": "restricted",
+    "components": "weights:open(downloadable on HF, BF16 safetensors);data:closed;code:partial(inference/usage);license:glm-4(custom non-OSI: commercial-use registration, 'Built with glm-4' attribution, behavioral/national-security restrictions, Chinese jurisdiction)",
+    "confidence": "high",
+    "note": "Weights downloadable but glm-4 license is non-OSI with registration-gated commercial use + use restrictions — restricted, not open_weights. HF card confirms a custom glm-4 LICENSE file (full restriction text in the linked LICENSE).",
+    "sources": [
+     {
+      "url": "https://huggingface.co/THUDM/glm-4-9b-hf",
+      "shows": "base GLM-4-9B, 8K context, glm-4 custom license, downloadable weights",
+      "accessed": "2026-06-04"
+     },
+     {
+      "url": "https://huggingface.co/THUDM/glm-4-9b-hf/blob/main/LICENSE",
+      "shows": "registration-for-commercial, attribution + use restrictions, non-OSI",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "adoption": {
+    "level": 2,
+    "reach": "10K-100K",
+    "signal_type": "usage_volume",
+    "confidence": "low",
+    "note": "Base GLM-4-9B-hf ~1,497 downloads/month on HF (confirmed live; chat variants out-download the base); 2024-era 9B superseded by GLM-4.5/4.6/5.x. Level 2 on modest base-variant volume.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/THUDM/glm-4-9b-hf",
+      "shows": "~1,497 downloads last month (base variant)",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "capability": {
+    "score": 2,
+    "basis": "benchmark:n/a",
+    "value": "Model card: MMLU 74.7, C-Eval 77.1, GSM8K 84.0, HumanEval 70.1; beats Llama-3-8B",
+    "confidence": "low",
+    "note": "Strong small base for 2024 (beats Llama-3-8B per card) but low vs 2026 frontier and vs the GLM-5.x family. Added the card's reported benchmark figures. Scored 2.",
+    "sources": [
+     {
+      "url": "https://huggingface.co/THUDM/glm-4-9b-hf",
+      "shows": "model card: MMLU 74.7/C-Eval 77.1/GSM8K 84.0/HumanEval 70.1, outperforms Llama-3-8B, 9B base",
+      "accessed": "2026-06-04"
+     }
+    ]
+   },
+   "flags": [
+    "stale",
+    "open_washed"
+   ]
+  }
+ ]
+}

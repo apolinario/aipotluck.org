@@ -1,0 +1,65 @@
+{
+ "note": "Removed from all_scores_v3.json during review (audit trail; reject path is first-class).",
+ "removed": [
+  {
+   "product": "LangChain Tools (LangChain)",
+   "category": "agent_tools_protocols",
+   "reason": "dedup_vs_anchor"
+  },
+  {
+   "product": "Llama 5 (Meta)",
+   "category": "base_pretrained",
+   "reason": "unverifiable_product"
+  },
+  {
+   "product": "Claude Sonnet 4.6 (base) (Anthropic)",
+   "category": "base_pretrained",
+   "reason": "unverifiable_product"
+  },
+  {
+   "product": "Gemini (base) (Google DeepMind)",
+   "category": "base_pretrained",
+   "reason": "unverifiable_product"
+  },
+  {
+   "product": "Grok (base) (xAI)",
+   "category": "base_pretrained",
+   "reason": "unverifiable_product"
+  },
+  {
+   "product": "The Stack v2 (BigCode / Hugging Face)",
+   "category": "benchmark_eval_data",
+   "reason": "out_of_scope"
+  },
+  {
+   "product": "DeepSeek-R2 (DeepSeek)",
+   "category": "finetuned_chat",
+   "reason": "unverifiable_product"
+  },
+  {
+   "product": "Cohere Fine-Tuning (Command R) (Cohere)",
+   "category": "finetuning_code",
+   "reason": "unverifiable_product"
+  },
+  {
+   "product": "Humanloop (Humanloop)",
+   "category": "telemetry_observability",
+   "reason": "unverifiable_product"
+  },
+  {
+   "product": "MLflow Tracking (Databricks)",
+   "category": "telemetry_observability",
+   "reason": "dedup_vs_anchor"
+  },
+  {
+   "product": "Kimi K2.6 (Moonshot AI)",
+   "category": "finetuned_chat",
+   "reason": "dedup_vs_anchor"
+  },
+  {
+   "product": "Ollama",
+   "category": "inference_code",
+   "reason": "dedup_vs_anchor"
+  }
+ ]
+}
