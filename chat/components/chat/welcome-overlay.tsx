@@ -45,35 +45,25 @@ export function WelcomeOverlay({
             style={{ background: "var(--ap-live)" }}
           />
           <span className="font-mono text-[10px] text-[var(--ap-ink-3)] uppercase tracking-[0.12em]">
-            A public AI · alpha
+            A Current AI · Alpha
           </span>
         </div>
 
         <h1 className="font-serif text-[28px] text-[var(--ap-ink)] leading-tight md:text-[34px]">
-          A working AI, assembled in the open — and showing its work.
+          A model for collective abundance.
         </h1>
 
         <p className="text-[14px] text-[var(--ap-ink)]/85 leading-relaxed">
-          AI Potluck is not a product and not a research demo. It is a public
-          utility: a usable assistant built entirely from open-source parts, run
-          on compute owned by the public rather than a company.
+          AI Potluck is not a product. It is methodology for bringing together the best that exists in open-source AI, in service of the public interest.
         </p>
 
         <p className="text-[14px] text-[var(--ap-ink)]/85 leading-relaxed">
-          Answers come from {MODEL.short}, the open model from the Swiss
-          National AI Initiative. This prototype is served via HuggingFace for
-          speed; the production stack runs on sovereign public compute at CSCS
-          (Switzerland) and LUMI (Finland). Open partners cover safety, search,
-          and more.
+          Our intelligence comes from {MODEL.short}, the open model from the Swiss National AI Initiative. This prototype is served via HuggingFace Inference and the Public AI Inference Utility; the production stack runs on sovereign public compute at CSCS
+          (Switzerland) and LUMI (Finland). ROOST covers safety while OpenMined helps ensure responsible use of data. The Mozilla Data Collective rounds out our stack with locally-sourced data sets.
         </p>
 
         <p className="text-[14px] text-[var(--ap-ink)]/85 leading-relaxed">
-          What makes it different from a closed assistant: every answer shows
-          its work — which model wrote it, whose compute ran it, and which parts
-          of the stack are still missing. Nothing hides behind a black box. The
-          map <span className="hidden md:inline">on the right</span>
-          <span className="md:hidden">under “Under the hood”</span> is that
-          stack, live. Gaps are shown as open invitations, not swept away.
+          This website is a demonstration of what we can do together. But it's also a demonstration of all the gaps in open source, and where we need to focus if we're going to catch up with the big closed AI labs. Our little chatbot, like much of open source, is also a work-in-progress. That's okay. We think of every gap as an open invitation. Come join the Potluck.
         </p>
 
         <div className="mt-2 flex flex-wrap items-center gap-2.5">
