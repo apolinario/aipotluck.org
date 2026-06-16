@@ -1,0 +1,62 @@
+name: chat-ci
+
+# Gate the chat surface on every push/PR: Biome lint + format check + unit tests.
+# Build is NOT gated here — `pnpm build` runs `tsx lib/db/migrate` first, which needs
+# a live Neon DB; Vercel runs the real build (with the DB) on deploy. The behavioral
+# eval makes real, paid model calls, so it runs nightly on a schedule instead of
+# per-push (and needs an HF_TOKEN repo secret).
+
+on:
+  push:
+    branches: [ai-potluck-chat, main]
+  pull_request:
+  schedule:
+    - cron: '0 7 * * *' # 07:00 UTC nightly — behavioral eval only
+
+defaults:
+  run:
+    working-directory: chat
+
+jobs:
+  test:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: chat/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: npx @biomejs/biome check . # lint + format (ultracite wrapper crashes; use Biome directly)
+      - run: pnpm test:unit # vitest (no network — fetch is mocked)
+
+  eval:
+    # Nightly behavioral eval against the live model. Skips itself cleanly if the
+    # HF_TOKEN secret isn't configured, so a fork without the secret stays green.
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: chat/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: behavioral eval
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "HF_TOKEN secret not set — skipping nightly eval."
+            exit 0
+          fi
+          pnpm eval

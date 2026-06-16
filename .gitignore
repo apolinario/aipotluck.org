@@ -59,3 +59,7 @@ __marimo__/
 # Large data files (uploaded via MCP, not checked in)
 data/pypi/
 .vercel
+.plancheck-debug.json
+
+# Internal working notes (playtest scripts, WIP migration drafts) — never published
+.internal/
