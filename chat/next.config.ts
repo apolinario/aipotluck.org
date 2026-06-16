@@ -1,13 +1,20 @@
 import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
 
-const basePath = process.env.IS_DEMO === "1" ? "/demo" : "";
+// Optional path-mount: when APP_BASE_PATH is set (e.g. "/chat"), the whole app
+// serves under that prefix so it can be proxied at a path of another domain
+// (aipotluck.org/chat). With basePath set and no custom assetPrefix, Next serves
+// assets under `${basePath}/_next`, so a SINGLE upstream rewrite
+// (`/chat/* -> chat-app/chat/*`) covers pages, assets, and API in one rule.
+// Unset = serves at root (local dev, standalone preview). Deliberately separate
+// from IS_DEMO, which independently toggles the full-gateway model list in
+// /api/models — a path mount must not flip model behavior.
+const basePath = process.env.APP_BASE_PATH ?? "";
 
 const nextConfig: NextConfig = {
   ...(basePath
     ? {
         basePath,
-        assetPrefix: "/demo-assets",
         redirects: async () => [
           {
             source: "/",
