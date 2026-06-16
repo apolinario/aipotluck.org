@@ -1,6 +1,8 @@
 {
   "routes": [
     { "handle": "filesystem" },
+    { "src": "/chat", "dest": "https://aipotluck-chat-three.vercel.app/chat" },
+    { "src": "/chat/(.*)", "dest": "https://aipotluck-chat-three.vercel.app/chat/$1" },
     { "src": "/.*", "dest": "/index.html" }
   ]
 }
