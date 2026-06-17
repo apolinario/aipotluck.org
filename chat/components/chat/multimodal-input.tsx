@@ -26,7 +26,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
-import { useLocalStorage, useWindowSize } from "usehooks-ts";
+import { useWindowSize } from "usehooks-ts";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -126,30 +126,44 @@ function PureMultimodalInput({
     }
   }, [width]);
 
-  const [localStorageInput, setLocalStorageInput] = useLocalStorage(
-    "input",
-    ""
-  );
-
-  // Hydrate the draft from localStorage once on mount. Depending on
-  // `localStorageInput` here ping-pongs with the persist effect below
-  // (each setState retriggers the other) → "Maximum update depth exceeded".
-  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only hydration
-  useEffect(() => {
-    if (textareaRef.current) {
-      const domValue = textareaRef.current.value;
-      const finalValue = domValue || localStorageInput || "";
-      setInput(finalValue);
+  // Draft persistence across reloads. We use direct localStorage access rather
+  // than a reactive useLocalStorage hook on purpose: that hook re-renders the
+  // component on every write and its setter identity churns between renders,
+  // which ping-ponged the persist effect into "Maximum update depth exceeded".
+  // A plain write doesn't re-render, and this helper's identity is stable.
+  const persistDraft = useCallback((value: string) => {
+    try {
+      window.localStorage.setItem("input", value);
+    } catch {
+      /* storage blocked (private mode / quota) — draft simply won't persist */
     }
   }, []);
 
+  // Hydrate the draft once on mount, only when the field is empty.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only hydration
   useEffect(() => {
-    setLocalStorageInput(input);
-  }, [input, setLocalStorageInput]);
+    if (textareaRef.current?.value) {
+      return;
+    }
+    try {
+      const saved = window.localStorage.getItem("input");
+      if (saved) {
+        setInput(saved);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  // NOTE: persistence happens in handleInput (on the actual keystroke), NOT in
+  // an effect keyed on `input`. A persist effect fires on mount with the initial
+  // empty value and clobbers the saved draft (and double-fires under StrictMode);
+  // writing in the event handler only persists real edits and can never loop.
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = event.target.value;
     setInput(val);
+    persistDraft(val);
 
     if (val.startsWith("/") && !val.includes(" ")) {
       setSlashOpen(true);
@@ -248,7 +262,7 @@ function PureMultimodalInput({
     });
 
     setAttachments([]);
-    setLocalStorageInput("");
+    persistDraft("");
     setInput("");
 
     if (width && width > 768) {
@@ -260,7 +274,7 @@ function PureMultimodalInput({
     attachments,
     sendMessage,
     setAttachments,
-    setLocalStorageInput,
+    persistDraft,
     width,
     chatId,
   ]);
@@ -297,7 +311,7 @@ function PureMultimodalInput({
     } finally {
       setSearching(false);
       setAttachments([]);
-      setLocalStorageInput("");
+      persistDraft("");
       setInput("");
       if (width && width > 768) {
         textareaRef.current?.focus();
@@ -310,7 +324,7 @@ function PureMultimodalInput({
     sendMessage,
     chatId,
     setAttachments,
-    setLocalStorageInput,
+    persistDraft,
     setInput,
     width,
   ]);
