@@ -19,7 +19,12 @@ import {
   DEFAULT_CHAT_MODEL,
   getCapabilities,
 } from "@/lib/ai/models";
-import { MODERATION_DECLINE, moderateMessage } from "@/lib/ai/moderation";
+import {
+  CHILD_SAFETY_DECLINE,
+  checkChildSafety,
+  MODERATION_DECLINE,
+  moderateMessage,
+} from "@/lib/ai/moderation";
 import {
   type RequestHints,
   searchGroundingPrompt,
@@ -232,6 +237,23 @@ export async function POST(request: Request) {
             .map((p) => p.text)
             .join(" ")
             .trim() ?? "";
+        // Child-safety screening runs first and is a hard stop — a separate
+        // seam from toxicity, with no detector wired yet (see moderation.ts).
+        // Inert today; when a detector is wired it fails CLOSED. Distinct copy,
+        // no "rephrase" invitation.
+        const childSafety = await checkChildSafety(userText);
+        if (childSafety.flagged) {
+          const declineId = generateUUID();
+          dataStream.write({ type: "text-start", id: declineId });
+          dataStream.write({
+            type: "text-delta",
+            id: declineId,
+            delta: CHILD_SAFETY_DECLINE,
+          });
+          dataStream.write({ type: "text-end", id: declineId });
+          return;
+        }
+
         const moderation = await moderateMessage(userText);
         if (moderation.flagged) {
           dataStream.write({
