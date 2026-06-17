@@ -62,8 +62,8 @@ export function WelcomeOverlay({
         <p className="text-[14px] text-[var(--ap-ink)]/85 leading-relaxed">
           Our intelligence comes from {MODEL.short}, the open model from the
           Swiss National AI Initiative. This prototype is served via HuggingFace
-          Inference and the Public AI Inference Utility; the production stack
-          runs on sovereign public compute at CSCS (Switzerland) and LUMI
+          Inference and the Public AI Inference Utility; the production stack is
+          being built on sovereign public compute at CSCS (Switzerland) and LUMI
           (Finland). ROOST covers safety while OpenMined helps ensure
           responsible use of data. The Mozilla Data Collective rounds out our
           stack with locally-sourced data sets.
