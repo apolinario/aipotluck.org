@@ -457,7 +457,10 @@ export async function authenticateRequest(
 		};
 	}
 
-	if (isApi) {
+	// The TTL-cleanup cron endpoint carries `Authorization: Bearer ${CRON_SECRET}` (Vercel cron), which is
+	// NOT an HF token — let it through to its own CRON_SECRET gate instead of trying (and failing → 500) to
+	// resolve it as an API bearer here.
+	if (isApi && url.pathname !== `${base}/api/cleanup`) {
 		const authorization = headers.get("Authorization");
 		if (authorization?.startsWith("Bearer ")) {
 			const token = authorization.slice(7);

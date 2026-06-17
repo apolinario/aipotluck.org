@@ -44,11 +44,26 @@ export async function cleanupExpired(now: Date = new Date()): Promise<CleanupCou
 	// Absolute-expiry tables compare against `now`; relative-TTL tables against their cutoff.
 	// `.returning({ id })` lets us report a delete count without a separate query.
 	const [sessions, messageEvents, semaphores, tokenCaches, abortedGenerations] = await Promise.all([
-		db.delete(schema.sessions).where(lt(schema.sessions.expiresAt, now)).returning({ id: schema.sessions.id }),
-		db.delete(schema.messageEvents).where(lt(schema.messageEvents.expiresAt, now)).returning({ id: schema.messageEvents.id }),
-		db.delete(schema.semaphores).where(lt(schema.semaphores.deleteAt, now)).returning({ id: schema.semaphores.id }),
-		db.delete(schema.tokenCaches).where(lt(schema.tokenCaches.createdAt, tokenCacheCutoff)).returning({ id: schema.tokenCaches.id }),
-		db.delete(schema.abortedGenerations).where(lt(schema.abortedGenerations.updatedAt, abortedCutoff)).returning({ id: schema.abortedGenerations.id }),
+		db
+			.delete(schema.sessions)
+			.where(lt(schema.sessions.expiresAt, now))
+			.returning({ id: schema.sessions.id }),
+		db
+			.delete(schema.messageEvents)
+			.where(lt(schema.messageEvents.expiresAt, now))
+			.returning({ id: schema.messageEvents.id }),
+		db
+			.delete(schema.semaphores)
+			.where(lt(schema.semaphores.deleteAt, now))
+			.returning({ id: schema.semaphores.id }),
+		db
+			.delete(schema.tokenCaches)
+			.where(lt(schema.tokenCaches.createdAt, tokenCacheCutoff))
+			.returning({ id: schema.tokenCaches.id }),
+		db
+			.delete(schema.abortedGenerations)
+			.where(lt(schema.abortedGenerations.updatedAt, abortedCutoff))
+			.returning({ id: schema.abortedGenerations.id }),
 	]);
 
 	return {
