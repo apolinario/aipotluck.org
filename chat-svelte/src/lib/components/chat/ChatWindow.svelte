@@ -10,14 +10,8 @@
 	import { setArtifactsContext } from "$lib/utils/artifactsContext";
 	import { artifactPanel } from "$lib/stores/artifactPanel.svelte";
 
-	import IconOmni from "$lib/components/icons/IconOmni.svelte";
-	import IconCheap from "$lib/components/icons/IconCheap.svelte";
-	import IconFast from "$lib/components/icons/IconFast.svelte";
-	import CarbonCaretDown from "~icons/carbon/caret-down";
-	import { PROVIDERS_HUB_ORGS } from "@huggingface/inference";
 	import CarbonDirectionRight from "~icons/carbon/direction-right-01";
 	import IconArrowUp from "~icons/lucide/arrow-up";
-	import IconMic from "~icons/lucide/mic";
 
 	import ChatInput from "./ChatInput.svelte";
 	import WelcomeModal from "$lib/components/WelcomeModal.svelte";
@@ -29,8 +23,8 @@
 	import RetryBtn from "../RetryBtn.svelte";
 	import file2base64 from "$lib/utils/file2base64";
 	import { base } from "$app/paths";
+	import { resolveModelIdentity } from "$lib/identity";
 	import ChatMessage from "./ChatMessage.svelte";
-	import ThinkingEffortChip from "./ThinkingEffortChip.svelte";
 	import ScrollToBottomBtn from "../ScrollToBottomBtn.svelte";
 	import ScrollToPreviousBtn from "../ScrollToPreviousBtn.svelte";
 	import { browser } from "$app/environment";
@@ -92,6 +86,10 @@
 	}: Props = $props();
 
 	let isReadOnly = $derived(!models.some((model) => model.id === currentModel.id));
+
+	// Friendly model name for the in-composer indicator — DERIVED from the served id
+	// (never hardcoded) and the same source as the provenance badge, so they can't drift.
+	let modelLabel = $derived(resolveModelIdentity(currentModel.id).short);
 
 	// Mobile only (below md): the split-screen collapses to a single column with a
 	// Chat / "Under the hood" tab switcher — on a phone the map is one tap away
@@ -878,7 +876,7 @@
 							{:else}
 								<ChatInput
 									bind:this={chatInputRef}
-									placeholder={isReadOnly ? "This conversation is read-only." : "Ask anything"}
+									placeholder={isReadOnly ? "This conversation is read-only." : "Ask anything..."}
 									{loading}
 									bind:value={draft}
 									bind:files
@@ -889,6 +887,7 @@
 									{modelIsMultimodal}
 									{modelSupportsTools}
 									showWebSearch={!isReadOnly}
+									{modelLabel}
 									bind:webSearchEnabled
 									{webSearching}
 									webSearchAffordance={draftLooksRecent && !webSearchEnabled}
@@ -903,24 +902,13 @@
 										onstop?.();
 									}}
 									showBorder={true}
-									classNames="absolute bottom-2 right-2 size-8 sm:size-7 self-end rounded-full border bg-white text-black shadow-sm transition-none dark:border-transparent dark:bg-gray-600 dark:text-white"
+									classNames="absolute bottom-2 right-2 size-8 sm:size-7 self-end rounded-xl border bg-white text-black shadow-sm transition-none dark:border-transparent dark:bg-gray-600 dark:text-white"
 								/>
 							{:else}
-								{#if transcriptionEnabled}
-									<button
-										type="button"
-										class="absolute right-10 bottom-2 mr-1.5 btn size-8 self-end rounded-full border bg-white/50 text-gray-500 transition-none hover:bg-gray-50 hover:text-gray-700 sm:right-9 sm:size-7 dark:border-transparent dark:bg-gray-600/50 dark:text-gray-300 dark:hover:bg-gray-500 dark:hover:text-white"
-										disabled={isReadOnly}
-										onclick={() => {
-											isRecording = true;
-										}}
-										aria-label="Start voice recording"
-									>
-										<IconMic class="size-4" />
-									</button>
-								{/if}
+								<!-- Voice/mic removed for the alpha: voice is a WANTED / "open invitation" node on the
+							     stack map (not built); a working mic would contradict our own honest gap map. -->
 								<button
-									class="absolute right-2 bottom-2 btn size-8 self-end rounded-full border bg-white text-black shadow transition-none enabled:hover:bg-white enabled:hover:shadow-inner sm:size-7 dark:border-transparent dark:bg-gray-600 dark:text-white dark:hover:enabled:bg-black {!draft ||
+									class="absolute right-2 bottom-2 btn size-8 self-end rounded-xl border bg-white text-black shadow transition-none enabled:hover:bg-white enabled:hover:shadow-inner sm:size-7 dark:border-transparent dark:bg-gray-600 dark:text-white dark:hover:enabled:bg-black {!draft ||
 									isReadOnly
 										? ''
 										: 'bg-black! text-white! dark:bg-white! dark:text-black!'}"
@@ -935,99 +923,7 @@
 						</div>
 					{/if}
 				</form>
-				<div
-					class={{
-						"mt-1.5 flex h-5 items-center self-stretch px-0.5 text-xs whitespace-nowrap text-gray-400/90 max-md:mb-2 max-sm:gap-2": true,
-						"max-sm:hidden": focused && isVirtualKeyboard(),
-					}}
-				>
-					{#if models.find((m) => m.id === currentModel.id)}
-						{#if !currentModel.isRouter || !loading}
-							<a
-								href="{base}/settings/{currentModel.id}"
-								onclick={(e) => {
-									if (requireAuthUser()) {
-										e.preventDefault();
-									}
-								}}
-								class="inline-flex min-w-0 items-center gap-1 hover:underline"
-							>
-								{#if currentModel.isRouter}
-									<IconOmni />
-									<span class="truncate">{currentModel.displayName}</span>
-								{:else}
-									<span class="shrink-0">Model:</span>
-									{#if currentModel.logoUrl}
-										<img
-											src={currentModel.logoUrl}
-											alt=""
-											class="size-3 flex-none rounded-sm border bg-white dark:border-gray-700"
-										/>
-									{/if}
-									<span class="truncate">{currentModel.displayName}</span>
-									{#if hasProviderOverride}
-										{@const hubOrg =
-											PROVIDERS_HUB_ORGS[providerOverride as keyof typeof PROVIDERS_HUB_ORGS]}
-										<span
-											class="inline-flex shrink-0 items-center rounded-sm p-0.5 {providerOverride ===
-											'fastest'
-												? 'bg-green-100 text-green-600 dark:bg-green-800/20 dark:text-green-500'
-												: providerOverride === 'cheapest'
-													? 'bg-blue-100 text-blue-600 dark:bg-blue-800/20 dark:text-blue-500'
-													: ''}"
-											title="Provider: {providerOverride}"
-										>
-											{#if providerOverride === "fastest"}
-												<IconFast classNames="text-sm" />
-											{:else if providerOverride === "cheapest"}
-												<IconCheap classNames="text-sm" />
-											{:else if hubOrg}
-												<img
-													src="https://huggingface.co/api/avatars/{hubOrg}"
-													alt={providerOverride}
-													class="size-3 flex-none rounded-xs"
-												/>
-											{/if}
-										</span>
-									{/if}
-								{/if}
-								<CarbonCaretDown class="-ml-0.5 shrink-0 text-xxs" />
-							</a>
-						{:else if showRouterDetails && streamingRouterMetadata?.route}
-							<div
-								class="mr-2 flex items-center gap-1.5 text-xs text-[.70rem] leading-none whitespace-nowrap text-gray-400 dark:text-gray-400"
-							>
-								<IconOmni classNames="text-xs animate-pulse" />
 
-								<span class="router-badge-text router-shimmer">
-									{streamingRouterMetadata.route}
-								</span>
-
-								<span class="text-gray-500">with</span>
-
-								<span class="router-badge-text">
-									{streamingRouterModelName}
-								</span>
-							</div>
-						{:else}
-							<div
-								class="loading-dots relative inline-flex items-center text-gray-400 dark:text-gray-400"
-								aria-label="Routing…"
-							>
-								<IconOmni classNames="text-xs animate-pulse mr-1" /> Routing
-							</div>
-						{/if}
-					{:else}
-						<span class="inline-flex items-center line-through dark:border-gray-700">
-							{currentModel.id}
-						</span>
-					{/if}
-					{#if $settings.reasoningOverrides?.[currentModel.id] ?? currentModel.supportsReasoning}
-						<div class="ml-auto">
-							<ThinkingEffortChip modelId={currentModel.id} />
-						</div>
-					{/if}
-				</div>
 				<!-- Honest, no-number data-handling line near the composer. The precise
 				     retention window lives on the /privacy page; this line stays qualitative. -->
 				<div class="mt-1 text-center font-mono text-[9px] text-[var(--ap-ink-3)] opacity-70">
@@ -1112,67 +1008,6 @@
 		}
 		100% {
 			box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-		}
-	}
-
-	.router-badge-text {
-		display: inline-block;
-		position: relative;
-		color: inherit;
-	}
-
-	.router-shimmer {
-		display: inline-block;
-		background-image: linear-gradient(
-			90deg,
-			rgba(156, 163, 175, 1) 0%,
-			rgba(156, 163, 175, 0.6) 10%,
-			rgba(156, 163, 175, 0.6) 50%,
-			rgba(156, 163, 175, 0.6) 90%,
-			rgba(156, 163, 175, 1) 100%
-		);
-		background-size: 220% 100%;
-		animation: router-shimmer 2.8s linear infinite;
-		background-clip: text;
-		-webkit-background-clip: text;
-		color: transparent;
-		-webkit-text-fill-color: transparent;
-	}
-
-	:global(.dark) .router-shimmer {
-		background-image: linear-gradient(
-			90deg,
-			rgba(255, 255, 255, 0.15) 0%,
-			rgba(255, 255, 255, 0.7) 50%,
-			rgba(255, 255, 255, 0.15) 100%
-		);
-	}
-
-	@keyframes router-shimmer {
-		0% {
-			background-position: 200% 0;
-		}
-		100% {
-			background-position: -200% 0;
-		}
-	}
-
-	.loading-dots::after {
-		content: "";
-		animation: dots-content 0.9s steps(1, end) infinite;
-	}
-	@keyframes dots-content {
-		0% {
-			content: "";
-		}
-		33% {
-			content: ".";
-		}
-		66% {
-			content: "..";
-		}
-		88% {
-			content: "...";
 		}
 	}
 </style>

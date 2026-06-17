@@ -14,7 +14,7 @@
 
 	import LucideMessageSquare from "~icons/lucide/message-square";
 	import LucidePenSquare from "~icons/lucide/pen-square";
-	import LucideTrash2 from "~icons/lucide/trash-2";
+	import LucideTrash from "~icons/lucide/trash";
 	import LucidePanelLeft from "~icons/lucide/panel-left";
 	import { isAborted } from "$lib/stores/isAborted";
 
@@ -42,7 +42,6 @@
 		 *  Omitted on mobile (the drawer is always full), so no stray toggle renders. */
 		onToggleCollapse?: () => void;
 		ondeleteConversation?: (id: string) => void;
-		oneditConversationTitle?: (payload: { id: string; title: string }) => void;
 		ondeleteAllConversations?: () => void;
 	}
 
@@ -53,7 +52,6 @@
 		isCollapsed = false,
 		onToggleCollapse,
 		ondeleteConversation,
-		oneditConversationTitle,
 		ondeleteAllConversations,
 	}: Props = $props();
 
@@ -174,7 +172,7 @@
 		href={`${base}/`}
 		onclick={handleNewChatClick}
 		class="flex h-8 items-center gap-2 rounded-lg border border-sidebar-border px-2 text-[13px] text-sidebar-foreground/70 transition-colors duration-150 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-		title="Ctrl/Cmd + Shift + O"
+		title="New Chat"
 	>
 		<LucidePenSquare class="size-4 shrink-0" />
 		{#if !isCollapsed}
@@ -190,7 +188,7 @@
 			class="flex h-8 items-center gap-2 rounded-lg px-2 text-sidebar-foreground/40 transition-colors duration-150 hover:bg-destructive/10 hover:text-destructive"
 			title="Delete All Chats"
 		>
-			<LucideTrash2 class="size-4 shrink-0" />
+			<LucideTrash class="size-4 shrink-0" />
 			{#if !isCollapsed}
 				<span class="text-[13px]">Delete all</span>
 			{/if}
@@ -216,7 +214,7 @@
 							{titles[group]}
 						</div>
 						{#each convs as conv}
-							<NavConversationItem {conv} {oneditConversationTitle} {ondeleteConversation} />
+							<NavConversationItem {conv} {ondeleteConversation} />
 						{/each}
 					</div>
 				{/if}

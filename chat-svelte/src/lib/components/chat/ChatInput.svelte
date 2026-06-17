@@ -7,6 +7,7 @@
 	import IconPlus from "~icons/lucide/plus";
 	import IconGlobe from "~icons/lucide/globe";
 	import IconLoaderCircle from "~icons/lucide/loader-circle";
+	import LucideSparkles from "~icons/lucide/sparkles";
 	import CarbonImage from "~icons/carbon/image";
 	import CarbonDocument from "~icons/carbon/document";
 	import CarbonUpload from "~icons/carbon/upload";
@@ -39,6 +40,9 @@
 		// Heuristic hint that the draft wants current info — nudges the globe so the
 		// user notices the option. Never auto-enables; the user always decides.
 		webSearchAffordance?: boolean;
+		// Friendly served-model name for the in-composer indicator (non-interactive,
+		// one model for the alpha) — e.g. "Apertus 70B".
+		modelLabel?: string;
 		children?: import("svelte").Snippet;
 		onPaste?: (e: ClipboardEvent) => void;
 		focused?: boolean;
@@ -59,6 +63,7 @@
 		webSearchEnabled = $bindable(false),
 		webSearching = false,
 		webSearchAffordance = false,
+		modelLabel = "",
 		children,
 		onPaste,
 		focused = $bindable(false),
@@ -234,19 +239,66 @@
 		});
 	}
 
-	// Show file upload when any mime is allowed (text always; images if multimodal)
-	let showFileUpload = $derived(mimeTypes.length > 0);
+	// Attach/upload is hidden for the alpha: file upload is a P1 follow-on (not the
+	// P0 July-9 story), Apertus is text-only today, and prod gates the paperclip on
+	// vision so it's hidden for Apertus there too. Re-enable as a capability-gated
+	// control when file upload graduates to a built, tested P1.
+	let showFileUpload = $derived(false && mimeTypes.length > 0);
 	// The tools row renders when there's anything to put in it — file upload or
 	// the web-search toggle.
-	let showToolsRow = $derived(showFileUpload || showWebSearch);
+	let showToolsRow = $derived(showFileUpload || showWebSearch || !!modelLabel);
 
 	function toggleWebSearch() {
 		if (requireAuthUser()) return;
 		webSearchEnabled = !webSearchEnabled;
 	}
+
+	// Search-offer banner (prod parity, Feature Lock §2: "the visitor should
+	// understand WHY this feature is triggered"). When the draft looks recency-bound,
+	// offer the explicit choice — ground on open sources, or answer from training.
+	function offerSearch() {
+		if (requireAuthUser()) return;
+		webSearchEnabled = true;
+		onsubmit?.();
+	}
+	function offerTraining() {
+		if (requireAuthUser()) return;
+		onsubmit?.();
+	}
 </script>
 
 <div class="flex min-h-full flex-1 flex-col" onpaste={onPaste}>
+	{#if showWebSearch && webSearchAffordance}
+		<div
+			class="mx-2 mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)]/60 px-3 py-2 font-mono text-[11px] text-[var(--ap-ink-2)]"
+		>
+			<IconGlobe class="size-3.5 shrink-0 text-[var(--ap-coral)]" />
+			<span>This may need current info beyond the model's training.</span>
+			<div class="ml-auto flex items-center gap-1.5">
+				<button
+					type="button"
+					onclick={offerSearch}
+					class="rounded-lg bg-[var(--ap-ink)] px-2.5 py-1 text-[var(--ap-paper)] transition-opacity hover:opacity-85"
+				>
+					Search open sources
+				</button>
+				<button
+					type="button"
+					onclick={offerTraining}
+					class="rounded-lg border border-[var(--ap-rule)] px-2.5 py-1 text-[var(--ap-ink-2)] transition-colors hover:text-[var(--ap-ink)]"
+				>
+					Answer from training
+				</button>
+			</div>
+		</div>
+	{:else if webSearching}
+		<div
+			class="mx-2 mt-2 flex items-center gap-2 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)]/60 px-3 py-2 font-mono text-[11px] text-[var(--ap-ink-2)]"
+		>
+			<IconGlobe class="size-3.5 shrink-0 animate-pulse text-[var(--ap-coral)]" />
+			<span>Searching open sources — Wikipedia + Marginalia…</span>
+		</div>
+	{/if}
 	<textarea
 		rows="1"
 		tabindex="0"
@@ -376,10 +428,10 @@
 					aria-label="Search open sources for current info"
 					title="Ground the answer on open sources (Wikipedia + Marginalia)"
 					class="flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors sm:h-7 {webSearchEnabled
-						? 'border-blue-500/40 bg-blue-50 text-blue-600 dark:border-blue-400/30 dark:bg-blue-500/15 dark:text-blue-300'
+						? 'border-[var(--ap-coral)]/40 bg-[var(--ap-coral)]/10 text-[var(--ap-coral)]'
 						: webSearchAffordance
-							? 'animate-pulse border-blue-400/50 bg-white text-blue-500 dark:border-blue-400/30 dark:bg-gray-600/50 dark:text-blue-300'
-							: 'border-transparent bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:bg-gray-600/50 dark:text-gray-300 dark:hover:bg-gray-600'}"
+							? 'animate-pulse border-[var(--ap-coral)]/50 bg-transparent text-[var(--ap-coral)]'
+							: 'border-transparent bg-transparent text-[var(--ap-ink-3)] hover:bg-[var(--ap-ink)]/5 hover:text-[var(--ap-ink)]'}"
 				>
 					{#if webSearching}
 						<IconLoaderCircle class="size-3.5 animate-spin" />
@@ -389,6 +441,18 @@
 						<span>{webSearchEnabled ? "Open search on" : "Open search"}</span>
 					{/if}
 				</button>
+			{/if}
+
+			<!-- In-composer served-model indicator (prod parity): friendly, non-interactive
+			     (one model for the alpha — no fake chooser), sparkle, same source as the badge. -->
+			{#if modelLabel}
+				<span
+					class="ml-auto flex shrink-0 items-center gap-1 font-mono text-[11px] text-[var(--ap-ink-3)]"
+					title="The model serving this alpha"
+				>
+					<LucideSparkles class="size-3.5" />
+					{modelLabel}
+				</span>
 			{/if}
 		</div>
 	{/if}

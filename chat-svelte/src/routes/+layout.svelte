@@ -95,20 +95,6 @@
 			});
 	}
 
-	async function editConversationTitle(id: string, title: string) {
-		client
-			.conversations({ id })
-			.patch({ title })
-			.then(handleResponse)
-			.then(async () => {
-				convsStore.update(id, { title });
-			})
-			.catch((err) => {
-				console.error(err);
-				$error = String(err);
-			});
-	}
-
 	onDestroy(() => {
 		clearTimeout(errorToastTimeout);
 	});
@@ -248,7 +234,7 @@
 
 <div
 	class="fixed grid h-dvh w-screen grid-cols-1 grid-rows-[auto_1fr] overflow-hidden text-smd {!isNavCollapsed
-		? 'md:grid-cols-[260px_1fr]'
+		? 'md:grid-cols-[16rem_1fr]'
 		: 'md:grid-cols-[3rem_1fr]'} transition-[300ms] [transition-property:grid-template-columns] md:grid-rows-[1fr] dark:text-gray-300"
 >
 	<MobileNav title={mobileNavTitle}>
@@ -256,13 +242,12 @@
 			conversations={convsStore.list}
 			user={data.user}
 			ondeleteConversation={(id) => deleteConversation(id)}
-			oneditConversationTitle={(payload) => editConversationTitle(payload.id, payload.title)}
 			ondeleteAllConversations={() => deleteAllConversations()}
 		/>
 	</MobileNav>
 	<nav
 		class="grid max-h-dvh grid-cols-1 grid-rows-[auto_1fr_auto] overflow-hidden bg-sidebar {!isNavCollapsed
-			? '*:w-[260px]'
+			? '*:w-[16rem]'
 			: '*:w-[3rem]'} max-md:hidden"
 	>
 		<NavMenu
@@ -271,7 +256,6 @@
 			isCollapsed={isNavCollapsed}
 			onToggleCollapse={() => (isNavCollapsed = !isNavCollapsed)}
 			ondeleteConversation={(id) => deleteConversation(id)}
-			oneditConversationTitle={(payload) => editConversationTitle(payload.id, payload.title)}
 			ondeleteAllConversations={() => deleteAllConversations()}
 		/>
 	</nav>

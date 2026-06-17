@@ -29,8 +29,10 @@
 
 <div class="my-auto flex w-full flex-col items-center gap-6 px-4">
 	<div class="flex flex-col items-center">
+		<!-- Sans-bold like prod: prod reserves the serif for display headings (welcome,
+		     map); the empty-state greeting is the functional sans-bold tier. -->
 		<div
-			class="text-center font-serif text-xl font-semibold tracking-tight text-balance text-[var(--ap-ink)] md:text-2xl"
+			class="text-center text-xl font-semibold tracking-tight text-balance text-[var(--ap-ink)] md:text-2xl"
 		>
 			Open-source, sovereign, community-configured.
 		</div>
@@ -61,12 +63,12 @@
 	</div>
 
 	<div
-		class="no-scrollbar flex w-full max-w-3xl gap-2.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible"
+		class="no-scrollbar flex w-full gap-2.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible"
 	>
 		{#each suggestions as suggestion (suggestion)}
 			<button
 				type="button"
-				class="h-auto w-full min-w-[200px] shrink-0 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)] px-4 py-3 text-left text-[12px] leading-relaxed whitespace-nowrap text-[var(--ap-ink-3)] transition-all duration-200 hover:-translate-y-0.5 hover:text-[var(--ap-ink)] hover:shadow-sm sm:min-w-0 sm:shrink sm:p-4 sm:text-[13px] sm:whitespace-normal"
+				class="h-auto w-full min-w-[200px] shrink-0 rounded-xl border border-[var(--ap-rule)]/50 bg-[var(--ap-paper-2)]/40 px-4 py-3 text-left text-[12px] leading-relaxed whitespace-nowrap text-[var(--ap-ink-3)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--ap-paper-2)]/70 hover:text-[var(--ap-ink)] hover:shadow-[var(--shadow-card)] sm:min-w-0 sm:shrink sm:p-4 sm:text-[13px] sm:whitespace-normal"
 				onclick={() => onmessage?.(suggestion)}
 			>
 				{suggestion}
