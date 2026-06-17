@@ -8,18 +8,9 @@
 		/>
 		<meta name="theme-color" content="#e8e4de" />
 		<script>
-			(function () {
-				try {
-					var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-					var stored = localStorage.getItem("theme");
-					var followSystem = stored === null || stored === "system";
-					var isDark = stored === "dark" || (followSystem && prefersDark);
-					if (isDark) {
-						document.documentElement.classList.add("dark");
-						document.querySelector('meta[name="theme-color"]').setAttribute("content", "#000000");
-					}
-				} catch (e) {}
-			})();
+			// Dark mode parked as a later stretch goal — the alpha is light/paper only, so the
+				// first-paint dark-detection is removed (no `.dark` is ever added). Re-enable
+				// alongside DARK_MODE_ENABLED in src/lib/switchTheme.ts when dark mode comes back.
 
 			// For some reason, Sveltekit doesn't let us load env variables from .env here, so we load it from hooks.server.ts
 			window.gaId = "%gaId%";

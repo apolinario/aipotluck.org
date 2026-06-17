@@ -1,5 +1,11 @@
 export type ThemePreference = "light" | "dark" | "system";
 
+// Dark mode is parked as a later stretch goal — the alpha is light/paper only. This is the single
+// chokepoint that applies the theme class, so forcing light here pulls dark out of every path
+// (initial load, system preference, the settings selector, the sidebar toggle) in one place.
+// Flip to `true` to bring dark mode back (the .dark CSS + dark map variant are still in main.css).
+const DARK_MODE_ENABLED = false;
+
 type ThemeState = {
 	preference: ThemePreference;
 	isDark: boolean;
@@ -39,11 +45,13 @@ function setMetaThemeColor(isDark: boolean) {
 }
 
 function applyDarkClass(isDark: boolean) {
+	// Forced light while dark mode is parked (see DARK_MODE_ENABLED).
+	const dark = DARK_MODE_ENABLED && isDark;
 	const { classList } = document.querySelector("html") as HTMLElement;
-	if (isDark) classList.add("dark");
+	if (dark) classList.add("dark");
 	else classList.remove("dark");
-	setMetaThemeColor(isDark);
-	notify(currentPreference, isDark);
+	setMetaThemeColor(dark);
+	notify(currentPreference, dark);
 }
 
 export function getThemePreference(): ThemePreference {
