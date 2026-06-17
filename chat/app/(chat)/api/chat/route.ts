@@ -30,7 +30,7 @@ import {
   searchGroundingPrompt,
   systemPrompt,
 } from "@/lib/ai/prompts";
-import { getLanguageModel } from "@/lib/ai/providers";
+import { getLanguageModel, servingProvider } from "@/lib/ai/providers";
 import { createDocument } from "@/lib/ai/tools/create-document";
 import { editDocument } from "@/lib/ai/tools/edit-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
@@ -373,12 +373,18 @@ export async function POST(request: Request) {
           result.toUIMessageStream({ sendReasoning: isReasoningModel })
         );
 
-        // Surface the REAL inference provider (HF router's x-inference-provider
-        // header) so the provenance badge shows where the answer actually ran,
-        // instead of a hardcoded compute guess. Best-effort; never blocks.
+        // Surface the REAL inference provider so the provenance badge shows where
+        // the answer actually ran, instead of a hardcoded compute guess.
+        // - HF path: read the router's `x-inference-provider` header (it reports
+        //   "publicai" — Public AI's inference behind the router).
+        // - Sovereign path: api.publicai.co sends no such header, but we KNOW the
+        //   provider is Public AI directly, so label it honestly.
+        // Best-effort; never blocks.
         result.response.then(
           (r) => {
-            const provider = r.headers?.["x-inference-provider"];
+            const provider =
+              r.headers?.["x-inference-provider"] ??
+              (servingProvider === "publicai" ? "publicai" : undefined);
             if (provider) {
               dataStream.write({ type: "data-provider", data: { provider } });
             }
