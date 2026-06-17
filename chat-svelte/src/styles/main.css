@@ -368,6 +368,30 @@ h2 {
 }
 
 /*
+  Dark map variant — the editorial system inverted. In light mode the "Under the
+  hood" panel is the LIGHTEST brand tone (paper); in dark mode it becomes the
+  DARKEST — a deep ink-navy echoing --ap-ink (#0b1e2d) — so it reads as a
+  deliberate lit ink panel beside the neutral-dark chat, not a bright island.
+  These tokens drive the map (StackMap/MapNode/Sparkline) AND the in-chat
+  provenance badge + source strip, so all three flip together. Status hues are
+  semantic (kept), with live/gap nudged brighter for contrast on dark.
+  Must come after :root (equal specificity → source order wins).
+*/
+.dark {
+	--ap-paper: #142735; /* node card — lifted above the panel gradient */
+	--ap-paper-2: #1b3142;
+	--ap-paper-3: #233b4d;
+	--ap-ink: #e7e2da; /* foreground promoted to warm paper-cream */
+	--ap-ink-2: #a7b4bd;
+	--ap-ink-3: #74838d;
+	--ap-rule: rgba(231, 226, 218, 0.14);
+	--ap-live: #6cae98;
+	--ap-gap: #d56b7b;
+	--ap-map-grad-1: #10222f;
+	--ap-map-grad-2: #0b1a25;
+}
+
+/*
   The persistent highlight a node gets when it's "running this turn" (pulsed)
   or named by a "show on map" / safety event (trailed). A calm green wash, no
   animation — "running" is signalled by the header dot, the node just lifts.
