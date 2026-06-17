@@ -81,3 +81,32 @@ export async function moderateMessage(text: string): Promise<ModerationResult> {
 // error, consistent with the persona's "state the plain reason" rule.
 export const MODERATION_DECLINE =
   "I'm not going to engage with that. This message was flagged as toxic or abusive by an open safety classifier (toxic-bert) that screens every message before it reaches the model. If you think that's a mistake, you can rephrase, or flag it with the report button.";
+
+// Child-safety screening is a SEPARATE seam from toxicity, deliberately not
+// folded into moderateMessage. toxic-bert does NOT detect CSAM or other
+// child-sexual-abuse material — it scores the Jigsaw language axes — so reusing
+// it here would be a false sense of coverage. There is no open, self-hostable
+// CSAM classifier we can call from a serverless app today; the intended owner is
+// a dedicated detector reached through ROOST (see the map's ROOST/Osprey nodes).
+//
+// Until a detector is wired, this returns SAFE: nothing is flagged, so the
+// branch is inert and cannot produce a false positive.
+//
+// CONTRACT for whoever wires the detector: unlike moderateMessage (which fails
+// OPEN), this path MUST fail CLOSED — on timeout/error/uncertainty, return
+// `flagged: true`. A child-safety check that silently passes during an outage is
+// worse than no check. That asymmetry is the whole reason this is its own seam.
+export type ChildSafetyResult = { flagged: boolean };
+
+// biome-ignore lint/suspicious/useAwait: async to match the wired-detector shape
+export async function checkChildSafety(
+  _text: string
+): Promise<ChildSafetyResult> {
+  // No detector wired yet — see the contract above. Inert by construction.
+  return { flagged: false };
+}
+
+// Distinct from MODERATION_DECLINE: firm, no "rephrase" invitation. Shown only
+// when checkChildSafety flags (never today), so it reads for the wired state.
+export const CHILD_SAFETY_DECLINE =
+  "I can't help with that. This request was flagged by a child-safety classifier before it reached the model.";

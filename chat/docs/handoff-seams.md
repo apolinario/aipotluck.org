@@ -38,13 +38,23 @@ refusals remain the backstop, so an outage degrades to "no extra screen," never
 to a hard block on normal use.
 
 **The seam — child safety.** The local classifier covers general toxicity only.
-It does **not** detect CSAM or other child-safety harms, and the code says so. A
-dedicated detector (e.g. via the ROOST tooling on the map) is the intended owner
-of that signal, and — unlike the toxicity pre-check — that path is meant to
-**fail closed**. Wiring a real detector in is the whole integration.
+It does **not** detect CSAM or other child-safety harms, and the code says so.
+Child safety is therefore its own seam: `checkChildSafety` in
+`lib/ai/moderation.ts`, called as a hard stop ahead of the toxicity check in the
+chat route. It is **inert today** — there is no open, self-hostable CSAM detector
+to call from a serverless app, so it returns `flagged: false` by construction and
+cannot fire a false positive. A dedicated detector (e.g. via the ROOST tooling on
+the map) is the intended owner of that signal.
 
-**What flips it.** A child-safety classifier signal. Absent one, no such check
-runs.
+The asymmetry is deliberate: unlike the toxicity pre-check, which fails **open**,
+the child-safety path is contracted to fail **closed** — on timeout, error, or
+uncertainty it must return `flagged: true`. A child-safety check that silently
+passes during an outage is worse than no check, which is why it is a separate
+function with its own decline copy (firm, no "rephrase" invitation) rather than a
+label on the toxicity result.
+
+**What flips it.** Wiring a real detector inside `checkChildSafety`, honoring the
+fail-closed contract. Nothing else in the route changes.
 
 ## Out of scope here
 
