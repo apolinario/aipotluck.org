@@ -85,8 +85,8 @@ export function ReportDialog({
           <DialogHeader>
             <DialogTitle>Report a problem</DialogTitle>
             <DialogDescription>
-              Flag this response for review. Reports are stored so the team can
-              look into them — there is no automated moderation yet.
+              Flag this response for review. Reports are stored for the team to
+              review — they aren&apos;t automatically triaged yet.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3">

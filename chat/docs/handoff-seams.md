@@ -11,12 +11,14 @@ does not exist yet, the UI says so and the code fails in the safe direction.
 
 ## Report triage
 
-**What works today.** Any signed-in user can flag an assistant response from the
-message actions. The report is validated, scoped to the reporter's own
-conversation, and persisted to the `Report` table (`reason` ∈ {harmful,
-inaccurate, privacy, other}, optional free-text detail). The dialog copy is
-explicit that reports are stored for human review and that there is no automated
-moderation yet — see `components/chat/report-dialog.tsx`.
+**What works today.** Any user can flag an assistant response from the message
+actions (the alpha is guest-only, but every visitor has a session). The report
+is validated, scoped to the reporter's own conversation, and persisted to the
+`Report` table (`reason` ∈ {harmful, inaccurate, privacy, other}, optional
+free-text detail). The dialog copy is explicit that reports are stored for review
+and are not automatically triaged yet — distinct from the live input moderation
+below, which this surface does not claim to replace — see
+`components/chat/report-dialog.tsx`.
 
 **The seam.** `saveReport` in `lib/db/queries.ts` is the single write point, and
 the `Report` table is the single read point. A triage integration — routing,
@@ -30,9 +32,10 @@ guest alpha.
 
 ## Proactive moderation (toxicity pre-check)
 
-**What works today.** Outbound user messages get a fast toxicity pre-check
-(`lib/ai/moderation.ts`). On a flag, the chat declines with a single neutral
-message rather than forwarding the text to the model. The check **fails open**:
+**What works today.** Each user message gets a fast toxicity pre-check before it
+reaches the model (`lib/ai/moderation.ts`). On a flag, the chat declines with a
+single neutral message rather than forwarding the text to the model. The check
+**fails open**:
 if the classifier is slow or unreachable, the message proceeds — the model's own
 refusals remain the backstop, so an outage degrades to "no extra screen," never
 to a hard block on normal use.
