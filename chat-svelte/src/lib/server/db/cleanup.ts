@@ -10,11 +10,16 @@
  * `DATABASE_URL=… npx tsx scripts/verify-cleanup.ts` (seeds + asserts) or by hitting `GET /api/cleanup`.
  *
  * Every predicate hits a promoted, indexed column (see schema.ts): sessions.expiresAt,
- * messageEvents.expiresAt, semaphores.deleteAt, tokenCaches.createdAt, abortedGenerations.updatedAt.
+ * messageEvents.expiresAt, semaphores.deleteAt, tokenCaches.createdAt, abortedGenerations.updatedAt,
+ * conversations.updatedAt. The last one is different in kind: it enforces the user-facing /privacy
+ * retention promise (delete guest conversations after RETENTION_DAYS), not just infra-table hygiene.
  */
-import { lt } from "drizzle-orm";
+import { lt, inArray } from "drizzle-orm";
 import { getDb } from "./client";
 import * as schema from "./schema";
+// Relative (not `$lib`) so this module also resolves under tsx in scripts/verify-cleanup.ts,
+// which runs outside Vite and can't resolve SvelteKit's `$lib` alias.
+import { RETENTION_MS } from "../../constants/retention";
 
 // tokenCaches: the auth path honours a 5-minute cache by query (auth.ts) — match it here.
 const TOKEN_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -29,6 +34,8 @@ export type CleanupCounts = {
 	semaphores: number;
 	tokenCaches: number;
 	abortedGenerations: number;
+	// Conversations past the retention window (the /privacy "deleted after N days" promise).
+	conversations: number;
 };
 
 /**
@@ -66,11 +73,34 @@ export async function cleanupExpired(now: Date = new Date()): Promise<CleanupCou
 			.returning({ id: schema.abortedGenerations.id }),
 	]);
 
+	// Conversation retention — the user-facing /privacy promise ("guest conversations are
+	// automatically deleted after N days"), not just infra-table hygiene. Messages live embedded
+	// in conversations.doc, so deleting the row erases them. Dependents must go FIRST: reports has a
+	// NOT NULL FK to conversations.id (a bare conversation delete would FK-fail), and files carry a
+	// conversationId. Snapshot the expired ids, delete by id in one transaction so the dependent
+	// deletes and the conversation delete operate on exactly the same set.
+	const conversationsCutoff = new Date(now.getTime() - RETENTION_MS);
+	const conversations = await db.transaction(async (tx) => {
+		const expired = await tx
+			.select({ id: schema.conversations.id })
+			.from(schema.conversations)
+			.where(lt(schema.conversations.updatedAt, conversationsCutoff));
+		const expiredIds = expired.map((r) => r.id);
+		if (expiredIds.length === 0) return [] as { id: string }[];
+		await tx.delete(schema.reports).where(inArray(schema.reports.conversationId, expiredIds));
+		await tx.delete(schema.files).where(inArray(schema.files.conversationId, expiredIds));
+		return tx
+			.delete(schema.conversations)
+			.where(inArray(schema.conversations.id, expiredIds))
+			.returning({ id: schema.conversations.id });
+	});
+
 	return {
 		sessions: sessions.length,
 		messageEvents: messageEvents.length,
 		semaphores: semaphores.length,
 		tokenCaches: tokenCaches.length,
 		abortedGenerations: abortedGenerations.length,
+		conversations: conversations.length,
 	};
 }

@@ -47,6 +47,9 @@ export const conversations = pgTable(
 	(t) => [
 		index("conversations_session_updated_idx").on(t.sessionId, t.updatedAt.desc()),
 		index("conversations_user_updated_idx").on(t.userId, t.updatedAt.desc()),
+		// Serves the retention sweep's `updated_at < cutoff` predicate (db/cleanup.ts); the composite
+		// indexes above lead with session/user so they can't answer a bare time-range scan.
+		index("conversations_updated_idx").on(t.updatedAt),
 	]
 );
 

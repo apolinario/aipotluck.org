@@ -3,12 +3,10 @@
 	// HuggingChat PRIVACY.md, which contradicted the product (HF-account sign-in, Hugging Face as data
 	// controller, SOC 2, chat-ui GitHub). This is the AI Potluck open-alpha statement: guest/no-account,
 	// Current AI nonprofit, env-synced retention, no-sell / no-train-without-consent.
+	import { RETENTION_DAYS } from "$lib/constants/retention";
 	const UPDATED = "2026-06-15";
-	// Retention window the privacy claim rests on. Prod single-sources this from LIMITS.retentionDays.
-	// NOTE (follow-up): the chat-svelte TTL cron currently GCs sessions/messageEvents/etc. but NOT
-	// conversations — a conversation-retention sweep is required to make the "deleted after N days"
-	// claim literally true. Tracked in alpha-spec-checklist.
-	const RETENTION_DAYS = 30;
+	// RETENTION_DAYS is the SAME value the server actually sweeps on (db/cleanup.ts) — single-sourced so
+	// the "deleted after N days" claim below can't drift from the mechanism that enforces it.
 </script>
 
 <svelte:head>

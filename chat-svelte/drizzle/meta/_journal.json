@@ -8,6 +8,13 @@
       "when": 1781727245600,
       "tag": "0000_init_docstore_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781738357519,
+      "tag": "0001_goofy_expediter",
+      "breakpoints": true
     }
   ]
 }

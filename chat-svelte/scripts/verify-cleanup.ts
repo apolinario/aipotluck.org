@@ -10,9 +10,11 @@
  * never touches real data.
  */
 import { ObjectId } from "bson";
+import { eq } from "drizzle-orm";
 import { collections } from "../src/lib/server/database.ts";
 import { cleanupExpired } from "../src/lib/server/db/cleanup.ts";
-import { closeDb } from "../src/lib/server/db/client.ts";
+import { getDb, closeDb } from "../src/lib/server/db/client.ts";
+import * as schema from "../src/lib/server/db/schema.ts";
 
 let failures = 0;
 function check(name: string, cond: boolean) {
@@ -112,6 +114,47 @@ async function main() {
 	}); // < 1h → keep
 
 	// ── run ──────────────────────────────────────────────────────────────────────
+	// conversation retention (the /privacy promise) — seeded directly, since reports/files aren't
+	// behind the Mongo adapter. The EXPIRED conversation carries a report (NOT NULL FK to
+	// conversations.id) and a file; if cleanup deleted the conversation WITHOUT removing those first,
+	// the FK delete would throw — so this also proves the reports → files → conversations ordering.
+	const db = getDb();
+	const DAY = 24 * HOUR;
+	const convExpired = new ObjectId().toHexString();
+	const convFresh = new ObjectId().toHexString();
+	const reportExpired = new ObjectId().toHexString();
+	const fileExpired = new ObjectId().toHexString();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const doc = (t: string) => ({ title: t }) as any;
+	await db.insert(schema.conversations).values({
+		id: convExpired,
+		sessionId: `c-exp-${run}`,
+		createdAt: past(40 * DAY),
+		updatedAt: past(40 * DAY), // older than RETENTION_DAYS → swept
+		doc: doc(`exp-${run}`),
+	});
+	await db.insert(schema.conversations).values({
+		id: convFresh,
+		sessionId: `c-fresh-${run}`,
+		createdAt: past(MIN),
+		updatedAt: past(MIN), // recent → kept
+		doc: doc(`fresh-${run}`),
+	});
+	await db.insert(schema.reports).values({
+		id: reportExpired,
+		conversationId: convExpired,
+		reason: "other",
+		createdAt: past(40 * DAY),
+	});
+	await db.insert(schema.files).values({
+		id: fileExpired,
+		filename: `f-${run}.txt`,
+		conversationId: convExpired,
+		mime: "text/plain",
+		data: Buffer.from("x"),
+		createdAt: past(40 * DAY),
+	});
+
 	const counts = await cleanupExpired();
 	console.log("deleted:", JSON.stringify(counts));
 	check(
@@ -120,7 +163,8 @@ async function main() {
 			counts.messageEvents >= 1 &&
 			counts.semaphores >= 1 &&
 			counts.tokenCaches >= 1 &&
-			counts.abortedGenerations >= 1
+			counts.abortedGenerations >= 1 &&
+			counts.conversations >= 1
 	);
 
 	// ── assert: expired gone, fresh kept ──────────────────────────────────────────
@@ -141,6 +185,20 @@ async function main() {
 	check("abortedGenerations: >1h deleted", await gone("abortedGenerations", ids.agExpired));
 	check("abortedGenerations: <1h kept", await kept("abortedGenerations", ids.agFresh));
 
+	// conversation retention + FK-ordered dependent cleanup
+	const rowGone = async (table: typeof schema.conversations | typeof schema.reports, id: string) =>
+		(await db.select().from(table).where(eq(table.id, id))).length === 0;
+	check("conversations: >RETENTION_DAYS deleted", await rowGone(schema.conversations, convExpired));
+	check("conversations: recent kept", !(await rowGone(schema.conversations, convFresh)));
+	check(
+		"reports: dependent of expired conv deleted (FK order held)",
+		await rowGone(schema.reports, reportExpired)
+	);
+	check(
+		"files: dependent of expired conv deleted",
+		(await db.select().from(schema.files).where(eq(schema.files.id, fileExpired))).length === 0
+	);
+
 	// ── tidy: drop the fresh seeds we deliberately kept ───────────────────────────
 	await collections.sessions.deleteOne({ _id: ids.sessFresh });
 	await collections.messageEvents.deleteOne({ _id: ids.meFresh });
@@ -148,6 +206,7 @@ async function main() {
 	await collections.semaphores.deleteOne({ _id: ids.semActive });
 	await collections.tokenCaches.deleteOne({ _id: ids.tcFresh });
 	await collections.abortedGenerations.deleteOne({ _id: ids.agFresh });
+	await db.delete(schema.conversations).where(eq(schema.conversations.id, convFresh));
 
 	await closeDb();
 	console.log(failures === 0 ? "\nALL CHECKS PASSED" : `\n${failures} CHECK(S) FAILED`);
