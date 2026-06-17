@@ -718,8 +718,8 @@
 
 		<div
 			class="pointer-events-none absolute inset-x-0 bottom-0 z-0 mx-auto flex w-full
-			max-w-3xl flex-col items-center justify-center bg-linear-to-t from-white
-			via-white to-white/0 px-3.5 pt-2 *:pointer-events-auto
+			max-w-3xl flex-col items-center justify-center bg-linear-to-t from-[var(--ap-paper)]
+			via-[var(--ap-paper)] to-[var(--ap-paper)]/0 px-3.5 pt-2 *:pointer-events-auto
 			max-sm:py-0 sm:px-5
 			md:pb-4 xl:max-w-4xl dark:border-gray-800 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900/0"
 		>

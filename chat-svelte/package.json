@@ -68,6 +68,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fontsource/cormorant-garamond": "^5.2.11",
+		"@fontsource/dm-mono": "^5.2.7",
+		"@fontsource/dm-sans": "^5.2.8",
 		"@huggingface/hub": "^2.2.0",
 		"@huggingface/inference": "^4.11.3",
 		"@iconify-json/bi": "^1.1.21",

@@ -1,5 +1,18 @@
 @import "./highlight-js.css" layer(base);
 
+/*
+  Editorial type — self-hosted (no Google CDN request; privacy-first) to match
+  the prod /chat identity: Cormorant Garamond display serif for headings, DM Sans
+  body, DM Mono for code. Per-weight CSS carries unicode-range @font-face blocks,
+  so latin-only clients fetch only the latin woff2 subsets.
+*/
+@import "@fontsource/cormorant-garamond/400.css";
+@import "@fontsource/cormorant-garamond/600.css";
+@import "@fontsource/dm-sans/400.css";
+@import "@fontsource/dm-sans/500.css";
+@import "@fontsource/dm-sans/700.css";
+@import "@fontsource/dm-mono/400.css";
+
 @import "tailwindcss";
 
 @plugin "tailwind-scrollbar" {
@@ -10,10 +23,21 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-	--color-gray-50: #fafafa;
-	--color-gray-100: #f5f5f5;
-	--color-gray-200: #e5e5e5;
-	--color-gray-300: #d4d4d4;
+	/* Editorial type ramp (matches prod /chat). Headings get the serif via the
+	   base layer below; body/UI is DM Sans; code is DM Mono. */
+	--font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+	--font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+	--font-mono: "DM Mono", ui-monospace, monospace;
+
+	/* Light end of the neutral ramp is warmed to the AI Potluck "paper" palette so
+	   the whole light-mode chrome (sidebar from-gray-50, composer bg-gray-100,
+	   borders/hovers) reads as editorial paper in one lever. 400–950 stay NEUTRAL
+	   on purpose: they carry body text in light mode AND every dark-mode surface,
+	   and prod /chat keeps its dark theme neutral (not warmed). */
+	--color-gray-50: #f2efe9;
+	--color-gray-100: #eeeae3;
+	--color-gray-200: #ddd8d0;
+	--color-gray-300: #d0c9bf;
 	--color-gray-400: #a3a3a3;
 	--color-gray-500: #737373;
 	--color-gray-600: #454545;
@@ -58,6 +82,22 @@ html,
 body {
 	overscroll-behavior: none;
 	touch-action: pan-x pan-y;
+}
+
+/* Paper canvas in light mode (the app.html body keeps dark:bg-gray-900 for dark). */
+body {
+	background-color: var(--ap-paper);
+}
+.dark body {
+	background-color: var(--color-gray-900);
+}
+
+/* Editorial display headings — Cormorant Garamond, regular weight, like prod /chat. */
+h1,
+h2 {
+	font-family: var(--font-serif);
+	font-weight: 400;
+	letter-spacing: 0;
 }
 
 @utility btn {
