@@ -54,16 +54,28 @@ export function WelcomeOverlay({
         </h1>
 
         <p className="text-[14px] text-[var(--ap-ink)]/85 leading-relaxed">
-          AI Potluck is not a product. It is methodology for bringing together the best that exists in open-source AI, in service of the public interest.
+          AI Potluck is not a product. It is methodology for bringing together
+          the best that exists in open-source AI, in service of the public
+          interest.
         </p>
 
         <p className="text-[14px] text-[var(--ap-ink)]/85 leading-relaxed">
-          Our intelligence comes from {MODEL.short}, the open model from the Swiss National AI Initiative. This prototype is served via HuggingFace Inference and the Public AI Inference Utility; the production stack runs on sovereign public compute at CSCS
-          (Switzerland) and LUMI (Finland). ROOST covers safety while OpenMined helps ensure responsible use of data. The Mozilla Data Collective rounds out our stack with locally-sourced data sets.
+          Our intelligence comes from {MODEL.short}, the open model from the
+          Swiss National AI Initiative. This prototype is served via HuggingFace
+          Inference and the Public AI Inference Utility; the production stack
+          runs on sovereign public compute at CSCS (Switzerland) and LUMI
+          (Finland). ROOST covers safety while OpenMined helps ensure
+          responsible use of data. The Mozilla Data Collective rounds out our
+          stack with locally-sourced data sets.
         </p>
 
         <p className="text-[14px] text-[var(--ap-ink)]/85 leading-relaxed">
-          This website is a demonstration of what we can do together. But it's also a demonstration of all the gaps in open source, and where we need to focus if we're going to catch up with the big closed AI labs. Our little chatbot, like much of open source, is also a work-in-progress. That's okay. We think of every gap as an open invitation. Come join the Potluck.
+          This website is a demonstration of what we can do together. But it's
+          also a demonstration of all the gaps in open source, and where we need
+          to focus if we're going to catch up with the big closed AI labs. Our
+          little chatbot, like much of open source, is also a work-in-progress.
+          That's okay. We think of every gap as an open invitation. Come join
+          the Potluck.
         </p>
 
         <div className="mt-2 flex flex-wrap items-center gap-2.5">
