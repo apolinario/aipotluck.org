@@ -248,8 +248,11 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 		// NOTE: the `config` Proxy returns "" for unset keys (not undefined), so test the trimmed value.
 		// Unset/empty → default to Apertus; "*" or "all" → full catalog; otherwise the given id list.
 		const allowlistRaw = ((Reflect.get(config, "MODEL_ALLOWLIST") as string | undefined) ?? "").trim();
+		// 70B first: the answer-quality layer (persona/grounding/identity-lock) is
+		// tuned for the 70B, and it's the default served + tested model. The first
+		// allowlisted model becomes defaultModel (models[0]) below.
 		const allowlistSpec =
-			allowlistRaw || "swiss-ai/Apertus-8B-Instruct-2509,swiss-ai/Apertus-70B-Instruct-2509";
+			allowlistRaw || "swiss-ai/Apertus-70B-Instruct-2509,swiss-ai/Apertus-8B-Instruct-2509";
 		const exposeAll = ["*", "all"].includes(allowlistSpec.toLowerCase());
 		const allowlist = allowlistSpec
 			.split(",")
@@ -258,7 +261,10 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 		const allowSet = new Set(allowlist);
 		let allowedData = parsed.data;
 		if (!exposeAll && allowSet.size) {
-			const filtered = parsed.data.filter((m) => allowSet.has(m.id));
+			// Order by the allowlist, not the upstream router catalog order, so the
+			// FIRST allowlisted id deterministically becomes defaultModel (models[0]).
+			const byId = new Map(parsed.data.map((m) => [m.id, m]));
+			const filtered = allowlist.map((id) => byId.get(id)).filter((m): m is typeof parsed.data[number] => Boolean(m));
 			if (filtered.length) {
 				allowedData = filtered;
 				logger.info(
