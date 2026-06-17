@@ -248,11 +248,13 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 		// NOTE: the `config` Proxy returns "" for unset keys (not undefined), so test the trimmed value.
 		// Unset/empty → default to Apertus; "*" or "all" → full catalog; otherwise the given id list.
 		const allowlistRaw = ((Reflect.get(config, "MODEL_ALLOWLIST") as string | undefined) ?? "").trim();
-		// 70B first: the answer-quality layer (persona/grounding/identity-lock) is
-		// tuned for the 70B, and it's the default served + tested model. The first
-		// allowlisted model becomes defaultModel (models[0]) below.
-		const allowlistSpec =
-			allowlistRaw || "swiss-ai/Apertus-70B-Instruct-2509,swiss-ai/Apertus-8B-Instruct-2509";
+		// 70B only for the alpha (user decision): the answer-quality layer
+		// (persona/grounding/identity-lock) is tuned for the 70B, it's the default
+		// served + tested model, and the 8B fails the identity-lock / confabulates.
+		// Apertus 1.5 may be added here later if we get access. The first allowlisted
+		// model becomes defaultModel (models[0]) below; with one entry the picker
+		// collapses to a single model. Override via MODEL_ALLOWLIST if needed.
+		const allowlistSpec = allowlistRaw || "swiss-ai/Apertus-70B-Instruct-2509";
 		const exposeAll = ["*", "all"].includes(allowlistSpec.toLowerCase());
 		const allowlist = allowlistSpec
 			.split(",")
