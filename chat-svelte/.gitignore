@@ -11,7 +11,9 @@ SECRET_CONFIG
 .idea
 !.env.ci
 gcp-*.json
-db
+# Anchored: only the upstream MongoMemoryServer data dir at repo root, NOT our
+# Postgres persistence layer in src/lib/server/db (a bare `db` matched both).
+/db
 models/*
 !models/add-your-models-here.txt
 .claude/*
