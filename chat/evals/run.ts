@@ -41,9 +41,15 @@ if (!process.env.HF_TOKEN) {
   process.exit(2);
 }
 
+type Turn = { role: "user" | "assistant"; content: string };
+
 type Case = {
   name: string;
-  prompt: string;
+  // Single-turn cases use `prompt`; multi-turn cases use `turns` (a prior
+  // conversation whose FINAL user turn is the one under test). Exactly one of
+  // the two is set. Assertions always score the model's reply to the last turn.
+  prompt?: string;
+  turns?: Turn[];
   expectCategory?: string;
   expectNoCategory?: boolean;
   mustContain?: string[];
@@ -66,11 +72,17 @@ const EMPTY_HINTS: RequestHints = {
   country: undefined,
 };
 
-async function callModel(prompt: string) {
+async function callModel(c: Case) {
   // Build the exact prompt the route builds: ground + harden the user turn,
   // then the system prompt (tools disabled, no search grounding for evals).
-  const messages: ModelMessage[] = [{ role: "user", content: prompt }];
-  hardenLastUserTurn(messages);
+  // Multi-turn cases replay the prior conversation; single-turn cases are the
+  // one-user-message path, unchanged.
+  const messages: ModelMessage[] = c.turns
+    ? c.turns.map((t) => ({ role: t.role, content: t.content }) as ModelMessage)
+    : [{ role: "user", content: c.prompt ?? "" }];
+  // hardenLastUserTurn grounds over ALL user turns and hardens the last one,
+  // returning the conversation-level category.
+  const conversationCat = hardenLastUserTurn(messages);
   const system = systemPrompt({
     requestHints: EMPTY_HINTS,
     supportsTools: false,
@@ -93,8 +105,11 @@ async function callModel(prompt: string) {
   });
   const data = await res.json();
   const text: string = data.choices?.[0]?.message?.content ?? "";
-  // The route derives the category from the same ground() call; mirror it here.
-  const category = ground(prompt)?.id ?? "";
+  // Single-turn keeps the exact ground(prompt) scoring it always used; multi-turn
+  // uses the conversation-level category from the harden pass.
+  const category = c.turns
+    ? conversationCat
+    : (ground(c.prompt ?? "")?.id ?? "");
   return { status: res.status, text, category };
 }
 
@@ -151,7 +166,7 @@ async function main() {
     let passes = 0;
     let firstFail: { reason: string; snippet: string } | null = null;
     for (let i = 0; i < RUNS; i++) {
-      const r = await callModel(c.prompt);
+      const r = await callModel(c);
       const fail = check(c, r);
       if (fail) {
         firstFail ??= {
