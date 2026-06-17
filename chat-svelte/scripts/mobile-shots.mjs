@@ -52,8 +52,12 @@ async function shoot(browser, spec) {
 	try {
 		await page.goto(BASE, { waitUntil: "networkidle", timeout: 20000 });
 		// Fresh (cookieless) contexts get chat-ui's first-visit welcome modal, which
-		// covers the UI — exactly what a QR-code first-timer sees. Dismiss it so the
-		// shots capture the actual chat + map. (Match a couple of likely labels.)
+		// covers the UI — exactly what a QR-code first-timer sees. Capture it first
+		// (it's the literal first impression), then dismiss it so the later shots
+		// show the actual chat + map. (Match a couple of likely labels.)
+		if (await page.getByRole("button", { name: "Start chatting" }).count()) {
+			await page.screenshot({ path: join(OUT, `${spec.name}-welcome.png`), fullPage: false });
+		}
 		for (const label of ["Start chatting", "Get started", "Continue"]) {
 			const btn = page.getByRole("button", { name: label });
 			if (await btn.count()) {

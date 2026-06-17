@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Modal from "$lib/components/Modal.svelte";
-	import IconOmni from "$lib/components/icons/IconOmni.svelte";
 	import { usePublicConfig } from "$lib/utils/PublicConfig.svelte";
 
 	const publicConfig = usePublicConfig();
@@ -17,31 +16,28 @@
 		class="flex w-full flex-col gap-8 bg-white bg-linear-to-b to-transparent px-6 pb-7 dark:bg-black dark:from-white/10 dark:to-white/5"
 	>
 		<div
-			class="relative -mx-6 grid h-48 place-items-center overflow-hidden rounded-b-xl bg-linear-to-t from-black/5 select-none dark:from-white/10"
+			class="relative -mx-6 grid h-40 place-items-center overflow-hidden rounded-b-xl bg-linear-to-t from-black/5 select-none dark:from-white/10"
 		>
-			<img
-				class="size-full bg-black object-cover"
-				src="{publicConfig.assetPath}/omni-welcome.gif"
-				alt="Omni AI model router animation"
-			/>
-			<!-- <h2
-				class="flex translate-y-1 items-center text-3xl font-semibold text-gray-900 dark:text-gray-100"
+			<h2
+				class="flex translate-y-1 items-center gap-2.5 px-6 text-center text-2xl font-semibold text-gray-900 dark:text-gray-100"
 			>
-				<Logo classNames="mr-2 size-12 dark:invert" />
+				<img class="size-10 dark:invert" src="{publicConfig.assetPath}/logo.svg" alt="" />
 				{publicConfig.PUBLIC_APP_NAME}
-			</h2> -->
+			</h2>
 		</div>
 
 		<div class="text-gray-700 dark:text-gray-200">
 			<p class="text-[15px] leading-relaxed">
-				Welcome to {publicConfig.PUBLIC_APP_NAME}, the chat app powered by open source AI models.
+				Welcome to {publicConfig.PUBLIC_APP_NAME} — a chat app built on the open AI ecosystem, served
+				on public infrastructure.
 			</p>
 			<p class="mt-3 text-[15px] leading-relaxed">
-				<IconOmni classNames="-translate-y-px" /> Omni automatically picks the best AI model to give you
-				optimal answers depending on your requests.
+				Every answer is transparent about how it was made: the badge below each reply shows the model,
+				who built it, and who served it. Tap <span class="font-medium">show on map ↗</span> or
+				<span class="font-medium">Under the hood</span> to see the full open stack behind your chat.
 			</p>
 			<p class="mt-3 text-[15px] leading-relaxed">
-				You can also choose from any available open source models to chat with directly.
+				Turn on <span class="font-medium">Open search</span> to ground answers in open, citable sources.
 			</p>
 		</div>
 
