@@ -1,86 +1,76 @@
 <script lang="ts">
-	import Logo from "$lib/components/icons/Logo.svelte";
 	import type { Model } from "$lib/types/Model";
-	import { usePublicConfig } from "$lib/utils/PublicConfig.svelte";
-
-	const publicConfig = usePublicConfig();
+	import { resolveModelIdentity } from "$lib/identity";
+	import { suggestions } from "$lib/constants/suggestions";
 
 	interface Props {
 		currentModel: Model;
 		onmessage?: (content: string) => void;
 	}
 
-	let { currentModel: _currentModel, onmessage }: Props = $props();
+	let { currentModel, onmessage }: Props = $props();
 
-	$effect(() => {
-		// referenced to appease linter while UI blocks are commented out
-		void _currentModel;
-		void onmessage;
-	});
+	// The model name is DERIVED from the actually-served model (never hardcoded) so
+	// this line and the per-answer provenance badge can never disagree.
+	const short = $derived(resolveModelIdentity(currentModel.id).short);
+
+	// The six commitments (Ayah's value framework + the "collaboration" 6th, per
+	// Julie's Web UX spec). Titles only — the values, not the partly-stale
+	// supporting copy from the spec.
+	const COMMITMENTS = [
+		"Safe",
+		"Ethical",
+		"Human-flourishing",
+		"Multilingual",
+		"A public utility",
+		"A collaboration",
+	];
 </script>
 
-<div class="my-auto grid items-center justify-center gap-8 text-center">
-	<div
-		class="flex -translate-y-16 items-center rounded-xl text-3xl font-semibold select-none md:-translate-y-12 md:text-5xl"
-	>
-		<Logo classNames="size-12 md:size-20 dark:invert mr-0.5" />
-		{publicConfig.PUBLIC_APP_NAME}
-	</div>
-	<!-- <div class="lg:col-span-1">
-		<div>
-			<div class="mb-3 flex items-center text-2xl font-semibold">
-				<Logo classNames="mr-1 flex-none dark:invert" />
-				{publicConfig.PUBLIC_APP_NAME}
-				<div
-					class="ml-3 flex h-6 items-center rounded-lg border border-gray-100 bg-gray-50 px-2 text-base text-gray-400 dark:border-gray-700/60 dark:bg-gray-800"
-				>
-					{publicConfig.PUBLIC_VERSION}
-				</div>
-			</div>
-			<p class="text-base text-gray-600 dark:text-gray-400">
-				{publicConfig.PUBLIC_APP_DESCRIPTION ||
-					"Making the community's best AI chat models available to everyone."}
-			</p>
+<div class="my-auto flex w-full flex-col items-center gap-6 px-4">
+	<div class="flex flex-col items-center">
+		<div
+			class="text-center font-serif text-xl font-semibold tracking-tight text-balance text-[var(--ap-ink)] md:text-2xl"
+		>
+			Open-source, sovereign, community-configured.
 		</div>
-	</div>
-	<div class="lg:col-span-2 lg:pl-24">
-		{#each JSON5.parse(publicConfig.PUBLIC_ANNOUNCEMENT_BANNERS || "[]") as banner}
-			<AnnouncementBanner classNames="mb-4" title={banner.title}>
-				<a
-					target={banner.external ? "_blank" : "_self"}
-					href={banner.linkHref}
-					class="mr-2 flex items-center underline hover:no-underline">{banner.linkTitle}</a
-				>
-			</AnnouncementBanner>
-		{/each}
-		<div class="overflow-hidden rounded-xl border dark:border-gray-800">
-			<div class="flex p-3">
-				<div>
-					<div class="text-sm text-gray-600 dark:text-gray-400">Current Model</div>
-					<div class="flex items-center gap-1.5 font-semibold max-sm:text-smd">
-						{#if currentModel.logoUrl}
-							<img
-								class="aspect-square size-4 rounded-sm border bg-white dark:border-gray-700"
-								src={currentModel.logoUrl}
-								alt=""
-							/>
-						{:else}
-							<div
-								class="size-4 rounded-sm border border-transparent bg-gray-300 dark:bg-gray-800"
-							></div>
+		<div class="mt-2 max-w-prose text-center text-[13px] text-balance text-[var(--ap-ink-3)]">
+			Running on {short} by the Swiss National AI Initiative. This prototype is served via HuggingFace;
+			the production stack runs on sovereign public compute. Not a company.
+		</div>
+
+		<div class="mt-3 flex max-w-md flex-col items-center gap-1 text-center">
+			<div
+				class="font-mono text-[10px] tracking-[0.16em] text-[var(--ap-ink-3)] uppercase opacity-70"
+			>
+				We are
+			</div>
+			<div
+				class="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 font-mono text-[11px] text-[var(--ap-ink-2)]"
+			>
+				{#each COMMITMENTS as c, i (c)}
+					<span class="flex items-center gap-x-1.5">
+						<span>{c}</span>
+						{#if i < COMMITMENTS.length - 1}
+							<span class="text-[var(--ap-ink-3)] opacity-50">·</span>
 						{/if}
-						{currentModel.displayName}
-					</div>
-				</div>
-				<a
-					href="{base}/settings/{currentModel.id}"
-					aria-label="Settings"
-					class="btn ml-auto flex h-7 w-7 self-start rounded-full bg-gray-100 p-1 text-xs hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-600"
-					><IconGear /></a
-				>
+					</span>
+				{/each}
 			</div>
-			<ModelCardMetadata variant="dark" model={currentModel} />
 		</div>
 	</div>
-	<div class="h-40 sm:h-24"></div> -->
+
+	<div
+		class="no-scrollbar flex w-full max-w-3xl gap-2.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible"
+	>
+		{#each suggestions as suggestion (suggestion)}
+			<button
+				type="button"
+				class="h-auto w-full min-w-[200px] shrink-0 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)] px-4 py-3 text-left text-[12px] leading-relaxed whitespace-nowrap text-[var(--ap-ink-3)] transition-all duration-200 hover:-translate-y-0.5 hover:text-[var(--ap-ink)] hover:shadow-sm sm:min-w-0 sm:shrink sm:p-4 sm:text-[13px] sm:whitespace-normal"
+				onclick={() => onmessage?.(suggestion)}
+			>
+				{suggestion}
+			</button>
+		{/each}
+	</div>
 </div>

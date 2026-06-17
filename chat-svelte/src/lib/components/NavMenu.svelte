@@ -1,35 +1,32 @@
 <script lang="ts" module>
 	export const titles: { [key: string]: string } = {
 		today: "Today",
-		week: "This week",
-		month: "This month",
+		yesterday: "Yesterday",
+		lastWeek: "Last 7 days",
+		lastMonth: "Last 30 days",
 		older: "Older",
 	} as const;
 </script>
 
 <script lang="ts">
 	import { base } from "$app/paths";
+	import { goto } from "$app/navigation";
 
-	import Logo from "$lib/components/icons/Logo.svelte";
-	import IconSun from "$lib/components/icons/IconSun.svelte";
-	import IconMoon from "$lib/components/icons/IconMoon.svelte";
-	import { switchTheme, subscribeToTheme } from "$lib/switchTheme";
+	import LucideMessageSquare from "~icons/lucide/message-square";
+	import LucidePenSquare from "~icons/lucide/pen-square";
+	import LucideTrash2 from "~icons/lucide/trash-2";
 	import { isAborted } from "$lib/stores/isAborted";
-	import { onDestroy } from "svelte";
 
 	import NavConversationItem from "./NavConversationItem.svelte";
+	import DeleteAllConversationsModal from "./DeleteAllConversationsModal.svelte";
 	import type { LayoutData } from "../../routes/$types";
 	import type { ConvSidebar } from "$lib/types/ConvSidebar";
-	import type { Model } from "$lib/types/Model";
 	import { page } from "$app/state";
 	import InfiniteScroll from "./InfiniteScroll.svelte";
 	import { CONV_NUM_PER_PAGE } from "$lib/constants/pagination";
-	import { browser } from "$app/environment";
 	import { usePublicConfig } from "$lib/utils/PublicConfig.svelte";
 	import { useAPIClient, handleResponse } from "$lib/APIClient";
 	import { requireAuthUser } from "$lib/utils/auth";
-	import { isPro } from "$lib/stores/isPro";
-	import IconPro from "$lib/components/icons/IconPro.svelte";
 
 	const publicConfig = usePublicConfig();
 	const client = useAPIClient();
@@ -38,52 +35,62 @@
 		conversations: ConvSidebar[];
 		user: LayoutData["user"];
 		p?: number;
+		/** When true, render the icon-only rail (labels + history hidden). */
+		isCollapsed?: boolean;
 		ondeleteConversation?: (id: string) => void;
 		oneditConversationTitle?: (payload: { id: string; title: string }) => void;
+		ondeleteAllConversations?: () => void;
 	}
 
 	let {
 		conversations = $bindable(),
 		user,
 		p = $bindable(0),
+		isCollapsed = false,
 		ondeleteConversation,
 		oneditConversationTitle,
+		ondeleteAllConversations,
 	}: Props = $props();
 
 	let hasMore = $state(true);
+	let deleteAllOpen = $state(false);
 
 	function handleNewChatClick(e: MouseEvent) {
 		isAborted.set(true);
 
 		if (requireAuthUser()) {
 			e.preventDefault();
+			return;
 		}
+
+		e.preventDefault();
+		goto(`${base}/`, { invalidateAll: true });
 	}
 
-	function handleNavItemClick(e: MouseEvent) {
-		if (requireAuthUser()) {
-			e.preventDefault();
-		}
-	}
-
-	const dateRanges = [
-		new Date().setDate(new Date().getDate() - 1),
-		new Date().setDate(new Date().getDate() - 7),
-		new Date().setMonth(new Date().getMonth() - 1),
-	];
+	// Five date buckets mirroring prod groupChatsByDate (chat/components/chat/
+	// sidebar-history.tsx): isToday, isYesterday, > oneWeekAgo, > oneMonthAgo, else older.
+	const now = new Date();
+	const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+	const startOfYesterday = startOfToday - 24 * 60 * 60 * 1000;
+	const oneWeekAgo = new Date().setDate(new Date().getDate() - 7);
+	const oneMonthAgo = new Date().setMonth(new Date().getMonth() - 1);
 
 	let groupedConversations = $derived({
-		today: conversations.filter(({ updatedAt }) => updatedAt.getTime() > dateRanges[0]),
-		week: conversations.filter(
-			({ updatedAt }) => updatedAt.getTime() > dateRanges[1] && updatedAt.getTime() < dateRanges[0]
+		today: conversations.filter(({ updatedAt }) => updatedAt.getTime() >= startOfToday),
+		yesterday: conversations.filter(
+			({ updatedAt }) =>
+				updatedAt.getTime() >= startOfYesterday && updatedAt.getTime() < startOfToday
 		),
-		month: conversations.filter(
-			({ updatedAt }) => updatedAt.getTime() > dateRanges[2] && updatedAt.getTime() < dateRanges[1]
+		lastWeek: conversations.filter(
+			({ updatedAt }) => updatedAt.getTime() < startOfYesterday && updatedAt.getTime() > oneWeekAgo
 		),
-		older: conversations.filter(({ updatedAt }) => updatedAt.getTime() < dateRanges[2]),
+		lastMonth: conversations.filter(
+			({ updatedAt }) => updatedAt.getTime() <= oneWeekAgo && updatedAt.getTime() > oneMonthAgo
+		),
+		older: conversations.filter(({ updatedAt }) => updatedAt.getTime() <= oneMonthAgo),
 	});
 
-	const nModels: number = page.data.models.filter((el: Model) => !el.unlisted).length;
+	let hasAnyConversation = $derived(conversations.length > 0);
 
 	async function handleVisible() {
 		p++;
@@ -111,141 +118,100 @@
 			p = 0;
 		}
 	});
-
-	let isDark = $state(false);
-	let unsubscribeTheme: (() => void) | undefined;
-
-	if (browser) {
-		unsubscribeTheme = subscribeToTheme(({ isDark: nextIsDark }) => {
-			isDark = nextIsDark;
-		});
-	}
-
-	onDestroy(() => {
-		unsubscribeTheme?.();
-	});
 </script>
 
+<!-- Header: logo/home button (+ HuggingChat-only app name) -->
 <div
-	class="sticky top-0 flex flex-none touch-none items-center justify-between px-1.5 py-3.5 max-sm:pt-0"
+	class="sticky top-0 flex flex-none touch-none items-center justify-between px-1.5 py-3 max-sm:pt-0"
 >
 	<a
-		class="flex items-center rounded-xl text-lg font-semibold select-none"
+		class="flex size-8 items-center justify-center rounded-lg text-sidebar-foreground/50 transition-colors duration-150 select-none hover:text-sidebar-foreground"
 		href="{publicConfig.PUBLIC_ORIGIN}{base}/"
+		title="Chatbot"
+		aria-label="Chatbot"
 	>
-		<Logo classNames="dark:invert mr-[2px]" />
-		{publicConfig.PUBLIC_APP_NAME}
+		<LucideMessageSquare class="size-4" />
 	</a>
+	{#if publicConfig.isHuggingChat}
+		<span class="text-lg font-semibold select-none">{publicConfig.PUBLIC_APP_NAME}</span>
+	{/if}
+</div>
+
+<!-- Content: New chat + Delete all -->
+<div class="flex flex-col gap-px px-1.5 pt-1">
 	<a
 		href={`${base}/`}
 		onclick={handleNewChatClick}
-		class="flex rounded-lg border bg-white px-2 py-0.5 text-center whitespace-nowrap shadow-xs hover:shadow-none sm:text-smd dark:border-gray-600 dark:bg-gray-700"
+		class="flex h-8 items-center gap-2 rounded-lg border border-sidebar-border px-2 text-[13px] text-sidebar-foreground/70 transition-colors duration-150 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
 		title="Ctrl/Cmd + Shift + O"
 	>
-		New Chat
+		<LucidePenSquare class="size-4 shrink-0" />
+		{#if !isCollapsed}
+			<span class="font-medium">New chat</span>
+		{/if}
 	</a>
-</div>
-
-<div
-	class="scrollbar-custom flex touch-pan-y flex-col gap-1 overflow-y-auto rounded-r-xl border border-l-0 border-gray-100 from-gray-50 px-3 pt-2 pb-3 text-[.9rem] max-sm:bg-linear-to-t md:bg-linear-to-l dark:border-transparent dark:from-gray-800/30"
->
-	<div class="flex flex-col gap-px">
-		{#each Object.entries(groupedConversations) as [group, convs]}
-			{#if convs.length}
-				<h4 class="mt-4 mb-1.5 pl-0.5 text-xs text-gray-400 first:mt-0 dark:text-gray-500">
-					{titles[group]}
-				</h4>
-				{#each convs as conv}
-					<NavConversationItem {conv} {oneditConversationTitle} {ondeleteConversation} />
-				{/each}
-			{/if}
-		{/each}
-	</div>
-	{#if hasMore}
-		<InfiniteScroll onvisible={handleVisible} />
-	{/if}
-</div>
-<div
-	class="flex touch-none flex-col gap-px rounded-r-xl border border-l-0 border-gray-100 p-3 text-base sm:text-sm md:mt-3 md:bg-linear-to-l md:from-gray-50 dark:border-transparent md:dark:from-gray-800/30"
->
 	{#if user?.username || user?.email}
-		<div
-			class="group flex h-8 items-center gap-1.5 rounded-lg pr-2 pl-2 hover:bg-gray-100 first:hover:bg-transparent max-sm:h-10 dark:hover:bg-gray-700 dark:first:hover:bg-transparent"
-		>
-			<img
-				src="https://huggingface.co/api/users/{user.username}/avatar?redirect=true"
-				class="size-3.5 rounded-full border bg-gray-500 dark:border-white/40"
-				alt=""
-			/>
-			{#if publicConfig.isHuggingChat && user?.username}
-				<a
-					href="https://huggingface.co/{user.username}"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="min-w-0 truncate pr-2 text-gray-500 hover:underline dark:text-gray-400"
-					>{user.username}</a
-				>
-			{:else}
-				<span class="min-w-0 truncate pr-2 text-gray-500 dark:text-gray-400"
-					>{user?.username || user?.email}</span
-				>
-			{/if}
-
-			{#if publicConfig.isHuggingChat && $isPro === false}
-				<a
-					href="https://huggingface.co/subscribe/pro?from=HuggingChat"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="ml-auto flex h-[20px] shrink-0 items-center gap-1 px-1.5 py-0.5 text-xs text-gray-500 dark:text-gray-400"
-				>
-					<IconPro />
-					Get PRO
-				</a>
-			{:else if publicConfig.isHuggingChat && $isPro === true}
-				<span
-					class="ml-auto flex h-[20px] shrink-0 items-center gap-1 px-1.5 py-0.5 text-xs text-gray-500 dark:text-gray-400"
-				>
-					<IconPro />
-					PRO
-				</span>
-			{/if}
-		</div>
-	{/if}
-	<a
-		href="{base}/models"
-		class="flex h-8 flex-none items-center gap-1.5 rounded-lg pr-2 pl-2 text-gray-500 hover:bg-gray-100 max-sm:h-10 dark:text-gray-400 dark:hover:bg-gray-700"
-		onclick={handleNavItemClick}
-	>
-		Models
-		<span
-			class="ml-auto rounded-md bg-gray-500/5 px-1.5 py-0.5 text-xs text-gray-400 dark:bg-gray-500/20 dark:text-gray-400"
-			>{nModels}</span
-		>
-	</a>
-
-	<span class="flex gap-px">
-		<a
-			href="{base}/settings/application"
-			class="flex h-8 flex-none grow items-center gap-1.5 rounded-lg pr-2 pl-2 text-gray-500 hover:bg-gray-100 max-sm:h-10 dark:text-gray-400 dark:hover:bg-gray-700"
-			onclick={handleNavItemClick}
-		>
-			Settings
-		</a>
 		<button
-			onclick={() => {
-				switchTheme();
-			}}
-			aria-label="Toggle theme"
-			class="flex size-8 min-w-[1.5em] flex-none items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 max-sm:size-10 dark:text-gray-400 dark:hover:bg-gray-700"
+			type="button"
+			onclick={() => (deleteAllOpen = true)}
+			class="flex h-8 items-center gap-2 rounded-lg px-2 text-sidebar-foreground/40 transition-colors duration-150 hover:bg-destructive/10 hover:text-destructive"
+			title="Delete All Chats"
 		>
-			{#if browser}
-				{#if isDark}
-					<IconSun />
-				{:else}
-					<IconMoon />
-				{/if}
+			<LucideTrash2 class="size-4 shrink-0" />
+			{#if !isCollapsed}
+				<span class="text-[13px]">Delete all</span>
 			{/if}
 		</button>
-	</span>
+	{/if}
 </div>
 
+<!-- History -->
+{#if !isCollapsed}
+	<div class="scrollbar-custom flex touch-pan-y flex-col gap-4 overflow-y-auto px-1.5 pt-3 pb-3">
+		{#if hasAnyConversation}
+			<div
+				class="px-2 text-[10px] font-semibold tracking-[0.12em] text-sidebar-foreground/70 uppercase"
+			>
+				History
+			</div>
+			{#each Object.entries(groupedConversations) as [group, convs]}
+				{#if convs.length}
+					<div class="flex flex-col">
+						<div
+							class="px-2 py-1 text-[10px] font-semibold tracking-[0.12em] text-sidebar-foreground/70 uppercase"
+						>
+							{titles[group]}
+						</div>
+						{#each convs as conv}
+							<NavConversationItem {conv} {oneditConversationTitle} {ondeleteConversation} />
+						{/each}
+					</div>
+				{/if}
+			{/each}
+			{#if hasMore}
+				<InfiniteScroll onvisible={handleVisible} />
+			{/if}
+		{:else}
+			<div
+				class="flex w-full flex-row items-center justify-center gap-2 px-2 text-[13px] text-sidebar-foreground/60"
+			>
+				{#if user?.username || user?.email}
+					Your conversations will appear here once you start chatting!
+				{:else}
+					Login to save and revisit previous chats!
+				{/if}
+			</div>
+		{/if}
+	</div>
+{/if}
+
+{#if deleteAllOpen}
+	<DeleteAllConversationsModal
+		open={deleteAllOpen}
+		onclose={() => (deleteAllOpen = false)}
+		ondelete={() => {
+			deleteAllOpen = false;
+			ondeleteAllConversations?.();
+		}}
+	/>
+{/if}

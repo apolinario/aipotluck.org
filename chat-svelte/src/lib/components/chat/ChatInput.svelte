@@ -150,6 +150,13 @@
 		}
 	}
 
+	// On-demand focus entry point so callers (e.g. the welcome overlay's "Start
+	// chatting") can move the cursor into the composer after dismissing, mirroring
+	// prod's focus of [data-testid="multimodal-input"].
+	export function focusComposer() {
+		void focusTextarea();
+	}
+
 	function handleFetchedFiles(newFiles: File[]) {
 		if (!newFiles?.length) return;
 		files = [...files, ...newFiles];

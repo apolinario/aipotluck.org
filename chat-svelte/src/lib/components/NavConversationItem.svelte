@@ -4,12 +4,10 @@
 	import { tick } from "svelte";
 	import { DropdownMenu } from "bits-ui";
 
-	import CarbonTrashCan from "~icons/carbon/trash-can";
-	import CarbonEdit from "~icons/carbon/edit";
-	import LucideEllipsis from "~icons/lucide/ellipsis";
+	import LucideTrash2 from "~icons/lucide/trash-2";
+	import LucideMoreHorizontal from "~icons/lucide/more-horizontal";
 	import type { ConvSidebar } from "$lib/types/ConvSidebar";
 
-	import EditConversationModal from "$lib/components/EditConversationModal.svelte";
 	import DeleteConversationModal from "$lib/components/DeleteConversationModal.svelte";
 	import { requireAuthUser } from "$lib/utils/auth";
 
@@ -23,12 +21,13 @@
 	let { conv, readOnly, ondeleteConversation, oneditConversationTitle }: Props = $props();
 
 	let deleteOpen = $state(false);
-	let renameOpen = $state(false);
 	let isMenuOpen = $state(false);
 	let inlineEditing = $state(false);
 	let inlineCancelled = $state(false);
 	let inlineTitle = $state("");
 	let inputEl: HTMLInputElement | undefined = $state();
+
+	let isActive = $derived(conv.id === page.params.id);
 
 	async function startInlineEdit() {
 		if (readOnly || requireAuthUser()) return;
@@ -56,8 +55,10 @@
 </script>
 
 <div
-	class="group flex h-8 flex-none items-center gap-1.5 rounded-lg pr-1.5 pl-2 text-base text-gray-600 hover:bg-gray-100 max-sm:h-10 sm:text-sm dark:text-gray-300 dark:hover:bg-gray-700
-		{conv.id === page.params.id ? 'bg-gray-100 dark:bg-gray-700' : ''}"
+	class="group flex h-8 flex-none items-center gap-1.5 rounded-none px-2 text-[13px] text-sidebar-foreground/50 transition-all duration-150 max-sm:h-10
+		{isActive
+		? 'border-b border-dashed border-sidebar-foreground/50 font-medium text-sidebar-foreground'
+		: ''}"
 >
 	{#if inlineEditing}
 		<input
@@ -90,7 +91,7 @@
 				}
 			}}
 		>
-			<span>{conv.title}</span>
+			<span class="truncate">{conv.title}</span>
 		</a>
 
 		{#if !readOnly}
@@ -105,15 +106,15 @@
 				}}
 			>
 				<DropdownMenu.Trigger
-					class="flex h-6 w-6 items-center justify-center rounded-md text-gray-400 hover:bg-gray-200 hover:text-gray-600 data-[state=open]:bg-gray-200 data-[state=open]:text-gray-600 md:hidden md:group-hover:flex md:data-[state=open]:flex dark:hover:bg-gray-600 dark:hover:text-gray-200 dark:data-[state=open]:bg-gray-600 dark:data-[state=open]:text-gray-200"
+					class="flex h-6 w-6 items-center justify-center rounded-md text-sidebar-foreground/50 transition-colors duration-150 hover:text-sidebar-foreground data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground md:hidden md:group-hover:flex md:data-[state=open]:flex"
 					aria-label="Conversation actions"
 					title="More options"
 				>
-					<LucideEllipsis class="text-sm" />
+					<LucideMoreHorizontal class="text-sm" />
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Portal>
 					<DropdownMenu.Content
-						class="z-50 min-w-36 rounded-xl border border-gray-200 bg-white/95 p-1 text-gray-800 shadow-lg backdrop-blur-sm dark:border-gray-700/60 dark:bg-gray-800/95 dark:text-gray-100"
+						class="z-50 min-w-36 rounded-xl border border-gray-200 bg-white/95 p-1 text-gray-800 shadow-lg backdrop-blur-sm"
 						side="bottom"
 						align="end"
 						sideOffset={4}
@@ -122,17 +123,10 @@
 						interactOutsideBehavior="defer-otherwise-close"
 					>
 						<DropdownMenu.Item
-							class="flex h-9 items-center gap-2 rounded-md px-2 text-sm text-gray-700 select-none focus-visible:outline-hidden data-highlighted:bg-gray-100 sm:h-8 dark:text-gray-200 dark:data-highlighted:bg-white/10"
-							onSelect={() => (renameOpen = true)}
-						>
-							<CarbonEdit class="size-4 opacity-90 dark:opacity-80" />
-							Rename
-						</DropdownMenu.Item>
-						<DropdownMenu.Item
-							class="flex h-9 items-center gap-2 rounded-md px-2 text-sm text-red-500 select-none focus-visible:outline-hidden data-highlighted:bg-red-50 data-highlighted:text-red-600 sm:h-8 dark:text-red-400 dark:data-highlighted:bg-red-500/10 dark:data-highlighted:text-red-400"
+							class="flex h-9 items-center gap-2 rounded-md px-2 text-sm text-red-500 select-none focus-visible:outline-hidden data-highlighted:bg-red-50 data-highlighted:text-red-600 sm:h-8"
 							onSelect={() => (deleteOpen = true)}
 						>
-							<CarbonTrashCan class="size-4 opacity-90 dark:opacity-80" />
+							<LucideTrash2 class="size-4 opacity-90" />
 							Delete
 						</DropdownMenu.Item>
 					</DropdownMenu.Content>
@@ -141,19 +135,6 @@
 		{/if}
 	{/if}
 </div>
-
-<!-- Edit title modal -->
-{#if renameOpen}
-	<EditConversationModal
-		open={renameOpen}
-		title={conv.title}
-		onclose={() => (renameOpen = false)}
-		onsave={(payload) => {
-			renameOpen = false;
-			oneditConversationTitle?.({ id: conv.id.toString(), title: payload.title });
-		}}
-	/>
-{/if}
 
 <!-- Delete confirmation modal -->
 {#if deleteOpen}

@@ -13,7 +13,6 @@
 	import Toast from "$lib/components/Toast.svelte";
 	import NavMenu from "$lib/components/NavMenu.svelte";
 	import MobileNav from "$lib/components/MobileNav.svelte";
-	import WelcomeModal from "$lib/components/WelcomeModal.svelte";
 	import ExpandNavigation from "$lib/components/ExpandNavigation.svelte";
 	import { setContext } from "svelte";
 	import { handleResponse, useAPIClient } from "$lib/APIClient";
@@ -81,6 +80,20 @@
 			});
 	}
 
+	async function deleteAllConversations() {
+		client.conversations
+			.delete()
+			.then(handleResponse)
+			.then(async () => {
+				convsStore.init([]);
+				await goto(`${base}/`, { invalidateAll: true });
+			})
+			.catch((err) => {
+				console.error(err);
+				$error = String(err);
+			});
+	}
+
 	async function editConversationTitle(id: string, title: string) {
 		client
 			.conversations({ id })
@@ -93,11 +106,6 @@
 				console.error(err);
 				$error = String(err);
 			});
-	}
-
-	function closeWelcomeModal() {
-		if (requireAuthUser()) return;
-		settings.set({ welcomeModalSeen: true });
 	}
 
 	onDestroy(() => {
@@ -177,12 +185,6 @@
 			: convsStore.list.find((conv) => conv.id === page.params.id)?.title
 	);
 
-	// Show the welcome modal once on first app load
-	let showWelcome = $derived(
-		!$settings.welcomeModalSeen &&
-			!(page.data.shared === true && page.route.id?.startsWith("/conversation/"))
-	);
-
 	// Shared conversation views were removed (B1-lite strip).
 	let isSharedConversationView = $derived(false);
 </script>
@@ -241,23 +243,19 @@
 	{/if}
 </svelte:head>
 
-{#if showWelcome}
-	<WelcomeModal close={closeWelcomeModal} />
-{/if}
-
 <BackgroundGenerationPoller />
 
 <div
 	class="fixed grid h-dvh w-screen grid-cols-1 grid-rows-[auto_1fr] overflow-hidden text-smd {!isNavCollapsed
 		? 'md:grid-cols-[260px_1fr]'
-		: 'md:grid-cols-[0px_1fr]'} transition-[300ms] [transition-property:grid-template-columns] md:grid-rows-[1fr] dark:text-gray-300"
+		: 'md:grid-cols-[3rem_1fr]'} transition-[300ms] [transition-property:grid-template-columns] md:grid-rows-[1fr] dark:text-gray-300"
 >
 	<ExpandNavigation
 		isCollapsed={isNavCollapsed}
 		onClick={() => (isNavCollapsed = !isNavCollapsed)}
 		classNames="absolute inset-y-0 z-10 my-auto {!isNavCollapsed
 			? 'left-[260px]'
-			: 'left-0'} *:transition-transform"
+			: 'left-[3rem]'} *:transition-transform"
 	/>
 
 	<MobileNav title={mobileNavTitle}>
@@ -266,16 +264,21 @@
 			user={data.user}
 			ondeleteConversation={(id) => deleteConversation(id)}
 			oneditConversationTitle={(payload) => editConversationTitle(payload.id, payload.title)}
+			ondeleteAllConversations={() => deleteAllConversations()}
 		/>
 	</MobileNav>
 	<nav
-		class="grid max-h-dvh grid-cols-1 grid-rows-[auto_1fr_auto] overflow-hidden *:w-[260px] max-md:hidden"
+		class="grid max-h-dvh grid-cols-1 grid-rows-[auto_1fr_auto] overflow-hidden bg-sidebar {!isNavCollapsed
+			? '*:w-[260px]'
+			: '*:w-[3rem]'} max-md:hidden"
 	>
 		<NavMenu
 			conversations={convsStore.list}
 			user={data.user}
+			isCollapsed={isNavCollapsed}
 			ondeleteConversation={(id) => deleteConversation(id)}
 			oneditConversationTitle={(payload) => editConversationTitle(payload.id, payload.title)}
+			ondeleteAllConversations={() => deleteAllConversations()}
 		/>
 	</nav>
 	{#if currentError}

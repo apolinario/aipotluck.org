@@ -48,6 +48,22 @@
 
 	--text-xxs: 0.625rem;
 	--text-smd: 0.94rem;
+
+	/* Sidebar + destructive tokens — mirror prod /chat globals.css so the ported
+	   shadcn class names (bg-sidebar, text-sidebar-foreground, border-sidebar-border,
+	   bg-sidebar-accent, text-destructive, bg-destructive) resolve to the paper
+	   palette. Light/paper theme only: dark mode is deliberately disabled here, so
+	   we do NOT register the dark counterparts. Values copied 1:1 from prod's
+	   :root block (chat/app/globals.css). */
+	--color-sidebar: var(--ap-map-grad-2);
+	--color-sidebar-foreground: var(--ap-ink-2);
+	--color-sidebar-primary: var(--ap-ink);
+	--color-sidebar-primary-foreground: #f2efe9;
+	--color-sidebar-accent: rgba(11, 30, 45, 0.06);
+	--color-sidebar-accent-foreground: var(--ap-ink);
+	--color-sidebar-border: var(--ap-rule);
+	--color-sidebar-ring: var(--ap-ink-3);
+	--color-destructive: var(--ap-gap);
 }
 
 /*

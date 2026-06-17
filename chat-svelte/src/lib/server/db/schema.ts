@@ -201,4 +201,32 @@ export const reports = pgTable(
 
 export type ReportRow = typeof reports.$inferSelect;
 export type NewReportRow = typeof reports.$inferInsert;
+
+// ── contributions ("Get involved" capture) ──────────────────────────────────────
+// Public contribution write point — the single place "Stay informed" (subscribe) and
+// "Raise your hand" (contribute) submissions land. Written by saveContribution
+// (db/contributions.ts). Mirrors the Vercel app's `Contribution` table adapted to text ids,
+// plus an `ip` column the Vercel app lacks (it caps per-IP via Redis; chat-svelte has no
+// Redis, so the per-IP daily cap is DB-backed — we store ip to count it).
+export const contributions = pgTable(
+	"contributions",
+	{
+		id: text("id").primaryKey(),
+		kind: text("kind", { enum: ["subscribe", "contribute"] }).notNull(),
+		email: text("email").notNull(),
+		name: text("name"),
+		organization: text("organization"),
+		contributionType: text("contribution_type", {
+			enum: ["compute", "data", "code", "funding", "other"],
+		}),
+		detail: text("detail"),
+		userId: text("user_id"),
+		ip: text("ip"),
+		createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+	},
+	(t) => [index("contributions_ip_created_idx").on(t.ip, t.createdAt)]
+);
+
+export type ContributionRow = typeof contributions.$inferSelect;
+export type NewContributionRow = typeof contributions.$inferInsert;
 export type FileRow = typeof files.$inferSelect;

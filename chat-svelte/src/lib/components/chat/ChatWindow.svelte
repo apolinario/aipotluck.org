@@ -20,6 +20,8 @@
 	import IconMic from "~icons/lucide/mic";
 
 	import ChatInput from "./ChatInput.svelte";
+	import WelcomeModal from "$lib/components/WelcomeModal.svelte";
+	import ContributeDialog from "./ContributeDialog.svelte";
 	import VoiceRecorder from "./VoiceRecorder.svelte";
 	import StopGeneratingBtn from "../StopGeneratingBtn.svelte";
 	import type { Model } from "$lib/types/Model";
@@ -445,6 +447,38 @@
 	const settings = useSettingsStore();
 	let hideRouterExamples = $derived($settings.hidePromptExamples?.[currentModel.id] ?? false);
 
+	// First-run orientation overlay. Mirrors prod's ChatShell: shown once per
+	// browser on a FRESH chat (no messages), gated here in the chat panel so the
+	// live-stack map stays visible beside it on desktop. Persistence is the
+	// existing `welcomeModalSeen` setting; returning visitors / loaded histories
+	// don't see it. Shared conversation views never show it.
+	let chatInputRef = $state<ReturnType<typeof ChatInput>>();
+	let showWelcome = $derived(!$settings.welcomeModalSeen && !shared && messages.length === 0);
+
+	function dismissWelcome() {
+		if (requireAuthUser()) return;
+		void settings.instantSet({ welcomeModalSeen: true });
+	}
+
+	function handleWelcomeStart() {
+		dismissWelcome();
+		// Focus after the overlay unmounts so the composer is interactable.
+		setTimeout(() => chatInputRef?.focusComposer(), 0);
+	}
+
+	function handleWelcomeSeeBuilt() {
+		dismissWelcome();
+		if (browser && window.matchMedia("(max-width: 767px)").matches) {
+			mobileTab = "map";
+			mapHasActivity = false;
+		} else if (browser) {
+			// Defer past the dismiss re-render, or it would wipe the flash class.
+			setTimeout(() => {
+				window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["apertus", "cscs"] } }));
+			}, 0);
+		}
+	}
+
 	// Respect per‑model multimodal toggle from settings (force enable)
 	let modelIsMultimodalOverride = $derived($settings.multimodalOverrides?.[currentModel.id]);
 	let modelIsMultimodal = $derived((modelIsMultimodalOverride ?? currentModel.multimodal) === true);
@@ -633,10 +667,21 @@
      hit-area would otherwise swallow every click meant for it. Children
      re-enable pointer events themselves. -->
 <div class="pointer-events-none relative flex h-full min-h-0 min-w-0 flex-col md:flex-row">
+	<!-- Single, top-level contribute dialog (store-driven). Mounted here — not nested
+	     inside the welcome overlay — so its Modal backdrop intro plays correctly. -->
+	<ContributeDialog />
 	<div
 		class="pointer-events-auto relative z-[-1] min-h-0 min-w-0 flex-1"
 		class:max-md:hidden={mobileTab === "map"}
 	>
+		{#if showWelcome}
+			<WelcomeModal
+				modelId={currentModel.id}
+				onStartChatting={handleWelcomeStart}
+				onSeeHowBuilt={handleWelcomeSeeBuilt}
+				onSkip={dismissWelcome}
+			/>
+		{/if}
 		{#if featureAnnouncement && showFeatureAnnouncement}
 			<FeatureAnnouncementToast announcement={featureAnnouncement} />
 		{/if}
@@ -824,6 +869,7 @@
 								<ChatInput value="Sorry, something went wrong. Please try again." disabled={true} />
 							{:else}
 								<ChatInput
+									bind:this={chatInputRef}
 									placeholder={isReadOnly ? "This conversation is read-only." : "Ask anything"}
 									{loading}
 									bind:value={draft}
@@ -968,14 +1014,31 @@
 							{currentModel.id}
 						</span>
 					{/if}
-					{#if !messages.length && !loading}
-						<span class="max-sm:hidden">Generated content may be inaccurate or false.</span>
-					{/if}
 					{#if $settings.reasoningOverrides?.[currentModel.id] ?? currentModel.supportsReasoning}
 						<div class="ml-auto">
 							<ThinkingEffortChip modelId={currentModel.id} />
 						</div>
 					{/if}
+				</div>
+				<!-- Honest, no-number data-handling line near the composer. The precise
+				     retention window lives on the /privacy page; this line stays qualitative. -->
+				<div class="mt-1 text-center font-mono text-[9px] text-[var(--ap-ink-3)] opacity-70">
+					<span>No account needed · guest chats are auto-deleted</span>
+					<div class="mt-0.5">
+						<a
+							class="underline-offset-2 hover:text-[var(--ap-ink)] hover:underline"
+							href="{base}/terms"
+						>
+							Terms &amp; Safety
+						</a>
+						<span class="mx-1.5 opacity-50">·</span>
+						<a
+							class="underline-offset-2 hover:text-[var(--ap-ink)] hover:underline"
+							href="{base}/privacy"
+						>
+							Privacy
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
