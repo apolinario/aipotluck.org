@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LIMITS } from "@/lib/limits";
 
 export const metadata: Metadata = {
   title: "Privacy — AI Potluck",
@@ -7,7 +8,9 @@ export const metadata: Metadata = {
 };
 
 const UPDATED = "2026-06-15";
-const RETENTION_DAYS = 30;
+// Derived from the same constant the retention cron sweeps on, so the stated
+// retention can't drift from the actual deletion window.
+const RETENTION_DAYS = LIMITS.retentionDays;
 
 export default function PrivacyPage() {
   return (

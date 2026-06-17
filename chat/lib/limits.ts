@@ -23,10 +23,17 @@
 //                         (Redis) — these have no auth wall and write to the DB,
 //                         so a low cap blunts form spam without blocking a booth
 //                         full of attendees sharing an IP.
+//   retentionDays         how long guest chats live before the retention cron
+//                         deletes them. The SINGLE source for both the actual
+//                         sweep and the privacy-page disclosure, so what we say
+//                         can't drift from what we do. Server-only (env-driven);
+//                         do not surface the raw number in a client component,
+//                         which can't read this env and would show a stale 30.
 export const LIMITS = {
   userMessagesPerHour: 10,
   ipRequestsPerHour: 30,
   globalRequestsPerDay: Number(process.env.GLOBAL_DAILY_REQUEST_CAP) || 5000,
   maxOutputTokens: 512,
   contributionsPerDayPerIp: 30,
+  retentionDays: Number(process.env.RETENTION_DAYS) || 30,
 } as const;

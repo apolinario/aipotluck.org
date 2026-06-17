@@ -673,19 +673,26 @@ function PureMultimodalInput({
         </PromptInputFooter>
       </PromptInput>
       <div className="mt-1 text-center font-mono text-[9px] text-muted-foreground/40">
-        <Link
-          className="underline-offset-2 hover:text-foreground hover:underline"
-          href="/terms"
-        >
-          Terms &amp; Safety
-        </Link>
-        <span className="mx-1.5 opacity-50">·</span>
-        <Link
-          className="underline-offset-2 hover:text-foreground hover:underline"
-          href="/privacy"
-        >
-          Privacy
-        </Link>
+        {/* Honest, no-number data-handling line near the composer (the P0 slice
+            of the data statement). The precise retention window lives on the
+            server-rendered /privacy page, which reads LIMITS.retentionDays —
+            this client component can't see that env, so it stays qualitative. */}
+        <span>No account needed · guest chats are auto-deleted</span>
+        <div className="mt-0.5">
+          <Link
+            className="underline-offset-2 hover:text-foreground hover:underline"
+            href="/terms"
+          >
+            Terms &amp; Safety
+          </Link>
+          <span className="mx-1.5 opacity-50">·</span>
+          <Link
+            className="underline-offset-2 hover:text-foreground hover:underline"
+            href="/privacy"
+          >
+            Privacy
+          </Link>
+        </div>
       </div>
     </div>
   );

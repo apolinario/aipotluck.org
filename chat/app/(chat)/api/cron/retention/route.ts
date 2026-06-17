@@ -1,6 +1,7 @@
 import { deleteOldGuestChats } from "@/lib/db/queries";
+import { LIMITS } from "@/lib/limits";
 
-const RETENTION_DAYS = Number(process.env.RETENTION_DAYS) || 30;
+const RETENTION_DAYS = LIMITS.retentionDays;
 
 // Retention sweep, invoked by a Vercel Cron (see vercel.json). Vercel adds
 // `Authorization: Bearer <CRON_SECRET>` to cron requests when CRON_SECRET is
