@@ -37,7 +37,7 @@ const config = {
 				: adapterChoice === "node"
 					? adapterNode()
 					: // Vercel serverless: postgres.js + Node APIs (Buffer/streams) require the Node runtime.
-						adapterVercel({ runtime: "nodejs20.x" }),
+						adapterVercel({ runtime: "nodejs22.x" }),
 
 		paths: {
 			base: process.env.APP_BASE || "",
