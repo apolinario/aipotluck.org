@@ -3,6 +3,8 @@ import { preprocessMessages } from "../endpoints/preprocessMessages";
 import { generateTitleForConversation } from "./title";
 import { injectArtifactsPrompt } from "./artifacts";
 import { injectSearchGroundingPrompt } from "./searchGrounding";
+import { buildPersonaPrompt } from "./persona";
+import { hardenLastUserTurn } from "./grounding";
 import {
 	type MessageUpdate,
 	MessageUpdateType,
@@ -46,12 +48,19 @@ async function* textGenerationWithoutTitle(
 	const { conv, messages } = ctx;
 	const convId = conv._id;
 
+	// The honest Calm-AI persona is the FOUNDATION of every system prompt — identity
+	// derived from the served model id, closed-as-open guardrail, recency hedging,
+	// non-anthropomorphic voice. Any conv/model-configured preprompt is appended
+	// after it. Without this the fork regressed to rambling, confabulating answers.
+	const persona = buildPersonaPrompt(ctx.model.id ?? ctx.model.name);
+	const basePreprompt = conv.preprompt?.trim() ? `${persona}\n\n${conv.preprompt}` : persona;
+
 	// Artifacts are opt-in per model (supportsArtifacts in the MODELS overrides),
 	// with a per-model user override from the model settings page
 	let preprompt =
 		(ctx.artifactsOverride ?? ctx.model.supportsArtifacts)
-			? injectArtifactsPrompt(conv.preprompt)
-			: conv.preprompt;
+			? injectArtifactsPrompt(basePreprompt)
+			: basePreprompt;
 
 	// When the user grounded this turn on an open-web search, append the numbered
 	// evidence + cite-only instructions LAST so it's the highest-salience guidance.
@@ -64,6 +73,11 @@ async function* textGenerationWithoutTitle(
 	}
 
 	const processedMessages = await preprocessMessages(messages, convId);
+
+	// Ground the last user turn to a real catalog category and wrap it in an
+	// unguessable fence: the brevity + identity-lock + injection guard live in the
+	// USER role because Apertus under-weights the system role. Mutates in place.
+	hardenLastUserTurn(processedMessages);
 
 	// Tool/MCP flow removed (B1-lite strip) — go straight to default text generation.
 	yield* generate({ ...ctx, messages: processedMessages }, preprompt);

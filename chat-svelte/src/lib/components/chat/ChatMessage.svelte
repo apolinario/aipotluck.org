@@ -15,6 +15,7 @@
 	import UploadedFile from "./UploadedFile.svelte";
 
 	import MarkdownRenderer from "./MarkdownRenderer.svelte";
+	import { fixAcronymExpansions } from "$lib/utils/fixAcronyms";
 	import OpenReasoningResults from "./OpenReasoningResults.svelte";
 	import Alternatives from "./Alternatives.svelte";
 	import MessageAvatar from "./MessageAvatar.svelte";
@@ -396,7 +397,10 @@
 						{#if block.type === "text"}
 							{#if block.content.trim().length > 0}
 								<div class={proseClasses}>
-									<MarkdownRenderer content={block.content} loading={isLast && loading} />
+									<MarkdownRenderer
+										content={fixAcronymExpansions(block.content)}
+										loading={isLast && loading}
+									/>
 								</div>
 							{/if}
 						{:else if block.type === "artifact"}
@@ -418,7 +422,10 @@
 								<IconLoading classNames="loading inline ml-2 first:ml-0" />
 							{:else if unit.content.trim().length > 0}
 								<div class={proseClasses}>
-									<MarkdownRenderer content={unit.content} loading={isLast && loading} />
+									<MarkdownRenderer
+										content={fixAcronymExpansions(unit.content)}
+										loading={isLast && loading}
+									/>
 								</div>
 							{/if}
 						{:else if unit.kind === "artifact"}
