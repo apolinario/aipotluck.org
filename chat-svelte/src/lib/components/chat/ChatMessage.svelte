@@ -2,8 +2,6 @@
 	import type { Message } from "$lib/types/Message";
 	import { tick } from "svelte";
 
-	import { usePublicConfig } from "$lib/utils/PublicConfig.svelte";
-	const publicConfig = usePublicConfig();
 	import CopyToClipBoardBtn from "../CopyToClipBoardBtn.svelte";
 	import IconLoading from "../icons/IconLoading.svelte";
 	import CarbonRotate360 from "~icons/carbon/rotate-360";
@@ -19,12 +17,12 @@
 	import OpenReasoningResults from "./OpenReasoningResults.svelte";
 	import Alternatives from "./Alternatives.svelte";
 	import MessageAvatar from "./MessageAvatar.svelte";
-	import { PROVIDERS_HUB_ORGS } from "@huggingface/inference";
 	import { requireAuthUser } from "$lib/utils/auth";
 	import ArtifactCard from "./ArtifactCard.svelte";
 	import { MessageUpdateType } from "$lib/types/MessageUpdate";
 	import ImageLightbox from "./ImageLightbox.svelte";
 	import SourceStrip from "./SourceStrip.svelte";
+	import ProvenanceBadge from "./ProvenanceBadge.svelte";
 	import { splitArtifactSegments, stripArtifacts } from "$lib/utils/artifacts";
 	import type { ArtifactOperation } from "$lib/utils/artifacts";
 
@@ -37,6 +35,11 @@
 		alternatives?: Message["id"][];
 		editMsdgId?: Message["id"] | null;
 		isLast?: boolean;
+		// The conversation's served model id, used by the provenance badge to name
+		// the model honestly. routerMetadata.model (per-answer) wins when present;
+		// this is the fallback since we serve a single model with no Omni routing,
+		// so routerMetadata is usually empty.
+		modelId?: string;
 		onretry?: (payload: { id: Message["id"]; content?: string }) => void;
 		onshowAlternateMsg?: (payload: { id: Message["id"] }) => void;
 	}
@@ -50,6 +53,7 @@
 		alternatives = [],
 		editMsdgId = $bindable(null),
 		isLast = false,
+		modelId,
 		onretry,
 		onshowAlternateMsg,
 	}: Props = $props();
@@ -448,6 +452,13 @@
 					query={message.webSearch.query}
 				/>
 			{/if}
+
+			{#if !loading && message.content}
+				<ProvenanceBadge
+					modelId={message.routerMetadata?.model || modelId}
+					provider={message.routerMetadata?.provider}
+				/>
+			{/if}
 		</div>
 
 		{#if message.routerMetadata || (!loading && message.content)}
@@ -457,51 +468,11 @@
 					: 'right-1'} flex max-w-[100cqw] items-center gap-0.5"
 				bind:offsetWidth={messageInfoWidth}
 			>
-				{#if message.routerMetadata && (message.routerMetadata.route || message.routerMetadata.model || message.routerMetadata.provider) && (!isLast || !loading)}
-					<div
-						class="mr-2 flex items-center gap-1.5 truncate text-[.65rem] whitespace-nowrap text-gray-400 @xl:text-xs dark:text-gray-400 dark:opacity-50"
-					>
-						{#if message.routerMetadata.route && message.routerMetadata.model}
-							<span
-								class="truncate rounded-sm bg-gray-100 px-1 font-mono @xl:py-px dark:bg-gray-800"
-							>
-								{message.routerMetadata.route}
-							</span>
-							<span class="text-gray-500">with</span>
-							{#if publicConfig.isHuggingChat}
-								<a
-									href="/chat/settings/{message.routerMetadata.model}"
-									class="flex items-center gap-1 truncate rounded-sm bg-gray-100 px-1 font-mono hover:text-gray-500 @xl:py-px dark:bg-gray-800 dark:hover:text-gray-300"
-								>
-									{message.routerMetadata.model.split("/").pop()}
-								</a>
-							{:else}
-								<span
-									class="truncate rounded-sm bg-gray-100 px-1.5 font-mono @xl:py-px dark:bg-gray-800"
-								>
-									{message.routerMetadata.model.split("/").pop()}
-								</span>
-							{/if}
-						{/if}
-						{#if message.routerMetadata.provider}
-							{@const hubOrg = PROVIDERS_HUB_ORGS[message.routerMetadata.provider]}
-							<span class="text-gray-500 @max-xl:hidden">via</span>
-							<a
-								target="_blank"
-								href="https://huggingface.co/{hubOrg}"
-								class="flex items-center gap-1 truncate rounded-sm bg-gray-100 px-1 font-mono hover:text-gray-500 @max-xl:hidden @xl:py-px dark:bg-gray-800 dark:hover:text-gray-300"
-							>
-								<img
-									src="https://huggingface.co/api/avatars/{hubOrg}"
-									alt="{message.routerMetadata.provider} logo"
-									class="size-2.5 flex-none rounded-xs"
-									onerror={(e) => ((e.currentTarget as HTMLImageElement).style.display = "none")}
-								/>
-								{message.routerMetadata.provider}
-							</a>
-						{/if}
-					</div>
-				{/if}
+				<!-- HuggingChat's native route/model/provider pill is replaced by our
+				editorial ProvenanceBadge (rendered inline below the answer). We serve a
+				single Apertus model with no Omni routing, so the "route with model" UI
+				never applied — and the badge's "show on map ↗" ties provenance to the
+				live stack, which the pill could not. -->
 				{#if !isLast || !loading}
 					<CopyToClipBoardBtn
 						onClick={() => {

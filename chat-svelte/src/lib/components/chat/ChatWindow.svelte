@@ -660,6 +660,7 @@
 							<ChatMessage
 								{loading}
 								{message}
+								modelId={currentModel.id}
 								alternatives={messagesAlternatives.find((a) => a.includes(message.id)) ?? []}
 								isAuthor={!shared}
 								readOnly={isReadOnly}

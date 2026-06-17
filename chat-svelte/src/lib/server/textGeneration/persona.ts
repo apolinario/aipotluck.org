@@ -15,51 +15,11 @@
 //      on-topic. Merged over model.parameters in generate(), so the answer
 //      quality holds regardless of what the MODELS env happens to configure.
 
-type ModelIdentity = {
-	short: string; // "Apertus 70B"
-	maker: string; // "the Swiss AI Initiative (SwissAI)"
-	training: string; // openness fact injected into the prompt; "" for unknown models
-};
-
-const SWISSAI = "the Swiss AI Initiative (SwissAI)";
-
-// Apertus is one of the few FULLY-open models — open weights, open training
-// recipe, AND openly-published training data (verified against the model card +
-// technical report). Told to the model so it answers "what were you trained on?"
-// honestly instead of claiming the details are undisclosed (it did, without this).
-const APERTUS_TRAINING =
-	"you are one of the few fully-open models: your weights, training recipe, AND training data are openly published. If asked what you were trained on, say this honestly — do NOT claim the details are undisclosed";
-
-// Identity is DERIVED from the served model id, never hardcoded, so the prompt
-// can't claim a model that isn't running. Flip the served model and every
-// user-facing identity surface updates with zero code change.
-export function resolveModelIdentity(rawId?: string): ModelIdentity {
-	const lo = (rawId ?? "").toLowerCase();
-
-	// Honest to the served id — never claim a model that isn't running. The
-	// future multimodal launch model is "Apertus 1.5"; only call it that when the
-	// id actually says so. The current alpha serves the text-only 8B-2509.
-	if (lo.includes("apertus")) {
-		if (lo.includes("1.5") || lo.includes("multimodal")) {
-			return { short: "Apertus 1.5", maker: SWISSAI, training: APERTUS_TRAINING };
-		}
-		if (lo.includes("70b")) {
-			return { short: "Apertus 70B", maker: SWISSAI, training: APERTUS_TRAINING };
-		}
-		if (lo.includes("8b")) {
-			return { short: "Apertus 8B", maker: SWISSAI, training: APERTUS_TRAINING };
-		}
-		return { short: "Apertus", maker: SWISSAI, training: APERTUS_TRAINING };
-	}
-
-	// Generic fallback: a readable name from the id without claiming a maker or a
-	// training-data story we can't vouch for.
-	const pretty = (rawId?.split("/").pop() ?? rawId ?? "an open model")
-		.replace(/-instruct.*$/i, "")
-		.replace(/[-_]/g, " ")
-		.trim();
-	return { short: pretty, maker: "an open-source community", training: "" };
-}
+// Identity is DERIVED from the served model id (never hardcoded) so the prompt
+// can't claim a model that isn't running. resolveModelIdentity is the single
+// source of truth — it ALSO drives the client-side provenance badge, so the
+// system prompt and the badge can never disagree about who made the model.
+import { resolveModelIdentity } from "$lib/identity";
 
 // The decoding params — the actual regression fix. Merged OVER model.parameters
 // in generate(), so they win regardless of env config.
