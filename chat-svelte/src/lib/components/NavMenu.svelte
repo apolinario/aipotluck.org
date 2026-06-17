@@ -15,6 +15,7 @@
 	import LucideMessageSquare from "~icons/lucide/message-square";
 	import LucidePenSquare from "~icons/lucide/pen-square";
 	import LucideTrash2 from "~icons/lucide/trash-2";
+	import LucidePanelLeft from "~icons/lucide/panel-left";
 	import { isAborted } from "$lib/stores/isAborted";
 
 	import NavConversationItem from "./NavConversationItem.svelte";
@@ -37,6 +38,9 @@
 		p?: number;
 		/** When true, render the icon-only rail (labels + history hidden). */
 		isCollapsed?: boolean;
+		/** Desktop only: toggle the rail open/closed (prod's logo-hover → PanelLeft).
+		 *  Omitted on mobile (the drawer is always full), so no stray toggle renders. */
+		onToggleCollapse?: () => void;
 		ondeleteConversation?: (id: string) => void;
 		oneditConversationTitle?: (payload: { id: string; title: string }) => void;
 		ondeleteAllConversations?: () => void;
@@ -47,6 +51,7 @@
 		user,
 		p = $bindable(0),
 		isCollapsed = false,
+		onToggleCollapse,
 		ondeleteConversation,
 		oneditConversationTitle,
 		ondeleteAllConversations,
@@ -120,20 +125,46 @@
 	});
 </script>
 
-<!-- Header: logo/home button (+ HuggingChat-only app name) -->
+<!-- Header: logo/home button that morphs to a collapse toggle on hover when
+     collapsed (prod app-sidebar.tsx); a PanelLeft trigger sits on the right when
+     expanded. Toggle only renders on desktop (onToggleCollapse provided). -->
 <div
 	class="sticky top-0 flex flex-none touch-none items-center justify-between px-1.5 py-3 max-sm:pt-0"
 >
-	<a
-		class="flex size-8 items-center justify-center rounded-lg text-sidebar-foreground/50 transition-colors duration-150 select-none hover:text-sidebar-foreground"
-		href="{publicConfig.PUBLIC_ORIGIN}{base}/"
-		title="Chatbot"
-		aria-label="Chatbot"
-	>
-		<LucideMessageSquare class="size-4" />
-	</a>
-	{#if publicConfig.isHuggingChat}
-		<span class="text-lg font-semibold select-none">{publicConfig.PUBLIC_APP_NAME}</span>
+	<div class="group/logo relative flex items-center justify-center">
+		<a
+			class="grid size-8 place-items-center rounded-lg text-sidebar-foreground/50 transition-[color,opacity] duration-150 select-none hover:text-sidebar-foreground {isCollapsed &&
+			onToggleCollapse
+				? 'group-hover/logo:opacity-0'
+				: ''}"
+			href="{publicConfig.PUBLIC_ORIGIN}{base}/"
+			title="Chatbot"
+			aria-label="Chatbot"
+		>
+			<LucideMessageSquare class="size-4" />
+		</a>
+		{#if isCollapsed && onToggleCollapse}
+			<button
+				type="button"
+				onclick={onToggleCollapse}
+				title="Open sidebar"
+				aria-label="Open sidebar"
+				class="absolute inset-0 grid size-8 place-items-center rounded-lg text-sidebar-foreground/60 opacity-0 transition-opacity duration-150 group-hover/logo:opacity-100 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+			>
+				<LucidePanelLeft class="size-4" />
+			</button>
+		{/if}
+	</div>
+	{#if !isCollapsed && onToggleCollapse}
+		<button
+			type="button"
+			onclick={onToggleCollapse}
+			title="Collapse sidebar"
+			aria-label="Collapse sidebar"
+			class="grid size-8 place-items-center rounded-lg text-sidebar-foreground/60 transition-colors duration-150 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+		>
+			<LucidePanelLeft class="size-4" />
+		</button>
 	{/if}
 </div>
 
@@ -150,7 +181,9 @@
 			<span class="font-medium">New chat</span>
 		{/if}
 	</a>
-	{#if user?.username || user?.email}
+	<!-- Prod shows Delete-all in the rail for the guest-only alpha; gate on having
+	     conversations so a brand-new empty guest stays clean (no pointless action). -->
+	{#if hasAnyConversation}
 		<button
 			type="button"
 			onclick={() => (deleteAllOpen = true)}

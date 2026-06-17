@@ -749,8 +749,16 @@
 				{:else}
 					<ChatIntroduction
 						{currentModel}
-						onmessage={(content) => {
-							onmessage?.(content);
+						onmessage={async (content) => {
+							// Match prod (suggested-actions.tsx): a recency starter prompt (the
+							// EU AI Act one) routes straight through open-web search on click —
+							// one tap demos search + the map flash — while other starters just send.
+							if (isRecencyQuery(content)) {
+								const searchContext = await runOpenSearch(content);
+								onmessage?.(content, { searchContext });
+							} else {
+								onmessage?.(content);
+							}
 						}}
 					/>
 				{/if}

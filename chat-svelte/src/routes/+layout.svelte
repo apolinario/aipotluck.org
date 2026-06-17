@@ -13,7 +13,6 @@
 	import Toast from "$lib/components/Toast.svelte";
 	import NavMenu from "$lib/components/NavMenu.svelte";
 	import MobileNav from "$lib/components/MobileNav.svelte";
-	import ExpandNavigation from "$lib/components/ExpandNavigation.svelte";
 	import { setContext } from "svelte";
 	import { handleResponse, useAPIClient } from "$lib/APIClient";
 	import { isAborted } from "$lib/stores/isAborted";
@@ -41,7 +40,9 @@
 		convsStore.init(data.conversations);
 	});
 
-	let isNavCollapsed = $state(false);
+	// Default to the collapsed icon rail, matching prod /chat (a ~3rem rail of
+	// logo / new-chat / delete-all; history shows only when expanded).
+	let isNavCollapsed = $state(true);
 
 	let errorToastTimeout: ReturnType<typeof setTimeout>;
 	let currentError: string | undefined = $state();
@@ -250,14 +251,6 @@
 		? 'md:grid-cols-[260px_1fr]'
 		: 'md:grid-cols-[3rem_1fr]'} transition-[300ms] [transition-property:grid-template-columns] md:grid-rows-[1fr] dark:text-gray-300"
 >
-	<ExpandNavigation
-		isCollapsed={isNavCollapsed}
-		onClick={() => (isNavCollapsed = !isNavCollapsed)}
-		classNames="absolute inset-y-0 z-10 my-auto {!isNavCollapsed
-			? 'left-[260px]'
-			: 'left-[3rem]'} *:transition-transform"
-	/>
-
 	<MobileNav title={mobileNavTitle}>
 		<NavMenu
 			conversations={convsStore.list}
@@ -276,6 +269,7 @@
 			conversations={convsStore.list}
 			user={data.user}
 			isCollapsed={isNavCollapsed}
+			onToggleCollapse={() => (isNavCollapsed = !isNavCollapsed)}
 			ondeleteConversation={(id) => deleteConversation(id)}
 			oneditConversationTitle={(payload) => editConversationTitle(payload.id, payload.title)}
 			ondeleteAllConversations={() => deleteAllConversations()}
