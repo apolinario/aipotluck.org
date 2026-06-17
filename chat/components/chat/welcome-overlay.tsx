@@ -86,6 +86,19 @@ export function WelcomeOverlay({
           >
             Start chatting
           </button>
+          {/* "See the ecosystem" = the broader gap map (the Explorer at the site
+              root, OUTSIDE this chat's /chat basePath). A plain <a> (not next/link)
+              so the basePath isn't prepended, opened in a new tab so the visitor
+              isn't pulled out of onboarding — the chat stays put behind it.
+              URL is env-overridable; defaults to the Explorer. */}
+          <a
+            className="rounded-full border border-[var(--ap-rule)] px-4 py-2 font-mono text-[11px] text-[var(--ap-ink)] uppercase tracking-[0.08em] transition-colors hover:bg-[var(--ap-ink)]/5"
+            href={process.env.NEXT_PUBLIC_ECOSYSTEM_URL ?? "/app"}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            See the ecosystem
+          </a>
           <button
             className="rounded-full border border-[var(--ap-rule)] px-4 py-2 font-mono text-[11px] text-[var(--ap-ink)] uppercase tracking-[0.08em] transition-colors hover:bg-[var(--ap-ink)]/5"
             onClick={onSeeHowBuilt}
