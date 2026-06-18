@@ -18,6 +18,14 @@
 	<a
 		class="font-mono text-[12px] text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 		href="/"
+		onclick={(e) => {
+			// Return to wherever the reader came from (e.g. their conversation) instead of a fresh
+			// landing; fall back to "/" (the href) when there's no in-app history (direct visit).
+			if (typeof history !== "undefined" && history.length > 1) {
+				e.preventDefault();
+				history.back();
+			}
+		}}
 	>
 		← back to the chat
 	</a>

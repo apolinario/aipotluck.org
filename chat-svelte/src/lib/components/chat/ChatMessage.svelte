@@ -145,6 +145,13 @@
 		stripArtifacts(message.content.replace(THINK_BLOCK_REGEX, "")).trim()
 	);
 
+	// Feed the answer's open-web sources to the markdown renderer so inline [n] citation
+	// markers become links to their source (addInlineCitations in utils/marked). Mapped from
+	// SearchSource {n,title,url} to the renderer's {title,link} shape, in citation-number order.
+	let citationSources = $derived(
+		message.webSearch?.sources?.map((s) => ({ title: s.title, link: s.url })) ?? []
+	);
+
 	type Block =
 		| { type: "text"; content: string }
 		| { type: "think"; content: string; closed: boolean }
@@ -405,6 +412,7 @@
 								<div class={proseClasses}>
 									<MarkdownRenderer
 										content={fixAcronymExpansions(block.content)}
+										sources={citationSources}
 										loading={isLast && loading}
 									/>
 								</div>
@@ -430,6 +438,7 @@
 								<div class={proseClasses}>
 									<MarkdownRenderer
 										content={fixAcronymExpansions(unit.content)}
+										sources={citationSources}
 										loading={isLast && loading}
 									/>
 								</div>

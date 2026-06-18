@@ -39,7 +39,7 @@
 	<button
 		type="button"
 		aria-label="Skip the introduction"
-		class="absolute top-3 right-3 z-10 font-mono text-[10px] tracking-[0.1em] text-[var(--ap-ink-3)] uppercase transition-colors hover:text-[var(--ap-ink)]"
+		class="absolute top-1 right-1 z-10 inline-flex min-h-9 items-center p-2 font-mono text-[10px] tracking-[0.1em] text-[var(--ap-ink-3)] uppercase transition-colors hover:text-[var(--ap-ink)]"
 		onclick={onSkip}
 	>
 		Skip →

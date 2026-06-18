@@ -935,14 +935,14 @@
 					<span>No account needed · guest chats are auto-deleted</span>
 					<div class="mt-0.5">
 						<a
-							class="underline-offset-2 hover:text-[var(--ap-ink)] hover:underline"
+							class="inline-block py-1.5 underline-offset-2 hover:text-[var(--ap-ink)] hover:underline"
 							href="{base}/terms"
 						>
 							Terms &amp; Safety
 						</a>
 						<span class="mx-1.5 opacity-50">·</span>
 						<a
-							class="underline-offset-2 hover:text-[var(--ap-ink)] hover:underline"
+							class="inline-block py-1.5 underline-offset-2 hover:text-[var(--ap-ink)] hover:underline"
 							href="{base}/privacy"
 						>
 							Privacy

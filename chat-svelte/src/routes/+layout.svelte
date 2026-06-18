@@ -177,7 +177,7 @@
 </script>
 
 <svelte:head>
-	<title>{publicConfig.PUBLIC_APP_NAME} - Chat with AI models</title>
+	<title>{publicConfig.PUBLIC_APP_NAME}</title>
 	<meta name="description" content={publicConfig.PUBLIC_APP_DESCRIPTION} />
 	<meta name="twitter:site" content="@huggingface" />
 
@@ -246,7 +246,7 @@
 		/>
 	</MobileNav>
 	<nav
-		class="grid max-h-dvh grid-cols-1 grid-rows-[auto_1fr_auto] overflow-hidden bg-sidebar {!isNavCollapsed
+		class="grid max-h-dvh grid-cols-1 grid-rows-[auto_auto_1fr] overflow-hidden bg-sidebar {!isNavCollapsed
 			? '*:w-[16rem]'
 			: '*:w-[3rem]'} max-md:hidden"
 	>
