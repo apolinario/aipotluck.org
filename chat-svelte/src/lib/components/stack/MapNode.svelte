@@ -2,6 +2,7 @@
 	import ChevronDown from "~icons/lucide/chevron-down";
 	import Sparkline from "./Sparkline.svelte";
 	import { STATUS_LABEL, STATUS_VAR, STATUS_TEXT_VAR, type StackNode } from "./types";
+	import { contributeOpen } from "$lib/stores/contribute";
 
 	interface Props {
 		node: StackNode;
@@ -151,12 +152,23 @@
 					>
 				{/if}
 				{#if isWanted || node.st === "gap"}
-					<a
-						class="font-semibold text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
-						href="mailto:contact@aipotluck.org?subject={encodeURIComponent(
-							`Get involved: ${node.nm}`
-						)}"
-						onclick={(e) => e.stopPropagation()}>Get involved →</a
+					<!-- role=button span, not a <button>: this lives inside the node's outer
+					     <button>, and a nested <button> triggers a hydration-mismatch. -->
+					<span
+						role="button"
+						tabindex="0"
+						class="cursor-pointer font-semibold text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
+						onclick={(e) => {
+							e.stopPropagation();
+							contributeOpen.set({ topic: node.nm });
+						}}
+						onkeydown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								e.stopPropagation();
+								contributeOpen.set({ topic: node.nm });
+							}
+						}}>Get involved →</span
 					>
 				{/if}
 			</div>

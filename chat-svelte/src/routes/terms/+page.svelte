@@ -68,9 +68,8 @@
 		<h2 class="text-lg font-medium">Reporting a problem</h2>
 		<p class="text-[var(--ap-ink-2)]">
 			Use the “Report a problem” control beneath any response to flag it — harmful or unsafe
-			content, inaccuracy, or a privacy concern. You can also reach the team at <a
-				class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
-				href="mailto:contact@aipotluck.org">contact@aipotluck.org</a
+			content, inaccuracy, or a privacy concern. You can also reach the team at <span
+				class="font-medium text-[var(--ap-ink)]">contact@aipotluck.org</span
 			>.
 		</p>
 	</section>

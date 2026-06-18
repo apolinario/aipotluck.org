@@ -3,6 +3,7 @@
 	// DB. Two paths: "Stay informed" (subscribe → email only) and "Raise your hand" (contribute →
 	// name / org / contribution type / detail). Svelte 5 port of the Vercel app's
 	// components/chat/contribute-dialog.tsx, on the editorial paper theme (--ap-* tokens).
+	import { untrack } from "svelte";
 	import { base } from "$app/paths";
 	import { error as errorStore } from "$lib/stores/errors";
 	import Modal from "$lib/components/Modal.svelte";
@@ -36,6 +37,22 @@
 	let contributionType = $state<ContributionType | null>(null);
 	let detail = $state("");
 	let submitting = $state(false);
+
+	// Opened from a specific gap on the live-stack map ({ topic })? Jump to the
+	// contribution form and name the gap — preserving the context the old mailto
+	// subject carried. Guarded to the open transition so it never clobbers edits.
+	let wasOpen = false;
+	$effect(() => {
+		const c = $contributeOpen;
+		const isOpen = c !== false;
+		untrack(() => {
+			if (isOpen && !wasOpen && typeof c === "object") {
+				kind = "contribute";
+				detail = `Interested in: ${c.topic}`;
+			}
+			wasOpen = isOpen;
+		});
+	});
 
 	// Shared field styling minus the corner radius — single-line inputs get a `rounded-full` pill,
 	// the multi-line textarea gets `rounded-2xl`. Keep the radius OUT of the base: a textarea that
