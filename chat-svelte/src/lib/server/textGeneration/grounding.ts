@@ -296,6 +296,26 @@ function preambleFor(cat: Category | null, fence: string): string {
 	return guard;
 }
 
+// Locality lens: questions whose correct answer depends on the user's country,
+// jurisdiction, or cultural context — civic / legal / rights / immigration topics
+// and explicit cultural framing. Apertus defaults these to a Western/US frame (and
+// a generic list); this nudge — in the USER role, where Apertus actually attends —
+// makes it flag the context-dependence and invite the user's locale instead of
+// presenting one place's rules as universal. Gated by the signal set so it NEVER
+// fires on context-free questions (no blanket caveating). Deliberately omits
+// tech-overloaded terms ("policy" → RL policy, bare "law" → law of physics,
+// "governance" → data governance, bare "rights" → access rights); the civic signals
+// below carry the demo's Geneva ("public institutions") and government-service beats.
+const LOCALITY_RE =
+	/\b(jurisdictions?|government(?:al)?|public institutions?|public sector|public services|local services|regulations?|regulatory|legislative|legislation|statutes?|lawsuits?|legal|human rights|civil rights|constitutions?|constitutional|citizens?|citizenship|immigration|immigrants?|asylum|refugees?|visas?|welfare|courts?|judiciary|sovereign(?:ty)?|culturally|cultural|cross-cultural)\b/i;
+
+export function isLocalityQuery(text: string): boolean {
+	return LOCALITY_RE.test(text || "");
+}
+
+const LOCALITY_NOTE =
+	"This question's answer depends on the user's country, jurisdiction, or cultural context, and the specifics genuinely vary by place. In ONE short sentence, note that it varies by context and invite the user to share their country or context so you can be more relevant — then give the best general answer you can. Do not present one country's rules as universal, do not interrogate the user beyond their location/context, and do not refuse to answer.";
+
 // Mutates `messages` in place: grounds the last user turn and replaces its text
 // with the hardened preamble + fenced original. Returns the matched category id
 // (or "") for logging. EndpointMessage.content is always a string in this fork,
@@ -312,7 +332,10 @@ export function hardenLastUserTurn(messages: EndpointMessage[]): string {
 		}
 		const fence = `Q_${randomUUID().slice(0, 8)}`;
 		const original = m.content ?? "";
-		m.content = `${preambleFor(cat, fence)}\n\n<${fence}>\n${original}\n</${fence}>`;
+		// Locality lens rides the same user-role injection as the guard/preamble,
+		// gated on the raw turn so it only fires for context-dependent questions.
+		const locality = isLocalityQuery(original) ? `\n\n${LOCALITY_NOTE}` : "";
+		m.content = `${preambleFor(cat, fence)}${locality}\n\n<${fence}>\n${original}\n</${fence}>`;
 		break;
 	}
 	return cat?.id ?? "";
