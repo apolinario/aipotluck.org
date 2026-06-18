@@ -8,6 +8,7 @@ import {
 	hardenLastUserTurn,
 	isLocalityQuery,
 	isSelfPromptQuery,
+	isServingQuery,
 	neutralizeRationale,
 } from "./grounding";
 
@@ -273,5 +274,46 @@ describe("isLocalityQuery() — gates the cultural/jurisdictional lens", () => {
 		] as EndpointMessage[];
 		hardenLastUserTurn(tech);
 		expect(tech[0].content).not.toContain("depends on the user's country");
+	});
+});
+
+describe("isServingQuery() — gates the provenance/serving-honesty lens", () => {
+	it("fires on the diplomat 'where does it run' / sovereignty / compute probes", () => {
+		for (const q of [
+			"Where does it physically run right now?",
+			"I advise a minister on AI sovereignty — who controls this?",
+			"What compute serves this model?",
+			"Is the inference running on CSCS or LUMI?",
+			"Does this run on Hugging Face?",
+			"Where is it hosted?",
+			"Does it avoid US-based infrastructure?",
+		]) {
+			expect(isServingQuery(q), q).toBe(true);
+		}
+	});
+
+	it("does NOT fire on unrelated 'run'/'open' usage", () => {
+		for (const q of [
+			"How do I run vLLM locally?", // running software, not where THIS system runs
+			"Is vLLM open source?",
+			"How do I run a marathon?",
+			"What is photosynthesis?",
+			"Write me a poem about the sea.",
+		]) {
+			expect(isServingQuery(q), q).toBe(false);
+		}
+	});
+
+	it("injects the serving note (HF now, CSCS/LUMI target) only when gated on", () => {
+		const probe = [
+			{ from: "user", content: "Where does this physically run right now?" },
+		] as EndpointMessage[];
+		hardenLastUserTurn(probe);
+		expect(probe[0].content).toContain("served through HuggingFace");
+		expect(probe[0].content).toContain("NOT running on CSCS or LUMI");
+
+		const plain = [{ from: "user", content: "How do I run vLLM locally?" }] as EndpointMessage[];
+		hardenLastUserTurn(plain);
+		expect(plain[0].content).not.toContain("served through HuggingFace");
 	});
 });

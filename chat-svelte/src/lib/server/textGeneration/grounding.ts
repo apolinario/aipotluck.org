@@ -307,7 +307,7 @@ function preambleFor(cat: Category | null, fence: string): string {
 // "governance" → data governance, bare "rights" → access rights); the civic signals
 // below carry the demo's Geneva ("public institutions") and government-service beats.
 const LOCALITY_RE =
-	/\b(jurisdictions?|government(?:al)?|public institutions?|public sector|public services|local services|regulations?|regulatory|legislative|legislation|statutes?|lawsuits?|legal|human rights|civil rights|constitutions?|constitutional|citizens?|citizenship|immigration|immigrants?|asylum|refugees?|visas?|welfare|courts?|judiciary|sovereign(?:ty)?|culturally|cultural|cross-cultural)\b/i;
+	/\b(jurisdictions?|government(?:al)?|public institutions?|public sector|public services|local services|regulations?|regulatory|legislative|legislation|statutes?|lawsuits?|legal|human rights|civil rights|constitutions?|constitutional|citizens?|citizenship|immigration|immigrants?|asylum|refugees?|visas?|welfare|courts?|judiciary|culturally|cultural|cross-cultural)\b/i;
 
 export function isLocalityQuery(text: string): boolean {
 	return LOCALITY_RE.test(text || "");
@@ -315,6 +315,29 @@ export function isLocalityQuery(text: string): boolean {
 
 const LOCALITY_NOTE =
 	"This question's answer depends on the user's country, jurisdiction, or cultural context, and the specifics genuinely vary by place. In ONE short sentence, note that it varies by context and invite the user to share their country or context so you can be more relevant — then give the best general answer you can. Do not present one country's rules as universal, do not interrogate the user beyond their location/context, and do not refuse to answer.";
+
+// Serving/provenance lens: questions about where THIS system runs, what compute
+// serves it, or its sovereignty. Apertus under-weights the system-prompt serving
+// honesty and, under diplomat/journalist scrutiny, overclaims that the inference
+// runs on CSCS/LUMI "sovereign compute" and avoids US infrastructure — the exact
+// overclaim the whole provenance thesis must avoid. This note — in the USER role,
+// where Apertus attends — carries the honest framing the map/badge already state:
+// HuggingFace serves this request today; CSCS/LUMI are the production TARGET, not
+// current. Gated so it only fires on serving/compute/sovereignty questions.
+const SERVING_TERMS_RE =
+	/\b(cscs|lumi|sovereign(?:ty)?|datacent(?:er|re)s?|data cent(?:er|re)s?|hugging\s?face|inference provider|compute infrastructure|us[- ]based|us vendors?|on[- ]?prem(?:ise|ises)?)\b/i;
+const SERVING_WHERE_RE =
+	/\bwhere\b[^.?!]*\b(run|runs|running|hosted|host|served|serve|located|live|physically|deployed)\b/i;
+const SERVING_COMPUTE_RE =
+	/\b(what|which|whose)\b[^.?!]*\b(compute|infrastructure|hardware|servers?|datacent|gpus?|cloud)\b/i;
+
+export function isServingQuery(text: string): boolean {
+	const t = text || "";
+	return SERVING_TERMS_RE.test(t) || SERVING_WHERE_RE.test(t) || SERVING_COMPUTE_RE.test(t);
+}
+
+const SERVING_NOTE =
+	"If this is about where THIS system runs or what compute serves it: be honest and precise. Right now this prototype is served through HuggingFace's open inference router (the provider is shown in the answer's provenance badge) — it is NOT running on CSCS or LUMI. CSCS (Switzerland) and LUMI (Finland) are the sovereign production-serving TARGET and where Apertus was trained; they do NOT serve this request today. Do not claim the inference runs on CSCS/LUMI or on European/sovereign compute, and do not claim it avoids US-based infrastructure — HuggingFace is the current serving path. Present the sovereign compute as the goal, not the present.";
 
 // Mutates `messages` in place: grounds the last user turn and replaces its text
 // with the hardened preamble + fenced original. Returns the matched category id
@@ -332,10 +355,12 @@ export function hardenLastUserTurn(messages: EndpointMessage[]): string {
 		}
 		const fence = `Q_${randomUUID().slice(0, 8)}`;
 		const original = m.content ?? "";
-		// Locality lens rides the same user-role injection as the guard/preamble,
-		// gated on the raw turn so it only fires for context-dependent questions.
+		// Locality + serving lenses ride the same user-role injection as the
+		// guard/preamble, each gated on the raw turn so they only fire for the
+		// question type they target (no blanket caveating).
 		const locality = isLocalityQuery(original) ? `\n\n${LOCALITY_NOTE}` : "";
-		m.content = `${preambleFor(cat, fence)}${locality}\n\n<${fence}>\n${original}\n</${fence}>`;
+		const serving = isServingQuery(original) ? `\n\n${SERVING_NOTE}` : "";
+		m.content = `${preambleFor(cat, fence)}${locality}${serving}\n\n<${fence}>\n${original}\n</${fence}>`;
 		break;
 	}
 	return cat?.id ?? "";
