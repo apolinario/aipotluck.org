@@ -95,15 +95,19 @@ const listSchema = z
 			z.object({
 				id: z.string(),
 				description: z.string().optional(),
+				// .nullish() not .optional(): the HF router omits these keys, but the
+				// CSCS direct endpoint (api.swissai.svc.cscs.ch) returns them as
+				// explicit null. .optional() rejects null and would throw on parse,
+				// loading zero models. Downstream reads use `?? []` / optional chaining.
 				providers: z
 					.array(z.object({ supports_tools: z.boolean().optional() }).passthrough())
-					.optional(),
+					.nullish(),
 				architecture: z
 					.object({
 						input_modalities: z.array(z.string()).optional(),
 					})
 					.passthrough()
-					.optional(),
+					.nullish(),
 			})
 		),
 	})
