@@ -56,7 +56,7 @@
 		<!-- the blurred black shape inside the circular mask -->
 		<g filter="url(#c)" mask="url(#b)">
 			<!-- BASE state (normalized to absolute L commands) -->
-			<path id="blob" fill="#000" d="M11 1 L8 -4 L3 -8 L-6 6 L3 12 L7 11 L6 2 L11 1 Z">
+			<path id="blob" fill="currentColor" d="M11 1 L8 -4 L3 -8 L-6 6 L3 12 L7 11 L6 2 L11 1 Z">
 				<!-- MORPH: base -> mid -> far -> mid -> base -->
 				<animate
 					bind:this={blobAnim}
