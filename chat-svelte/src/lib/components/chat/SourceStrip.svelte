@@ -24,7 +24,20 @@
 		window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["websearch"] } }));
 
 	let open = $state(false);
-	let date = $derived(asOf?.slice(0, 10));
+
+	// `asOf` is the search-time instant (ISO/UTC). Render the DATE in the viewer's local timezone so a
+	// reader behind UTC never sees a "future" date — slicing the ISO string shows the UTC calendar day,
+	// which is tomorrow for an evening-in-the-Americas reader. SSR uses the UTC slice as a
+	// hydration-stable fallback; the $effect (client-only) upgrades it to the local date, so first paint
+	// matches on both sides and the swap is benign.
+	let date = $state(asOf?.slice(0, 10) ?? "");
+	$effect(() => {
+		if (!asOf) return;
+		const d = new Date(asOf);
+		if (!Number.isNaN(d.getTime())) {
+			date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+		}
+	});
 </script>
 
 {#if sources?.length}
