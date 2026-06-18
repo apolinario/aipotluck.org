@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseClassifierVerdict } from "./searchDecision";
+import { parseClassifierVerdict, parseToolDecision } from "./searchDecision";
 
 // The verdict parse is the load-bearing bit of the model classifier: it must
 // fail CLOSED (→ no search) on anything that isn't a clean leading "yes", since
@@ -24,5 +24,39 @@ describe("parseClassifierVerdict", () => {
 		expect(parseClassifierVerdict("maybe")).toBe(false);
 		// must be the whole word, not a prefix like "yesterday"
 		expect(parseClassifierVerdict("yesterday's news")).toBe(false);
+	});
+});
+
+// The tool-decision parse turns the model's OpenAI tool_calls into {shouldSearch,
+// query}. A web_search call → search (with the model's query when present); no
+// call → no search. Shape mirrors the live probe (Apertus 1.5 8B sft-dpo-tools).
+describe("parseToolDecision", () => {
+	const webSearchCall = (args: string) => [
+		{ id: "x", type: "function", function: { name: "web_search", arguments: args } },
+	];
+
+	it("a web_search call with a query → search, carrying the model's query", () => {
+		expect(parseToolDecision(webSearchCall('{"query": "latest news EU AI Act 2024"}'))).toEqual({
+			shouldSearch: true,
+			query: "latest news EU AI Act 2024",
+		});
+	});
+
+	it("no tool call → no search (model answered from training)", () => {
+		expect(parseToolDecision(null)).toEqual({ shouldSearch: false });
+		expect(parseToolDecision([])).toEqual({ shouldSearch: false });
+		expect(parseToolDecision(undefined)).toEqual({ shouldSearch: false });
+	});
+
+	it("only web_search counts — an unrelated tool call does not trigger search", () => {
+		expect(
+			parseToolDecision([{ function: { name: "some_other_tool", arguments: "{}" } }])
+		).toEqual({ shouldSearch: false });
+	});
+
+	it("called but malformed/empty args → search, no query (caller falls back to raw text)", () => {
+		expect(parseToolDecision(webSearchCall("not json"))).toEqual({ shouldSearch: true });
+		expect(parseToolDecision(webSearchCall('{"query": "   "}'))).toEqual({ shouldSearch: true });
+		expect(parseToolDecision(webSearchCall("{}"))).toEqual({ shouldSearch: true });
 	});
 });

@@ -15,15 +15,28 @@
 // read PUBLIC_SEARCH_TRIGGER here and fall back to this default.
 export type SearchTriggerStrategy = "heuristic" | "model" | "tool";
 
-// Default = "heuristic" for now. Empirical finding (browser probe, 2026-06-18,
-// Apertus 70B): the model classifier discriminates timeless vs current well,
-// BUT under-triggers on non-keyword live-data queries ("price of Bitcoin?",
-// "who is the secretary-general of NATO?") — the model is confidently unaware
-// its knowledge is stale. In testing it added ZERO net coverage over the regex
-// while adding a pre-answer round-trip on every non-recency turn. So the
-// classifier ships built + tested + ready, but OFF, until Apertus 1.5 is
-// re-probed (rerun the same queries; flip to "model" once it expands coverage).
+// Code default = "heuristic" — the prod-SAFE default. Deployments select the
+// active strategy via the PUBLIC_SEARCH_TRIGGER env var (resolved through
+// resolveTriggerStrategy below), so flipping to model/tool is a config change,
+// never a code edit that could surprise a deploy. Local dogfood (2026-06-18)
+// runs PUBLIC_SEARCH_TRIGGER=tool on the Apertus 1.5 8B sft-dpo-TOOLS checkpoint:
+// the probe confirmed it emits clean OpenAI tool_calls (recency → web_search with
+// its own query; timeless → answers directly), so the model itself decides when
+// to search. The recency heuristic stays as the safety net (OR'd in) that catches
+// any false-negative the tool misses; in the ideal end-state the tool never misses
+// and the net is redundant. ("model" = the cheaper yes/no classifier path, kept
+// for the non-tools checkpoint; see searchDecision.ts.)
 export const SEARCH_TRIGGER_STRATEGY: SearchTriggerStrategy = "heuristic";
+
+/**
+ * Resolve a raw env value (PUBLIC_SEARCH_TRIGGER) into a valid strategy, falling
+ * back to the safe code default for unset/unknown values. Pure + exported so the
+ * client (via layout data) and the server endpoint resolve it identically.
+ */
+export function resolveTriggerStrategy(raw?: string | null): SearchTriggerStrategy {
+	const v = (raw ?? "").trim().toLowerCase();
+	return v === "heuristic" || v === "model" || v === "tool" ? v : SEARCH_TRIGGER_STRATEGY;
+}
 
 /**
  * Whether the model classifier should arbitrate when the recency heuristic

@@ -1,15 +1,19 @@
-// SCAFFOLD for model TOOL-CALLING web search (trigger strategy "tool").
+// Model TOOL-CALLING web search (trigger strategy "tool").
 //
-// NOT WIRED YET. The OpenAI tool loop was intentionally stripped from this fork
-// (see endpointOai.ts "no tool call ids", and textGeneration/generate.ts has no
-// tool_call handling), and Apertus's tool-calling is unreliable until 1.5. Until
-// TOOL_CALLING_WIRED flips to true, the "tool" strategy degrades to the
-// pre-flight classifier (searchDecision.ts) so search still works today.
+// WIRED (2026-06-18, Commit A) for the DECISION step: Apertus 1.5 8B sft-dpo-tools
+// emits clean OpenAI tool_calls, so searchDecision.decideSearchViaTool advertises
+// WEB_SEARCH_TOOL and lets the model decide + author the query. The chat answer is
+// still produced by the existing grounded-streaming path (run openSearch with the
+// model's query, inject evidence), so the streaming tool-result loop did NOT need
+// re-architecting for this step.
 //
-// This file exists so the contract is reviewable now and the eventual wiring is
-// mechanical when Apertus 1.5 lands and we want to dogfood real tool-calling.
+// STILL DEFERRED to a later commit (with the MCP subsystem for the HF Spaces
+// integration): the full in-stream tool loop — parsing tool_calls deltas mid-
+// stream and continuing the completion with tool-role messages — which is what
+// multi-step / MCP tools require. endpointOai.ts still sends no `tools` and
+// generate.ts has no in-stream tool_call handling; that's the Commit B scope.
 
-export const TOOL_CALLING_WIRED = false;
+export const TOOL_CALLING_WIRED = true;
 
 /**
  * The function/tool schema we will advertise to the model once wired. Shape

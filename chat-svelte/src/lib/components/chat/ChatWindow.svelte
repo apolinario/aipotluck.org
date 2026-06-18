@@ -2,7 +2,7 @@
 	import type { Message, MessageFile } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
 	import { isRecencyQuery } from "$lib/search/recency";
-	import { shouldRunSearch, usesModelClassifier } from "$lib/search/triggerStrategy";
+	import { shouldRunSearch, usesModelClassifier, SEARCH_TRIGGER_STRATEGY } from "$lib/search/triggerStrategy";
 	import { onDestroy, onMount, tick } from "svelte";
 
 	import ArtifactPanel from "./ArtifactPanel.svelte";
@@ -171,6 +171,12 @@
 	let deciding = $state(false);
 	let draftLooksRecent = $derived(isRecencyQuery(draft));
 
+	// Active trigger strategy, resolved from PUBLIC_SEARCH_TRIGGER server-side and
+	// shipped via layout data (falls back to the safe code default). "tool" = the
+	// model decides via tool-calling; "model" = yes/no classifier; "heuristic" =
+	// regex only.
+	const searchStrategy = $derived(page.data.searchTriggerStrategy ?? SEARCH_TRIGGER_STRATEGY);
+
 	async function runOpenSearch(query: string): Promise<SearchContext | undefined> {
 		try {
 			// Mirror the chat event on the live-stack map the instant search starts.
@@ -186,38 +192,46 @@
 		}
 	}
 
-	// Model-driven search decision: when the recency heuristic abstains and the
-	// trigger strategy enables it, ask the server-side classifier whether this
-	// turn needs open-web grounding (see $lib/search/triggerStrategy +
-	// server/search/searchDecision). Best-effort — a failure means "don't search".
-	async function classifyNeedsSearch(query: string): Promise<boolean> {
+	// Model-driven search decision: when the strategy enables it, ask the server
+	// whether this turn needs open-web grounding. Under "tool" the model decides
+	// via real tool-calling AND authors the search query; under "model" it's a
+	// yes/no classifier (no query). Best-effort — a failure means "don't search".
+	async function modelDecide(query: string): Promise<{ shouldSearch?: boolean; query?: string }> {
 		try {
 			const res = await fetch(`${base}/api/search/classify?q=${encodeURIComponent(query)}`);
-			if (!res.ok) return false;
-			const { shouldSearch } = (await res.json()) as { shouldSearch?: boolean };
-			return !!shouldSearch;
+			if (!res.ok) return { shouldSearch: false };
+			return (await res.json()) as { shouldSearch?: boolean; query?: string };
 		} catch {
-			return false;
+			return { shouldSearch: false };
 		}
 	}
 
-	// Resolve whether a turn searches: heuristic fast-path, else (strategy
-	// permitting) the model classifier arbitrates. Shared by the composer send
-	// flow and the starter-prompt path so both honor the active strategy.
-	async function decideSearch(text: string): Promise<boolean> {
+	// Resolve whether a turn searches AND which query to run. The model is the
+	// primary decider (strategy "tool"/"model"); the recency heuristic is OR'd in
+	// as a safety net catching the model's false-negatives. The query is the
+	// model's own when it tool-called, else the raw user text. Shared by the
+	// composer send flow and the starter-prompt path so both honor the strategy.
+	async function decideSearch(text: string): Promise<{ search: boolean; query: string }> {
 		const heuristicHit = isRecencyQuery(text);
-		let classifierHit = false;
-		if (!heuristicHit && usesModelClassifier()) {
-			// Surface the "thinking" affordance only for the classifier round-trip —
-			// the heuristic path is instant and needs none.
+		let modelHit = false;
+		let modelQuery: string | undefined;
+		if (usesModelClassifier(searchStrategy)) {
+			// Surface the "thinking" affordance during the decision round-trip.
 			deciding = true;
 			try {
-				classifierHit = await classifyNeedsSearch(text);
+				const r = await modelDecide(text);
+				modelHit = !!r.shouldSearch;
+				modelQuery = r.query;
 			} finally {
 				deciding = false;
 			}
 		}
-		return shouldRunSearch({ heuristicHit, classifierHit });
+		const search = shouldRunSearch({
+			heuristicHit,
+			classifierHit: modelHit,
+			strategy: searchStrategy,
+		});
+		return { search, query: modelHit && modelQuery ? modelQuery : text };
 	}
 
 	const handleSubmit = async () => {
@@ -233,10 +247,11 @@
 		// opt-in. The classifier round-trip stays quiet; the "Searching…" spinner
 		// only shows once we commit to actually searching.
 		let searchContext: SearchContext | undefined;
-		if (await decideSearch(text)) {
+		const { search, query } = await decideSearch(text);
+		if (search) {
 			webSearching = true;
 			try {
-				searchContext = await runOpenSearch(text);
+				searchContext = await runOpenSearch(query);
 			} finally {
 				webSearching = false;
 			}
@@ -805,8 +820,9 @@
 							// (the EU AI Act one via the heuristic, or any starter the model
 							// classifier flags) routes through open-web search — one tap demos
 							// search + the map flash — while timeless starters just send.
-							if (await decideSearch(content)) {
-								const searchContext = await runOpenSearch(content);
+							const { search, query } = await decideSearch(content);
+							if (search) {
+								const searchContext = await runOpenSearch(query);
 								onmessage?.(content, { searchContext });
 							} else {
 								onmessage?.(content);
