@@ -37,8 +37,14 @@
 	let detail = $state("");
 	let submitting = $state(false);
 
-	const inputClass =
-		"w-full rounded-full border border-[var(--ap-rule)] bg-transparent px-3 py-2 text-sm text-[var(--ap-ink)] placeholder:text-[var(--ap-ink-3)] outline-none focus:border-[var(--ap-ink)]";
+	// Shared field styling minus the corner radius — single-line inputs get a `rounded-full` pill,
+	// the multi-line textarea gets `rounded-2xl`. Keep the radius OUT of the base: a textarea that
+	// carried both `rounded-full` and `rounded-2xl` rendered as a full pill, because equal-specificity
+	// radius utilities resolve by stylesheet order (rounded-full wins), not class-attribute order.
+	const fieldBase =
+		"w-full border border-[var(--ap-rule)] bg-transparent px-3 py-2 text-sm text-[var(--ap-ink)] placeholder:text-[var(--ap-ink-3)] outline-none focus:border-[var(--ap-ink)]";
+	const inputClass = `${fieldBase} rounded-full`;
+	const textareaClass = `${fieldBase} rounded-2xl`;
 
 	function reset() {
 		email = "";
@@ -156,7 +162,7 @@
 
 				{#if kind === "contribute"}
 					<textarea
-						class="{inputClass} rounded-2xl"
+						class={textareaClass}
 						rows={3}
 						maxlength={2000}
 						placeholder="Anything else? (optional)"
