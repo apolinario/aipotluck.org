@@ -43,7 +43,14 @@
 	const scrollNodeIntoView = (id: string | undefined) => {
 		if (!id || !container) return;
 		const el = container.querySelector<HTMLElement>(`[data-node-id="${id}"]`);
-		el?.scrollIntoView({ behavior: "smooth", block: "center" });
+		if (!el) return;
+		// Center the node WITHIN the map's own scroll container. scrollIntoView({block:"center"})
+		// also pans the outer page and, in this nested scroll, tends to land the node above the
+		// fold — so scroll the container directly by the measured delta instead (deterministic).
+		const elRect = el.getBoundingClientRect();
+		const cRect = container.getBoundingClientRect();
+		const delta = elRect.top - cRect.top - (container.clientHeight - el.clientHeight) / 2;
+		container.scrollBy({ top: delta, behavior: "smooth" });
 	};
 
 	onMount(() => {
@@ -91,9 +98,14 @@
 			const lastAnswer = [...messages].reverse().find((m) => m.from === "assistant");
 			if (!lastAnswer) return;
 			// Persist the answer's real provenance: the model node always, plus the
-			// Web-search node when the turn was grounded on open sources. (Moderation
-			// highlight is the remaining extension point: branch here on a declined
-			// marker → ["toxicbert"] when that wiring lands.)
+			// Web-search node when the turn was grounded on open sources.
+			// A declined turn never reached the model: highlight ONLY the toxic-bert
+			// node so the map honestly shows what actually ran (the safety pre-screen,
+			// not Apertus). This is the moderation extension point referenced above.
+			if (lastAnswer.moderation?.flagged) {
+				trailIds = ["toxicbert"];
+				return;
+			}
 			const searched = !!lastAnswer.webSearch?.sources?.length;
 			trailIds = searched ? ["websearch", ...TURN_PULSE] : [...TURN_PULSE];
 		});

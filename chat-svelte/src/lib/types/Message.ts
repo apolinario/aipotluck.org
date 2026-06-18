@@ -1,5 +1,5 @@
 import type { InferenceProvider } from "@huggingface/inference";
-import type { MessageUpdate } from "./MessageUpdate";
+import type { MessageUpdate, ModerationKind } from "./MessageUpdate";
 import type { Timestamps } from "./Timestamps";
 import type { SearchSource } from "./Search";
 import type { v4 } from "uuid";
@@ -35,6 +35,18 @@ export type Message = Partial<Timestamps> & {
 		query: string;
 		sources: SearchSource[];
 		asOf: string;
+	};
+
+	// Safety provenance: set when the proactive pre-screen (toxic-bert / child-safety)
+	// declined this turn BEFORE the model ran. Its presence makes the answer render as a
+	// safety decline — the "Apertus" provenance badge is suppressed (the model never ran)
+	// and the live-stack map highlights the toxic-bert node instead. Persisted via JSONB so
+	// the decline survives reload, mirroring webSearch above.
+	moderation?: {
+		flagged: boolean;
+		label: string | null;
+		score: number;
+		kind: ModerationKind;
 	};
 
 	// needed for conversation trees

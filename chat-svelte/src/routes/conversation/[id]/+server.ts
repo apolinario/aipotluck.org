@@ -15,6 +15,12 @@ import {
 	type MessageStreamUpdate,
 } from "$lib/types/MessageUpdate";
 import { uploadFile } from "$lib/server/files/uploadFile";
+import {
+	moderateMessage,
+	checkChildSafety,
+	MODERATION_DECLINE,
+	CHILD_SAFETY_DECLINE,
+} from "$lib/server/moderation";
 import { convertLegacyConversation } from "$lib/utils/tree/convertLegacyConversation";
 import { isMessageId } from "$lib/utils/tree/isMessageId";
 import { buildSubtree } from "$lib/utils/tree/buildSubtree.js";
@@ -667,56 +673,96 @@ export async function POST({ request, locals, params, getClientAddress }) {
 			};
 
 			try {
-				// Fetch user settings once for all overrides and billing org
-				const userSettings = await collections.settings.findOne(authCondition(locals));
+				// ── Proactive safety pre-screen — runs BEFORE the model ────────────────
+				// Mirrors prod (chat/app/(chat)/api/chat/route.ts): screen the user's text first.
+				// Child-safety fails CLOSED, toxicity (toxic-bert) fails OPEN. On a flag we stamp the
+				// message, stream the decline as the answer, and SKIP the model entirely. The Safety
+				// update makes the client render a safety decline (no Apertus badge) and the map flash
+				// the toxic-bert node — which is what makes that node's "screens every message before it
+				// reaches the model" claim actually true. Re-screens on retry: a toxic prompt must not
+				// generate on a second attempt either.
+				const userTextToScreen =
+					[...messagesForPrompt].reverse().find((m) => m.from === "user")?.content ?? "";
+				const childSafety = await checkChildSafety(userTextToScreen);
+				const moderation = childSafety.flagged
+					? { flagged: true, label: "child_safety" as string | null, score: 1 }
+					: await moderateMessage(userTextToScreen);
 
-				// Add billing organization to locals for the endpoint to use
-				locals.billingOrganization = userSettings?.billingOrganization;
+				if (moderation.flagged) {
+					const isChild = childSafety.flagged;
+					messageToWriteTo.moderation = {
+						flagged: true,
+						label: moderation.label,
+						score: moderation.score,
+						kind: isChild ? "child_safety" : "toxicity",
+					};
+					await update({
+						type: MessageUpdateType.Safety,
+						kind: isChild ? "child_safety" : "toxicity",
+						label: moderation.label,
+						score: moderation.score,
+					});
+					await update({
+						type: MessageUpdateType.FinalAnswer,
+						text: isChild ? CHILD_SAFETY_DECLINE : MODERATION_DECLINE,
+						interrupted: false,
+					});
+					await update({
+						type: MessageUpdateType.Status,
+						status: MessageUpdateStatus.Finished,
+					});
+				} else {
+					// Fetch user settings once for all overrides and billing org
+					const userSettings = await collections.settings.findOne(authCondition(locals));
 
-				const ctx: TextGenerationContext = {
-					model,
-					endpoint: await model.getEndpoint(),
-					conv,
-					messages: messagesForPrompt,
-					promptedAt,
-					ip: getClientAddress(),
-					username: locals.user?.username,
-					// Force-enable multimodal/tools if user settings say so for this model.
-					// On HuggingChat capability comes from the upstream router, so any stored
-					// per-user overrides are ignored — existing entries don't keep applying.
-					forceMultimodal:
-						!config.isHuggingChat && Boolean(userSettings?.multimodalOverrides?.[model.id]),
-					// Inference provider preference (HuggingChat only, skip for router models)
-					provider:
-						config.isHuggingChat && !model.isRouter
-							? userSettings?.providerOverrides?.[model.id]
+					// Add billing organization to locals for the endpoint to use
+					locals.billingOrganization = userSettings?.billingOrganization;
+
+					const ctx: TextGenerationContext = {
+						model,
+						endpoint: await model.getEndpoint(),
+						conv,
+						messages: messagesForPrompt,
+						promptedAt,
+						ip: getClientAddress(),
+						username: locals.user?.username,
+						// Force-enable multimodal/tools if user settings say so for this model.
+						// On HuggingChat capability comes from the upstream router, so any stored
+						// per-user overrides are ignored — existing entries don't keep applying.
+						forceMultimodal:
+							!config.isHuggingChat && Boolean(userSettings?.multimodalOverrides?.[model.id]),
+						// Inference provider preference (HuggingChat only, skip for router models)
+						provider:
+							config.isHuggingChat && !model.isRouter
+								? userSettings?.providerOverrides?.[model.id]
+								: undefined,
+						// Thinking-effort override (only forwarded for reasoning-capable models;
+						// per-user override can force-enable on self-hosted)
+						reasoningEffort:
+							(userSettings?.reasoningOverrides?.[model.id] ?? model.supportsReasoning)
+								? userSettings?.reasoningEffortOverrides?.[model.id]
+								: undefined,
+						// Artifacts aren't provider-determined, so the per-model user
+						// override applies on HuggingChat too
+						artifactsOverride: userSettings?.artifactsOverrides?.[model.id],
+						// Open-web grounding for this turn (evidence + date only; the model
+						// cites the numbered sources). Persistence of the sources happens on
+						// messageToWriteTo.webSearch above.
+						searchContext: searchContext?.sources.length
+							? { evidence: searchContext.evidence, asOf: searchContext.asOf }
 							: undefined,
-					// Thinking-effort override (only forwarded for reasoning-capable models;
-					// per-user override can force-enable on self-hosted)
-					reasoningEffort:
-						(userSettings?.reasoningOverrides?.[model.id] ?? model.supportsReasoning)
-							? userSettings?.reasoningEffortOverrides?.[model.id]
-							: undefined,
-					// Artifacts aren't provider-determined, so the per-model user
-					// override applies on HuggingChat too
-					artifactsOverride: userSettings?.artifactsOverrides?.[model.id],
-					// Open-web grounding for this turn (evidence + date only; the model
-					// cites the numbered sources). Persistence of the sources happens on
-					// messageToWriteTo.webSearch above.
-					searchContext: searchContext?.sources.length
-						? { evidence: searchContext.evidence, asOf: searchContext.asOf }
-						: undefined,
-					locals,
-					abortController: ctrl,
-				};
-				// run the text generation and send updates to the client
-				for await (const event of textGeneration(ctx)) await update(event);
-				if (ctrl.signal.aborted) {
-					abortedByUser = true;
-				}
-				if (abortedByUser && !finalAnswerReceived) {
-					await emitInterruptedFinalAnswer();
-				}
+						locals,
+						abortController: ctrl,
+					};
+					// run the text generation and send updates to the client
+					for await (const event of textGeneration(ctx)) await update(event);
+					if (ctrl.signal.aborted) {
+						abortedByUser = true;
+					}
+					if (abortedByUser && !finalAnswerReceived) {
+						await emitInterruptedFinalAnswer();
+					}
+				} // end else: message was not declined by the safety pre-screen
 			} catch (e) {
 				const err = e as Error;
 				const isAbortError =

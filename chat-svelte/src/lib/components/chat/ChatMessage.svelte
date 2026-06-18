@@ -23,6 +23,8 @@
 	import ImageLightbox from "./ImageLightbox.svelte";
 	import SourceStrip from "./SourceStrip.svelte";
 	import ProvenanceBadge from "./ProvenanceBadge.svelte";
+	import SafetyBadge from "./SafetyBadge.svelte";
+	import ReportButton from "./ReportButton.svelte";
 	import { splitArtifactSegments, stripArtifacts } from "$lib/utils/artifacts";
 	import type { ArtifactOperation } from "$lib/utils/artifacts";
 
@@ -454,10 +456,16 @@
 			{/if}
 
 			{#if !loading && message.content}
-				<ProvenanceBadge
-					modelId={message.routerMetadata?.model || modelId}
-					provider={message.routerMetadata?.provider}
-				/>
+				{#if message.moderation?.flagged}
+					<!-- Safety decline: the model never ran, so the Apertus provenance badge would
+					     be dishonest. Name the open classifier that actually made the call instead. -->
+					<SafetyBadge kind={message.moderation.kind} label={message.moderation.label} />
+				{:else}
+					<ProvenanceBadge
+						modelId={message.routerMetadata?.model || modelId}
+						provider={message.routerMetadata?.provider}
+					/>
+				{/if}
 			{/if}
 		</div>
 
@@ -492,6 +500,9 @@
 					>
 						<CarbonRotate360 />
 					</button>
+					<!-- Report a problem — present on every completed answer (docx P0); the Terms
+					     page points users here. Flags route to saveReport (ROOST triage seam). -->
+					<ReportButton messageId={message.id} />
 					{#if alternatives.length > 1 && editMsdgId === null}
 						<Alternatives
 							{message}

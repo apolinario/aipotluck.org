@@ -449,6 +449,16 @@
 						route: update.route,
 						model: update.model,
 					};
+				} else if (update.type === MessageUpdateType.Safety) {
+					// Safety pre-screen declined this turn before the model ran. Stamp the marker
+					// so the answer renders as a safety decline (no Apertus provenance badge) and
+					// the live-stack map highlights the toxic-bert node.
+					messageToWriteTo.moderation = {
+						flagged: true,
+						label: update.label,
+						score: update.score,
+						kind: update.kind,
+					};
 				}
 			}
 
@@ -741,7 +751,6 @@
 			convsStore.list.find((conv) => conv.id === page.params.id)?.title ?? data.title;
 		return rawTitle ? rawTitle.charAt(0).toUpperCase() + rawTitle.slice(1) : rawTitle;
 	});
-
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

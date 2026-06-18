@@ -7,7 +7,8 @@ export type MessageUpdate =
 	| MessageFileUpdate
 	| MessageFinalAnswerUpdate
 	| MessageReasoningUpdate
-	| MessageRouterMetadataUpdate;
+	| MessageRouterMetadataUpdate
+	| MessageSafetyUpdate;
 
 export enum MessageUpdateType {
 	Status = "status",
@@ -17,6 +18,7 @@ export enum MessageUpdateType {
 	FinalAnswer = "finalAnswer",
 	Reasoning = "reasoning",
 	RouterMetadata = "routerMetadata",
+	Safety = "safety",
 }
 
 // Status
@@ -79,4 +81,16 @@ export interface MessageRouterMetadataUpdate {
 	route: string;
 	model: string;
 	provider?: InferenceProvider;
+}
+
+// Emitted when the proactive safety pre-screen (toxic-bert / child-safety) declines a
+// message BEFORE the model runs. Carries the marker the client stamps onto
+// message.moderation so the answer renders as a safety decline (not a model answer) and
+// the live-stack map highlights the toxic-bert node. Mirrors the prod app's `data-safety`.
+export type ModerationKind = "toxicity" | "child_safety";
+export interface MessageSafetyUpdate {
+	type: MessageUpdateType.Safety;
+	kind: ModerationKind;
+	label: string | null;
+	score: number;
 }
