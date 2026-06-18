@@ -8,6 +8,13 @@ function renderHtml(md: string): string {
 	return typeof textToken.html === "string" ? textToken.html : "";
 }
 
+function renderHtmlWithSources(md: string, sources: Array<{ title: string; link: string }>): string {
+	const tokens = processTokensSync(md, sources);
+	const textToken = tokens.find((token) => token.type === "text");
+	if (!textToken || textToken.type !== "text") return "";
+	return typeof textToken.html === "string" ? textToken.html : "";
+}
+
 // Full pipeline render (block splitting + optional streaming repairs), as used by MarkdownRenderer
 function renderBlocksHtml(md: string, streaming: boolean): string {
 	return processBlocksSync(md, [], streaming)
@@ -31,6 +38,53 @@ describe("marked basic rendering", () => {
 	test("renders paragraphs", () => {
 		const html = renderHtml("hello world");
 		expect(html).toContain("<p>hello world</p>");
+	});
+});
+
+describe("inline web-search citations", () => {
+	const sources = [
+		{ title: "First", link: "https://a.example/page" },
+		{ title: "Second", link: "https://b.example/page" },
+	];
+
+	test("turns [n] into a superscript link to the matching source", () => {
+		const html = renderHtmlWithSources("The capital is Bern [1].", sources);
+		expect(html).toContain("<sup>");
+		expect(html).toContain('<a href="https://a.example/page"');
+		expect(html).toContain('target="_blank"');
+		expect(html).toContain(">1</a>");
+	});
+
+	test("links each citation to its own source", () => {
+		const html = renderHtmlWithSources("See [1] and also [2].", sources);
+		expect(html).toContain('href="https://a.example/page"');
+		expect(html).toContain('href="https://b.example/page"');
+	});
+
+	test("leaves [n] literal when the index is out of range", () => {
+		const html = renderHtmlWithSources("Citing [3] here.", sources);
+		expect(html).not.toContain("<sup>");
+		expect(html).toContain("[3]");
+	});
+
+	test("leaves [0] literal (no zero-th source)", () => {
+		const html = renderHtmlWithSources("Footnote [0].", sources);
+		expect(html).not.toContain("<sup>");
+		expect(html).toContain("[0]");
+	});
+
+	test("leaves [n] literal when there are no sources", () => {
+		const html = renderHtmlWithSources("No web search [1].", []);
+		expect(html).not.toContain("<sup>");
+		expect(html).toContain("[1]");
+	});
+
+	test("escapes special characters in the source URL", () => {
+		const html = renderHtmlWithSources("Ref [1].", [
+			{ title: "Q", link: "https://x.example/?a=1&b=2" },
+		]);
+		expect(html).toContain("&amp;");
+		expect(html).not.toContain('?a=1&b=2"');
 	});
 });
 
