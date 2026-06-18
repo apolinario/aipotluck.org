@@ -20,10 +20,10 @@
 			"nodes": [
 				{
 					"id": "apertus",
-					"nm": "Apertus 70B",
+					"nm": "Apertus 1.5",
 					"org": "Swiss AI Initiative (SwissAI)",
 					"st": "live",
-					"d": "Open-weights Swiss foundation model (text-only today; multimodal incoming). Multilingual, open training data.",
+					"d": "Open-weights Swiss foundation model (text-only today; multimodal incoming). Multilingual, open training data. Served checkpoint: Apertus-70B-Instruct-2509.",
 					"prov": "open weights · HuggingFace · trained on CSCS",
 					"url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
 					"lineage": {

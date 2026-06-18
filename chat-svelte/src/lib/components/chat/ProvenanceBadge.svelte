@@ -34,7 +34,9 @@
 
 <div
 	class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10.5px] text-[var(--ap-ink-3)]"
-	title="{identity.short} · {identity.maker} · {identity.openness} · served via {providerName}; sovereign-compute target: CSCS (Switzerland) & LUMI (Finland)"
+	title="{identity.short} · {identity.maker} · {identity.openness}{identity.served
+		? ` · served model: ${identity.served}`
+		: ''} · served via {providerName}; sovereign-compute target: CSCS (Switzerland) & LUMI (Finland)"
 >
 	<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-live)"></span>
 	<span>{identity.short} · {identity.makerShort} · {providerName}</span>
