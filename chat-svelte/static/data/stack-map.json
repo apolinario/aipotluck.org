@@ -1,204 +1,190 @@
 {
-  "generatedFrom": "OSO product-view (local)",
-  "layers": [
-    {
-      "label": "Routing",
-      "ghost": false,
-      "nodes": [
-        {
-          "id": "router",
-          "nm": "model-router",
-          "org": "Arch-Router · Katanemo",
-          "st": "building",
-          "d": "Planned: route each query to the right open model by task (Arch-Router-1.5B). One model serves every answer today; provider routing (LiteLLM) is already live via HuggingFace."
-        }
-      ]
-    },
-    {
-      "label": "Model",
-      "ghost": false,
-      "nodes": [
-        {
-          "id": "apertus",
-          "nm": "Apertus 70B",
-          "org": "Swiss AI Initiative (SwissAI)",
-          "st": "live",
-          "d": "Open-weights Swiss foundation model (text-only today; multimodal incoming). Multilingual, open training data.",
-          "prov": "open weights · HuggingFace · trained on CSCS",
-          "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
-          "lineage": {
-            "summary": "fully open & reproducible, opt-out-respecting",
-            "facts": [
-              "15T tokens · 1811 languages",
-              "open weights + open data + open training recipe",
-              "respects data-owner opt-out, even retroactively"
-            ],
-            "links": [
-              {
-                "label": "Technical report ↗",
-                "url": "https://arxiv.org/abs/2509.14233"
-              },
-              {
-                "label": "Data recipe ↗",
-                "url": "https://github.com/swiss-ai/pretrain-data"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "label": "Compute",
-      "ghost": false,
-      "nodes": [
-        {
-          "id": "cscs",
-          "nm": "CSCS 🇨🇭",
-          "org": "Swiss National Supercomputing Centre",
-          "st": "live",
-          "d": "Sovereign public compute — owned by the public, not a company. Apertus was trained here; production serves from here too (this prototype runs via HuggingFace).",
-          "prov": "public infrastructure · Switzerland"
-        },
-        {
-          "id": "lumi",
-          "nm": "LUMI 🇫🇮",
-          "org": "CSC, Finland",
-          "st": "live",
-          "d": "EuroHPC sovereign compute pool — a production serving target for the public stack.",
-          "prov": "public infrastructure · EuroHPC"
-        }
-      ]
-    },
-    {
-      "label": "Safety",
-      "ghost": false,
-      "nodes": [
-        {
-          "id": "toxicbert",
-          "nm": "toxic-bert",
-          "org": "Unitary · Detoxify",
-          "st": "live",
-          "d": "Apache-2.0 toxicity classifier — screens every message before it reaches the model. Flags toxic or abusive language (not all harmful requests).",
-          "prov": "open safety classifier"
-        },
-        {
-          "id": "osprey",
-          "nm": "Osprey",
-          "org": "ROOST.tech",
-          "st": "building",
-          "d": "Request-path abuse detection with reviewable logs — building.",
-          "prov": "open moderation tooling"
-        }
-      ]
-    },
-    {
-      "label": "Tools",
-      "ghost": false,
-      "nodes": [
-        {
-          "id": "websearch",
-          "nm": "Web search",
-          "org": "Wikipedia · Marginalia",
-          "st": "building",
-          "d": "Wiring open-knowledge search: Wikipedia (open public knowledge) + Marginalia (open independent index). A Google-scale open web index is still the honest gap.",
-          "prov": "open knowledge + open independent index"
-        },
-        {
-          "id": "upload",
-          "nm": "File upload",
-          "org": "Docling · pgvector",
-          "st": "building",
-          "d": "Open document parsing + retrieval over open vector stores — building. Files attach today but aren't parsed yet.",
-          "atlas": {
-            "pid": "repo:docling-project/docling",
-            "stars": 58707,
-            "stars7d": 425,
-            "contributors": 54,
-            "commits90d": 1503,
-            "language": "Python",
-            "license": null,
-            "desc": "Get your documents ready for gen AI",
-            "url": "https://github.com/docling-project/docling",
-            "openness": "open",
-            "sparkline": [
-              165,
-              206,
-              226,
-              229,
-              177,
-              158,
-              116,
-              73,
-              47,
-              81,
-              134,
-              84,
-              54
-            ]
-          }
-        },
-        {
-          "id": "voice",
-          "nm": "Voice",
-          "org": "open invitation",
-          "st": "wanted",
-          "d": "Talk to it out loud. Not part of the open stack here yet — an open invitation, not a closed door."
-        },
-        {
-          "id": "imagegen",
-          "nm": "Image generation",
-          "org": "open invitation",
-          "st": "wanted",
-          "d": "Make images from a prompt. Open projects exist; nobody has wired one in here yet."
-        }
-      ]
-    },
-    {
-      "label": "Agent",
-      "ghost": false,
-      "nodes": [
-        {
-          "id": "hermes",
-          "nm": "Nous Hermes",
-          "org": "Nous Research",
-          "st": "building",
-          "d": "Hosted agent service — developer API only for the alpha.",
-          "prov": "open agent models · API-only for alpha"
-        },
-        {
-          "id": "computeruse",
-          "nm": "Computer use",
-          "org": "open invitation",
-          "st": "wanted",
-          "d": "Let the AI act in apps and the browser on your behalf."
-        },
-        {
-          "id": "memory",
-          "nm": "Memory",
-          "org": "open invitation",
-          "st": "wanted",
-          "d": "Remember context across conversations."
-        }
-      ]
-    },
-    {
-      "label": "Community",
-      "ghost": false,
-      "nodes": [
-        {
-          "id": "localculture",
-          "nm": "local-culture",
-          "org": "open invitation",
-          "st": "gap",
-          "d": "Community self-configuration of a live deployment. Not built yet — an open gap, not a promise. This is where a contribution would land."
-        }
-      ]
-    }
-  ],
-  "coverage": {
-    "live": 4,
-    "building": 5,
-    "gap": 1,
-    "wanted": 4
-  }
+	"generatedFrom": "OSO product-view (local)",
+	"layers": [
+		{
+			"label": "Routing",
+			"ghost": false,
+			"nodes": [
+				{
+					"id": "router",
+					"nm": "model-router",
+					"org": "Arch-Router · Katanemo",
+					"st": "building",
+					"d": "Planned: route each query to the right open model by task (Arch-Router-1.5B). One model serves every answer today; provider routing (LiteLLM) is already live via HuggingFace."
+				}
+			]
+		},
+		{
+			"label": "Model",
+			"ghost": false,
+			"nodes": [
+				{
+					"id": "apertus",
+					"nm": "Apertus 70B",
+					"org": "Swiss AI Initiative (SwissAI)",
+					"st": "live",
+					"d": "Open-weights Swiss foundation model (text-only today; multimodal incoming). Multilingual, open training data.",
+					"prov": "open weights · HuggingFace · trained on CSCS",
+					"url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
+					"lineage": {
+						"summary": "fully open & reproducible, opt-out-respecting",
+						"facts": [
+							"15T tokens · 1811 languages",
+							"open weights + open data + open training recipe",
+							"respects data-owner opt-out, even retroactively"
+						],
+						"links": [
+							{
+								"label": "Technical report ↗",
+								"url": "https://arxiv.org/abs/2509.14233"
+							},
+							{
+								"label": "Data recipe ↗",
+								"url": "https://github.com/swiss-ai/pretrain-data"
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"label": "Compute",
+			"ghost": false,
+			"nodes": [
+				{
+					"id": "cscs",
+					"nm": "CSCS 🇨🇭",
+					"org": "Swiss National Supercomputing Centre",
+					"st": "live",
+					"d": "Sovereign public compute — owned by the public, not a company. Apertus was trained here; it's the production serving target too (this prototype is served via HuggingFace, not yet from CSCS).",
+					"prov": "public infrastructure · Switzerland"
+				},
+				{
+					"id": "lumi",
+					"nm": "LUMI 🇫🇮",
+					"org": "CSC, Finland",
+					"st": "live",
+					"d": "EuroHPC sovereign compute pool — a production serving target for the public stack.",
+					"prov": "public infrastructure · EuroHPC"
+				}
+			]
+		},
+		{
+			"label": "Safety",
+			"ghost": false,
+			"nodes": [
+				{
+					"id": "toxicbert",
+					"nm": "toxic-bert",
+					"org": "Unitary · Detoxify",
+					"st": "live",
+					"d": "Apache-2.0 toxicity classifier — screens every message before it reaches the model. Flags toxic or abusive language (not all harmful requests).",
+					"prov": "open safety classifier"
+				},
+				{
+					"id": "osprey",
+					"nm": "Osprey",
+					"org": "ROOST.tech",
+					"st": "building",
+					"d": "Request-path abuse detection with reviewable logs — building.",
+					"prov": "open moderation tooling"
+				}
+			]
+		},
+		{
+			"label": "Tools",
+			"ghost": false,
+			"nodes": [
+				{
+					"id": "websearch",
+					"nm": "Web search",
+					"org": "Wikipedia · Marginalia",
+					"st": "live",
+					"d": "Open-knowledge search over Wikipedia (open public knowledge) + Marginalia (open independent index), grounding answers with cited sources. A Google-scale open web index is still the honest gap.",
+					"prov": "open knowledge + open independent index"
+				},
+				{
+					"id": "upload",
+					"nm": "File upload",
+					"org": "Docling · pgvector",
+					"st": "building",
+					"d": "Open document parsing + retrieval over open vector stores — building. File attach is wired but turned off for the alpha; parsing isn't built yet.",
+					"atlas": {
+						"pid": "repo:docling-project/docling",
+						"stars": 58707,
+						"stars7d": 425,
+						"contributors": 54,
+						"commits90d": 1503,
+						"language": "Python",
+						"license": null,
+						"desc": "Get your documents ready for gen AI",
+						"url": "https://github.com/docling-project/docling",
+						"openness": "open",
+						"sparkline": [165, 206, 226, 229, 177, 158, 116, 73, 47, 81, 134, 84, 54]
+					}
+				},
+				{
+					"id": "voice",
+					"nm": "Voice",
+					"org": "open invitation",
+					"st": "wanted",
+					"d": "Talk to it out loud. Not part of the open stack here yet — an open invitation, not a closed door."
+				},
+				{
+					"id": "imagegen",
+					"nm": "Image generation",
+					"org": "open invitation",
+					"st": "wanted",
+					"d": "Make images from a prompt. Open projects exist; nobody has wired one in here yet."
+				}
+			]
+		},
+		{
+			"label": "Agent",
+			"ghost": false,
+			"nodes": [
+				{
+					"id": "hermes",
+					"nm": "Nous Hermes",
+					"org": "Nous Research",
+					"st": "building",
+					"d": "Hosted agent service — developer API only for the alpha.",
+					"prov": "open agent models · API-only for alpha"
+				},
+				{
+					"id": "computeruse",
+					"nm": "Computer use",
+					"org": "open invitation",
+					"st": "wanted",
+					"d": "Let the AI act in apps and the browser on your behalf."
+				},
+				{
+					"id": "memory",
+					"nm": "Memory",
+					"org": "open invitation",
+					"st": "wanted",
+					"d": "Remember context across conversations."
+				}
+			]
+		},
+		{
+			"label": "Community",
+			"ghost": false,
+			"nodes": [
+				{
+					"id": "localculture",
+					"nm": "local-culture",
+					"org": "open invitation",
+					"st": "gap",
+					"d": "Community self-configuration of a live deployment. Not built yet — an open gap, not a promise. This is where a contribution would land."
+				}
+			]
+		}
+	],
+	"coverage": {
+		"live": 5,
+		"building": 4,
+		"gap": 1,
+		"wanted": 4
+	}
 }
