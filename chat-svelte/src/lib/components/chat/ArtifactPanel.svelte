@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
-	import DOMPurify from "isomorphic-dompurify";
 
 	import type { ArtifactRegistry, ArtifactVersion } from "$lib/utils/artifacts";
 	import { artifactFileName, isPreviewableKind } from "$lib/utils/artifacts";
@@ -123,9 +122,9 @@
 			// The highlighter runs on the full old/new contents so token colors
 			// survive in the diff (multi-line constructs included).
 			const lang = hljsLanguageFor(version);
-			highlightedCode = DOMPurify.sanitize(
-				renderDiffHtml(diff, (text) => highlightCode(text, lang))
-			);
+			// renderDiffHtml wraps highlight.js output (which escapes the code text) in its own
+			// diff markup — safe by construction, no jsdom-backed sanitizer needed. See CodeBlock.svelte.
+			highlightedCode = renderDiffHtml(diff, (text) => highlightCode(text, lang));
 			lastHighlightAt = Date.now();
 			return;
 		}
@@ -134,7 +133,8 @@
 		const complete = version.complete;
 
 		const run = () => {
-			highlightedCode = DOMPurify.sanitize(highlightCode(content, lang));
+			// highlight.js escapes the code text; render its output directly (no jsdom sanitizer).
+			highlightedCode = highlightCode(content, lang);
 			lastHighlightAt = Date.now();
 		};
 

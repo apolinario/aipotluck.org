@@ -1,6 +1,5 @@
 <script lang="ts">
 	import CopyToClipBoardBtn from "./CopyToClipBoardBtn.svelte";
-	import DOMPurify from "isomorphic-dompurify";
 	import HtmlPreviewModal from "./HtmlPreviewModal.svelte";
 	import PlayFilledAlt from "~icons/carbon/play-filled-alt";
 	import EosIconsLoading from "~icons/eos-icons/loading";
@@ -11,6 +10,11 @@
 		loading?: boolean;
 	}
 
+	// `code` is highlight.js output (`hljs.highlight(...).value` via marked.ts highlightCode),
+	// which HTML-escapes the code text and emits only its own `<span class="hljs-*">` markup.
+	// So `{@html code}` is safe by construction — that escaping is the real XSS protection.
+	// (Previously wrapped in isomorphic-dompurify, which dragged jsdom into the SSR graph and
+	// broke the serverless runtime with ERR_REQUIRE_ESM; the DOMPurify pass was redundant.)
 	let { code = "", rawCode = "", loading = false }: Props = $props();
 
 	let previewOpen = $state(false);
@@ -64,7 +68,7 @@
 		</div>
 	</div>
 	<pre class="scrollbar-custom overflow-auto px-5 font-mono transition-[height]"><code
-			><!-- eslint-disable svelte/no-at-html-tags -->{@html DOMPurify.sanitize(code)}</code
+			><!-- eslint-disable svelte/no-at-html-tags -->{@html code}</code
 		></pre>
 
 	{#if previewOpen}
