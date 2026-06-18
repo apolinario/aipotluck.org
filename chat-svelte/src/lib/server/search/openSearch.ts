@@ -7,6 +7,7 @@
 // Ported from the Next chat/ app (lib/search/open-search.ts).
 
 import { distillQuery } from "./distill";
+import { rerankByRelevance, rerankModel } from "./rerank";
 import type { OpenSearchResult, SearchSource } from "$lib/types/Search";
 
 export type { OpenSearchResult, SearchSource };
@@ -119,9 +120,18 @@ function dedupe(items: Omit<SearchSource, "n">[]): Omit<SearchSource, "n">[] {
 
 export async function openSearch(
 	query: string,
-	opts: { wikipedia?: number; marginalia?: number; timeoutMs?: number } = {}
+	opts: { wikipedia?: number; marginalia?: number; keep?: number; timeoutMs?: number } = {}
 ): Promise<OpenSearchResult> {
-	const { wikipedia = 3, marginalia = 4, timeoutMs = 8000 } = opts;
+	// With a reranker configured, cast a WIDER net and let the cross-encoder pick
+	// the best — recall from the wide retrieval, precision from the rerank. Without
+	// one, keep the original tight limits (no extra latency, unchanged behavior).
+	const reranking = !!rerankModel();
+	const {
+		wikipedia = reranking ? 6 : 3,
+		marginalia = reranking ? 10 : 4,
+		keep = 6,
+		timeoutMs = 8000,
+	} = opts;
 	// Focus the query before it hits the engines: a conversational turn ranks
 	// worse than its core entities. The distilled string is what we report back
 	// as `query`, so the user sees exactly what the open web was searched for.
@@ -135,10 +145,18 @@ export async function openSearch(
 			searchWikipedia(searchQuery, wikipedia, controller.signal),
 			searchMarginalia(searchQuery, marginalia, controller.signal),
 		]);
-		const merged = dedupe([
+		let merged = dedupe([
 			...(wiki.status === "fulfilled" ? wiki.value : []),
 			...(marg.status === "fulfilled" ? marg.value : []),
 		]).filter((s) => s.snippet);
+
+		// Cross-encoder rerank by true query-relevance, keeping the best `keep` and
+		// dropping clearly off-topic hits (the failure mode that returned generic AI
+		// pages for an "EU AI Act" query). Best-effort: a no-op when disabled or on
+		// any reranker error, so retrieval order survives.
+		if (reranking) {
+			merged = await rerankByRelevance(searchQuery, merged, { topK: keep, minScore: 0.01 });
+		}
 
 		const sources: SearchSource[] = merged.map((s, i) => ({ ...s, n: i + 1 }));
 		const evidence = sources
