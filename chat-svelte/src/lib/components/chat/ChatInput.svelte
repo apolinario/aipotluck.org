@@ -33,7 +33,10 @@
 		// Whether the currently selected model supports tool calling (incl. overrides)
 		modelSupportsTools?: boolean;
 		// Open-web search composer toggle (the P0 differentiator). When the toggle
-		// is shown, the user can ground a turn on Wikipedia + Marginalia.
+		// is shown, the user can ground a turn on Wikipedia + Marginalia. Currently
+		// hidden (showWebSearch={false}): search is auto-triggered by the recency
+		// heuristic in ChatWindow, not a manual control (Julie, 2026-06-18). The
+		// "Searching…" spinner banner still renders during an auto-search.
 		showWebSearch?: boolean;
 		webSearchEnabled?: boolean;
 		webSearching?: boolean;

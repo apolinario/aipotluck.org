@@ -153,12 +153,15 @@
 	);
 	let isTouchDevice = $derived(browser && navigator.maxTouchPoints > 0);
 
-	// Open-web search (P0 differentiator): an explicit composer toggle, never
-	// model-driven tool-calling (Apertus's is unreliable). When on, the turn is
-	// grounded on Wikipedia + Marginalia: we fetch /api/search here, flash the
-	// Web-search node on the map, then hand the result to the send flow as
-	// searchContext. A recency-looking draft surfaces the affordance (a hint on
-	// the globe) but the user always decides — nothing auto-searches.
+	// Open-web search (P0 differentiator). Per Julie (2026-06-18) this is no longer
+	// a manual composer toggle: the system decides when a turn needs current
+	// open-web grounding. The deciding "layer" is the deterministic recency
+	// heuristic (isRecencyQuery) — NOT Apertus tool-calling, which is unreliable.
+	// When the heuristic fires, the turn is grounded on Wikipedia + Marginalia: we
+	// fetch /api/search here, flash the Web-search node on the map, then hand the
+	// result to the send flow as searchContext. The manual globe toggle is hidden
+	// (showWebSearch={false} below); webSearchEnabled is retained dormant so the
+	// control can be re-exposed without rewiring if the product direction changes.
 	let webSearchEnabled = $state(false);
 	let webSearching = $state(false);
 	let draftLooksRecent = $derived(isRecencyQuery(draft));
@@ -186,8 +189,10 @@
 		const text = draft;
 		draft = "";
 
+		// The recency heuristic decides whether this turn needs open-web grounding
+		// (same logic as the starter-prompt path below). No manual opt-in.
 		let searchContext: SearchContext | undefined;
-		if (webSearchEnabled) {
+		if (isRecencyQuery(text)) {
 			webSearching = true;
 			try {
 				searchContext = await runOpenSearch(text);
@@ -893,7 +898,7 @@
 									disabled={isReadOnly || lastIsError}
 									{modelIsMultimodal}
 									{modelSupportsTools}
-									showWebSearch={!isReadOnly}
+									showWebSearch={false}
 									{modelLabel}
 									bind:webSearchEnabled
 									{webSearching}
