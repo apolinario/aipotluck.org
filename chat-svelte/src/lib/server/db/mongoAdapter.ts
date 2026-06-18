@@ -33,6 +33,13 @@ function isObjectIdLike(v: unknown): v is { toHexString(): string } {
 /** Replace Date/ObjectId with tagged markers so they survive a JSONB round-trip anywhere in the doc. */
 function toStorage(value: unknown): unknown {
 	if (value === null || value === undefined) return value;
+	if (typeof value === "string") {
+		// Postgres jsonb cannot store U+0000 — it's the one codepoint it rejects outright ("unsupported
+		// Unicode escape sequence"). A pasted or crafted null byte anywhere in a message would otherwise
+		// fail the whole conversation write (a 500 on send). Strip it at the storage boundary so every
+		// write is safe; the includes() guard keeps the normal path allocation-free.
+		return value.includes("\u0000") ? value.replace(/\u0000/g, "") : value;
+	}
 	if (value instanceof Date) return { $dt: value.toISOString() };
 	if (isObjectIdLike(value)) return { $oid: value.toHexString() };
 	if (Array.isArray(value)) return value.map(toStorage);
