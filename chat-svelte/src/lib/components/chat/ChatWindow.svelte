@@ -179,7 +179,9 @@
 	}
 
 	const handleSubmit = async () => {
-		if (requireAuthUser() || loading || !draft || webSearching) return;
+		// Guard on the trimmed draft, not just `!draft`: a whitespace-only draft ("   \n") is
+		// truthy, so a bare `!draft` let the send button submit blank turns (Enter already trims).
+		if (requireAuthUser() || loading || !draft.trim() || webSearching) return;
 		tap();
 		const text = draft;
 		draft = "";
@@ -913,11 +915,11 @@
 								<!-- Voice/mic removed for the alpha: voice is a WANTED / "open invitation" node on the
 							     stack map (not built); a working mic would contradict our own honest gap map. -->
 								<button
-									class="absolute right-2 bottom-2 btn size-8 self-end rounded-xl border bg-white text-black shadow transition-none enabled:hover:bg-white enabled:hover:shadow-inner sm:size-7 dark:border-transparent dark:bg-gray-600 dark:text-white dark:hover:enabled:bg-black {!draft ||
+									class="absolute right-2 bottom-2 btn size-8 self-end rounded-xl border bg-white text-black shadow transition-none enabled:hover:bg-white enabled:hover:shadow-inner sm:size-7 dark:border-transparent dark:bg-gray-600 dark:text-white dark:hover:enabled:bg-black {!draft.trim() ||
 									isReadOnly
 										? ''
 										: 'bg-black! text-white! dark:bg-white! dark:text-black!'}"
-									disabled={!draft || isReadOnly}
+									disabled={!draft.trim() || isReadOnly}
 									type="submit"
 									aria-label="Send message"
 									name="submit"
