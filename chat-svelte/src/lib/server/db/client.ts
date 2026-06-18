@@ -29,6 +29,12 @@ export function getDb() {
 			// Serverless: keep the pool small; one connection per function instance.
 			max: Number(process.env.PG_POOL_MAX ?? 1),
 			prepare: false,
+			// Cold starts hit the Neon pooler before it's warm; the default connect timeout
+			// was tripping (write CONNECT_TIMEOUT …-pooler.neon.tech) on the first query of a
+			// fresh function. Give the handshake real runway, and reap idle sockets so a frozen
+			// serverless instance doesn't hold a pooler slot.
+			connect_timeout: Number(process.env.PG_CONNECT_TIMEOUT ?? 30),
+			idle_timeout: Number(process.env.PG_IDLE_TIMEOUT ?? 20),
 		});
 		_db = drizzle(_sql, { schema });
 	}

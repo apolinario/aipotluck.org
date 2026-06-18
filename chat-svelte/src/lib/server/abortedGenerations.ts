@@ -10,11 +10,13 @@ export class AbortedGenerations {
 	private abortedGenerations: Record<string, Date> = {};
 
 	private constructor() {
-		// Poll every 500ms for faster abort detection (reduced from 1000ms)
-		const interval = setInterval(() => this.updateList(), 500);
+		// Serverless-friendly: do NOT query eagerly here. getInstance() runs at server init, so an
+		// eager query races a cold Neon pooler connection and tripped CONNECT_TIMEOUT on the first
+		// request of a fresh function. Let the first poll fire after the interval (DB is connected
+		// by then); until then getAbortTime() returns undefined — "not aborted", the safe default.
+		// 1s poll keeps abort latency responsive without hammering the max:1 pool twice a second.
+		const interval = setInterval(() => this.updateList(), 1000);
 		onExit(() => clearInterval(interval));
-
-		this.updateList();
 	}
 
 	public static getInstance(): AbortedGenerations {
