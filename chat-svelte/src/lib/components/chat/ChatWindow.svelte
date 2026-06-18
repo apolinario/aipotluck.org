@@ -165,6 +165,10 @@
 	// control can be re-exposed without rewiring if the product direction changes.
 	let webSearchEnabled = $state(false);
 	let webSearching = $state(false);
+	// True only while the model classifier is deciding (the "model"/"tool"
+	// strategies). Drives the brief "thinking" affordance so the pre-answer
+	// classifier round-trip doesn't read as a stall. Dormant under "heuristic".
+	let deciding = $state(false);
 	let draftLooksRecent = $derived(isRecencyQuery(draft));
 
 	async function runOpenSearch(query: string): Promise<SearchContext | undefined> {
@@ -204,7 +208,14 @@
 		const heuristicHit = isRecencyQuery(text);
 		let classifierHit = false;
 		if (!heuristicHit && usesModelClassifier()) {
-			classifierHit = await classifyNeedsSearch(text);
+			// Surface the "thinking" affordance only for the classifier round-trip —
+			// the heuristic path is instant and needs none.
+			deciding = true;
+			try {
+				classifierHit = await classifyNeedsSearch(text);
+			} finally {
+				deciding = false;
+			}
 		}
 		return shouldRunSearch({ heuristicHit, classifierHit });
 	}
@@ -933,6 +944,7 @@
 									{modelLabel}
 									bind:webSearchEnabled
 									{webSearching}
+									{deciding}
 									webSearchAffordance={draftLooksRecent && !webSearchEnabled}
 									bind:focused
 								/>
