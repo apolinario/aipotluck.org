@@ -67,6 +67,13 @@ export const sameSite = z
 	.default(!secure || dev || config.ALLOW_INSECURE_COOKIES === "true" ? "lax" : "none")
 	.parse(config.COOKIE_SAMESITE === "" ? undefined : config.COOKIE_SAMESITE);
 
+// Session cookie name. Unlike secure/sameSite, config has no default for COOKIE_NAME (it's a plain
+// env passthrough), so when the env var is unset — e.g. on a deploy that didn't set it — config.COOKIE_NAME
+// is "", and cookies.set("", …) makes cookie.serialize throw "argument name is invalid", 500-ing every
+// cookie-setting POST (conversation create, settings). Default to the chat-ui heritage name so the cookie
+// always has a valid name. Used for both set and read so they can't drift.
+export const sessionCookieName = config.COOKIE_NAME || "hf-chat";
+
 function sanitizeReturnPath(path: string | undefined | null): string | undefined {
 	if (!path) {
 		return undefined;
@@ -81,7 +88,7 @@ function sanitizeReturnPath(path: string | undefined | null): string | undefined
 }
 
 export function refreshSessionCookie(cookies: Cookies, sessionId: string) {
-	cookies.set(config.COOKIE_NAME, sessionId, {
+	cookies.set(sessionCookieName, sessionId, {
 		path: "/",
 		// So that it works inside the space's iframe
 		sameSite,
@@ -405,7 +412,7 @@ export async function authenticateRequest(
 	url: URL,
 	isApi?: boolean
 ): Promise<App.Locals & { secretSessionId: string }> {
-	const token = cookie.get(config.COOKIE_NAME);
+	const token = cookie.get(sessionCookieName);
 
 	let email = null;
 	if (config.TRUSTED_EMAIL_HEADER) {

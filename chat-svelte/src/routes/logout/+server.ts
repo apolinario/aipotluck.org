@@ -1,13 +1,12 @@
 import { base } from "$app/paths";
 import { collections } from "$lib/server/database";
 import { redirect } from "@sveltejs/kit";
-import { config } from "$lib/server/config";
-import { sameSite, secure } from "$lib/server/auth";
+import { sameSite, secure, sessionCookieName } from "$lib/server/auth";
 
 export async function POST({ locals, cookies }) {
 	await collections.sessions.deleteOne({ sessionId: locals.sessionId });
 
-	cookies.delete(config.COOKIE_NAME, {
+	cookies.delete(sessionCookieName, {
 		path: "/",
 		// So that it works inside the space's iframe
 		sameSite,

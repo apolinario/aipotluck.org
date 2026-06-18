@@ -27,7 +27,7 @@
 	];
 </script>
 
-<div class="my-auto flex w-full flex-col items-center gap-6 px-4">
+<div class="mt-[8vh] mb-auto flex w-full flex-col items-center gap-6 px-4 sm:mt-[12vh]">
 	<div class="flex flex-col items-center">
 		<!-- Sans-bold like prod: prod reserves the serif for display headings (welcome,
 		     map); the empty-state greeting is the functional sans-bold tier. -->
