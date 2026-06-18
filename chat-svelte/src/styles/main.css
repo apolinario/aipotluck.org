@@ -428,12 +428,47 @@ h2 {
 }
 
 /*
-  The persistent highlight a node gets when it's "running this turn" (pulsed)
-  or named by a "show on map" / safety event (trailed). A calm green wash, no
-  animation — "running" is signalled by the header dot, the node just lifts.
+  The persistent highlight a node gets when it's named by a "show on map" /
+  safety event, or as the settled end-state of a turn's staged reveal. A calm
+  green wash, no animation — the answer is done, the node just stays lifted.
 */
 .ap-trail {
 	box-shadow:
 		inset 0 0 0 200px color-mix(in oklch, var(--ap-live) 6%, transparent),
 		inset 0 0 0 1.5px color-mix(in oklch, var(--ap-live) 32%, transparent);
+}
+
+/*
+  The ACTIVE node while a turn streams — a breathing green pulse (inner wash +
+  an outer halo that swells and fades) so "Under the hood · running" reads as
+  alive, not just lifted. Settles to the static .ap-trail when the turn ends.
+  Honest: only the node that genuinely ran this turn pulses.
+*/
+.ap-pulse {
+	box-shadow:
+		inset 0 0 0 200px color-mix(in oklch, var(--ap-live) 8%, transparent),
+		inset 0 0 0 1.5px color-mix(in oklch, var(--ap-live) 36%, transparent);
+	animation: ap-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ap-pulse {
+	0%,
+	100% {
+		box-shadow:
+			inset 0 0 0 200px color-mix(in oklch, var(--ap-live) 5%, transparent),
+			inset 0 0 0 1.5px color-mix(in oklch, var(--ap-live) 28%, transparent),
+			0 0 0 0 color-mix(in oklch, var(--ap-live) 0%, transparent);
+	}
+	50% {
+		box-shadow:
+			inset 0 0 0 200px color-mix(in oklch, var(--ap-live) 15%, transparent),
+			inset 0 0 0 1.5px color-mix(in oklch, var(--ap-live) 64%, transparent),
+			0 0 14px 2px color-mix(in oklch, var(--ap-live) 38%, transparent);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ap-pulse {
+		animation: none;
+	}
 }

@@ -5,8 +5,8 @@
 
 	interface Props {
 		node: StackNode;
-		// Pulsed while this node's turn streams; trailed = a persisted "show on
-		// map" / safety highlight. Both render the same calm green wash (.ap-trail).
+		// Pulsed while this node's turn streams (animated breathing glow, .ap-pulse);
+		// trailed = a persisted "show on map" / safety highlight (static wash, .ap-trail).
 		pulsed?: boolean;
 		trailed?: boolean;
 	}
@@ -27,7 +27,7 @@
 		[
 			"group relative flex flex-1 basis-[200px] flex-col select-text rounded-[10px] border-[1.5px] px-[15px] py-[10px] text-left transition-[border-color,box-shadow] duration-150",
 			isWanted ? "border-dashed bg-transparent" : "border-[var(--ap-rule)] bg-[var(--ap-paper)]",
-			pulsed || trailed ? "ap-trail" : "",
+			pulsed ? "ap-pulse" : trailed ? "ap-trail" : "",
 		].join(" ")
 	);
 

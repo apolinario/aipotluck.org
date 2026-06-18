@@ -5,6 +5,7 @@
 	import type { Message } from "$lib/types/Message";
 	import MapNode from "./MapNode.svelte";
 	import { type StackMapData, type StackStatus } from "./types";
+	import { MODEL_NODES, computeRevealStages } from "./reveal";
 
 	interface Props {
 		// True while a turn is streaming/submitted — pulses the model node and,
@@ -22,7 +23,7 @@
 	// turn streams and persisted after. CSCS/LUMI stay static as the production-
 	// target compute layer (this prototype is HF-served, not run on them), and
 	// the router stays a static `building` node — nothing routes today.
-	const TURN_PULSE = ["apertus"];
+	const TURN_PULSE: string[] = [...MODEL_NODES];
 
 	// Legend uses the AA text variants (the coverage BAR above keeps the bright fills) so the
 	// "5 live / 4 building / 1 gap" text clears WCAG AA on the map panel.
@@ -136,14 +137,10 @@
 			// A declined turn never reached the model: highlight ONLY the toxic-bert
 			// node so the map honestly shows what actually ran (the safety pre-screen,
 			// not Apertus). This is the moderation extension point referenced above.
-			if (lastAnswer.moderation?.flagged) {
-				stagedReveal(["toxicbert"]);
-				return;
-			}
-			// Reveal in real pipeline order: open-web search grounds the answer first,
-			// then the model produces it — so the stack lights search → model.
-			const searched = !!lastAnswer.webSearch?.sources?.length;
-			stagedReveal(searched ? ["websearch", ...TURN_PULSE] : [...TURN_PULSE]);
+			// Which nodes light, in real pipeline order — honest by construction
+			// (declined → safety only; searched → search → model; else model).
+			// The invariant lives in reveal.ts and is unit-tested there.
+			stagedReveal(computeRevealStages(lastAnswer));
 		});
 	});
 
