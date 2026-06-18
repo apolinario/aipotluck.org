@@ -6,6 +6,7 @@ import { collections } from "$lib/server/database";
 import { authCondition } from "$lib/server/auth";
 import { ObjectId } from "bson";
 import { validModelIdSchema } from "$lib/server/models";
+import { deleteConversationsCascade } from "$lib/server/db/deleteConversations";
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	requireAuth(locals);
@@ -32,14 +33,16 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (!ObjectId.isValid(id)) {
 		error(400, "Invalid conversation ID");
 	}
-	const res = await collections.conversations.deleteOne({
+	// Scope to the caller, then FK-ordered cascade (a bare delete throws if the conversation
+	// has a report — reports.conversationId is a NOT NULL FK).
+	const conv = await collections.conversations.findOne({
 		_id: new ObjectId(id),
 		...authCondition(locals),
 	});
-
-	if (res.deletedCount === 0) {
+	if (!conv) {
 		error(404, "Conversation not found");
 	}
+	await deleteConversationsCascade([conv._id.toString()]);
 
 	return superjsonResponse({ success: true });
 };

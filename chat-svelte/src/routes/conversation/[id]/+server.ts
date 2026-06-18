@@ -33,6 +33,7 @@ import { logger } from "$lib/server/logger.js";
 import { AbortRegistry } from "$lib/server/abortRegistry";
 import { clampStoppedContent } from "$lib/server/stopTruncation";
 import { MetricsServer } from "$lib/server/metrics";
+import { deleteConversationsCascade } from "$lib/server/db/deleteConversations";
 
 // How long a stop marker is protected from the pre-flight cleanup of a new
 // generation. A marker younger than this may still be awaiting observation by
@@ -876,7 +877,9 @@ export async function DELETE({ locals, params }) {
 		error(404, "Conversation not found");
 	}
 
-	await collections.conversations.deleteOne({ _id: conv._id });
+	// FK-ordered cascade (reports/files before the conversation) — a bare deleteOne throws once
+	// the conversation has a report (NOT NULL FK to conversations.id).
+	await deleteConversationsCascade([conv._id.toString()]);
 
 	return new Response();
 }

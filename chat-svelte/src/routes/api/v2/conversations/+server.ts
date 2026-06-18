@@ -5,6 +5,7 @@ import { collections } from "$lib/server/database";
 import { authCondition } from "$lib/server/auth";
 import type { Conversation } from "$lib/types/Conversation";
 import { CONV_NUM_PER_PAGE } from "$lib/constants/pagination";
+import { deleteConversationsCascade } from "$lib/server/db/deleteConversations";
 
 export const GET: RequestHandler = async ({ locals, url }) => {
 	requireAuth(locals);
@@ -40,9 +41,15 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 export const DELETE: RequestHandler = async ({ locals }) => {
 	requireAuth(locals);
 
-	const res = await collections.conversations.deleteMany({
-		...authCondition(locals),
-	});
+	// FK-ordered cascade: resolve the caller's conversation ids, then delete dependents + the
+	// conversations in one transaction. A bare conversations.deleteMany() throws once any of them
+	// has a report (NOT NULL FK) — which is what "Delete all chats" was erroring on.
+	const convs = await collections.conversations
+		.find(authCondition(locals))
+		.project<Pick<Conversation, "_id">>({ _id: 1 })
+		.toArray();
+	const ids = convs.map((c) => c._id.toString());
+	const deletedCount = await deleteConversationsCascade(ids);
 
-	return superjsonResponse(res.deletedCount);
+	return superjsonResponse(deletedCount);
 };
