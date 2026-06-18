@@ -63,3 +63,6 @@ data/pypi/
 
 # Internal working notes (playtest scripts, WIP migration drafts) — never published
 .internal/
+
+# Read-only upstream refs for pattern reference (never copied into our code)
+.vendor-refs/
