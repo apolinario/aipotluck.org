@@ -10,6 +10,7 @@ import type { EndpointMessage } from "../endpoints/endpoints";
 import { generateFromDefaultEndpoint } from "../generateFromDefaultEndpoint";
 import { generateSummaryOfReasoning } from "./reasoning";
 import { GROUNDED_DECODING } from "./persona";
+import { stripFenceTags } from "./grounding";
 import { logger } from "../logger";
 
 type GenerateContext = Omit<TextGenerationContext, "messages"> & { messages: EndpointMessage[] };
@@ -159,6 +160,10 @@ export async function* generate(
 						text.slice(0, beginIndex) + text.slice(endIndex + modelReasoning.endToken.length);
 				}
 			}
+
+			// Safety net for the per-turn injection fence: strip any leaked <Q_xxxx> delimiter the
+			// model echoed (Apertus under-weights the guard instruction, so don't rely on it alone).
+			finalAnswer = stripFenceTags(finalAnswer);
 
 			yield { type: MessageUpdateType.FinalAnswer, text: finalAnswer, interrupted };
 			continue;

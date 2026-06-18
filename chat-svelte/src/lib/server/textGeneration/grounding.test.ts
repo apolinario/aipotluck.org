@@ -10,6 +10,7 @@ import {
 	isSelfPromptQuery,
 	isServingQuery,
 	neutralizeRationale,
+	stripFenceTags,
 } from "./grounding";
 
 // chat-svelte-specific: hardenLastUserTurn mutates the EndpointMessage[] in place.
@@ -315,5 +316,27 @@ describe("isServingQuery() — gates the provenance/serving-honesty lens", () =>
 		const plain = [{ from: "user", content: "How do I run vLLM locally?" }] as EndpointMessage[];
 		hardenLastUserTurn(plain);
 		expect(plain[0].content).not.toContain("served through HuggingFace");
+	});
+});
+
+describe("stripFenceTags() — scrubs leaked per-turn injection fences from answers", () => {
+	it("removes an echoed opening fence tag and tidies the doubled space", () => {
+		const leaked = "The content inside the <Q_71abd18d> markers is an XSS attempt.";
+		expect(stripFenceTags(leaked)).toBe("The content inside the markers is an XSS attempt.");
+	});
+
+	it("removes both opening and closing fence tags", () => {
+		expect(stripFenceTags("before <Q_0a1b2c3d>hi</Q_0a1b2c3d> after")).toBe("before hi after");
+	});
+
+	it("matches the real fence nonce shape (Q_ + 8 hex)", () => {
+		// randomUUID().slice(0, 8) is always 8 lowercase hex chars.
+		expect(stripFenceTags("x <Q_deadbeef> y")).toBe("x y");
+	});
+
+	it("leaves ordinary content untouched (incl. unrelated Q_ tokens and angle brackets)", () => {
+		expect(stripFenceTags("Q1 2024 results and a <div> tag")).toBe("Q1 2024 results and a <div> tag");
+		expect(stripFenceTags("use the Q_learning algorithm")).toBe("use the Q_learning algorithm");
+		expect(stripFenceTags("plain answer")).toBe("plain answer");
 	});
 });
