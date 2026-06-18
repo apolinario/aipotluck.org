@@ -82,7 +82,9 @@ export async function endpointAgent(
 			const submit = await fetch(`${base}/run`, {
 				method: "POST",
 				headers,
-				body: JSON.stringify({ prompt }),
+				// synthesize: a final model call turns the raw step output into a natural-language answer —
+				// the difference between "Done — 7 steps." and an actual reply in a chat surface.
+				body: JSON.stringify({ prompt, synthesize: true }),
 				signal: abortSignal,
 			});
 			if (!submit.ok) {
