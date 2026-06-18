@@ -22,7 +22,11 @@ async function reportsFor(convId: string) {
 		.where(inArray(schema.reports.conversationId, [convId]));
 }
 
-function postReport(args: { locals: App.Locals; id: string; body: unknown }): Promise<Response> {
+async function postReport(args: {
+	locals: App.Locals;
+	id: string;
+	body: unknown;
+}): Promise<Response> {
 	const request = new Request(`http://localhost/conversation/${args.id}/report`, {
 		method: "POST",
 		body: JSON.stringify(args.body),

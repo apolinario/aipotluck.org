@@ -15,6 +15,7 @@ import { adminTokenManager } from "$lib/server/adminToken";
 import { isHostLocalhost } from "$lib/server/isURLLocal";
 import { runWithRequestContext, updateRequestContext } from "$lib/server/requestContext";
 import { config, ready } from "$lib/server/config";
+import { env } from "$env/dynamic/private";
 
 type HandleInput = Parameters<Handle>[0];
 
@@ -33,6 +34,36 @@ export async function handleRequest({ event, resolve }: HandleInput): Promise<Re
 	// Run the entire request handling within the request context
 	return runWithRequestContext(
 		async () => {
+			// Password gate (HTTP Basic Auth), ported 1:1 from the Next.js app (chat/proxy.ts)
+			// so the cutover keeps the exact same wall: "any username / <PREVIEW_PASSWORD>".
+			// Presence of PREVIEW_PASSWORD is the switch — when set, the whole app is gated,
+			// independent of Vercel env. The daily cleanup cron (its own CRON_SECRET Bearer)
+			// and the healthcheck/.well-known must stay reachable, so they're exempt (matched
+			// base-path-agnostically). Remove PREVIEW_PASSWORD to open the deployment; local
+			// dev (no var) is never gated. Runs before everything so pages + /api are covered.
+			const previewPassword = env.PREVIEW_PASSWORD;
+			if (previewPassword) {
+				const p = event.url.pathname;
+				const exempt =
+					p.endsWith("/api/cleanup") ||
+					p.endsWith("/healthcheck") ||
+					p.includes("/.well-known/");
+				if (!exempt) {
+					const header = event.request.headers.get("authorization") ?? "";
+					let authorized = false;
+					if (header.startsWith("Basic ")) {
+						const decoded = atob(header.slice(6)); // "user:pass"
+						authorized = decoded.slice(decoded.indexOf(":") + 1) === previewPassword;
+					}
+					if (!authorized) {
+						return new Response("Authentication required.", {
+							status: 401,
+							headers: { "WWW-Authenticate": 'Basic realm="AI Potluck preview"' },
+						});
+					}
+				}
+			}
+
 			await ready.then(() => {
 				config.checkForUpdates();
 			});
