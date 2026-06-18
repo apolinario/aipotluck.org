@@ -140,12 +140,17 @@ const addEndpoint = (m: Awaited<ReturnType<typeof processModel>>) => ({
 		if (!m.endpoints || m.endpoints.length === 0) {
 			throw new Error("No endpoints configured. This build requires OpenAI-compatible endpoints.");
 		}
-		// Only support OpenAI-compatible endpoints in this build
 		const endpoint = m.endpoints[0];
-		if (endpoint.type !== "openai") {
-			throw new Error("Only 'openai' endpoint type is supported in this build");
+		// OpenAI-compatible models (the catalog default) + the Public AI agent endpoint (Story B:
+		// the hybrid Apertus agent service behind chat-ui's stream — see endpoints/agent/endpointAgent.ts).
+		if (endpoint.type === "openai") {
+			return await endpoints.openai({ ...endpoint, model: m });
 		}
-		return await endpoints.openai({ ...endpoint, model: m });
+		if (endpoint.type === "agent") {
+			return await endpoints.agent({ ...endpoint, model: m });
+		}
+		// Unreachable per the discriminated union (openai|agent both handled above); runtime-only guard.
+		throw new Error(`Unsupported endpoint type '${(endpoint as { type: string }).type}' in this build`);
 	},
 });
 
@@ -418,6 +423,44 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 
 			// Put alias first
 			decorated = [aliasModel, ...decorated];
+		}
+
+		// Public AI agent (Story B): expose the hybrid Apertus agent service as a model in the picker.
+		// Gated by AGENT_SERVICE_URL so it appears ONLY where configured (off by default → safe for the
+		// alpha; setting the env turns it on). The agent endpoint streams the service's /run + SSE into
+		// chat-ui's token stream (plan/steps as a <think> block, verified result as the answer).
+		const agentUrl = ((Reflect.get(config, "AGENT_SERVICE_URL") as string | undefined) ?? "").trim();
+		if (agentUrl) {
+			const agentToken = ((Reflect.get(config, "AGENT_SERVICE_TOKEN") as string | undefined) ?? "").trim();
+			const agentModelName =
+				((Reflect.get(config, "AGENT_SERVICE_MODEL") as string | undefined) ?? "").trim() ||
+				"swiss-ai/Apertus-70B-Instruct-2509";
+			const agentRaw = {
+				id: "apertus-agent",
+				name: "apertus-agent",
+				displayName:
+					((Reflect.get(config, "AGENT_SERVICE_DISPLAY_NAME") as string | undefined) ?? "").trim() ||
+					"Apertus Agent (beta)",
+				description:
+					"Runs your task as a multi-step agent on the fully-open Apertus model (hybrid), sandboxed and metered server-side. Shows its plan + steps as it works.",
+				preprompt: "",
+				endpoints: [
+					{
+						type: "agent" as const,
+						baseURL: agentUrl,
+						apiKey: agentToken,
+						provenanceModel: agentModelName,
+					},
+				],
+				unlisted: false,
+			} as ModelConfig;
+			const agentModel = {
+				...addEndpoint(await processModel(agentRaw)),
+				isRouter: false as boolean,
+				hasInferenceAPI: false,
+			} as ProcessedModel;
+			decorated = [...decorated, agentModel];
+			logger.info({ baseURL: agentUrl }, "[models] Registered Public AI agent model (apertus-agent)");
 		}
 
 		return decorated;
