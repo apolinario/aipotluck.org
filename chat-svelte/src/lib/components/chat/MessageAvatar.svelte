@@ -1,18 +1,19 @@
 <script lang="ts">
-	// Flat, on-theme assistant marker. The previous version was a morphing SVG blob (`#ball`) that,
-	// at 14px with a gaussian blur, rendered as a GLOSSY dark sphere with a specular highlight —
-	// read as "shiny black/white" and clashed with the flat warm-paper editorial theme. Recoloring
-	// the fill / removing the white disc didn't help because the gloss came from the blur+shape.
-	// This is a flat filled dot in the theme ink (currentColor, set via classNames
-	// `text-[var(--ap-ink)]`) — matching the map's flat status dots — that gently pulses while a
-	// response streams. No blur, gloss, white, morph, or shadow.
+	// Minimal, on-theme assistant marker: a thin hollow ink RING. History: the original morphing
+	// SVG blob (`#ball`) rendered at 14px + blur as a glossy dark sphere ("shiny black"); a flat
+	// filled dot fixed the gloss but read too heavy ("hard black circle"). A 1.5px ring (transparent
+	// fill, border in the theme ink via currentColor / classNames `text-[var(--ap-ink)]`) is light
+	// and editorial. It gently pulses while a response streams; honors prefers-reduced-motion.
 	let {
 		animating = false,
 		classNames = "",
 	}: { animating?: boolean; classNames?: string } = $props();
 </script>
 
-<span class={`block bg-current ${classNames}`} class:ap-thinking={animating} aria-hidden="true"
+<span
+	class={`block border-[1.5px] border-current bg-transparent ${classNames}`}
+	class:ap-thinking={animating}
+	aria-hidden="true"
 ></span>
 
 <style>
