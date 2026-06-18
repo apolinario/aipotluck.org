@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { fly } from "svelte/transition";
+	import { prefersReducedMotion } from "svelte/motion";
 	import type { SearchSource } from "$lib/types/Search";
 
 	// Provenance for a search-grounded answer: the numbered open sources the model
@@ -42,6 +44,7 @@
 
 {#if sources?.length}
 	<div
+		in:fly={{ y: 6, duration: prefersReducedMotion.current ? 0 : 360 }}
 		class="mt-1.5 rounded-lg border border-[var(--ap-rule)] bg-[var(--ap-paper)]/40 font-mono text-[10.5px]"
 	>
 		<div class="flex items-center gap-2 px-2.5 py-1.5">

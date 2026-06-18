@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { fly } from "svelte/transition";
+	import { prefersReducedMotion } from "svelte/motion";
 	import { providerDisplay, resolveModelIdentity } from "$lib/identity";
 
 	// The honest provenance line for an assistant answer: what model ran, who made
@@ -32,7 +34,10 @@
 		window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: MODEL_NODES } }));
 </script>
 
+<!-- Provenance streams in on completion (Josh: "feel alive and active") rather than
+     popping static. Mount-only fade/slide — cosmetic; the content is unchanged. -->
 <div
+	in:fly={{ y: 6, duration: prefersReducedMotion.current ? 0 : 360 }}
 	class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10.5px] text-[var(--ap-ink-3)]"
 	title="{identity.short} · {identity.maker} · {identity.openness}{identity.served
 		? ` · served model: ${identity.served}`

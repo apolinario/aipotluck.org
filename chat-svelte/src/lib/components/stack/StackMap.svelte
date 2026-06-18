@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, untrack } from "svelte";
+	import { prefersReducedMotion } from "svelte/motion";
 	import { base } from "$app/paths";
 	import type { Message } from "$lib/types/Message";
 	import MapNode from "./MapNode.svelte";
@@ -55,6 +56,34 @@
 		container.scrollBy({ top: delta, behavior: "smooth" });
 	};
 
+	// Staged reveal: light the answer's real provenance stages one at a time so the
+	// stack "comes alive" after each query (Josh: "feel alive and active") instead of
+	// snapping every highlight on at once. Cosmetic ORDERING only — every stage shown
+	// genuinely ran (search grounds first, then the model answers); a stage never
+	// appears unless it actually happened. Reduced-motion users get the instant set.
+	let revealTimers: ReturnType<typeof setTimeout>[] = [];
+	const clearReveal = () => {
+		revealTimers.forEach(clearTimeout);
+		revealTimers = [];
+	};
+	const stagedReveal = (stages: string[]) => {
+		clearReveal();
+		if (prefersReducedMotion.current) {
+			trailIds = stages;
+			scrollNodeIntoView(stages.at(-1));
+			return;
+		}
+		trailIds = [];
+		stages.forEach((id, i) => {
+			revealTimers.push(
+				setTimeout(() => {
+					trailIds = stages.slice(0, i + 1);
+					scrollNodeIntoView(id);
+				}, i * 460)
+			);
+		});
+	};
+
 	onMount(() => {
 		let cancelled = false;
 		fetch(`${base}/data/stack-map.json`)
@@ -69,6 +98,7 @@
 		// "show on map" → flash the referenced nodes. Only the most recent
 		// highlight stays, so the trail always points at the latest event.
 		const onFlash = (e: Event) => {
+			clearReveal(); // a manual "show on map" overrides any in-flight staged reveal
 			const ids = (e as CustomEvent<{ ids: string[] }>).detail?.ids ?? [];
 			trailIds = ids;
 			requestAnimationFrame(() => scrollNodeIntoView(ids.at(-1)));
@@ -77,6 +107,7 @@
 
 		return () => {
 			cancelled = true;
+			clearReveal();
 			window.removeEventListener("ap:flash", onFlash);
 		};
 	});
@@ -91,6 +122,7 @@
 		const isActive = active;
 		untrack(() => {
 			if (isActive) {
+				clearReveal(); // a fresh turn cancels any pending reveal from the last one
 				wasActive = true;
 				if (trailIds.length === 0) scrollNodeIntoView(TURN_PULSE[0]);
 				return;
@@ -105,11 +137,13 @@
 			// node so the map honestly shows what actually ran (the safety pre-screen,
 			// not Apertus). This is the moderation extension point referenced above.
 			if (lastAnswer.moderation?.flagged) {
-				trailIds = ["toxicbert"];
+				stagedReveal(["toxicbert"]);
 				return;
 			}
+			// Reveal in real pipeline order: open-web search grounds the answer first,
+			// then the model produces it — so the stack lights search → model.
 			const searched = !!lastAnswer.webSearch?.sources?.length;
-			trailIds = searched ? ["websearch", ...TURN_PULSE] : [...TURN_PULSE];
+			stagedReveal(searched ? ["websearch", ...TURN_PULSE] : [...TURN_PULSE]);
 		});
 	});
 
