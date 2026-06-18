@@ -29,9 +29,15 @@ describe("resolveServing", () => {
 		expect(s.cscsServingNote).not.toMatch(/not yet/i);
 	});
 
-	it("derives the HF model page from the served id", () => {
-		expect(resolveServing(CSCS, "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo").checkpointUrl).toBe(
-			"https://huggingface.co/swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo"
+	it("deep-links the served checkpoint only when its HF page is public", () => {
+		// Public 2509 build → deep-link to its model page.
+		expect(resolveServing(HF, "swiss-ai/Apertus-70B-Instruct-2509").checkpointUrl).toBe(
+			"https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509"
+		);
+		// Private CSCS 1.5 research build (401 on HF) → fall back to the public org
+		// page, never a dead deep-link. The checkpoint NAME still shows elsewhere.
+		expect(resolveServing(CSCS, "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools").checkpointUrl).toBe(
+			"https://huggingface.co/swiss-ai"
 		);
 	});
 

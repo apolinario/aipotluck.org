@@ -50,6 +50,19 @@ const KNOWN_HOSTS: Record<string, HostFacts> = {
 	"api.swissai.svc.cscs.ch": { label: "CSCS", sovereign: true },
 };
 
+// Served checkpoints whose HF model page is PUBLIC — safe to deep-link from the
+// "Open weights" control on the provenance map. The CSCS-served 1.5 research
+// builds (sft-dpo / sft-dpo-tools) return 401 on huggingface.co (unpublished), so
+// linking them directly would 401 a public visitor and break the open-weights
+// story. For anything not known-public we fall back to the SwissAI org page,
+// which is always public and on-brand (the served checkpoint NAME still shows in
+// the map copy, so we stay honest about exactly what's running).
+const PUBLIC_MODEL_PAGES = new Set([
+	"swiss-ai/Apertus-70B-Instruct-2509",
+	"swiss-ai/Apertus-8B-Instruct-2509",
+]);
+const SWISSAI_ORG_URL = "https://huggingface.co/swiss-ai";
+
 function hostOf(baseURL?: string): string {
 	try {
 		return baseURL ? new URL(baseURL).host : "";
@@ -65,9 +78,10 @@ export function resolveServing(baseURL?: string, servedModelId?: string): Servin
 	const isSovereign = known?.sovereign ?? false;
 
 	const servedCheckpoint = servedModelId?.split("/").pop() || "the configured model";
-	const checkpointUrl = servedModelId
-		? `https://huggingface.co/${servedModelId}`
-		: "https://huggingface.co/swiss-ai";
+	const checkpointUrl =
+		servedModelId && PUBLIC_MODEL_PAGES.has(servedModelId)
+			? `https://huggingface.co/${servedModelId}`
+			: SWISSAI_ORG_URL;
 
 	if (isSovereign) {
 		// Served directly on sovereign public compute — say so plainly. No
