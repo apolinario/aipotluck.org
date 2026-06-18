@@ -40,7 +40,7 @@ interface SettingsResponse {
 	billingOrganization?: string;
 }
 
-export const load = async ({ fetch, url }) => {
+export const load = async ({ fetch, url, data }) => {
 	const client = useAPIClient({ fetch, origin: url.origin });
 
 	const [settings, models, user, publicConfig, featureFlags, conversationsData] =
@@ -77,6 +77,9 @@ export const load = async ({ fetch, url }) => {
 	});
 
 	return {
+		// Merge parent (+layout.server.ts) data — e.g. servingProvenance — which is
+		// NOT auto-merged into page.data when a universal load is also present.
+		...data,
 		conversations,
 		models,
 		oldModels: [],

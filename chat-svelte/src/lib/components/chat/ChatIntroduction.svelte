@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Model } from "$lib/types/Model";
+	import { page } from "$app/state";
 	import { resolveModelIdentity } from "$lib/identity";
+	import { resolveServing } from "$lib/servingProvenance";
 	import { suggestions } from "$lib/constants/suggestions";
 
 	interface Props {
@@ -13,6 +15,10 @@
 	// The model name is DERIVED from the actually-served model (never hardcoded) so
 	// this line and the per-answer provenance badge can never disagree.
 	const short = $derived(resolveModelIdentity(currentModel.id).short);
+
+	// The serving sentence is likewise config-derived (servingProvenance.ts), so it
+	// states what's actually serving — HF prototype host vs CSCS sovereign compute.
+	const serving = $derived(page.data.servingProvenance ?? resolveServing());
 
 	// The six commitments (Ayah's value framework + the "collaboration" 6th, per
 	// Julie's Web UX spec). Titles only — the values, not the partly-stale
@@ -37,8 +43,7 @@
 			Open-source, sovereign, community-configured.
 		</div>
 		<div class="mt-2 max-w-prose text-center text-[13px] text-balance text-[var(--ap-ink-3)]">
-			Running on {short} by the Swiss National AI Initiative. This prototype is served via HuggingFace;
-			the production stack runs on sovereign public compute. Not a company.
+			Running on {short} by the Swiss National AI Initiative. {serving.heroServingLine}
 		</div>
 
 		<div class="mt-3 flex max-w-md flex-col items-center gap-1 text-center">

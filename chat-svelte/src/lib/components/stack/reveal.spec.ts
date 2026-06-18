@@ -27,4 +27,25 @@ describe("computeRevealStages — the live-stack honesty invariant", () => {
 	it("an empty search result is not a search turn — no websearch node", () => {
 		expect(computeRevealStages({ webSearch: { sources: [] } })).toEqual(["apertus"]);
 	});
+
+	it("lights the sovereign compute cell only when the answer ran on it", () => {
+		// HF-served (default): no compute node — claiming CSCS would be fabricated.
+		expect(computeRevealStages({})).toEqual(["apertus"]);
+		// CSCS-served: the model truly ran on Swiss hardware → credit the compute cell, last.
+		expect(computeRevealStages({}, { servedOnSovereignCompute: true })).toEqual([
+			"apertus",
+			"cscs",
+		]);
+		// Composes with search: search → model → compute.
+		expect(
+			computeRevealStages({ webSearch: { sources: [{}] } }, { servedOnSovereignCompute: true })
+		).toEqual(["websearch", "apertus", "cscs"]);
+	});
+
+	it("a declined turn never lights compute, even when sovereign-served", () => {
+		// The model (and its compute) never ran; only the safety pre-screen did.
+		expect(
+			computeRevealStages({ moderation: { flagged: true } }, { servedOnSovereignCompute: true })
+		).toEqual(["toxicbert"]);
+	});
 });

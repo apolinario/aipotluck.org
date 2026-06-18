@@ -2,10 +2,12 @@
 	import { onMount, untrack } from "svelte";
 	import { prefersReducedMotion } from "svelte/motion";
 	import { base } from "$app/paths";
+	import { page } from "$app/state";
 	import type { Message } from "$lib/types/Message";
 	import MapNode from "./MapNode.svelte";
 	import { type StackMapData, type StackStatus } from "./types";
 	import { MODEL_NODES, computeRevealStages } from "./reveal";
+	import { resolveServing, type ServingProvenance } from "$lib/servingProvenance";
 
 	interface Props {
 		// True while a turn is streaming/submitted — pulses the model node and,
@@ -19,11 +21,33 @@
 	}
 	let { active = false, messages = [], mobileActive = false }: Props = $props();
 
+	// Serving provenance (config-derived; see servingProvenance.ts) — drives both
+	// the header copy AND whether the sovereign compute cell lights per answer.
+	// Falls back to a generic resolve so node tokens never render literally.
+	const serving: ServingProvenance = $derived(page.data.servingProvenance ?? resolveServing());
+
 	// The node every answer genuinely runs through — the model — pulsed while a
-	// turn streams and persisted after. CSCS/LUMI stay static as the production-
-	// target compute layer (this prototype is HF-served, not run on them), and
-	// the router stays a static `building` node — nothing routes today.
+	// turn streams and persisted after. The router stays a static `building` node
+	// (nothing routes today). The CSCS compute cell lights per answer ONLY when we
+	// serve directly on it (serving.isSovereign) — otherwise it stays a static
+	// production-target, because this prototype isn't actually running there.
 	const TURN_PULSE: string[] = [...MODEL_NODES];
+
+	// Replace the serving-dependent tokens in the static map copy with the live,
+	// config-derived facts — so the map states what's ACTUALLY serving (checkpoint,
+	// routing provider, whether CSCS serves this prototype yet) and can't drift.
+	function applyServingTokens(d: StackMapData, sv: ServingProvenance): StackMapData {
+		for (const layer of d.layers) {
+			for (const node of layer.nodes) {
+				node.d = node.d
+					.replaceAll("{servedCheckpoint}", sv.servedCheckpoint)
+					.replaceAll("{cscsServingNote}", sv.cscsServingNote)
+					.replaceAll("{routingProvider}", sv.routingProvider);
+				if (node.id === "apertus") node.url = sv.checkpointUrl;
+			}
+		}
+		return d;
+	}
 
 	// Legend uses the AA text variants (the coverage BAR above keeps the bright fills) so the
 	// "5 live / 4 building / 1 gap" text clears WCAG AA on the map panel.
@@ -90,7 +114,7 @@
 		fetch(`${base}/data/stack-map.json`)
 			.then((r) => r.json())
 			.then((d: StackMapData) => {
-				if (!cancelled) data = d;
+				if (!cancelled) data = applyServingTokens(d, serving);
 			})
 			.catch(() => {
 				/* map is non-critical chrome */
@@ -140,7 +164,9 @@
 			// Which nodes light, in real pipeline order — honest by construction
 			// (declined → safety only; searched → search → model; else model).
 			// The invariant lives in reveal.ts and is unit-tested there.
-			stagedReveal(computeRevealStages(lastAnswer));
+			stagedReveal(
+				computeRevealStages(lastAnswer, { servedOnSovereignCompute: serving.isSovereign })
+			);
 		});
 	});
 
@@ -166,11 +192,10 @@
 			</span>
 		</div>
 		<h2 class="mt-0.5 font-serif text-[24px] text-[var(--ap-ink)]">What's behind every answer</h2>
-		<!-- Honest prototype-vs-production disclosure: the compute nodes below are
-		     the real sovereign target, but this prototype is HF-served. -->
+		<!-- Honest serving disclosure, config-derived (servingProvenance.ts): states
+		     the live serving host — HF prototype host vs CSCS sovereign compute. -->
 		<p class="mt-1 text-[11px] leading-snug text-[var(--ap-ink-3)]">
-			This prototype is served via HuggingFace for speed; the production stack runs on the sovereign
-			compute shown below.
+			{serving.mapHeaderLine}
 		</p>
 	</div>
 

@@ -10,7 +10,7 @@
 					"nm": "model-router",
 					"org": "Arch-Router · Katanemo",
 					"st": "building",
-					"d": "Planned: route each query to the right open model by task (Arch-Router-1.5B). One model serves every answer today; provider routing (LiteLLM) is already live via HuggingFace."
+					"d": "Planned: route each query to the right open model by task (Arch-Router-1.5B). One model serves every answer today; provider routing (LiteLLM) is {routingProvider}."
 				}
 			]
 		},
@@ -23,7 +23,7 @@
 					"nm": "Apertus 1.5",
 					"org": "Swiss AI Initiative (SwissAI)",
 					"st": "live",
-					"d": "Open-weights Swiss foundation model (text-only today; multimodal incoming). Multilingual, open training data. Served checkpoint: Apertus-70B-Instruct-2509.",
+					"d": "Open-weights Swiss foundation model (text-only today; multimodal incoming). Multilingual, open training data. Served checkpoint: {servedCheckpoint}.",
 					"prov": "open weights · HuggingFace · trained on CSCS",
 					"url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
 					"lineage": {
@@ -56,7 +56,7 @@
 					"nm": "CSCS 🇨🇭",
 					"org": "Swiss National Supercomputing Centre",
 					"st": "live",
-					"d": "Sovereign public compute — owned by the public, not a company. Apertus was trained here; it's the production serving target too (this prototype is served via HuggingFace, not yet from CSCS).",
+					"d": "Sovereign public compute — owned by the public, not a company. Apertus was trained here; it's the production serving target too ({cscsServingNote}).",
 					"prov": "public infrastructure · Switzerland"
 				},
 				{

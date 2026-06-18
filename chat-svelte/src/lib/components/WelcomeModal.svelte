@@ -9,7 +9,9 @@
 	//
 	// Voice: flat, declarative, non-anthropomorphic, honest about the alpha (gaps
 	// are framed as open invitations, not hidden).
+	import { page } from "$app/state";
 	import { resolveModelIdentity } from "$lib/identity";
+	import { resolveServing } from "$lib/servingProvenance";
 	import { contributeOpen } from "$lib/stores/contribute";
 
 	interface Props {
@@ -28,6 +30,10 @@
 	let { onStartChatting, onSeeHowBuilt, onSkip, modelId, ecosystemUrl = "/app" }: Props = $props();
 
 	let modelShort = $derived(resolveModelIdentity(modelId).short);
+
+	// Serving sentence is config-derived (servingProvenance.ts) — HF prototype host
+	// vs CSCS sovereign — so the modal never claims a serving path that isn't live.
+	const serving = $derived(page.data.servingProvenance ?? resolveServing());
 </script>
 
 <div
@@ -64,10 +70,8 @@
 
 		<p class="text-[14px] leading-relaxed text-[var(--ap-ink)]/85">
 			Our intelligence comes from {modelShort}, the open model from the Swiss National AI
-			Initiative. This prototype is served via HuggingFace Inference and the Public AI Inference
-			Utility; the production stack is being built on sovereign public compute at CSCS (Switzerland)
-			and LUMI (Finland). ROOST covers safety while OpenMined helps ensure responsible use of data.
-			The Mozilla Data Collective rounds out our stack with locally-sourced data sets.
+			Initiative. {serving.welcomeServingLine} ROOST covers safety while OpenMined helps ensure responsible
+			use of data. The Mozilla Data Collective rounds out our stack with locally-sourced data sets.
 		</p>
 
 		<p class="text-[14px] leading-relaxed text-[var(--ap-ink)]/85">
