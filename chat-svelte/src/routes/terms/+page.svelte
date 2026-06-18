@@ -12,7 +12,7 @@
 
 <main class="mx-auto max-w-2xl px-6 py-16 leading-relaxed text-[var(--ap-ink)]">
 	<a
-		class="font-mono text-[12px] text-[var(--ap-coral)] underline-offset-2 hover:underline"
+		class="font-mono text-[12px] text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 		href="/"
 	>
 		← back to the chat
@@ -61,7 +61,7 @@
 		<p class="text-[var(--ap-ink-2)]">
 			Use the “Report a problem” control beneath any response to flag it — harmful or unsafe
 			content, inaccuracy, or a privacy concern. You can also reach the team at <a
-				class="text-[var(--ap-coral)] underline-offset-2 hover:underline"
+				class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 				href="mailto:contact@aipotluck.org">contact@aipotluck.org</a
 			>.
 		</p>
@@ -72,7 +72,7 @@
 		<p class="text-[var(--ap-ink-2)]">
 			Conversations are stored to operate the service, and guest conversations are automatically
 			deleted after 30 days. Do not enter sensitive personal information. See the <a
-				class="text-[var(--ap-coral)] underline-offset-2 hover:underline"
+				class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 				href="/privacy">Privacy</a
 			> page for details.
 		</p>

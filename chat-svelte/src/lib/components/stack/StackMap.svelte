@@ -23,10 +23,12 @@
 	// the router stays a static `building` node — nothing routes today.
 	const TURN_PULSE = ["apertus"];
 
+	// Legend uses the AA text variants (the coverage BAR above keeps the bright fills) so the
+	// "5 live / 4 building / 1 gap" text clears WCAG AA on the map panel.
 	const COVERAGE_LEGEND: { key: StackStatus; label: string; mark: string; color: string }[] = [
-		{ key: "live", label: "live", mark: "●", color: "var(--ap-live)" },
-		{ key: "building", label: "building", mark: "●", color: "var(--ap-building)" },
-		{ key: "gap", label: "gap", mark: "●", color: "var(--ap-gap)" },
+		{ key: "live", label: "live", mark: "●", color: "var(--ap-live-text)" },
+		{ key: "building", label: "building", mark: "●", color: "var(--ap-building-text)" },
+		{ key: "gap", label: "gap", mark: "●", color: "var(--ap-gap-text)" },
 		{ key: "wanted", label: "open invitations", mark: "○", color: "var(--ap-ink-3)" },
 	];
 

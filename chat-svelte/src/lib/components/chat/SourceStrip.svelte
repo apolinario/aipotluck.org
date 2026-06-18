@@ -39,13 +39,15 @@
 			>
 				<span class="size-[6px] shrink-0 rounded-full" style="background:var(--ap-live);"></span>
 				<span>
-					{sources.length} open source{sources.length === 1 ? "" : "s"}{date ? ` · as of ${date}` : ""}
+					{sources.length} open source{sources.length === 1 ? "" : "s"}{date
+						? ` · as of ${date}`
+						: ""}
 				</span>
 				<span class="text-[var(--ap-ink-3)]">{open ? "▾" : "▸"}</span>
 			</button>
 			<button
 				type="button"
-				class="ml-auto text-[var(--ap-coral)] underline-offset-2 hover:underline"
+				class="ml-auto text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 				onclick={flashWebsearch}
 			>
 				show on map ↗

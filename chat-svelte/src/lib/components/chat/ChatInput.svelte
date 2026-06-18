@@ -272,7 +272,7 @@
 		<div
 			class="mx-2 mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)]/60 px-3 py-2 font-mono text-[11px] text-[var(--ap-ink-2)]"
 		>
-			<IconGlobe class="size-3.5 shrink-0 text-[var(--ap-coral)]" />
+			<IconGlobe class="size-3.5 shrink-0 text-[var(--ap-coral-text)]" />
 			<span>This may need current info beyond the model's training.</span>
 			<div class="ml-auto flex items-center gap-1.5">
 				<button
@@ -295,7 +295,7 @@
 		<div
 			class="mx-2 mt-2 flex items-center gap-2 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)]/60 px-3 py-2 font-mono text-[11px] text-[var(--ap-ink-2)]"
 		>
-			<IconGlobe class="size-3.5 shrink-0 animate-pulse text-[var(--ap-coral)]" />
+			<IconGlobe class="size-3.5 shrink-0 animate-pulse text-[var(--ap-coral-text)]" />
 			<span>Searching open sources — Wikipedia + Marginalia…</span>
 		</div>
 	{/if}
@@ -303,6 +303,7 @@
 		rows="1"
 		tabindex="0"
 		inputmode="text"
+		aria-label="Message AI Potluck"
 		class="scrollbar-custom max-h-[4lh] w-full resize-none overflow-x-hidden overflow-y-auto border-0 bg-transparent px-2.5 py-2.5 outline-hidden focus:ring-0 focus-visible:ring-0 sm:px-3 md:max-h-[8lh]"
 		class:text-gray-400={disabled}
 		bind:value
@@ -428,9 +429,9 @@
 					aria-label="Search open sources for current info"
 					title="Ground the answer on open sources (Wikipedia + Marginalia)"
 					class="flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors sm:h-7 {webSearchEnabled
-						? 'border-[var(--ap-coral)]/40 bg-[var(--ap-coral)]/10 text-[var(--ap-coral)]'
+						? 'border-[var(--ap-coral)]/40 bg-[var(--ap-coral)]/10 text-[var(--ap-coral-text)]'
 						: webSearchAffordance
-							? 'animate-pulse border-[var(--ap-coral)]/50 bg-transparent text-[var(--ap-coral)]'
+							? 'animate-pulse border-[var(--ap-coral)]/50 bg-transparent text-[var(--ap-coral-text)]'
 							: 'border-transparent bg-transparent text-[var(--ap-ink-3)] hover:bg-[var(--ap-ink)]/5 hover:text-[var(--ap-ink)]'}"
 				>
 					{#if webSearching}

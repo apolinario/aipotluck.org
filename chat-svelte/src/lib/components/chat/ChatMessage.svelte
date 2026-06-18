@@ -486,12 +486,12 @@
 						onClick={() => {
 							isCopied = true;
 						}}
-						classNames="btn rounded-xs p-1 text-sm text-gray-400 hover:text-gray-500 focus:ring-0 dark:text-gray-400 dark:hover:text-gray-300"
+						classNames="btn inline-flex min-h-7 min-w-7 items-center justify-center rounded-xs p-1 text-sm text-gray-400 hover:text-gray-500 focus:ring-0 dark:text-gray-400 dark:hover:text-gray-300"
 						value={contentWithoutThink}
 						iconClassNames="text-xs"
 					/>
 					<button
-						class="btn rounded-xs p-1 text-xs text-gray-400 hover:text-gray-500 focus:ring-0 dark:text-gray-400 dark:hover:text-gray-300"
+						class="btn inline-flex min-h-7 min-w-7 items-center justify-center rounded-xs p-1 text-xs text-gray-400 hover:text-gray-500 focus:ring-0 dark:text-gray-400 dark:hover:text-gray-300"
 						title="Retry"
 						type="button"
 						onclick={() => {

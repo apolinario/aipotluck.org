@@ -33,7 +33,7 @@
 	<span>Flagged by {source}</span>
 	<button
 		type="button"
-		class="text-[var(--ap-coral)] underline-offset-2 hover:underline"
+		class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 		onclick={flashSafety}
 	>
 		show on map ↗

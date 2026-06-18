@@ -62,3 +62,12 @@ export const STATUS_VAR: Record<StackStatus, string> = {
 	gap: "var(--ap-gap)",
 	wanted: "var(--ap-wanted)",
 };
+
+// AA-compliant variants for status text (labels + coverage legend). The bright STATUS_VAR
+// hues stay for fills/dots/borders; these darker tints keep the LABEL text readable (WCAG AA).
+export const STATUS_TEXT_VAR: Record<StackStatus, string> = {
+	live: "var(--ap-live-text)",
+	building: "var(--ap-building-text)",
+	gap: "var(--ap-gap-text)",
+	wanted: "var(--ap-ink-3)",
+};

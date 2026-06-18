@@ -40,7 +40,7 @@
 	<span>{identity.short} · {identity.makerShort} · {providerName}</span>
 	<button
 		type="button"
-		class="text-[var(--ap-coral)] underline-offset-2 hover:underline"
+		class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 		onclick={flashModel}
 	>
 		show on map ↗

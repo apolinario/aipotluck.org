@@ -16,7 +16,7 @@
 
 <main class="mx-auto max-w-2xl px-6 py-16 leading-relaxed text-[var(--ap-ink)]">
 	<a
-		class="font-mono text-[12px] text-[var(--ap-coral)] underline-offset-2 hover:underline"
+		class="font-mono text-[12px] text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 		href="/"
 	>
 		← back to the chat
@@ -48,7 +48,7 @@
 	</section>
 
 	<p class="mt-10 font-mono text-[12px] text-[var(--ap-ink-3)]">
-		See also <a class="text-[var(--ap-coral)] underline-offset-2 hover:underline" href="/terms"
+		See also <a class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline" href="/terms"
 			>Terms &amp; Safety</a
 		>.
 	</p>

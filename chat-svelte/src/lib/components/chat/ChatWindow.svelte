@@ -669,9 +669,14 @@
 	     inside the welcome overlay — so its Modal backdrop intro plays correctly. -->
 	<ContributeDialog />
 	<div
+		role="main"
+		aria-label="Chat"
 		class="pointer-events-auto relative z-[-1] min-h-0 min-w-0 flex-1"
 		class:max-md:hidden={mobileTab === "map"}
 	>
+		<!-- One per-page H1 for the screen-reader/document outline (the visible greeting is
+		     decorative display text); visually hidden so the editorial layout is unchanged. -->
+		<h1 class="sr-only">AI Potluck — open-source, sovereign AI chat</h1>
 		{#if showWelcome}
 			<WelcomeModal
 				modelId={currentModel.id}

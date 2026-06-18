@@ -372,13 +372,24 @@ h2 {
 	--ap-paper-3: #d0c9bf;
 	--ap-ink: #0b1e2d;
 	--ap-ink-2: #3a4f5e;
-	--ap-ink-3: #687a84;
+	--ap-ink-3: #52646d; /* muted text — darkened from #687a84 to clear WCAG AA (3.72→5.15:1 on the map panel) */
 	--ap-rule: rgba(11, 30, 45, 0.16);
 	--ap-live: #5b9e8a;
 	--ap-building: #d4a255;
 	--ap-gap: #c85566;
-	--ap-wanted: #687a84;
+	--ap-wanted: #52646d;
 	--ap-coral: #ff4c24;
+	/* AA-compliant TEXT variants of the status hues. The bright fills above stay for the
+	   dots, left-borders, coverage bar and glow; these darker tints are used ONLY for the
+	   status LABEL text + the coverage legend, which otherwise fail WCAG AA on paper (the
+	   amber "BUILDING" label was 1.82:1). All clear 4.5:1 on both paper and the map panel. */
+	--ap-live-text: #346757;
+	--ap-building-text: #7d5a0e;
+	--ap-gap-text: #a3394a;
+	/* Coral for TEXT/links — the vivid brand coral (#ff4c24) is only 2.63:1 on paper, below
+	   WCAG AA, so link text uses this deeper coral-red (4.81:1). The bright --ap-coral stays
+	   for non-text accents (the live dot, search-active border/fill, CTA). */
+	--ap-coral-text: #b82f0e;
 	--ap-map-grad-1: #eeeae3;
 	--ap-map-grad-2: #e3ded7;
 	/* Subtle card shadow, copied 1:1 from prod globals.css — used by the empty-state
@@ -402,10 +413,16 @@ h2 {
 	--ap-paper-3: #233b4d;
 	--ap-ink: #e7e2da; /* foreground promoted to warm paper-cream */
 	--ap-ink-2: #a7b4bd;
-	--ap-ink-3: #74838d;
+	--ap-ink-3: #93a1aa; /* lifted for AA on the dark panel (light-on-dark) */
 	--ap-rule: rgba(231, 226, 218, 0.14);
 	--ap-live: #6cae98;
 	--ap-gap: #d56b7b;
+	/* On dark, the status hues are already light-on-dark and clear AA, so the text
+	   variants map to the (bright) fills rather than darkening them. */
+	--ap-live-text: #6cae98;
+	--ap-building-text: #d4a255;
+	--ap-gap-text: #d56b7b;
+	--ap-coral-text: #ff6b47; /* coral links on the dark panel (light-on-dark clears AA) */
 	--ap-map-grad-1: #10222f;
 	--ap-map-grad-2: #0b1a25;
 }

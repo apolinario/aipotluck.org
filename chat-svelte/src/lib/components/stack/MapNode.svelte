@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChevronDown from "~icons/lucide/chevron-down";
 	import Sparkline from "./Sparkline.svelte";
-	import { STATUS_LABEL, STATUS_VAR, type StackNode } from "./types";
+	import { STATUS_LABEL, STATUS_VAR, STATUS_TEXT_VAR, type StackNode } from "./types";
 
 	interface Props {
 		node: StackNode;
@@ -19,6 +19,8 @@
 
 	let isWanted = $derived(node.st === "wanted");
 	let color = $derived(STATUS_VAR[node.st]);
+	// AA-compliant text colour for the status LABEL (the bright `color` stays on the border).
+	let textColor = $derived(STATUS_TEXT_VAR[node.st]);
 	let atlas = $derived(node.atlas);
 
 	let buttonClass = $derived(
@@ -42,6 +44,8 @@
 	class={buttonClass}
 	style={buttonStyle}
 	data-node-id={node.id}
+	aria-expanded={open}
+	aria-label="{node.nm} — {node.st}. Tap to {open ? 'collapse' : 'expand'} details"
 	onclick={() => (open = !open)}
 >
 	<div class="flex items-start justify-between gap-2">
@@ -59,7 +63,7 @@
 		</div>
 		<span
 			class="shrink-0 font-mono text-[10px] tracking-[0.14em] uppercase"
-			style="color:{isWanted ? 'var(--ap-coral)' : color};"
+			style="color:{isWanted ? 'var(--ap-coral-text)' : textColor};"
 		>
 			{STATUS_LABEL[node.st]}
 		</span>
@@ -88,9 +92,13 @@
 						{/if}
 					</div>
 					<div class="font-mono text-[10px] leading-[1.7] text-[var(--ap-ink-3)]">
-						{#if atlas.contributors != null}<span>{compact.format(atlas.contributors)} contributors · </span>{/if}
+						{#if atlas.contributors != null}<span
+								>{compact.format(atlas.contributors)} contributors ·
+							</span>{/if}
 						{#if atlas.language}<span>{atlas.language} · </span>{/if}
-						{#if atlas.commits90d != null}<span>{compact.format(atlas.commits90d)} commits/90d · </span>{/if}
+						{#if atlas.commits90d != null}<span
+								>{compact.format(atlas.commits90d)} commits/90d ·
+							</span>{/if}
 						<span>{atlas.openness}</span>
 						{#if atlas.license}<span> · {atlas.license}</span>{/if}
 					</div>
@@ -98,7 +106,9 @@
 				</div>
 			{:else}
 				<div class="font-mono text-[10px] leading-[1.7] text-[var(--ap-ink-3)]">
-					{isWanted ? "open projects exist for this" : (node.prov ?? "provenance on the live stack")}
+					{isWanted
+						? "open projects exist for this"
+						: (node.prov ?? "provenance on the live stack")}
 				</div>
 			{/if}
 
@@ -118,7 +128,7 @@
 						<div class="flex flex-wrap gap-3 font-mono text-[10px]">
 							{#each node.lineage.links as l}
 								<a
-									class="text-[var(--ap-coral)] underline-offset-2 hover:underline"
+									class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 									href={l.url}
 									onclick={(e) => e.stopPropagation()}
 									rel="noreferrer"
@@ -142,7 +152,7 @@
 				{/if}
 				{#if isWanted || node.st === "gap"}
 					<a
-						class="font-semibold text-[var(--ap-coral)] underline-offset-2 hover:underline"
+						class="font-semibold text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 						href="mailto:contact@aipotluck.org?subject={encodeURIComponent(
 							`Get involved: ${node.nm}`
 						)}"
