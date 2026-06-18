@@ -11,6 +11,12 @@ Three phases:
 2. **Gap analysis** — heatmap overlay showing ecosystem health (healthy/fragile/gap)
 3. **Crowdsourcing** — votable issues, project submissions, gap adoption
 
+## Chat (`aipotluck.org/chat`)
+
+The chat lives in **`chat-svelte/`** — a SvelteKit fork of HuggingFace's chat-ui (persistence on Postgres/Neon, Apertus served via the HF router). **This is the canonical chat and what production `/chat` serves — make chat changes here.**
+
+The earlier Vercel/Next.js chat (a `vercel/ai-chatbot` fork) is **frozen/legacy**: removed from this branch, preserved on the `ai-potluck-chat` branch. Don't build new work on it.
+
 ## Tech Stack
 
 - **Website** (`app/`): Vanilla JS + CSS, built with Vite (pnpm for package management)

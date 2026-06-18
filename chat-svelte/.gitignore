@@ -16,8 +16,7 @@ gcp-*.json
 /db
 models/*
 !models/add-your-models-here.txt
-.claude/*
-!.claude/skills/
+.claude/
 .vercel
 
 # Playwright mobile-viewport screenshots (dev-only)
