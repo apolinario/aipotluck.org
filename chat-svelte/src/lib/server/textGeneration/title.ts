@@ -3,14 +3,39 @@ import { generateFromDefaultEndpoint } from "$lib/server/generateFromDefaultEndp
 import { logger } from "$lib/server/logger";
 import { MessageUpdateType, type MessageUpdate } from "$lib/types/MessageUpdate";
 import type { Conversation } from "$lib/types/Conversation";
+import type { Message } from "$lib/types/Message";
 import { getReturnFromGenerator } from "$lib/utils/getReturnFromGenerator";
+
+// A user turn was declined by the safety pre-screen if its assistant response carries
+// moderation.flagged (the model never ran — see the conversation POST route). Title gen runs
+// on a LATER clean turn but always titled from the FIRST user message, so a flagged/toxic
+// opening message would become the conversation title — surfacing toxic text in the sidebar and
+// feeding it to the title model. conv.messages is chronological, so a turn's assistant reply is
+// the next message; that's the reliable signal (adjacency on tree order would misattribute).
+function userTurnWasDeclined(messages: Message[], index: number): boolean {
+	const reply = messages[index + 1];
+	return reply?.from === "assistant" && Boolean(reply.moderation?.flagged);
+}
+
+// First user message whose turn produced a real (non-declined) answer. undefined if every turn so
+// far was moderation-declined — then the conversation keeps its "New Chat" title rather than being
+// named after flagged content.
+export function firstAnsweredUserMessage(messages: Message[]): Message | undefined {
+	for (let i = 0; i < messages.length; i++) {
+		const m = messages[i];
+		if (m.from !== "user") continue;
+		if (userTurnWasDeclined(messages, i)) continue;
+		return m;
+	}
+	return undefined;
+}
 
 export async function* generateTitleForConversation(
 	conv: Conversation,
 	locals: App.Locals | undefined
 ): AsyncGenerator<MessageUpdate, undefined, undefined> {
 	try {
-		const userMessage = conv.messages.find((m) => m.from === "user");
+		const userMessage = firstAnsweredUserMessage(conv.messages);
 		// HACK: detect if the conversation is new
 		if (conv.title !== "New Chat" || !userMessage) return;
 

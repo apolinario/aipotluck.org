@@ -47,8 +47,9 @@
 	aria-label="Ball mask"
 >
 	<g clip-path="url(#a)">
-		<!-- circular mask -->
-		<path d="M12 6A6 6 0 1 0 0 6a6 6 0 0 0 12 0Z" fill="#fff" />
+		<!-- No solid disc behind the blob: a stark white circle read as "shiny white" against the
+		     warm-paper theme. The blob below is masked to the circle and inherits currentColor
+		     (--ap-ink), so it renders as a soft ink morph on the paper background — no white. -->
 		<mask id="b" style="mask-type:luminance" x="0" y="0" width="12" height="12">
 			<path d="M12 6A6 6 0 1 0 0 6a6 6 0 0 0 12 0Z" fill="#fff" />
 		</mask>
