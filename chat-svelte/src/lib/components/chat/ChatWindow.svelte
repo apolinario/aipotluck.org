@@ -2,6 +2,7 @@
 	import type { Message, MessageFile } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
 	import { isRecencyQuery } from "$lib/search/recency";
+	import { shouldRunSearch, usesModelClassifier } from "$lib/search/triggerStrategy";
 	import { onDestroy, onMount, tick } from "svelte";
 
 	import ArtifactPanel from "./ArtifactPanel.svelte";
@@ -181,6 +182,33 @@
 		}
 	}
 
+	// Model-driven search decision: when the recency heuristic abstains and the
+	// trigger strategy enables it, ask the server-side classifier whether this
+	// turn needs open-web grounding (see $lib/search/triggerStrategy +
+	// server/search/searchDecision). Best-effort — a failure means "don't search".
+	async function classifyNeedsSearch(query: string): Promise<boolean> {
+		try {
+			const res = await fetch(`${base}/api/search/classify?q=${encodeURIComponent(query)}`);
+			if (!res.ok) return false;
+			const { shouldSearch } = (await res.json()) as { shouldSearch?: boolean };
+			return !!shouldSearch;
+		} catch {
+			return false;
+		}
+	}
+
+	// Resolve whether a turn searches: heuristic fast-path, else (strategy
+	// permitting) the model classifier arbitrates. Shared by the composer send
+	// flow and the starter-prompt path so both honor the active strategy.
+	async function decideSearch(text: string): Promise<boolean> {
+		const heuristicHit = isRecencyQuery(text);
+		let classifierHit = false;
+		if (!heuristicHit && usesModelClassifier()) {
+			classifierHit = await classifyNeedsSearch(text);
+		}
+		return shouldRunSearch({ heuristicHit, classifierHit });
+	}
+
 	const handleSubmit = async () => {
 		// Guard on the trimmed draft, not just `!draft`: a whitespace-only draft ("   \n") is
 		// truthy, so a bare `!draft` let the send button submit blank turns (Enter already trims).
@@ -189,10 +217,12 @@
 		const text = draft;
 		draft = "";
 
-		// The recency heuristic decides whether this turn needs open-web grounding
-		// (same logic as the starter-prompt path below). No manual opt-in.
+		// The system decides whether this turn needs open-web grounding (heuristic
+		// fast-path, else the model classifier — see decideSearch). No manual
+		// opt-in. The classifier round-trip stays quiet; the "Searching…" spinner
+		// only shows once we commit to actually searching.
 		let searchContext: SearchContext | undefined;
-		if (isRecencyQuery(text)) {
+		if (await decideSearch(text)) {
 			webSearching = true;
 			try {
 				searchContext = await runOpenSearch(text);
@@ -760,10 +790,11 @@
 					<ChatIntroduction
 						{currentModel}
 						onmessage={async (content) => {
-							// Match prod (suggested-actions.tsx): a recency starter prompt (the
-							// EU AI Act one) routes straight through open-web search on click —
-							// one tap demos search + the map flash — while other starters just send.
-							if (isRecencyQuery(content)) {
+							// Same decision as the composer: a starter that needs current info
+							// (the EU AI Act one via the heuristic, or any starter the model
+							// classifier flags) routes through open-web search — one tap demos
+							// search + the map flash — while timeless starters just send.
+							if (await decideSearch(content)) {
 								const searchContext = await runOpenSearch(content);
 								onmessage?.(content, { searchContext });
 							} else {
