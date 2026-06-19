@@ -20,6 +20,7 @@ loudly rather than producing a bogus "no effect".
 """
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -29,8 +30,10 @@ HERE = Path(__file__).parent
 PERSONA_TS = "chat-svelte/src/lib/server/textGeneration/persona.ts"
 PERSONA_REF = "fork/chat-ui-migration"
 
-# resolveModelIdentity(Apertus) values for the served checkpoint.
-SERVED_ID = "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools"
+# resolveModelIdentity values for the served checkpoint. Sourced from env so the
+# exact (pre-release) checkpoint is not named in this public tree; set APERTUS_MODEL
+# locally to regenerate against the real served model.
+SERVED_ID = os.environ.get("APERTUS_MODEL", "")
 # {training} pinned verbatim from APERTUS_TRAINING in identity.ts (verified
 # against fork/chat-ui-migration). Non-load-bearing for caving (identity para
 # only); pinned rather than regex-extracted to avoid brittle parsing.
@@ -40,9 +43,9 @@ APERTUS_TRAINING = (
     "say this honestly — do NOT claim the details are undisclosed"
 )
 TOKENS = {
-    "{model}": "Apertus 1.5",
+    "{model}": "Apertus",
     "{maker}": "the Swiss AI Initiative (SwissAI)",
-    "{served}": SERVED_ID.split("/")[-1],  # Apertus-1.5-8B-Instruct-sft-dpo-tools
+    "{served}": SERVED_ID.split("/")[-1],  # the served checkpoint's short name (from env)
     "{training}": APERTUS_TRAINING,
 }
 

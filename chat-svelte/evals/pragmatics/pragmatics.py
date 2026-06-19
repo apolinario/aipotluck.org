@@ -446,8 +446,8 @@ def cond_reframe2_vote(scenario: str, *, return_trace: bool = False,
 # the walk-or-drive failure vs the bare prompt? It also tells us whether a fix
 # must sit OUTSIDE the persona'd call (it does, if persona makes it worse).
 #
-# persona_prompt.txt is a verbatim snapshot of buildPersonaPrompt(
-# "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools") from chat-svelte
+# persona_prompt.txt is a verbatim snapshot of buildPersonaPrompt(<served model>)
+# from chat-svelte
 # src/lib/server/textGeneration/persona.ts (branch chat-ui-migration, 2026-06-18).
 # Decoding is held at the harness default (temp 0) to isolate the prompt
 # variable; prod additionally applies GROUNDED_DECODING (temp 0.1 + penalties).

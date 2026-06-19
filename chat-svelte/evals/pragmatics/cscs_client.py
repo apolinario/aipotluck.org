@@ -17,11 +17,11 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 
-# CSCS-direct serving endpoint (Apertus 1.5 lives here, not on the HF router).
+# CSCS-direct serving endpoint (the served model lives here, not on the HF router).
 BASE_URL = os.environ.get("CSCS_BASE_URL", "https://api.swissai.svc.cscs.ch/v1")
-# Default to the model production actually serves, so an unset run tests what
-# users get — not a stale checkpoint. Override with APERTUS_MODEL to probe others.
-DEFAULT_MODEL = os.environ.get("APERTUS_MODEL", "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools")
+# The served checkpoint is sourced from env (not named in this public tree, as it
+# is a pre-release build). Set APERTUS_MODEL to the model production serves.
+DEFAULT_MODEL = os.environ.get("APERTUS_MODEL", "")
 CACHE_DIR = Path(__file__).parent / ".cache"
 
 

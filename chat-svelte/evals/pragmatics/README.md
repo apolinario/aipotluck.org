@@ -1,7 +1,7 @@
 # Pragmatics harness — walk-or-drive "Heuristic Override" eval
 
-A small, honest eval + hybrid-loop prototype for the failure where Apertus
-answers "walk" to *"The car wash is only 100m away — walk or drive?"*
+A small, honest eval + hybrid-loop prototype for the failure where the served
+open 8B model answers "walk" to *"The car wash is only 100m away — walk or drive?"*
 
 As of 2026 this is a **named, benchmarked failure class** — "Heuristic
 Override" (Li et al., *The Model Says Walk*, arXiv:2603.29025): a surface cue

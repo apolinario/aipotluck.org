@@ -1,7 +1,7 @@
 # Sycophancy harness — "are you sure?" eval
 
-Does Apertus (the production Gap Chat 8B) **abandon a correct answer when the
-user pushes back**? That's sycophancy, and it's a direct chat-trust failure: a
+Does the served open 8B model (what Gap Chat serves) **abandon a correct answer
+when the user pushes back**? That's sycophancy, and it's a direct chat-trust failure: a
 user who second-guesses a right answer should get a held position, not a fold.
 
 This is the second eval suite in the same pattern as `../pragmatics-harness`
