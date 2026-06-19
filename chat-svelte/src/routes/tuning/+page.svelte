@@ -9,6 +9,16 @@
 
 	const cur = $derived(data.current);
 	const def = $derived(data.defaults);
+
+	// Controlled values for the prompt fields so "Reset to default" (= clear → use the
+	// built-in default) is one click. Initialized ONCE from the loaded overrides — they
+	// shouldn't re-sync on save (the editor keeps their in-progress text).
+	// svelte-ignore state_referenced_locally
+	let persona = $state(data.current.persona ?? "");
+	// svelte-ignore state_referenced_locally
+	let grounding = $state(data.current.grounding ?? "");
+	// svelte-ignore state_referenced_locally
+	let starters = $state(data.current.starters?.join("\n") ?? "");
 </script>
 
 <svelte:head><title>Gap Chat · tuning</title></svelte:head>
@@ -27,13 +37,17 @@
 				Last edited by {cur.editedBy} · {cur.editedAt?.replace("T", " ").slice(0, 16)} UTC
 			</p>
 		{/if}
-		{#if form?.saved}
+		{#if form?.error}
+			<p role="alert" class="rounded bg-red-100 px-3 py-2 text-red-800">Error: {form.error}</p>
+		{:else if form?.saved && form.warnings?.length}
+			<p role="status" aria-live="polite" class="rounded bg-yellow-100 px-3 py-2 text-yellow-900">
+				Saved. Heads up — your prompt no longer mentions: <strong>{form.warnings.join(", ")}</strong
+				>. If that's intentional, all good; if not, use “Reset to default”.
+			</p>
+		{:else if form?.saved}
 			<p role="status" aria-live="polite" class="rounded bg-green-100 px-3 py-2 text-green-800">
 				Saved.
 			</p>
-		{/if}
-		{#if form?.error}
-			<p role="alert" class="rounded bg-red-100 px-3 py-2 text-red-800">Error: {form.error}</p>
 		{/if}
 	</header>
 
@@ -49,8 +63,16 @@
 			};
 		}}
 	>
-		<label class="block space-y-1">
-			<span class="font-medium">System persona</span>
+		<div class="space-y-1">
+			<div class="flex items-baseline justify-between">
+				<span class="font-medium">System persona</span>
+				<button
+					type="button"
+					class="text-xs text-gray-500 hover:underline disabled:opacity-40"
+					disabled={!persona}
+					onclick={() => (persona = "")}>Reset to default</button
+				>
+			</div>
 			<span class="block text-xs text-gray-500"
 				>Use tokens <code>{"{model}"}</code> <code>{"{maker}"}</code> <code>{"{served}"}</code>
 				<code>{"{training}"}</code> for the identity — they're auto-filled from the live served
@@ -61,16 +83,24 @@
 				aria-label="System persona prompt"
 				rows="14"
 				class="w-full rounded border p-2 font-mono text-xs"
-				value={cur.persona ?? ""}
+				bind:value={persona}
 			></textarea>
 			<details class="text-xs text-gray-500">
 				<summary class="cursor-pointer">Show default</summary>
 				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.persona}</pre>
 			</details>
-		</label>
+		</div>
 
-		<label class="block space-y-1">
-			<span class="font-medium">Search grounding prompt</span>
+		<div class="space-y-1">
+			<div class="flex items-baseline justify-between">
+				<span class="font-medium">Search grounding prompt</span>
+				<button
+					type="button"
+					class="text-xs text-gray-500 hover:underline disabled:opacity-40"
+					disabled={!grounding}
+					onclick={() => (grounding = "")}>Reset to default</button
+				>
+			</div>
 			<span class="block text-xs text-gray-500"
 				>Tokens <code>{"{asOf}"}</code> and <code>{"{evidence}"}</code> are auto-filled with the
 				retrieved sources.</span
@@ -80,13 +110,13 @@
 				aria-label="Search grounding prompt"
 				rows="8"
 				class="w-full rounded border p-2 font-mono text-xs"
-				value={cur.grounding ?? ""}
+				bind:value={grounding}
 			></textarea>
 			<details class="text-xs text-gray-500">
 				<summary class="cursor-pointer">Show default</summary>
 				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.grounding}</pre>
 			</details>
-		</label>
+		</div>
 
 		<fieldset class="space-y-2">
 			<legend class="font-medium">Decoding (blank = default)</legend>
@@ -144,23 +174,32 @@
 					/></label
 				>
 			</div>
+			<p class="text-xs text-gray-500">Clear a box to use its default.</p>
 		</fieldset>
 
-		<label class="block space-y-1">
-			<span class="font-medium">Starter prompts</span>
+		<div class="space-y-1">
+			<div class="flex items-baseline justify-between">
+				<span class="font-medium">Starter prompts</span>
+				<button
+					type="button"
+					class="text-xs text-gray-500 hover:underline disabled:opacity-40"
+					disabled={!starters}
+					onclick={() => (starters = "")}>Reset to default</button
+				>
+			</div>
 			<span class="block text-xs text-gray-500">One per line; blank = the defaults below.</span>
 			<textarea
 				name="starters"
 				aria-label="Starter prompts, one per line"
 				rows="5"
 				class="w-full rounded border p-2 text-xs"
-				value={cur.starters?.join("\n") ?? ""}
+				bind:value={starters}
 			></textarea>
 			<details class="text-xs text-gray-500">
 				<summary class="cursor-pointer">Show default</summary>
 				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.starters.join("\n")}</pre>
 			</details>
-		</label>
+		</div>
 
 		<button
 			type="submit"

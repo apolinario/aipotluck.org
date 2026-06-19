@@ -41,6 +41,27 @@ function num(v: FormDataEntryValue | null): number | undefined {
 	return Number.isFinite(n) ? n : undefined;
 }
 
+// Non-blocking safety net: if an OVERRIDDEN persona/grounding no longer mentions key
+// safety markers, warn (never block — Laura owns this language and may reword
+// deliberately). The hard moderation gate (toxic-bert / child-safety) is separate and
+// not tunable, so this is about the in-conversation guidance only.
+function safetyWarnings(t: Tuning): string[] {
+	const w: string[] = [];
+	if (t.persona) {
+		const p = t.persona.toLowerCase();
+		if (!/crisis|suicide|988|helpline|findahelpline/.test(p))
+			w.push("crisis / self-harm resources");
+		if (!/machine|ai system|not a person|non-anthropomorphic/.test(p))
+			w.push("the non-anthropomorphic voice rule");
+		if (!/\{model\}|\{maker\}|identity|developed by/.test(p)) w.push("model-identity guidance");
+	}
+	if (t.grounding) {
+		const g = t.grounding.toLowerCase();
+		if (!/cite|\[1\]|\[n\]|sources/.test(g)) w.push("cite-your-sources grounding");
+	}
+	return w;
+}
+
 export const actions: Actions = {
 	save: async ({ request, locals }) => {
 		requireAdmin(locals);
@@ -71,7 +92,7 @@ export const actions: Actions = {
 
 		try {
 			const saved = await setTuning(next, locals.user?.username ?? "admin");
-			return { saved: true, value: saved };
+			return { saved: true, warnings: safetyWarnings(saved) };
 		} catch (e) {
 			return fail(400, { error: e instanceof Error ? e.message : "save failed" });
 		}
