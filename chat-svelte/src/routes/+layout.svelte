@@ -5,6 +5,7 @@
 	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
 	import { page } from "$app/state";
+	import { SHARE_TAGLINE, SHARE_TEXT, SHARE_IMAGE } from "$lib/constants/share";
 
 	import { error } from "$lib/stores/errors";
 	import { createSettingsStore } from "$lib/stores/settings";
@@ -179,25 +180,28 @@
 <svelte:head>
 	<title>{publicConfig.PUBLIC_APP_NAME}</title>
 	<meta name="description" content={publicConfig.PUBLIC_APP_DESCRIPTION} />
-	<meta name="twitter:site" content="@huggingface" />
 
-	<!-- use those meta tags everywhere except on special listing pages -->
-	<!-- feel free to refacto if there's a better way -->
+	<!-- Social card. The title/description/image are AI-Potluck-specific constants (share.ts) —
+	     NOT the upstream chat-ui defaults — so a shared link previews as AI Potluck regardless
+	     of how PUBLIC_APP_DESCRIPTION is set in the deploy env. Image is the editorial OG card in
+	     static/. Shown everywhere except the model-listing pages. -->
 	{#if !page.url.pathname.includes("/models/") && !isSharedConversationView}
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content="{publicConfig.PUBLIC_APP_NAME} - Chat with AI models" />
-		<meta name="twitter:description" content={publicConfig.PUBLIC_APP_DESCRIPTION} />
+		<meta name="twitter:title" content="{publicConfig.PUBLIC_APP_NAME} — {SHARE_TAGLINE}" />
+		<meta name="twitter:description" content={SHARE_TEXT} />
 		<meta
 			name="twitter:image"
-			content="{publicConfig.PUBLIC_ORIGIN ||
-				page.url.origin}{publicConfig.assetPath}/thumbnail.png"
+			content="{publicConfig.PUBLIC_ORIGIN || page.url.origin}{base}{SHARE_IMAGE}"
 		/>
-		<meta name="twitter:image:alt" content="{publicConfig.PUBLIC_APP_NAME} preview" />
-		<meta property="og:title" content="{publicConfig.PUBLIC_APP_NAME} - Chat with AI models" />
+		<meta name="twitter:image:alt" content="{publicConfig.PUBLIC_APP_NAME} — {SHARE_TAGLINE}" />
+		<meta property="og:title" content="{publicConfig.PUBLIC_APP_NAME} — {SHARE_TAGLINE}" />
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="{publicConfig.PUBLIC_ORIGIN || page.url.origin}{base}" />
-		<meta property="og:image" content="{publicConfig.assetPath}/thumbnail.png" />
-		<meta property="og:description" content={publicConfig.PUBLIC_APP_DESCRIPTION} />
+		<meta
+			property="og:image"
+			content="{publicConfig.PUBLIC_ORIGIN || page.url.origin}{base}{SHARE_IMAGE}"
+		/>
+		<meta property="og:description" content={SHARE_TEXT} />
 		<meta property="og:site_name" content={publicConfig.PUBLIC_APP_NAME} />
 		<meta property="og:locale" content="en_US" />
 	{/if}

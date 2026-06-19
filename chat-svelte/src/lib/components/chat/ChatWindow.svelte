@@ -19,6 +19,7 @@
 	import ContributeDialog from "./ContributeDialog.svelte";
 	import BlindSpotsModal from "./BlindSpotsModal.svelte";
 	import { blindSpotsOpen } from "$lib/stores/blindSpots";
+	import ShareButton from "./ShareButton.svelte";
 	import VoiceRecorder from "./VoiceRecorder.svelte";
 	import StopGeneratingBtn from "../StopGeneratingBtn.svelte";
 	import type { Model } from "$lib/types/Model";
@@ -1035,6 +1036,8 @@
 						>
 							Blind spots
 						</button>
+						<span class="mx-1.5 opacity-50">·</span>
+						<ShareButton class="py-1.5 align-baseline" />
 					</div>
 				</div>
 			</div>
