@@ -34,6 +34,10 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: chat-svelte/package-lock.json
+      # The committed package-lock.json is an npm-11 lockfile (matches local dev).
+      # node 22's bundled npm is 10, which reports the lock out-of-sync (missing
+      # @csstools/* entries) and fails `npm ci`. Pin npm 11 to match the lock.
+      - run: npm install -g npm@11
       - run: npm ci
         env:
           HUSKY: 0 # skip the husky `prepare` hook install in CI
