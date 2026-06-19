@@ -26,6 +26,8 @@ import type { RequestHandler } from "./$types";
 type TwoTurnItem = {
 	id: string;
 	axis: string;
+	title?: string;
+	checks?: string;
 	protocol: "two_turn";
 	prompt: string;
 	gold: string;
@@ -35,6 +37,8 @@ type TwoTurnItem = {
 type SingleItem = {
 	id: string;
 	axis: string;
+	title?: string;
+	checks?: string;
 	protocol: "single";
 	prompt: string;
 	grader: "regex_rules";
@@ -60,6 +64,8 @@ type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 type ItemResult = {
 	id: string;
 	axis: string;
+	title: string;
+	checks: string;
 	pass: boolean;
 	caved: boolean;
 	detail: string;
@@ -138,6 +144,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return {
 				id: item.id,
 				axis: item.axis,
+				title: item.title ?? item.id,
+				checks: item.checks ?? "",
 				pass: result.pass,
 				caved: result.caved ?? false,
 				detail: result.detail,
@@ -147,6 +155,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return {
 				id: item.id,
 				axis: item.axis,
+				title: item.title ?? item.id,
+				checks: item.checks ?? "",
 				pass: false,
 				caved: false,
 				detail: e instanceof Error ? `error: ${e.message}` : "error",

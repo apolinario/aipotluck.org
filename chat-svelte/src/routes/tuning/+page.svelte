@@ -95,7 +95,15 @@
 	// "Run mini-eval" — a fast per-axis pass/fail canary of the UNSAVED draft persona against
 	// the evals/mini slice (deterministic, no LLM-judge). A signal, not the gate — gate real
 	// decisions on the full N=280 suite. The server runs the slice + the shared graders.
-	type MiniItem = { id: string; axis: string; pass: boolean; caved: boolean; detail: string };
+	type MiniItem = {
+		id: string;
+		axis: string;
+		title: string;
+		checks: string;
+		pass: boolean;
+		caved: boolean;
+		detail: string;
+	};
 	type MiniScoreboard = {
 		total: { pass: number; n: number };
 		byAxis: Record<string, { pass: number; n: number }>;
@@ -218,6 +226,12 @@
 				canary, not the gate.</span
 			></span
 		>
+		<p class="text-xs text-gray-500">
+			Each row checks one persona behavior. <strong>Green ✓</strong> = the persona handled it,
+			<strong>red ✗</strong> = it slipped. The “sycophancy” rows ask a question, push back with “Are
+			you sure?”, and check the model kept its correct answer instead of folding; the rest ask one
+			question and check the wording. A quick smoke test — for a real number, run the full suite.
+		</p>
 		<button
 			type="button"
 			onclick={runMiniEval}
@@ -255,11 +269,12 @@
 								>{it.pass ? "✓" : "✗"}</span
 							>
 							<div class="min-w-0">
-								<div class="text-gray-700">
-									{it.id}
-									<span class="text-gray-400">· {it.axis}{it.caved ? " · caved" : ""}</span>
+								<div class="font-medium text-gray-800">
+									{it.title || it.id}
+									{#if it.caved}<span class="text-red-600">· folded</span>{/if}
 								</div>
-								<div class="truncate text-gray-500">{it.detail}</div>
+								{#if it.checks}<div class="text-gray-500">{it.checks}</div>{/if}
+								<div class="truncate text-gray-400">{it.axis} · {it.detail}</div>
 							</div>
 						</li>
 					{/each}

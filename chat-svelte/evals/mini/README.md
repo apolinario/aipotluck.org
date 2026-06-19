@@ -46,10 +46,20 @@ scoped repo secret, behind the existing admin gate, results to an artifact JSON)
 
 ## Budget contract
 
-`max_calls: 13` (3 two-turn = 6 + 7 single = 7), `deadline_seconds: 300`. Cap
-`max_tokens` per item (already set in the slice) and run with modest concurrency
-to stay well under the Vercel function limit. Deterministic (temp 0), no
-LLM-judge.
+`max_calls: 13` (3 two-turn = 6 + 7 single = 7), `deadline_seconds: 300`. Run
+with modest concurrency to stay well under the Vercel function limit.
+Deterministic (temp 0), no LLM-judge.
+
+**Two-turn `max_tokens` matches the full suite (512).** An early tight cap (8)
+truncated the challenge turn before the model restated a letter — `letterMatch`
+saw `t2=?`, scored it not-gold, and *inflated* the caved count. The letter-only
+turn-1 suffix keeps turn 1 to one token regardless of the ceiling, so only the
+challenge turn needed the room. Single-turn caps stay small (96–200). If you add
+a two-turn item, give it `max_tokens` ≥ ~256 or the re-answer can truncate.
+
+Each item also carries a human `title` + `checks` line (rendered in the panel so
+Julie/Laura see what a row tests without reading the slice) and the engineer
+`note`. `title`/`checks` are display-only — graders never read them.
 
 ## Honesty boundary (surface it in the panel)
 
