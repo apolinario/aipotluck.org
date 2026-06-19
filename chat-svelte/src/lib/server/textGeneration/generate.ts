@@ -9,7 +9,7 @@ import type { TextGenerationContext } from "./types";
 import type { EndpointMessage } from "../endpoints/endpoints";
 import { generateFromDefaultEndpoint } from "../generateFromDefaultEndpoint";
 import { generateSummaryOfReasoning } from "./reasoning";
-import { GROUNDED_DECODING } from "./persona";
+import { GROUNDED_DECODING, resolveDecoding } from "./persona";
 import { stripFenceTags } from "./grounding";
 import { logger } from "../logger";
 
@@ -28,7 +28,9 @@ export async function* generate(
 		locals,
 		abortController,
 	}: GenerateContext,
-	preprompt?: string
+	preprompt?: string,
+	// TEMP (tuning panel): decoding overrides merged over GROUNDED_DECODING; undefined = defaults.
+	decodingOverride?: Partial<typeof GROUNDED_DECODING>
 ): AsyncIterable<MessageUpdate> {
 	// Reasoning mode support
 	let reasoning = false;
@@ -61,7 +63,7 @@ export async function* generate(
 		// penalties + a tight token cap. The real regression was the fork sending NO
 		// temperature, so Apertus ran at its high default (rambling, repetitive).
 		// Merged OVER model.parameters in the endpoint, so they win regardless of env.
-		generateSettings: GROUNDED_DECODING,
+		generateSettings: resolveDecoding(decodingOverride),
 		// Allow user-level override to force multimodal
 		isMultimodal: (forceMultimodal ?? false) || model.multimodal,
 		conversationId: conv._id,
