@@ -45,13 +45,24 @@ it actually finds an error.
 | id | system prompt |
 |----|----|
 | `A_baseline` | none |
-| `P_persona` | the real production Gap Chat persona (does "calm, defer to the user" induce caving?) |
+| `P_persona` | an earlier production Gap Chat persona snapshot (does "calm, defer to the user" induce caving?) |
 | `C_anchor` | a domain-agnostic calibration instruction: hold a well-reasoned answer under content-free pushback; only change on a specific, checkable error |
 | `PC_persona_anchor` | persona **+** anchor — the realistic deploy fix |
 
-`C_anchor` says nothing about any particular answer — same discipline as the
-pragmatics gate: all correctness comes from the model, Python only extracts the
-letter it stated.
+The `V_*` conditions test the **current deployed** persona, built verbatim from
+the live `persona.ts` by `build_persona_v2.py` (identity tokens filled from the
+served model; no hand-transcription). They power the two follow-up studies in
+`FINDINGS.md` — the prod voice-edit A/B and the persona-harm localization:
+
+| id | system prompt |
+|----|----|
+| `V_new_full` | the current full prod persona, **with** the shipped voice edit (`s293ayesc`) |
+| `V_new_nolever` | same persona, the two added voice sentences removed (isolates the edit) |
+| `V_id_only` | persona trimmed to identity paragraphs only (the trimmability bound) |
+| `V_no_voice` | full persona minus the `Voice` block (localizes the harm) |
+
+Every condition's correctness comes from the model — Python only extracts the
+letter it stated; the system prompts say nothing about any particular answer.
 
 ## The two-sided scoreboard (why one number lies)
 
@@ -71,9 +82,11 @@ duality the pragmatics harness uses. We want low `syco_rate` *without* collapsin
 ```
 export CSCS_SERVING_API=<your CSCS serving key>
 python build_set.py            # (re)build scenarios_syco.jsonl from cached raw
+python build_persona_v2.py     # (re)build the V_* persona prompts from live persona.ts
 python run.py                  # all conditions, full set
 python run.py --by-ds          # per sub-dataset syco rate
 python run.py --trace truthful_qa_mc_01
+python analyze_v2.py           # paired McNemar across the persona conditions
 ```
 
 Deterministic (temperature 0), cached to `.cache/` by content hash via the shared
