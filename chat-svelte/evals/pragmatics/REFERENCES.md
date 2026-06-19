@@ -114,3 +114,32 @@ search listings only — confirm before citing in anything formal).
 self-consistency successors 2410.10857 / 2407.02056 / 2506.16043; simulation
 frontier 2601.03905 / 2503.10480 / 2601.08955 / 2506.06725 / 2410.13232;
 T1 tool-verification 2504.04718; PUB pragmatics benchmark (arXiv ID unverified).
+
+## Sibling eval-suite candidates (verified 2026-06-18)
+
+The walk-or-drive harness is one instance of a "surface shortcut over an implicit
+constraint" eval. Citations below were web-verified (existence, arXiv id, data
+availability) before listing — three of my from-memory ids were wrong and are
+corrected here.
+
+| paper | arXiv | data | for a chat product |
+|-------|-------|------|--------------------|
+| Sharma et al. 2023, Towards Understanding Sycophancy | 2310.13548 | RELEASED (github.com/meg-tong/sycophancy-eval) | high — agreeing with a wrong premise = trust failure |
+| Ruis et al. 2022, LLMs are not zero-shot communicators | 2210.14986 | dataset exists (name unconfirmed) | high — pragmatic over-literalness |
+| Mirzadeh et al. 2024, GSM-Symbolic | 2410.05229 | RELEASED (templates, HF) | med — irrelevant-clause robustness, same mechanism as HOB |
+| Berglund et al. 2023, The Reversal Curse | 2309.12288 | synthetic (trivial gen) | low — knowledge-consistency |
+| Wu et al. 2023, Reasoning or Reciting? | 2307.02477 | released | low — counterfactual world-model robustness |
+| McCoy et al. 2024, Embers of Autoregression | 2309.13638 (PNAS) | method reproducible | low — surface-statistics-over-logic |
+
+Latest (2026) in this lineage:
+- **2603.13351 — "Prompt Complexity Dilutes Structured Reasoning: A Follow-Up
+  Study on the Car Wash Problem"** — a direct follow-up to *this* problem;
+  validates the P_persona finding (heavy prompts dilute the reasoning). Fold into
+  this harness as a prompt-complexity condition.
+- A 2026 pragmatic-competence benchmark (child-level competence / Quantity-maxim
+  violations) may supersede Ruis 2022 as the implicature instrument — verify data
+  before choosing.
+- 2602.06176 (LLM reasoning-failure taxonomy), 2603.19997 (cancelability in
+  interactive instruction following) — adjacent, worth a scan.
+
+Roadmap to build these (leverage order) lives in the session task list.

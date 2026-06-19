@@ -119,6 +119,20 @@ gas/air as robust, and proved the dog-flip real. N=65 is a credible small eval,
 not yet a benchmark — HOB (arXiv:2603.29025) and ~150+ items remain for a SOTA
 claim.
 
+**HOB-aligned extension — the gate is heuristic-robust (2026-06-18).** Grew the
+set to 107 in-frame items tagged with HOB's real families (4 heuristic ×
+constraint, pulled from the paper). Note: HOB's own 500 instances are **NOT
+publicly released** (paper-only — verified: no GitHub/HF/data link), so "run HOB"
+means mirroring its *taxonomy*, not downloading it — which matches HOB's own
+construction (3 authors, hand-built, not LLM-generated). On the 107-item set
+F_reframe2 scores **99/107 (93%), zero walk false-flips**, and crucially holds
+across heuristic families — H-prox 79/85, H-eff 8/10, H-cost 8/8, H-sem 4/4. The
+2-key gate ignores the surface bait (closer/faster/cheaper/name-matches) and
+checks the invariant, so it isn't proximity-specific. Plus 8 out-of-frame probes
+(C-val/C-scope/C-proc — precondition/scope/timing violations) that the
+walk-or-drive gate structurally **cannot** represent (gold "neither"): these mark
+the boundary — the next constraint families need a different gate, not a tweak.
+
 **Triage pre-filter is REQUIRED (not optional).** Ran the reframe→gate on 15
 NON-errand prompts ("explain recursion", "summarize the French Revolution",
 "should I take the job offer", etc.). 13/15 correctly resolved to no-vehicle, but
