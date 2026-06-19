@@ -27,6 +27,43 @@
 	// svelte-ignore state_referenced_locally
 	let baseEditedAt = $state(data.current.editedAt ?? "");
 
+	// Decoding bound to state (not uncontrolled) so "Load into editor" can restore it too. Inputs
+	// keep their name= so the values still submit with the form. "" = use that field's code default.
+	// svelte-ignore state_referenced_locally
+	let decoding = $state({
+		temperature: data.current.decoding?.temperature ?? "",
+		frequency_penalty: data.current.decoding?.frequency_penalty ?? "",
+		presence_penalty: data.current.decoding?.presence_penalty ?? "",
+		max_tokens: data.current.decoding?.max_tokens ?? "",
+	});
+
+	// Recovery: pull a prior version (from the version-history backup) back INTO the editor so it can
+	// be reviewed and re-Saved (which goes through the concurrency guard). Doesn't auto-save.
+	function loadIntoEditor(snap: NonNullable<typeof data.current.history>[number]) {
+		persona = snap.persona ?? "";
+		grounding = snap.grounding ?? "";
+		starters = (snap.starters ?? []).join("\n");
+		decoding = {
+			temperature: snap.decoding?.temperature ?? "",
+			frequency_penalty: snap.decoding?.frequency_penalty ?? "",
+			presence_penalty: snap.decoding?.presence_penalty ?? "",
+			max_tokens: snap.decoding?.max_tokens ?? "",
+		};
+	}
+
+	// Manual off-DB backup: download the current saved tuning (incl. history) as JSON.
+	function exportJson() {
+		const blob = new Blob([JSON.stringify(data.current, null, 2)], { type: "application/json" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `tuning-backup-${(data.current.editedAt ?? "current").replace(/[:.]/g, "-")}.json`;
+		a.click();
+		URL.revokeObjectURL(url);
+	}
+
+	const fmtWhen = (iso?: string) => (iso ? iso.replace("T", " ").slice(0, 16) + " UTC" : "unknown");
+
 	// "Try it" — run a query against the UNSAVED draft persona (no save, no tab-switch).
 	let testQuery = $state("");
 	let testAnswer = $state("");
@@ -228,7 +265,7 @@
 						min="0"
 						max="2"
 						class="w-full rounded border p-1"
-						value={cur.decoding?.temperature ?? ""}
+						bind:value={decoding.temperature}
 					/></label
 				>
 				<label class="space-y-1"
@@ -241,7 +278,7 @@
 						min="-2"
 						max="2"
 						class="w-full rounded border p-1"
-						value={cur.decoding?.frequency_penalty ?? ""}
+						bind:value={decoding.frequency_penalty}
 					/></label
 				>
 				<label class="space-y-1"
@@ -254,7 +291,7 @@
 						min="-2"
 						max="2"
 						class="w-full rounded border p-1"
-						value={cur.decoding?.presence_penalty ?? ""}
+						bind:value={decoding.presence_penalty}
 					/></label
 				>
 				<label class="space-y-1"
@@ -267,7 +304,7 @@
 						min="1"
 						max="4096"
 						class="w-full rounded border p-1"
-						value={cur.decoding?.max_tokens ?? ""}
+						bind:value={decoding.max_tokens}
 					/></label
 				>
 			</div>
@@ -306,4 +343,48 @@
 			{saving ? "Saving…" : "Save"}
 		</button>
 	</form>
+
+	<!-- Version-history backup: every save snapshots the value it replaced (newest first), so an
+	     overwrite / "reset to default" / bad edit is recoverable. "Load into editor" pulls a version
+	     back into the fields above to review and re-Save (which goes through the concurrency guard).
+	     Export is an off-DB manual copy. -->
+	<section class="mt-8 space-y-3 border-t pt-6">
+		<div class="flex items-center justify-between">
+			<h2 class="font-medium">Version history &amp; backup</h2>
+			<button
+				type="button"
+				onclick={exportJson}
+				class="rounded border px-3 py-1.5 text-xs hover:bg-gray-50"
+			>
+				Export current as JSON
+			</button>
+		</div>
+		{#if cur.history?.length}
+			<ul class="space-y-2">
+				{#each cur.history as snap, i (i)}
+					<li class="flex items-start justify-between gap-3 rounded border p-2 text-xs">
+						<div class="min-w-0">
+							<div class="text-gray-600">{snap.editedBy ?? "unknown"} · {fmtWhen(snap.editedAt)}</div>
+							<div class="truncate text-gray-500">
+								{snap.persona ? snap.persona.slice(0, 120) : "(default persona)"}
+							</div>
+						</div>
+						<button
+							type="button"
+							onclick={() => loadIntoEditor(snap)}
+							class="shrink-0 rounded border px-2 py-1 hover:bg-gray-50">Load into editor</button
+						>
+					</li>
+				{/each}
+			</ul>
+			<p class="text-xs text-gray-500">
+				Loading a version fills the fields above — review, then Save to apply. The current value is
+				snapshotted into this history on every save, so restoring is reversible.
+			</p>
+		{:else}
+			<p class="text-xs text-gray-500">
+				No prior versions yet — they appear here after the next save.
+			</p>
+		{/if}
+	</section>
 </div>

@@ -5,7 +5,10 @@
 // reverts to the hardcoded behavior.
 //
 // REMOVE BEFORE PUBLIC LAUNCH: delete this file + src/routes/tuning/, drop the TUNING
-// config row, and the `?? default` read sites collapse back to the constants.
+// config row, and the `?? default` read sites collapse back to the constants. The row now also
+// carries a `history` array of prior persona/grounding versions (the version backup) — DROP IT
+// before alpha too: stale admin-authored prompt/safety-logic versions sitting at rest are extra
+// attack surface if the DB is breached, for zero value once the panel is gone.
 import { z } from "zod";
 import { collections } from "$lib/server/database";
 import { logger } from "$lib/server/logger";
@@ -19,8 +22,14 @@ const DecodingSchema = z
 	})
 	.partial();
 
-// All optional: absence of a field = use the code default at the read site.
-export const TuningSchema = z
+// How many prior versions to keep in the in-doc backup. Each save snapshots the value it
+// replaces, so an accidental overwrite / "reset to default" / bad edit is recoverable in-panel
+// (the tuning row otherwise lives ONLY in the DB with no history). Personas are a few KB in
+// practice, so 20 keeps the config row comfortably bounded.
+const HISTORY_LIMIT = 20;
+
+// A single saved version: the editable fields + who/when. No `history` field — snapshots never nest.
+const SnapshotSchema = z
 	.object({
 		persona: z.string().max(20000),
 		grounding: z.string().max(20000),
@@ -30,6 +39,15 @@ export const TuningSchema = z
 		editedAt: z.string().max(40),
 	})
 	.partial();
+
+export type TuningSnapshot = z.infer<typeof SnapshotSchema>;
+
+// All optional: absence of a field = use the code default at the read site. `history` is the
+// version backup (prior values, newest first), maintained server-side by setTuning — the form
+// never submits it.
+export const TuningSchema = SnapshotSchema.extend({
+	history: z.array(SnapshotSchema).max(HISTORY_LIMIT),
+}).partial();
 
 export type Tuning = z.infer<typeof TuningSchema>;
 
@@ -103,13 +121,29 @@ export async function setTuning(
 	editedBy: string,
 	expectedEditedAt?: string
 ): Promise<Tuning> {
-	const parsed = TuningSchema.safeParse({ ...next, editedBy, editedAt: new Date().toISOString() });
+	const store = configStore();
+
+	// Version backup: snapshot the value THIS save replaces (newest-first), capped at HISTORY_LIMIT,
+	// so an overwrite/reset/bad-edit is recoverable. Read the current stored value + its history.
+	const prior = parseTuning(await store.findOne({ key: KEY }));
+	const { history: priorHistory = [], ...priorValue } = prior;
+	// Only snapshot a REAL prior save (editedAt present) — not the empty "no row yet" state.
+	const history = (priorValue.editedAt ? [priorValue, ...priorHistory] : priorHistory).slice(
+		0,
+		HISTORY_LIMIT
+	);
+
+	const parsed = TuningSchema.safeParse({
+		...next,
+		editedBy,
+		editedAt: new Date().toISOString(),
+		history,
+	});
 	if (!parsed.success) {
 		throw new Error(
 			parsed.error.issues.map((i) => `${i.path.join(".") || "value"}: ${i.message}`).join("; ")
 		);
 	}
-	const store = configStore();
 
 	if (expectedEditedAt) {
 		// Conditional update: matches only while the row's editedAt is unchanged. matchedCount 0 →
@@ -125,11 +159,10 @@ export async function setTuning(
 		}
 	} else {
 		// Editor loaded with no existing row. Insert-if-absent: if a row appeared since (someone
-		// created the tuning while they edited from defaults), that's a conflict too. Small
-		// read-then-write window, acceptable for the once-ever first save.
-		const existing = parseTuning(await store.findOne({ key: KEY }));
-		if (existing.editedAt) {
-			throw new TuningConflictError(existing.editedBy, existing.editedAt);
+		// created the tuning while they edited from defaults), that's a conflict too. Reuses the
+		// `prior` read above — small read-then-write window, acceptable for the once-ever first save.
+		if (priorValue.editedAt) {
+			throw new TuningConflictError(priorValue.editedBy, priorValue.editedAt);
 		}
 		await store.updateOne({ key: KEY }, { $set: parsed.data }, { upsert: true });
 	}

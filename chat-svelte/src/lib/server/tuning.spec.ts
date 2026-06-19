@@ -124,3 +124,52 @@ describe("setTuning optimistic concurrency (two editors can't silently clobber)"
 		expect(updateOne).not.toHaveBeenCalled();
 	});
 });
+
+describe("setTuning version-history backup (prior values are recoverable, not clobbered)", () => {
+	const findOne = vi.mocked((collections as any).config.findOne);
+	beforeEach(() => {
+		updateOne.mockReset();
+		findOne.mockReset();
+		updateOne.mockResolvedValue({ matchedCount: 1 });
+	});
+
+	it("snapshots the value it replaces into history, newest-first, without nesting", async () => {
+		findOne.mockResolvedValue({
+			key: "TUNING",
+			persona: "OLD",
+			editedBy: "julie",
+			editedAt: "2026-06-19T10:00:00.000Z",
+			history: [{ persona: "OLDER", editedBy: "laura", editedAt: "2026-06-18T00:00:00.000Z" }],
+		});
+		await setTuning({ persona: "NEW" }, "laura", "2026-06-19T10:00:00.000Z");
+		const written = (updateOne.mock.calls[0][1] as any).$set;
+		expect(written.persona).toBe("NEW");
+		expect(written.history[0]).toMatchObject({ persona: "OLD", editedBy: "julie" });
+		expect(written.history[1]).toMatchObject({ persona: "OLDER" });
+		expect(written.history[0].history).toBeUndefined(); // snapshots never nest
+	});
+
+	it("does not snapshot when there was no prior save (first ever → empty history)", async () => {
+		findOne.mockResolvedValue(null);
+		await setTuning({ persona: "FIRST" }, "laura");
+		const written = (updateOne.mock.calls[0][1] as any).$set;
+		expect(written.history).toEqual([]);
+	});
+
+	it("caps history at 20 entries (oldest drops off)", async () => {
+		// A real stored row never exceeds 20 (setTuning caps it). Seed the max, so prepending the
+		// just-replaced value pushes to 21 → capped back to 20, dropping the oldest.
+		const old = Array.from({ length: 20 }, (_, i) => ({ persona: `v${i}`, editedAt: `t${i}` }));
+		findOne.mockResolvedValue({
+			key: "TUNING",
+			persona: "CURRENT",
+			editedAt: "2026-06-19T10:00:00.000Z",
+			history: old,
+		});
+		await setTuning({ persona: "NEW" }, "laura", "2026-06-19T10:00:00.000Z");
+		const written = (updateOne.mock.calls[0][1] as any).$set;
+		expect(written.history).toHaveLength(20);
+		expect(written.history[0]).toMatchObject({ persona: "CURRENT" }); // newest = the replaced value
+		expect(written.history.at(-1)).toMatchObject({ persona: "v18" }); // oldest (v19) dropped
+	});
+});
