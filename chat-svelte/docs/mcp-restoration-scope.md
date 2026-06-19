@@ -1,8 +1,8 @@
 # MCP restoration scope — for the HF Spaces integration
 
-**Audience:** Josh / Poli. **Status:** scoping. **Owner:** chat (Gap Chat / chat-svelte).
-**Context:** the HF Spaces integration on the `chat-ui-migration` fork "will require us to bring
-back in the MCP integrations on chat-ui" (Josh, 2026-06-17).
+**Status:** scoping. **Owner:** chat (Gap Chat / chat-svelte).
+**Context:** the HF Spaces integration on the `chat-ui-migration` fork will require bringing
+back the MCP integrations on chat-ui.
 
 ## TL;DR
 
@@ -30,20 +30,21 @@ No tool decision is ever made by the persona-framed chat model.
 ## Why bare-router, not in-context tool-choice (two independent reasons)
 
 1. **Measured model behavior.**
-   - Served 8B: on a bare prompt the model emits clean tool_calls
-     and decides search well (**~85%** held-out). Under our full system prompt the same decision
-     drops to **0%** — even with an explicit "you can call web_search" directive. (Search-decision
-     eval, `evals/search-decision/`.) Confirmed independently by the world-model session: the
-     persona suppresses a *chosen action* (tool-call) but not a *factual judgment*.
-   - 70B: single tool call is fine (8/8, but drops to 2/8 under
-     negation-priming — phrasing-sensitive). The weakness is the **multi-turn loop**: naked
-     controller 0/8 (fabricates "done" and bails ~1 step in) → hybrid code-as-controller 8/8.
+   - Served open 8B: on a bare prompt the model emits clean tool_calls and decides search well
+     on the held-out set. Under our full system prompt the same decision collapses — even with
+     an explicit "you can call web_search" directive. (Search-decision eval,
+     `evals/search-decision/`.) The persona suppresses a *chosen action* (tool-call) but not a
+     *factual judgment*.
+   - Larger reference model: a single tool call is reliable but degrades under
+     negation-priming — phrasing-sensitive. The weakness is the **multi-turn loop**: a naked
+     controller fabricates "done" and bails early → a hybrid code-as-controller recovers it.
      (agent-service probes.)
-   - Net: on our checkpoints the model should not carry the tool-decision or the multi-turn loop.
+   - Net: on the served checkpoints the model should not carry the tool-decision or the
+     multi-turn loop.
 
 2. **Product voice rules (Alpha launch content §1.1 — a design constraint reviewed at every
    sign-off).** The persona is *engineered to be non-proactive*: "the product **does not volunteer
-   the next task**… does not suggest conclusions the user did not ask for"; Laura's ask-don't-tell
+   the next task**… does not suggest conclusions the user did not ask for"; the ask-don't-tell
    reframe — "a **responding machine, not a proactive assistant**." Deciding to call a tool *is*
    proactive behavior. So the model's tool-suppression under the persona is **the persona working as
    specified**, not a bug. Making the persona tool-eager would violate the signed-off voice rules.
@@ -86,18 +87,18 @@ weak model. That's the framing to carry: tool decisions live outside the passive
 the same bare-decide pattern. **Restore it once; both consume it.** agent-service already builds the
 agent as code-as-controller, so the model never carries that loop either.
 
-## Open questions for Josh / Poli
+## Open questions (spec owners)
 
 - **The spec:** which Space, which of its tools, expected UX (inline tool result vs a distinct
   "tool" turn in the transcript)?
 - Anything user-facing about the Space tool needs to obey the **same voice rules** (machine voice,
   no proactive follow-ups, plain-stated declines).
 
-## Predicted spec (draft to build against; refine when Josh confirms)
+## Predicted spec (draft to build against; refine when the spec is confirmed)
 
-Josh will specify this by reasoning about it (likely with an AI) — so here's the most probable
-shape, to start the vertical slice now. The integration is **Space-agnostic below the tool
-schema**, so his eventual answer only swaps the tool definition + map node.
+Here's the most probable shape, to start the vertical slice now. The integration is
+**Space-agnostic below the tool schema**, so the eventual spec only swaps the tool definition +
+map node.
 
 **What it almost certainly is:** wire one (or a few) open-source HF **Spaces** as callable tools,
 each surfaced as a **live node on the "Under the hood" map** that pulses when the chat uses it —
@@ -128,9 +129,9 @@ component honestly — same "what's behind every answer" pattern as search.
 **Scope (for "straightforward"):** IN — 1 Space, gated, map node, bare-router decide+invoke,
 provenance. OUT — general MCP marketplace, user-added Spaces, multi-Space chaining.
 
-**The only genuine unknowns (Josh's call):** (1) which Space/capability (recommend vision; he may
-have a partner-specific one); (2) one showcase Space vs a small set; (3) builder attribution on the
-map. Everything below the tool schema we can build now.
+**The only genuine unknowns (spec owner's call):** (1) which Space/capability (recommend vision;
+there may be a partner-specific one); (2) one showcase Space vs a small set; (3) builder
+attribution on the map. Everything below the tool schema we can build now.
 
 ## Sizing (honest)
 

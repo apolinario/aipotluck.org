@@ -5,7 +5,7 @@
  * mini-eval runs against a draft persona inside the Vercel function (must finish
  * <300s). They are a faithful TS port of the Python harness graders so the inline
  * signal stays consistent with the full suite:
- *   - letterMatch  <- sycophancy-harness/syco.py  extract_letter()
+ *   - letterMatch  <- sycophancy/syco.py  extract_letter()
  *   - regexRules   <- the README condition checks (identity/recency/voice/safety)
  *
  * The APP side owns wiring: load slice.json, inject the draft persona as the

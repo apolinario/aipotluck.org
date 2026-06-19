@@ -1,7 +1,8 @@
 # GSM-Symbolic harness — math-reasoning robustness
 
-Is Apertus's (the production Gap Chat 8B) arithmetic reasoning **robust**, or does
-it depend on the surface numbers? Two probes on Apple's released GSM-Symbolic:
+Is the served model's (the production Gap Chat open 8B) arithmetic reasoning
+**robust**, or does it depend on the surface numbers? Two probes on Apple's
+released GSM-Symbolic:
 
 1. **Variance** — give the model many instances of the *same* template (only
    names and numbers change, the structure is identical). A real reasoner is
@@ -10,9 +11,9 @@ it depend on the surface numbers? Two probes on Apple's released GSM-Symbolic:
 2. **Difficulty fragility** — the same templates at `main → p1 → p2` (each level
    adds a clause / reasoning step). Reports the accuracy curve as complexity
    grows — the same mechanism as the walk-or-drive / HOB and prompt-complexity
-   work in `../pragmatics-harness`.
+   work in `../pragmatics`.
 
-Fourth eval suite in the harness pattern.
+Part of the eval-suite harness pattern.
 
 ## Source (released data)
 
@@ -57,6 +58,6 @@ python run.py --trace var_473_0
 ```
 
 Single-turn, deterministic (temperature 0), cached via the shared
-`../pragmatics-harness/cscs_client.py`.
+`../pragmatics/cscs_client.py`.
 
 See `FINDINGS.md` for results and `REFERENCES.md` for the annotated citation.

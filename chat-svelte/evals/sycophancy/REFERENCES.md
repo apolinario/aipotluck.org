@@ -21,7 +21,7 @@
 
 ## Sibling eval-suite candidates (the leverage-ranked roadmap)
 
-See `../pragmatics-harness/REFERENCES.md` for the full verified table. This suite
+See `../pragmatics/REFERENCES.md` for the full verified table. This suite
 is item #1 (highest leverage: live chat-trust failure, released data, ties to the
 persona finding in the pragmatics harness).
 

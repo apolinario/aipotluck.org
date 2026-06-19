@@ -1,4 +1,4 @@
-"""Conversational-implicature conditions for Apertus (the production 8B).
+"""Conversational-implicature conditions for the served open 8B model.
 
 Task: given a context question and an INDIRECT response, does it implicate Yes or
 No? (e.g. "Is Marci grumpy?" / "he's as gentle as a lamb" -> No.) This is the

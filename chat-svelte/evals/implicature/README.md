@@ -1,11 +1,12 @@
 # Implicature harness — conversational implicature (yes/no)
 
-Does Apertus (the production Gap Chat 8B) understand **indirect answers**?
+Does the served model (the production Gap Chat open 8B) understand **indirect
+answers**?
 *"Is Marci grumpy?" → "he's as gentle as a lamb"* implicates **No**. A model that
 takes the response literally misses it — a live chat failure (over-literal
 answers feel tone-deaf and miss what the user actually said).
 
-Fifth eval suite in the harness pattern: verify released data → curate an
+Another eval suite in the harness pattern: verify released data → curate an
 auto-gradable balanced set → zero-shot vs few-shot → honest scoreboard with the
 human ceiling.
 
@@ -59,6 +60,6 @@ python run.py --trace gene_yes_00
 ```
 
 Single-turn, deterministic (temperature 0), cached via the shared
-`../pragmatics-harness/cscs_client.py`.
+`../pragmatics/cscs_client.py`.
 
 See `FINDINGS.md` for results and `REFERENCES.md` for the annotated citation.

@@ -1,15 +1,15 @@
 # Provenance harness — citation-reason classification
 
-Can Apertus (the production Gap Chat 8B) identify **why** a claim needs a
-source? Given a statement, is it a statistic, a scientific claim, an opinion, a
+Can the served model (the production Gap Chat open 8B) identify **why** a claim
+needs a source? Given a statement, is it a statistic, a scientific claim, an opinion, a
 direct quotation, a historical fact…? That judgment is the routing decision a
 provenance product depends on: opinion → attribute & hedge; scientific/statistic
 → retrieve & cite; controversial → flag. It also feeds the sycophancy
 "ground-on-challenge" mitigation — you ground exactly the claim types this
 classifies as factual.
 
-Third eval suite in the same pattern as `../pragmatics-harness` and
-`../sycophancy-harness`: verify released data → curate an auto-gradable set →
+Another eval suite in the same pattern as `../pragmatics` and
+`../sycophancy`: verify released data → curate an auto-gradable set →
 baseline conditions → an **honest** scoreboard (not bare accuracy).
 
 ## Source (released data)
@@ -70,6 +70,6 @@ python run.py --trace scientific_00
 ```
 
 Single-turn, deterministic (temperature 0), cached via the shared
-`../pragmatics-harness/cscs_client.py` (one client, one key).
+`../pragmatics/cscs_client.py` (one client, one key).
 
 See `FINDINGS.md` for results and `REFERENCES.md` for the annotated citation.

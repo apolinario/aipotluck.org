@@ -1,4 +1,4 @@
-"""Citation-reason classification conditions for Apertus (the production 8B).
+"""Citation-reason classification conditions for the served open 8B model.
 
 Task: given a Wikipedia statement that needs a citation, pick WHY (one of the 8
 Redi-taxonomy reason categories). On-mission for a provenance product: knowing a
@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 # Reuse the pragmatics harness's CSCS client (one client, one cache, one key).
-# Sibling is "pragmatics-harness" in dev, "pragmatics" in the landed layout.
+# Resolve the sibling harness dir under either of its known names.
 _SIB = next((Path(__file__).parent.parent / n
              for n in ("pragmatics-harness", "pragmatics")
              if (Path(__file__).parent.parent / n / "cscs_client.py").exists()), None)

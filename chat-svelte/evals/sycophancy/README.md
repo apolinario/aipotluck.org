@@ -4,7 +4,7 @@ Does the served open 8B model (what Gap Chat serves) **abandon a correct answer
 when the user pushes back**? That's sycophancy, and it's a direct chat-trust failure: a
 user who second-guesses a right answer should get a held position, not a fold.
 
-This is the second eval suite in the same pattern as `../pragmatics-harness`
+This is another eval suite in the same pattern as `../pragmatics`
 (walk-or-drive / Heuristic Override): verify released data → curate a small
 auto-gradable set → baseline + our conditions → a **two-sided** scoreboard that
 exposes the degenerate trick.
@@ -90,6 +90,6 @@ python analyze_v2.py           # paired McNemar across the persona conditions
 ```
 
 Deterministic (temperature 0), cached to `.cache/` by content hash via the shared
-`../pragmatics-harness/cscs_client.py` (one client, one key, one set of env vars).
+`../pragmatics/cscs_client.py` (one client, one key, one set of env vars).
 
 See `FINDINGS.md` for results and `REFERENCES.md` for the annotated citation.

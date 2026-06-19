@@ -1,4 +1,4 @@
-"""GSM-Symbolic solving + numeric grading for Apertus (the production 8B).
+"""GSM-Symbolic solving + numeric grading for the served open 8B model.
 
 One condition (solve the word problem with chain-of-thought). The interesting
 structure is in the SCORING (run.py): the same model is probed for
@@ -15,8 +15,8 @@ import re
 import sys
 from pathlib import Path
 
-# Reuse the pragmatics harness's CSCS client (sibling "pragmatics-harness" in dev,
-# "pragmatics" in the landed layout).
+# Reuse the pragmatics harness's CSCS client (resolve the sibling harness dir
+# under either of its known names).
 _SIB = next((Path(__file__).parent.parent / n
              for n in ("pragmatics-harness", "pragmatics")
              if (Path(__file__).parent.parent / n / "cscs_client.py").exists()), None)

@@ -25,9 +25,8 @@ import sys
 from pathlib import Path
 
 # Single source of truth for the CSCS client -- reuse the pragmatics harness's
-# (one client, one cache convention, one set of env vars). No duplicate. The
-# sibling is named "pragmatics-harness" in the dev worktree and "pragmatics" in
-# the landed chat-svelte/evals/ layout; resolve either so this lands unedited.
+# (one client, one cache convention, one set of env vars). No duplicate.
+# Resolve the sibling harness dir under either of its known names.
 _SIB = next((Path(__file__).parent.parent / n
              for n in ("pragmatics-harness", "pragmatics")
              if (Path(__file__).parent.parent / n / "cscs_client.py").exists()), None)
