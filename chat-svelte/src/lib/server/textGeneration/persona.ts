@@ -74,8 +74,10 @@ function fillIdentityTokens(
 
 /**
  * Build the system persona. `override` (the tuning panel's persona template, same
- * {token} placeholders) replaces the default prose; identity tokens are always filled
- * from the real served model, so an override can't fake the model identity.
+ * {token} placeholders) replaces the default prose; identity tokens are filled from the
+ * real served model, so an editor who uses the tokens keeps the model name correct across
+ * model swaps. (The override is free text, so a trusted editor could still write a wrong
+ * name — the tokens prevent accidental staleness, not deliberate misstatement.)
  */
 export function buildPersonaPrompt(modelId?: string, override?: string): string {
 	const identity = resolveModelIdentity(modelId);

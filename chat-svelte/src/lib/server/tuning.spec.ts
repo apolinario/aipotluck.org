@@ -1,5 +1,15 @@
-import { describe, it, expect } from "vitest";
-import { parseTuning, TuningSchema } from "./tuning";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// Mock the DB collection so setTuning's read/write hits an in-memory stub.
+vi.mock("$lib/server/database", () => ({
+	collections: { config: { findOne: vi.fn(async () => null), updateOne: vi.fn(async () => ({})) } },
+}));
+
+import { parseTuning, TuningSchema, setTuning } from "./tuning";
+import { collections } from "$lib/server/database";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const updateOne = vi.mocked((collections as any).config.updateOne);
 
 describe("parseTuning (fail-safe validation)", () => {
 	it("accepts a valid partial doc and strips unknown keys (e.g. the row key)", () => {
@@ -41,5 +51,28 @@ describe("parseTuning (fail-safe validation)", () => {
 	it("each field is independently optional", () => {
 		expect(TuningSchema.safeParse({ grounding: "Cite [n]." }).success).toBe(true);
 		expect(TuningSchema.safeParse({ decoding: { presence_penalty: 0.5 } }).success).toBe(true);
+	});
+});
+
+describe("setTuning (writes reject invalid — never silently wipe)", () => {
+	beforeEach(() => updateOne.mockClear());
+
+	it("persists a valid doc and stamps editedBy/editedAt", async () => {
+		const out = await setTuning({ persona: "Hi {model}.", decoding: { temperature: 0.3 } }, "laura");
+		expect(out.persona).toBe("Hi {model}.");
+		expect(out.editedBy).toBe("laura");
+		expect(out.editedAt).toBeTruthy();
+		expect(updateOne).toHaveBeenCalledOnce();
+	});
+
+	it("THROWS on an out-of-range field and does NOT write (no silent wipe)", async () => {
+		await expect(setTuning({ decoding: { temperature: 9 } }, "laura")).rejects.toThrow();
+		expect(updateOne).not.toHaveBeenCalled();
+	});
+
+	it("THROWS on a wrong-typed field rather than dropping all overrides", async () => {
+		// @ts-expect-error — deliberately invalid input (simulates a non-form POST)
+		await expect(setTuning({ persona: 123 }, "laura")).rejects.toThrow();
+		expect(updateOne).not.toHaveBeenCalled();
 	});
 });

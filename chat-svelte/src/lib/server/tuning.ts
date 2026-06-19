@@ -77,12 +77,18 @@ export async function getTuning(): Promise<Tuning> {
 
 /** REPLACE the stored doc with a validated `next` (the admin form submits the full desired
  *  state, so an omitted field means "use the code default" — replace, not merge). Stamps
- *  editor + time, upserts, busts cache. */
+ *  editor + time, upserts, busts cache. THROWS on invalid input — writes must NOT fail-safe
+ *  to {} (that would silently wipe every existing override); only reads do. */
 export async function setTuning(next: Tuning, editedBy: string): Promise<Tuning> {
-	const validated = parseTuning({ ...next, editedBy, editedAt: new Date().toISOString() });
-	await configStore().updateOne({ key: KEY }, { $set: validated }, { upsert: true });
-	cache = { at: Date.now(), value: validated };
-	return validated;
+	const parsed = TuningSchema.safeParse({ ...next, editedBy, editedAt: new Date().toISOString() });
+	if (!parsed.success) {
+		throw new Error(
+			parsed.error.issues.map((i) => `${i.path.join(".") || "value"}: ${i.message}`).join("; ")
+		);
+	}
+	await configStore().updateOne({ key: KEY }, { $set: parsed.data }, { upsert: true });
+	cache = { at: Date.now(), value: parsed.data };
+	return parsed.data;
 }
 
 export function bustTuningCache(): void {

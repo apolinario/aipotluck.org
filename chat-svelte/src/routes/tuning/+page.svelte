@@ -1,6 +1,7 @@
 <!-- TEMP: pre-launch tuning panel. Remove routes/tuning/ before public launch. -->
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { base } from "$app/paths";
 	import type { PageData, ActionData } from "./$types";
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -15,6 +16,7 @@
 <!-- h-dvh + overflow so the panel scrolls inside the chat shell's fixed-height layout -->
 <div class="mx-auto h-dvh max-w-3xl space-y-6 overflow-y-auto bg-white p-6 text-sm text-black">
 	<header class="space-y-1">
+		<a href={base || "/"} class="text-xs text-gray-500 hover:underline">← Back to chat</a>
 		<h1 class="text-xl font-semibold">Gap Chat — tuning</h1>
 		<p class="text-gray-600">
 			Edit the prompts and parameters live. Changes apply to new chats within ~20 seconds — no
@@ -46,8 +48,9 @@
 		<label class="block space-y-1">
 			<span class="font-medium">System persona</span>
 			<span class="block text-xs text-gray-500"
-				>Tokens <code>{"{model}"}</code> <code>{"{maker}"}</code> <code>{"{served}"}</code>
-				<code>{"{training}"}</code> are auto-filled from the live model identity — they can't be faked.</span
+				>Use tokens <code>{"{model}"}</code> <code>{"{maker}"}</code> <code>{"{served}"}</code>
+				<code>{"{training}"}</code> for the identity — they're auto-filled from the live served
+				model, so the model name stays correct if we swap models. (Don't hardcode a model name.)</span
 			>
 			<textarea
 				name="persona"
