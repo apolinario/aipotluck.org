@@ -28,7 +28,6 @@
 	import type { TreeNode, TreeId } from "$lib/utils/tree/tree";
 	import "katex/dist/katex.min.css";
 	import { updateDebouncer } from "$lib/utils/updates.js";
-	import SubscribeModal from "$lib/components/SubscribeModal.svelte";
 	import { loading } from "$lib/stores/loading.js";
 	import { streamStart } from "$lib/utils/haptics";
 	import { requireAuthUser } from "$lib/utils/auth.js";
@@ -44,7 +43,6 @@
 	let convId = $derived(page.params.id ?? "");
 	let pending = $state(false);
 	let initialRun = true;
-	let showSubscribeModal = $state(false);
 	// Conversation-scoped stop tombstone. A boolean reset on page.params.id
 	// changes resurrects the generating UI: invalidation reassigns page.params,
 	// which clears the flag while the stopped conversation's snapshot is still
@@ -420,10 +418,9 @@
 					update.type === MessageUpdateType.Status &&
 					update.status === MessageUpdateStatus.Error
 				) {
-					// Check if this is a 402 payment required error
-					if (update.statusCode === 402) {
-						showSubscribeModal = true;
-					} else if (
+					// 402 (HuggingChat PRO upsell) removed — our serving has no billing/accounts;
+					// a stray 402 now falls through to the generic error below.
+					if (
 						update.statusCode === 401 &&
 						typeof update.message === "string" &&
 						/oauth authorization|has been revoked|requested scopes/i.test(update.message)
@@ -775,6 +772,3 @@
 	currentModel={findCurrentModel(data.models, data.oldModels, data.model)}
 />
 
-{#if showSubscribeModal}
-	<SubscribeModal close={() => (showSubscribeModal = false)} />
-{/if}

@@ -226,11 +226,8 @@
 			<div
 				class="flex w-full flex-row items-center justify-center gap-2 px-2 text-[13px] text-sidebar-foreground/60"
 			>
-				{#if user?.username || user?.email}
-					Your conversations will appear here once you start chatting!
-				{:else}
-					Login to save and revisit previous chats!
-				{/if}
+				<!-- No accounts at this phase — always the guest empty-state (no login prompt). -->
+				Your conversations will appear here once you start chatting!
 			</div>
 		{/if}
 	</div>
