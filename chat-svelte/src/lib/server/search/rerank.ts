@@ -15,7 +15,10 @@ import { logger } from "$lib/server/logger";
 
 /** Configured reranker model id (e.g. "BAAI/bge-reranker-v2-m3"); "" = disabled. */
 export function rerankModel(): string {
-	return (config.RERANK_MODEL || "").trim();
+	// Reflect.get, not config.RERANK_MODEL: this key isn't in committed .env, so the
+	// SvelteKit-generated $env type omits it everywhere it's unset (CI), and direct
+	// access fails svelte-check. Matches the MODELS / MODEL_ALLOWLIST pattern.
+	return ((Reflect.get(config, "RERANK_MODEL") as string | undefined) || "").trim();
 }
 
 type RerankResult = { index: number; relevance_score: number };

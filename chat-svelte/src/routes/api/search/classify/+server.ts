@@ -24,7 +24,11 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(400, "query too long");
 	}
 
-	const strategy = resolveTriggerStrategy(config.PUBLIC_SEARCH_TRIGGER);
+	// Reflect.get: PUBLIC_SEARCH_TRIGGER isn't in committed .env, so direct config.X
+	// access fails svelte-check wherever it's unset (CI). See rerank.ts.
+	const strategy = resolveTriggerStrategy(
+		Reflect.get(config, "PUBLIC_SEARCH_TRIGGER") as string | undefined
+	);
 	if (strategy === "tool" && TOOL_CALLING_WIRED) {
 		const decision = await decideSearchViaTool(q, locals);
 		return json(decision, { headers: { "cache-control": "no-store" } });

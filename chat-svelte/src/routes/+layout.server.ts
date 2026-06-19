@@ -12,6 +12,10 @@ import { resolveTriggerStrategy } from "$lib/search/triggerStrategy";
 export const load = async () => {
 	return {
 		servingProvenance: resolveServing(config.OPENAI_BASE_URL, defaultModel?.id),
-		searchTriggerStrategy: resolveTriggerStrategy(config.PUBLIC_SEARCH_TRIGGER),
+		// Reflect.get: PUBLIC_SEARCH_TRIGGER isn't in committed .env, so direct config.X
+		// access fails svelte-check wherever the key is unset (CI). See rerank.ts.
+		searchTriggerStrategy: resolveTriggerStrategy(
+			Reflect.get(config, "PUBLIC_SEARCH_TRIGGER") as string | undefined
+		),
 	};
 };
