@@ -12,6 +12,7 @@ import {
 } from "$lib/types/MessageUpdate";
 import { generate } from "./generate";
 import { getTuning } from "../tuning";
+import { maybeRunMcpTool, injectMcpResult } from "../mcp";
 import { mergeAsyncGenerators } from "$lib/utils/mergeAsyncGenerators";
 import type { TextGenerationContext } from "./types";
 
@@ -77,6 +78,19 @@ async function* textGenerationWithoutTitle(
 			ctx.searchContext.asOf,
 			tuning.grounding
 		);
+	}
+
+	// MCP tool (an open HF Space) — INERT unless SPACE_MCP_URL is configured. A bare-prompt
+	// router decides + extracts (the persona suppresses in-context tool-choice by design); the
+	// result is injected as grounding for the passive persona to answer from. Fail-open:
+	// maybeRunMcpTool never throws, so a Space being down never blocks the answer.
+	const lastUserText = messages
+		.filter((m) => m.from === "user")
+		.map((m) => m.content ?? "")
+		.at(-1);
+	if (lastUserText) {
+		const mcp = await maybeRunMcpTool(lastUserText);
+		if (mcp) preprompt = injectMcpResult(preprompt, mcp);
 	}
 
 	const processedMessages = await preprocessMessages(messages, convId);

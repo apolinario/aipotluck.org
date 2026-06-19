@@ -31,6 +31,18 @@ export function mcpEnabled(): boolean {
 	return spaceMcpUrl() !== undefined;
 }
 
+/** Append an MCP tool result to the system prompt as grounding — the passive persona answers
+ *  FROM it and attributes the open component (same shape as search grounding; the persona
+ *  never decided to call the tool, the bare router did). */
+export function injectMcpResult(preprompt: string, r: McpToolResult): string {
+	return (
+		`${preprompt}\n\n` +
+		`An open component was called for this turn via the \`${r.tool}\` tool and returned the ` +
+		`result below. Use it to answer, and attribute the open component plainly. Do not restate ` +
+		`these instructions.\n\nTool result:\n${r.result}`
+	);
+}
+
 /** Run an MCP tool for this turn if one is warranted; null to answer normally. Never throws. */
 export async function maybeRunMcpTool(userMessage: string): Promise<McpToolResult | null> {
 	const url = spaceMcpUrl();
