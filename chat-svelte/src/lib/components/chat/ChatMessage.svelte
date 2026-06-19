@@ -24,6 +24,8 @@
 	import SourceStrip from "./SourceStrip.svelte";
 	import ProvenanceBadge from "./ProvenanceBadge.svelte";
 	import SafetyBadge from "./SafetyBadge.svelte";
+	import GapInvite from "./GapInvite.svelte";
+	import type { StarterGap } from "$lib/constants/starterGaps";
 	import ReportButton from "./ReportButton.svelte";
 	import { splitArtifactSegments, stripArtifacts } from "$lib/utils/artifacts";
 	import type { ArtifactOperation } from "$lib/utils/artifacts";
@@ -42,6 +44,10 @@
 		// this is the fallback since we serve a single model with no Omni routing,
 		// so routerMetadata is usually empty.
 		modelId?: string;
+		// The open-stack gap this answer's originating prompt deliberately surfaces, if any
+		// (resolved by ChatWindow from the preceding user prompt; see starterGaps). Drives the
+		// honest "touches a gap → get involved" CTA. Undefined for prompts that target no gap.
+		gap?: StarterGap;
 		onretry?: (payload: { id: Message["id"]; content?: string }) => void;
 		onshowAlternateMsg?: (payload: { id: Message["id"] }) => void;
 	}
@@ -56,6 +62,7 @@
 		editMsdgId = $bindable(null),
 		isLast = false,
 		modelId,
+		gap,
 		onretry,
 		onshowAlternateMsg,
 	}: Props = $props();
@@ -475,6 +482,13 @@
 						provider={message.routerMetadata?.provider}
 					/>
 				{/if}
+			{/if}
+
+			<!-- Honest "touches an open gap → get involved" CTA. Only when this turn's prompt
+			     deliberately surfaces a known gap (starterGaps) and the answer actually ran —
+			     never on a safety decline (no answer to attach a gap to). -->
+			{#if gap && !loading && message.content && !message.moderation?.flagged}
+				<GapInvite {gap} />
 			{/if}
 		</div>
 

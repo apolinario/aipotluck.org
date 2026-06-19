@@ -38,6 +38,7 @@
 	import ModelSwitch from "./ModelSwitch.svelte";
 	import { routerExamples } from "$lib/constants/routerExamples";
 	import type { RouterFollowUp, RouterExample } from "$lib/constants/routerExamples";
+	import { gapForPrompt } from "$lib/constants/starterGaps";
 	import FeatureAnnouncementToast from "../FeatureAnnouncementToast.svelte";
 	import { getActiveAnnouncement } from "$lib/utils/featureAnnouncements";
 	import { usePublicConfig } from "$lib/utils/PublicConfig.svelte";
@@ -776,6 +777,9 @@
 								{loading}
 								{message}
 								modelId={currentModel.id}
+								gap={message.from === "assistant"
+									? gapForPrompt(messages[idx - 1]?.content)
+									: undefined}
 								alternatives={messagesAlternatives.find((a) => a.includes(message.id)) ?? []}
 								isAuthor={!shared}
 								readOnly={isReadOnly}
