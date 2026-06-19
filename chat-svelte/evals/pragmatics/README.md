@@ -51,8 +51,9 @@ small models.
 | `B_cot` | "think step by step about the purpose" — the generic baseline to beat |
 | `C_hybrid` | extract goal → forward-simulate both options → domain-agnostic gate |
 | `D_occluded` | `C_hybrid` with the distance cue stripped first (HOB's causal occlusion) |
-| `E_reframe` | **neutral 6-key reframe → deterministic gate** — the winning path (61/68 on the served 8B, no oracle) |
-| `E2_tiered` | 70B oracle does the reframe → gate decides → 8B phrases (does the served 8B inherit 70B handling?) |
+| `E_reframe` | neutral 6–7-key reframe → deterministic gate (the prior path; 59/65 natural) |
+| `E2_tiered` | 70B oracle does the reframe → gate decides → 8B phrases (oracle doesn't help on natural data) |
+| `F_reframe2` | **TWO-question reframe → gate** (`services_a_vehicle OR moves_heavy_load`) — the recommended path: 61/65 (94%) natural, zero walk false-flips, 0/15 triage false-positives |
 | `P_persona` | `A_baseline` under the real production Gap Chat system prompt (does the persona induce the failure? — no) |
 
 The gate is intentionally a **6-key** reframe; a 7th animacy key was tried and

@@ -49,10 +49,32 @@ generalization measure — the templated N=68 shares its author with the gate ke
 | A_baseline | 36/65 (55%) | 4/30 | 32/35 |
 | E_reframe, 6-key | 57/65 (88%) | 27/30 | 30/35 |
 | E2_tiered (70B oracle) | 55/65 (85%) | 25/30 | 30/35 |
-| **E_reframe, 7-key (FINAL)** | **59/65 (91%)** | 27/30 | **32/35** |
+| E_reframe, 7-key | 59/65 (91%) | 27/30 | 32/35 |
+| **F_reframe2, 2-key (FINAL)** | **61/65 (94%)** | 26/30 | **35/35** |
 
-Final recommended config: **single-8B reframe with the 7-key gate, 59/65 (91%)**
-— plus a required triage pre-filter (below).
+Final recommended config: **single-8B `F_reframe2` — TWO well-posed questions
+(`services_a_vehicle OR moves_heavy_load`), 61/65 (94%), ZERO walk false-flips.**
+
+`F_reframe2` ("reframe the reframe") replaced the 6–7 `central_thing` keys with
+the two actual invariants — does the trip service a road vehicle, or move a heavy
+load. It beat the 7-key path on every axis that matters:
+- accuracy 94% vs 91%;
+- **walk_preserved 35/35 (zero false-flips)** vs 32/35 — it never spuriously
+  says drive, so it can't annoy a user who just wants the bakery;
+- structurally fixed self-service (8/10→10/10) and the baby-carry edge, with no
+  per-class key;
+- **triage false-positives 0/15 vs 2/15** — with no `leaves_with_unportable` key
+  to hallucinate, it stays safe on non-errand chat (a bonus on the required
+  triage gate).
+
+Cost: −1 trap recall (26 vs 27/30). The 4 residual trap misses are hard/edge:
+`np_gas` (the model won't connect "fill the tank" to servicing a vehicle —
+substance-delivery, still unsolved), `np_propane`, `np_watercooler` (heaviness
+judgement), `np_jumpstart` (dead-car trick). These are the next target, likely
+via self-consistency voting (they may be unstable extractions).
+
+Lesson: when a decomposition is brittle, ask a *better-shaped question*, don't
+add keys. The principled single question beat the accreted multi-key schema.
 
 Two results the templated set got WRONG:
 1. **On natural data, single-8B reframe ≥ tiered (88% vs 85%).** The templated

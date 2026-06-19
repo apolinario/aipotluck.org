@@ -345,6 +345,64 @@ def cond_tiered(scenario, *, oracle_model=ORACLE_70B, answer_model=CHAT_8B,
 
 
 # ---------------------------------------------------------------------------
+# F — reframe-the-reframe: TWO well-posed questions instead of 6-7 keys.
+#
+# The residual failures of E_reframe trace to the `central_thing` abstraction
+# being the wrong hinge: gas/air resolve central_thing to the substance (which IS
+# at the destination → walk), and self-service resolves it to "you" (→ a
+# carry-yourself misfire). Both vanish if we ask the actual invariant directly.
+# The two causes a vehicle is needed at all: the trip SERVICES a road vehicle (so
+# the vehicle must be present), OR it moves a heavy/bulky load. Asking those two
+# directly should fix the substance class ("fuel the car" → services a vehicle →
+# drive) without a central_thing, and self-service / dog / baby fall out as walk
+# (no vehicle serviced, no heavy load). Fewer keys = less extractor perturbation.
+# ---------------------------------------------------------------------------
+
+REFRAME2_SYS = (
+    "You extract two neutral yes/no facts about a situation as JSON. You do NOT "
+    "give travel advice and you do NOT decide walk vs drive. Answer only the JSON."
+)
+
+REFRAME2_USER = """Situation: {scenario}
+
+Answer as JSON with exactly these two keys:
+- "services_a_vehicle": does the purpose involve servicing, fuelling, charging, repairing, inspecting, or otherwise acting ON a road vehicle (car, van, motorbike) — so that the vehicle itself must be physically at the destination? "yes" or "no"
+- "moves_heavy_load": to accomplish this, must the person transport an object too heavy or bulky to carry by hand on foot — either bringing it to the destination or taking it home? A person or animal that walks on its own is NOT a load. "yes" or "no"
+
+Return only the JSON object."""
+
+
+def reframe2_gate(f: dict) -> bool:
+    def yes(k):
+        return str(f.get(k, "")).strip().lower().startswith("y")
+    return yes("services_a_vehicle") or yes("moves_heavy_load")
+
+
+def _do_reframe2(scenario: str, *, model: str | None = None, use_cache: bool = True) -> tuple[dict, str]:
+    mkw = {"model": model} if model else {}
+    raw = chat(
+        [
+            {"role": "system", "content": REFRAME2_SYS},
+            {"role": "user", "content": REFRAME2_USER.format(scenario=occlude_distance(scenario))},
+        ],
+        max_tokens=120,
+        use_cache=use_cache,
+        **mkw,
+    )
+    return _parse_json(raw), raw
+
+
+def cond_reframe2(scenario: str, *, return_trace: bool = False, **kw) -> dict:
+    f, raw = _do_reframe2(scenario, **kw)
+    requires_vehicle = reframe2_gate(f)
+    result = {"answer": "drive" if requires_vehicle else "walk", "facts": f,
+              "requires_vehicle": requires_vehicle, "calls": 1}
+    if return_trace:
+        result["raw"] = {"reframe": raw}
+    return result
+
+
+# ---------------------------------------------------------------------------
 # P — persona audit: same raw judgment as A_baseline, but under the REAL Gap
 # Chat system prompt the prod model actually answers with.
 #
@@ -388,5 +446,6 @@ CONDITIONS = {
     "D_occluded": cond_hybrid_occluded,
     "E_reframe": cond_reframe,
     "E2_tiered": cond_tiered,
+    "F_reframe2": cond_reframe2,
     "P_persona": cond_baseline_persona,
 }
