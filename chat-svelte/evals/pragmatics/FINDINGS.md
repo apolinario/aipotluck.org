@@ -38,6 +38,64 @@ Three results that revise the earlier (2509/70B) conclusions:
    decide, the 8B phrase), but naive fact-injection is far less dangerous on the
    served model than the 2509 result implied.
 
+**Pressure test — 65-item NATURAL set (`scenarios_natural.jsonl`, 2026-06-18).**
+Hand-written, off-template, human-labeled gold + rationale, 30 drive / 35 walk,
+with adversarial items (portable purchase, baby-carry, heavy-grocery distractor,
+gas/air substance-delivery, propane, water-cooler). This is the trustworthy
+generalization measure — the templated N=68 shares its author with the gate keys.
+
+| condition | overall | trap recall | walk preserved |
+|-----------|---------|-------------|----------------|
+| A_baseline | 36/65 (55%) | 4/30 | 32/35 |
+| E_reframe, 6-key | 57/65 (88%) | 27/30 | 30/35 |
+| E2_tiered (70B oracle) | 55/65 (85%) | 25/30 | 30/35 |
+| **E_reframe, 7-key (FINAL)** | **59/65 (91%)** | 27/30 | **32/35** |
+
+Final recommended config: **single-8B reframe with the 7-key gate, 59/65 (91%)**
+— plus a required triage pre-filter (below).
+
+Two results the templated set got WRONG:
+1. **On natural data, single-8B reframe ≥ tiered (88% vs 85%).** The templated
+   "tiered 36/36 traps" was an artifact of structures aligned to the oracle's
+   extraction; on natural phrasing the 70B advantage vanishes and it adds errors
+   (windshield, jump-start, water-cooler, both daycare items). **Recommend the
+   single-8B path; drop the oracle.** (Every time the eval set changed, the
+   single-vs-tiered winner flipped — which is the argument for the natural set.)
+2. **The real generalization number is ~88%, not the templated ~90%+.**
+
+Three characterized residual failure classes (all gate/schema, addressable):
+- **(a) substance-delivery co-presence** — `np_gas`, `np_tireair` miss on BOTH
+  tiers. When the service delivers a substance (gas, air) into the car, the
+  reframe resolves `central_thing` to the substance (which genuinely IS at the
+  destination) → gate says walk. The systematic co-presence weak spot (~2/14).
+- **(b) co-participant-can-walk false-flips** — `np_dogvet`, `np_doggroom` flip a
+  walkable dog/kid to drive. **FIXED by the kept 7-key gate** (co_participant
+  7/9→9/9); this is what the natural set proved real and worth the key.
+- **(c) self-service "carry yourself"** — `np_dentist`, `np_gym` mild flips (the
+  central_thing is you; "can you be hand-carried" → no → drive). Milder, remains.
+- Edge: `np_baby_carry` (a baby can't walk but is hand-carryable) still flips —
+  one item, the animacy key doesn't catch "can't-walk-but-portable".
+
+After the 7-key fix the residuals are (a) gas/air substance-delivery and (c)
+self-service — both `central_thing`-resolution issues in the reframe schema.
+
+The set already earned its keep: it reversed the architecture call (single ≥
+tiered), reversed the companion_can_walk verdict (keep, not revert), confirmed
+gas/air as robust, and proved the dog-flip real. N=65 is a credible small eval,
+not yet a benchmark — HOB (arXiv:2603.29025) and ~150+ items remain for a SOTA
+claim.
+
+**Triage pre-filter is REQUIRED (not optional).** Ran the reframe→gate on 15
+NON-errand prompts ("explain recursion", "summarize the French Revolution",
+"should I take the job offer", etc.). 13/15 correctly resolved to no-vehicle, but
+**2/15 spuriously fired "drive"** — both via a hallucinated
+`leaves_with_unportable=yes` on an abstract `central_thing` ("a problem", "the
+French monarchy"); the `bring_unportable` branch never misfired. So the world-
+model pre-pass must only run on travel-decision questions — running it on all
+chat injects a spurious drive on ~13% of normal turns. A crude "is there a
+physical trip/destination?" triage kills both failures. This is the load-bearing
+product gate, ahead of any further trap-recall tuning.
+
 **Persona audit (P_persona).** The full production Gap Chat system prompt does
 NOT induce or worsen the failure — it mildly *helps* (traps 2→9/36). The failure
 is a property of the model, not the prompt framing. This is a clean contrast
@@ -46,15 +104,17 @@ tool-calling decision to 0%: heavy system context dampens a *chosen action*
 (whether to call a tool) but not a *factual judgment* (walk vs drive). The fix
 runs as its own pre-pass regardless, so it is persona-independent.
 
-**Negative result — gate walk-side (companion_can_walk).** An added 7th reframe
-key (animacy: "is the central thing a person/animal that can walk itself?",
-intended to stop the gate treating a walkable dog/kid as an uncarryable payload)
-helped the 70B oracle path (+1) but HURT the single served 8B (−2: 61→59).
-Tracing showed the 8B did not misread the new key — adding a question *perturbed
-the extraction of the other keys* (a car wash's `location_before_trip` flipped to
-"at_destination"). For a weak fact-extractor, every extra decomposition question
-is a liability; the minimal 6-key reframe wins. Reverted. (Same lesson as the
-spot-check correction below, now for *adding* a key: re-run the whole set.)
+**Gate walk-side — companion_can_walk (7th key), KEPT after the natural set
+overturned the templated verdict.** An animacy key ("is the central thing a
+person/animal that can walk itself?", to stop the gate treating a walkable
+dog/kid as an uncarryable payload). On the TEMPLATED set it looked like a
+regression for the single 8B (−2: 61→59 — adding a question perturbed the
+extraction of the *other* keys, flipping a car wash's `location_before_trip` to
+"at_destination"). That perturbation was itself a template artifact: on the
+trustworthy NATURAL set the key is a net **+2 (57→59/65)**, fixing the
+dog-vet/groomer false-flips (co_participant 7/9→9/9) with no trap-recall cost,
+and co_presence even ticked up. Lesson: the templated set's negative verdict was
+wrong; the natural set is the one to trust. (See the pressure-test section.)
 
 ---
 

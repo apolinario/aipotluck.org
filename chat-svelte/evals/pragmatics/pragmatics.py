@@ -241,16 +241,16 @@ Answer as JSON with exactly these keys (short factual answers):
 - "location_before_trip": where central_thing is before the trip — "at_destination" or "with_person"
 - "hand_portable": can one ordinary person carry central_thing by hand on foot the whole way? "yes" or "no"
 - "leaves_with_unportable": will the person leave the destination carrying something too big or heavy to carry by hand all the way home? "yes" or "no"
+- "companion_can_walk": is central_thing a person or animal that can walk the distance on its own legs (NOT an object, and NOT a vehicle the person drives)? "yes" or "no"
 
 Return only the JSON object."""
 
-# NEGATIVE RESULT (2026-06-18): a 7th key "companion_can_walk" (animacy, to stop
-# the gate treating a walkable dog/kid as an uncarryable payload) helped the 70B
-# oracle path (+1) but HURT the single served 8B (-2). Tracing showed the 8B did
-# NOT misread the new key — adding it PERTURBED extraction of the *other* keys
-# (it flipped a car wash's location_before_trip to "at_destination"). For a weak
-# extractor every extra question is a liability; the minimal 6-key reframe wins.
-# Kept out on purpose. (The single-8B path never had the walk-flip it targeted.)
+# companion_can_walk (animacy): stops the gate treating a walkable dog/kid as an
+# uncarryable payload. KEPT. On the TEMPLATED set it looked like a regression for
+# the single 8B (-2, perturbed extraction) — but that harm was itself a template
+# artifact: on the trustworthy NATURAL set it is a net +2 (57->59/65), fixing the
+# dog-vet/groomer false-flips (co_participant 7/9->9/9) with no trap-recall cost.
+# A clean case of the natural set overturning a templated-set conclusion.
 
 
 def reframe_gate(f: dict) -> bool:
@@ -262,8 +262,13 @@ def reframe_gate(f: dict) -> bool:
     def yes(k):
         return str(f.get(k, "")).strip().lower().startswith("y")
     with_person = "with_person" in str(f.get("location_before_trip", "")).lower()
-    bring_unportable = yes("needs_to_be_present") and with_person and not yes("hand_portable")
-    return bring_unportable or yes("leaves_with_unportable")
+    companion_can_walk = yes("companion_can_walk")
+    bring_unportable = (
+        yes("needs_to_be_present") and with_person and not yes("hand_portable")
+        and not companion_can_walk
+    )
+    leaves_unportable = yes("leaves_with_unportable") and not companion_can_walk
+    return bring_unportable or leaves_unportable
 
 
 def _do_reframe(scenario: str, *, model: str | None = None, use_cache: bool = True) -> tuple[dict, str]:
