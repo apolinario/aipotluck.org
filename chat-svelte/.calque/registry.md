@@ -13,22 +13,23 @@ SvelteKit-handler structural, or eval-harness-sibling false alarms.
 
 ## Real drift — collapse candidates
 
-### sanitizeJSONEnv — byte-identical triplet
-The exact same backtick-unquoting env sanitizer is copy-pasted into three files.
-If the env-quoting convention changes, all three must change in lockstep.
-**Collapse to one shared helper** (e.g. `src/lib/server/envParse.ts`) and import.
-⚠ DEFERRED, not collapsed yet: two of the three sites are in `models.ts`, the one
-file shared with the agent-service track — editing it now risks their rebase.
-Collapse after the agent-service fold window (coordinate on #potluck).
+### sanitizeJSONEnv — byte-identical triplet → COLLAPSED
+The exact same backtick-unquoting env sanitizer was copy-pasted into three files.
+✅ RESOLVED 2026-06-19: collapsed to one shared helper at `src/lib/server/envParse.ts`;
+all three sites now `import { sanitizeJSONEnv } from "$lib/server/envParse"`. The drift
+can no longer occur — there is one definition. Done after the agent-service fold window
+opened (their models.ts hunks were confirmed disjoint on #potluck; clean rebase for them).
+The client-side `unquoteEnv` in `$lib/utils/featureAnnouncements.ts` is deliberately NOT
+folded in (no fallback param, client layer) — different contract, stays separate.
 
 - pair: src/lib/server/models.ts::sanitizeJSONEnv | src/lib/server/usageLimits.ts::sanitizeJSONEnv
-- verdict: drift
+- verdict: collapsed
 - reviewed: 2026-06-19
 - pair: src/lib/server/models.ts::sanitizeJSONEnv | src/routes/login/callback/+server.ts::sanitizeJSONEnv
-- verdict: drift
+- verdict: collapsed
 - reviewed: 2026-06-19
 - pair: src/lib/server/usageLimits.ts::sanitizeJSONEnv | src/routes/login/callback/+server.ts::sanitizeJSONEnv
-- verdict: drift
+- verdict: collapsed
 - reviewed: 2026-06-19
 
 ---

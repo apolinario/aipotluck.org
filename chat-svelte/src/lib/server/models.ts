@@ -8,14 +8,9 @@ import endpoints, { endpointSchema, type Endpoint } from "./endpoints/endpoints"
 import JSON5 from "json5";
 import { logger } from "$lib/server/logger";
 import { makeRouterEndpoint } from "$lib/server/router/endpoint";
+import { sanitizeJSONEnv } from "$lib/server/envParse";
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
-
-const sanitizeJSONEnv = (val: string, fallback: string) => {
-	const raw = (val ?? "").trim();
-	const unquoted = raw.startsWith("`") && raw.endsWith("`") ? raw.slice(1, -1) : raw;
-	return unquoted || fallback;
-};
 
 const modelConfig = z.object({
 	/** Used as an identifier in DB */

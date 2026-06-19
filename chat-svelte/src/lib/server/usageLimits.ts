@@ -1,12 +1,7 @@
 import { z } from "zod";
 import { config } from "$lib/server/config";
 import JSON5 from "json5";
-
-const sanitizeJSONEnv = (val: string, fallback: string) => {
-	const raw = (val ?? "").trim();
-	const unquoted = raw.startsWith("`") && raw.endsWith("`") ? raw.slice(1, -1) : raw;
-	return unquoted || fallback;
-};
+import { sanitizeJSONEnv } from "$lib/server/envParse";
 
 // RATE_LIMIT is the legacy way to define messages per minute limit
 const usageLimitsSchema = z
