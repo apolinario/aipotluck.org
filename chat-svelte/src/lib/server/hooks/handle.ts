@@ -11,7 +11,6 @@ import {
 import { ERROR_MESSAGES } from "$lib/stores/errors";
 import { addWeeks } from "date-fns";
 import { logger } from "$lib/server/logger";
-import { adminTokenManager } from "$lib/server/adminToken";
 import { isHostLocalhost } from "$lib/server/isURLLocal";
 import { runWithRequestContext, updateRequestContext } from "$lib/server/requestContext";
 import { config, ready } from "$lib/server/config";
@@ -153,8 +152,10 @@ export async function handleRequest({ event, resolve }: HandleInput): Promise<Re
 				updateRequestContext({ user: auth.user.username });
 			}
 
-			event.locals.isAdmin =
-				event.locals.user?.isAdmin || adminTokenManager.isAdmin(event.locals.sessionId);
+			// Trust the resolver's isAdmin — it already ORs user.isAdmin, the same-instance
+			// in-memory grant, AND the durable ADMIN_PROOF_COOKIE (instance-independent). Recomputing
+			// from adminTokenManager alone here would drop the cookie grant on serverless.
+			event.locals.isAdmin = auth.isAdmin;
 
 			// CSRF protection
 			const requestContentType = event.request.headers.get("content-type")?.split(";")[0] ?? "";

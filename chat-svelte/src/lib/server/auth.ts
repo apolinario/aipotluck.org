@@ -17,7 +17,7 @@ import { collections } from "$lib/server/database";
 import JSON5 from "json5";
 import { logger } from "$lib/server/logger";
 import { ObjectId } from "bson";
-import { adminTokenManager } from "./adminToken";
+import { adminTokenManager, ADMIN_PROOF_COOKIE } from "./adminToken";
 import type { User } from "$lib/types/User";
 import type { Session } from "$lib/types/Session";
 import { base } from "$app/paths";
@@ -460,7 +460,13 @@ export async function authenticateRequest(
 			token: result.oauth?.token?.value,
 			sessionId,
 			secretSessionId,
-			isAdmin: result.user?.isAdmin || adminTokenManager.isAdmin(sessionId),
+			// Durable admin: the proof cookie survives across serverless instances (the in-memory
+			// adminTokenManager.isAdmin only sees grants made on this same instance). Bound to this
+			// sessionId, so an invalidated/regenerated session above won't carry an old grant.
+			isAdmin:
+				result.user?.isAdmin ||
+				adminTokenManager.isAdmin(sessionId) ||
+				(await adminTokenManager.verifyProof(cookie.get(ADMIN_PROOF_COOKIE), sessionId)),
 		};
 	}
 

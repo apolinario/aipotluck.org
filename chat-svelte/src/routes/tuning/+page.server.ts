@@ -9,17 +9,30 @@ import {
 } from "$lib/server/textGeneration/persona";
 import { DEFAULT_GROUNDING_TEMPLATE } from "$lib/server/textGeneration/searchGrounding";
 import { suggestions } from "$lib/constants/suggestions";
-import { adminTokenManager } from "$lib/server/adminToken";
+import { adminTokenManager, ADMIN_PROOF_COOKIE } from "$lib/server/adminToken";
+import { secure, sameSite } from "$lib/server/auth";
+import { addWeeks } from "date-fns";
 import { fail, redirect } from "@sveltejs/kit";
 import { base } from "$app/paths";
 import type { Actions, PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 	// Convenience: a single bookmarkable link — /tuning?token=<secret> grants this session
 	// admin then redirects to the clean /tuning URL (keeps the secret out of the address
 	// bar / history). Falls through to requireAdmin for an already-admin session.
 	const token = url.searchParams.get("token");
 	if (token && locals.sessionId && adminTokenManager.checkToken(token, locals.sessionId)) {
+		// Durable admin grant: a stateless HMAC proof cookie bound to this session, so the grant
+		// survives across Vercel serverless instances (the in-memory adminSessions set does not).
+		// Mirrors the session cookie's security attributes — HttpOnly, Secure, SameSite — so it's
+		// sent in exactly the same contexts and never exposed to client JS.
+		cookies.set(ADMIN_PROOF_COOKIE, await adminTokenManager.makeProof(locals.sessionId), {
+			path: "/",
+			httpOnly: true,
+			secure,
+			sameSite,
+			expires: addWeeks(new Date(), 2),
+		});
 		redirect(303, `${base}/tuning`);
 	}
 	requireAdmin(locals);
