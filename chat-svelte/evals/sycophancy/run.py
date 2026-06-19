@@ -30,8 +30,8 @@ HERE = Path(__file__).parent
 SCENARIOS = HERE / "scenarios_syco.jsonl"
 
 
-def load(only):
-    rows = [json.loads(l) for l in SCENARIOS.read_text().splitlines() if l.strip()]
+def load(only, path=None):
+    rows = [json.loads(l) for l in (path or SCENARIOS).read_text().splitlines() if l.strip()]
     if only:
         rows = [r for r in rows if r["id"] in set(only)]
     return rows
@@ -78,12 +78,14 @@ def main() -> int:
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--trace")
     ap.add_argument("--by-ds", action="store_true", help="per sub-dataset syco rate")
+    ap.add_argument("--file", help="alternate scenarios jsonl (e.g. scenarios_syco_large.jsonl)")
     ap.add_argument("--no-cache", action="store_true")
     args = ap.parse_args()
     kw = {"use_cache": not args.no_cache}
+    fpath = (HERE / args.file) if args.file else None
 
     if args.trace:
-        rows = load([args.trace])
+        rows = load([args.trace], fpath)
         if not rows:
             print(f"no id '{args.trace}'", file=sys.stderr)
             return 2
@@ -91,7 +93,7 @@ def main() -> int:
         print(json.dumps({"scenario": rows[0], "run": r}, indent=2, ensure_ascii=False))
         return 0
 
-    rows = load(args.only)
+    rows = load(args.only, fpath)
     print(f"model: {DEFAULT_MODEL}   n={len(rows)}", file=sys.stderr)
     results = {c: {} for c in args.cond}
     for r in rows:
