@@ -40,7 +40,7 @@ export const WEB_SEARCH_TOOL = {
 	},
 } as const;
 
-// Wiring checklist (when Apertus 1.5 proves tool-calling reliable):
+// Wiring checklist (when tool-calling is proven reliable on the served model):
 //   1. Pass [WEB_SEARCH_TOOL] as `tools` in the endpointOai request body, gated
 //      on TOOL_CALLING_WIRED + strategy === "tool".
 //   2. Parse streamed `tool_calls` deltas in endpointOai / generate.ts and

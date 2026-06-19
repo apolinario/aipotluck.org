@@ -42,7 +42,7 @@ describe("mcpToolToOpenAITool", () => {
 		expect(p.required).toEqual(["text", "target"]);
 	});
 
-	it("pads a no-param tool with the dummy arg (the Apertus-bug workaround)", () => {
+	it("pads a no-param tool with the dummy arg (the no-param-tool workaround)", () => {
 		const t = mcpToolToOpenAITool(noParams);
 		const p = t.function.parameters as { properties: Record<string, unknown>; required?: string[] };
 		expect(Object.keys(p.properties)).toEqual([DUMMY_PARAM]);

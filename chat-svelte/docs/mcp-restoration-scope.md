@@ -30,12 +30,12 @@ No tool decision is ever made by the persona-framed chat model.
 ## Why bare-router, not in-context tool-choice (two independent reasons)
 
 1. **Measured model behavior.**
-   - Served 8B (`Apertus-1.5-8B-sft-dpo-tools`): on a bare prompt the model emits clean tool_calls
+   - Served 8B: on a bare prompt the model emits clean tool_calls
      and decides search well (**~85%** held-out). Under our full system prompt the same decision
      drops to **0%** — even with an explicit "you can call web_search" directive. (Search-decision
      eval, `evals/search-decision/`.) Confirmed independently by the world-model session: the
      persona suppresses a *chosen action* (tool-call) but not a *factual judgment*.
-   - 70B (`Apertus-70B-Instruct-2509`): single tool call is fine (8/8, but drops to 2/8 under
+   - 70B: single tool call is fine (8/8, but drops to 2/8 under
      negation-priming — phrasing-sensitive). The weakness is the **multi-turn loop**: naked
      controller 0/8 (fabricates "done" and bails ~1 step in) → hybrid code-as-controller 8/8.
      (agent-service probes.)
@@ -71,7 +71,7 @@ weak model. That's the framing to carry: tool decisions live outside the passive
 6. **Serving confirm — DONE** (`evals/tool-serving-probe/`, probed live CSCS): multi-tool
    discrimination + arg extraction work cleanly (`get_weather({location:"Geneva"})`,
    `web_search({query:...})` picked correctly among 2–3 tools). The **no-argument-tool case is
-   broken** — the documented Apertus "tools without parameters" bug is live (leaks
+   weak** — the documented serving-layer "tools without parameters" edge case shows up (leaks
    `<|tools_prefix|>` instead of a parseable call). **Our bare-router+code-invokes design
    sidesteps it** (code constructs the call; no-arg tools need no model arg-extraction), so **no
    serving change is required.** It would only matter if someone wired in-stream model-driven

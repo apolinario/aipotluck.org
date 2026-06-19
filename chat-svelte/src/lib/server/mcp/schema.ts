@@ -1,6 +1,6 @@
 // MCP tool definitions <-> OpenAI function-tool schemas.
 //
-// Bakes in the VERIFIED workaround for the Apertus "tools without parameters" bug
+// Bakes in the VERIFIED workaround for the serving-layer "tools without parameters" edge case
 // (evals/tool-serving-probe): a tool whose input schema has no/empty properties makes the
 // served model emit a malformed call (leaks <|tools_prefix|>). Padding the schema with one
 // dummy param fixes it — the model emits a clean parseable call; we strip the dummy before
@@ -21,7 +21,7 @@ export type McpTool = {
 // Distinctive name (unlikely to collide with a real Space param) for the dummy pad.
 export const DUMMY_PARAM = "_noop";
 
-/** True when the tool advertises no input parameters — the Apertus bug trigger. */
+/** True when the tool advertises no input parameters — the no-param edge-case trigger. */
 export function isNoParamTool(tool: McpTool): boolean {
 	const props = tool.inputSchema?.properties;
 	return !props || Object.keys(props).length === 0;

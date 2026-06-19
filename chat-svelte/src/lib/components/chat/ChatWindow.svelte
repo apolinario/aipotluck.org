@@ -157,7 +157,7 @@
 	// Open-web search (P0 differentiator). Per Julie (2026-06-18) this is no longer
 	// a manual composer toggle: the system decides when a turn needs current
 	// open-web grounding. The deciding "layer" is the deterministic recency
-	// heuristic (isRecencyQuery) — NOT Apertus tool-calling, which is unreliable.
+	// heuristic (isRecencyQuery) — NOT mid-stream model tool-calling, which is unreliable here.
 	// When the heuristic fires, the turn is grounded on Wikipedia + Marginalia: we
 	// fetch /api/search here, flash the Web-search node on the map, then hand the
 	// result to the send flow as searchContext. The manual globe toggle is hidden

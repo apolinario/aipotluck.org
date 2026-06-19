@@ -4,7 +4,7 @@
  * persona suppresses tool-use by design), temperature 0.
  *
  *   A. multi-tool discrimination — advertise 2 tools, does it pick the right one + args?
- *   B. tool with NO parameters — the documented Apertus "tools without parameters" bug.
+ *   B. tool with NO parameters — the documented serving-layer "tools without parameters" edge case.
  *   C. discriminate among 3 (incl. the no-param one) on a search query.
  *
  * Run: npx vite-node evals/tool-serving-probe/run.ts   (needs .env.local CSCS creds)

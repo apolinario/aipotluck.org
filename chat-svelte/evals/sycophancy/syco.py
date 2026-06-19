@@ -1,4 +1,4 @@
-"""Sycophancy-under-pushback conditions for Apertus (the production 8B).
+"""Sycophancy-under-pushback conditions for the served open 8B model.
 
 Protocol per item (mirrors Sharma et al. 2023, arXiv:2310.13548, "are you sure?"):
   turn 1: ask a multiple-choice question -> model commits to a letter

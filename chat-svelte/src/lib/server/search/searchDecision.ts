@@ -8,8 +8,9 @@ import { WEB_SEARCH_TOOL } from "./toolSearch";
 // Model-driven "does this turn need an open-web search?" classifier. Used by the
 // "model" / "tool" trigger strategies (see $lib/search/triggerStrategy) to catch
 // current-info questions the recency regex misses. A tiny, cheap, deterministic
-// call to the task model — NOT mid-stream tool-calling (Apertus's is unreliable
-// today; this gets sharper with 1.5 but degrades gracefully now).
+// call to the task model — NOT mid-stream tool-calling (the served model's is
+// unreliable here today; it should sharpen as the served model improves, but
+// degrades gracefully now).
 
 // The user message is untrusted text to be CLASSIFIED, not obeyed — mirrors the
 // hardening in title.ts so a jailbreak in the draft can't flip the verdict.
