@@ -91,6 +91,42 @@
 		}
 		testing = false;
 	}
+
+	// "Run mini-eval" — a fast per-axis pass/fail canary of the UNSAVED draft persona against
+	// the evals/mini slice (deterministic, no LLM-judge). A signal, not the gate — gate real
+	// decisions on the full N=280 suite. The server runs the slice + the shared graders.
+	type MiniItem = { id: string; axis: string; pass: boolean; caved: boolean; detail: string };
+	type MiniScoreboard = {
+		total: { pass: number; n: number };
+		byAxis: Record<string, { pass: number; n: number }>;
+		caved: number;
+	};
+	let evalRunning = $state(false);
+	let evalError = $state("");
+	let evalBoard = $state<MiniScoreboard | null>(null);
+	let evalItems = $state<MiniItem[]>([]);
+	async function runMiniEval() {
+		evalRunning = true;
+		evalError = "";
+		evalBoard = null;
+		evalItems = [];
+		try {
+			const r = await fetch(`${base}/tuning/mini-eval`, {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ persona }),
+			});
+			const d = await r.json();
+			if (!r.ok) evalError = d.message ?? d.error ?? `error ${r.status}`;
+			else {
+				evalBoard = d.scoreboard;
+				evalItems = d.items;
+			}
+		} catch (e) {
+			evalError = e instanceof Error ? e.message : "request failed";
+		}
+		evalRunning = false;
+	}
 </script>
 
 <svelte:head><title>Gap Chat · tuning</title></svelte:head>
@@ -169,6 +205,71 @@
 				<summary class="cursor-pointer">Show the assembled system prompt sent to the model</summary>
 				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{testSystem}</pre>
 			</details>
+		{/if}
+	</section>
+
+	<!-- Run the mini-eval slice (evals/mini) against the UNSAVED draft persona: a fast per-axis
+	     canary before saving-to-prod. Deterministic (temp 0), no LLM-judge; a signal, not the gate. -->
+	<section class="space-y-2 rounded border border-dashed border-gray-300 p-3">
+		<span class="font-medium"
+			>Mini-eval
+			<span class="text-xs font-normal text-gray-500"
+				>— per-axis pass/fail on your unsaved persona above (10 items · ~13 calls · temp 0). A
+				canary, not the gate.</span
+			></span
+		>
+		<button
+			type="button"
+			onclick={runMiniEval}
+			disabled={evalRunning}
+			class="rounded bg-black px-3 py-1.5 text-xs text-white disabled:opacity-50"
+		>
+			{evalRunning ? "Running… (up to ~30s)" : "Run mini-eval"}
+		</button>
+		{#if evalError}
+			<p role="alert" class="rounded bg-red-100 px-3 py-2 text-xs text-red-800">{evalError}</p>
+		{/if}
+		{#if evalBoard}
+			<div role="status" aria-live="polite" class="space-y-2 text-xs">
+				<div class="flex flex-wrap items-center gap-2">
+					<span class="rounded bg-gray-900 px-2 py-1 font-medium text-white"
+						>{evalBoard.total.pass}/{evalBoard.total.n} pass</span
+					>
+					{#each Object.entries(evalBoard.byAxis) as [axis, s] (axis)}
+						<span
+							class="rounded px-2 py-1 {s.pass === s.n
+								? 'bg-green-100 text-green-800'
+								: 'bg-yellow-100 text-yellow-900'}">{axis} {s.pass}/{s.n}</span
+						>
+					{/each}
+					<span
+						class="rounded px-2 py-1 {evalBoard.caved === 0
+							? 'bg-green-100 text-green-800'
+							: 'bg-red-100 text-red-800'}">caved {evalBoard.caved}</span
+					>
+				</div>
+				<ul class="space-y-1">
+					{#each evalItems as it (it.id)}
+						<li class="flex items-start gap-2 rounded border p-1.5">
+							<span class="shrink-0 font-mono {it.pass ? 'text-green-700' : 'text-red-700'}"
+								>{it.pass ? "✓" : "✗"}</span
+							>
+							<div class="min-w-0">
+								<div class="text-gray-700">
+									{it.id}
+									<span class="text-gray-400">· {it.axis}{it.caved ? " · caved" : ""}</span>
+								</div>
+								<div class="truncate text-gray-500">{it.detail}</div>
+							</div>
+						</li>
+					{/each}
+				</ul>
+				<p class="text-gray-500">
+					Regex graders catch gross violations (claims “GPT-4”, opens with “I'd be happy to”) but
+					can miss subtle ones; 3 sycophancy items is a signal, not a statistic. For a real number,
+					run the full N=280 suite.
+				</p>
+			</div>
 		{/if}
 	</section>
 
