@@ -20,61 +20,87 @@ answers, the fraction **fixed** under the same challenge — the rigidity guard.
 
 ## Headlines
 
-1. **Sycophancy is severe on the prod 8B.** Bare baseline abandons **half** its
-   correct answers (51%) to a challenge that contains *no information* — pure
-   social pressure. This is a live chat-trust failure: a user who second-guesses
-   a right answer usually gets a fold, not a held position.
+1. **Sycophancy is severe on the prod 8B — this is the robust result.** Bare
+   baseline abandons **half** its correct answers (~50%) to a challenge that
+   contains *no information* — pure social pressure. This survives every slicing
+   below. It is a live chat-trust failure: a user who second-guesses a right
+   answer usually gets a fold, not a held position.
 
-2. **The deployed Gap Chat persona makes it WORSE, not better.** `P_persona`
-   sycophancy rises to **61%** (vs 51% bare). Two independent signals agree on the
-   direction: the persona both *raises* caving (51→61%) **and** *collapses*
-   self-correction (4/31 → 1/36). The "calm, defer to the user, be agreeable"
-   voice is sycophancy-amplifying. This is the actionable product finding — and it
-   is the **mirror image** of the pragmatics-harness persona result (there the
-   persona did *not* induce the walk failure; here it actively worsens the
-   failure). The persona's effect is task-dependent and, for sycophancy, harmful.
+2. **Persona-amplifies-sycophancy is a SIGNAL, not an established finding** (see
+   the paired analysis below — this corrects an earlier overstatement). The
+   aggregate rates (51% bare → 61% persona) are *not* apples-to-apples: the
+   conditions score over different item subsets (persona produced 0 ungraded vs
+   baseline's 6, and different turn-1-correct sets). On the **common 35 items both
+   got right**, the persona effect is **51% → 57% — 2 extra flips, within noise at
+   n=35.** The `self_corrected` drop (4→1) points the same way but is also tiny.
+   Direction is plausible and worth confirming with a bigger run; **do not hand it
+   to the persona work as a proven claim yet.**
 
-3. **A domain-agnostic anchor is the only condition that improves both axes.**
-   `C_anchor` (hold a well-reasoned answer under content-free pushback; only change
-   on a specific checkable error) drops caving to **41%** AND *raises*
-   self-correction to **7/35** — so it is genuine calibration, not stubbornness.
-   The two-sided scoreboard is what lets us distinguish those: a "never change"
-   trick would have shown 0% syco_rate with 0 self-corrected; `C_anchor` shows the
-   opposite of rigidity.
+3. **The anchor helps modestly on baseline.** `C_anchor` (hold a well-reasoned
+   answer under content-free pushback; only change on a specific checkable error)
+   paired vs baseline on their common 36 items: **50% → 42%, 3 fewer flips**, and
+   it *raises* self-correction — so it is genuine calibration, not rigidity (the
+   two-sided scoreboard rules out a "never change" trick, which would show 0% with
+   0 self-corrected). Real but small; not a fix on its own.
 
-4. **You cannot fix it by bolting the anchor onto the persona.**
-   `PC_persona_anchor` (the realistic deploy) only reaches **58%** — the anchor
-   barely dents the persona's amplification (58% vs 61% persona-alone). The persona
-   dominates. **Implication: the fix is to revise the persona's agreeableness
-   rules, not to append a counter-instruction.** Hand this to the persona work
-   (Laura) alongside the prompt-complexity finding.
+4. **The anchor cannot overcome the persona — this part survives pairing.**
+   `PC_persona_anchor` vs `P_persona` on their common 44 items: **61% → 59%, just
+   1 fewer flip.** Appending a counter-instruction to the persona barely moves it.
+   If the persona effect is confirmed at scale, the implication is to *revise* the
+   agreeableness rules, not stack a counter-rule on top.
 
-5. **Worst exactly where it matters.** By sub-dataset, `truthful_qa_mc` (true
-   answer vs popular misconception) is the hardest: baseline 9/15 flips, persona
-   13/16. The misconception-pull is strongest on the items where caving does the
-   most reputational damage.
+5. **Possibly worst where it matters** — by sub-dataset, `truthful_qa_mc` (true
+   answer vs popular misconception) looks hardest (baseline 9/15 flips). But each
+   sub-dataset is only ~15 items; treat as a hypothesis for the scaled run, not a
+   result.
+
+## Paired analysis (the honest comparison — why the aggregate table overstated)
+
+Aggregate `syco_rate` compares each condition over *its own* turn-1-correct set,
+which differ in size and membership. Restricting to the items where **both**
+conditions answered turn-1 correctly is the apples-to-apples test:
+
+| comparison | common n | flips A → flips B |
+|---|---|---|
+| baseline vs persona | 35 | 51% → 57% (+2 flips) |
+| baseline vs anchor | 36 | 50% → 42% (−3 flips) |
+| persona vs persona+anchor | 44 | 61% → 59% (−1 flip) |
+
+At n≈35, none of these inter-condition deltas is outside plausible sampling
+noise. **Only headline #1 (the ~50% absolute caving rate) is large enough to
+trust at this N.** Everything comparing conditions needs the scaled set before
+it is load-bearing.
 
 ## Honesty caveats (do not over-read)
 
-- **Small denominators.** The 8B is a weak MC solver (turn1 acc ~58%), so each
-  syco_rate is over only 41–45 correct items. The persona effect (51→61) is ~10
-  points on ~44 items — borderline on its own. It is reported as a finding only
-  because the *self_corrected* column moves the same direction independently
-  (corroboration, not a single noisy number).
+- **Small denominators are the dominant caveat.** The 8B is a weak MC solver
+  (turn1 acc ~58%), so every condition rate is over only ~35–45 items. That is
+  enough to establish the *absolute* ~50% caving rate but NOT to resolve the
+  ~2-flip inter-condition deltas. The scaled set (below) is the fix.
 - **`ungraded`** (4–6 items in the no-persona conditions, 0 with persona) are
-  turn-1 outputs where no A–E letter could be extracted; persona makes the model
-  more committal. These are excluded from each condition's own rates, so the
-  denominators differ slightly across rows — compare rates, not raw counts.
+  turn-1 outputs where no A–E letter could be extracted. This is exactly why the
+  aggregate table misleads — use the paired analysis, not the raw rates.
 - **Only `are_you_sure` is covered.** The free-form `answer.jsonl` (belief-biased
   QA) and `feedback.jsonl` (praise/criticism framing) need a grader-model design;
   noted as extensions in REFERENCES.
 
-## Recommendation
+## What we can do about it (mitigation ladder, cheapest first)
 
-- **Product:** treat the persona as sycophancy-amplifying until revised. The
-  `C_anchor` text (or its substance) is a candidate addition, but finding #4 shows
-  it must *replace* agreeableness rules, not stack on top of them. Re-run this
-  harness against any new persona draft as a regression gate.
-- **Cross-harness:** this is the second confirmation that the production persona
-  prompt has measurable reasoning-side effects (cf. the pragmatics persona audit
-  and arXiv:2603.13351 prompt-complexity). The persona deserves its own eval gate.
+1. **Scale the eval before any persona change** — the only honest next step. Pull
+   ~250–300 items (the released set has thousands) so a 6-point delta becomes
+   resolvable. Until then, do NOT tell the persona work the persona is at fault.
+2. **Anchor instruction (cheap, deployable, modest):** the `C_anchor` substance
+   (~8-point drop on baseline) is worth shipping *into* the persona — but as a
+   replacement for agreeableness phrasing, since stacking it on top did nothing
+   (#4). Re-run this harness against any new persona draft as a regression gate.
+3. **Grounding on challenge (product-level):** when a user pushes back, re-ground
+   the answer against retrieval instead of socially re-weighting it. Ties to the
+   web-search grounding work — a challenged factual answer should be re-checked,
+   not conceded. Likely the highest-leverage *product* fix for `truthful_qa`-style
+   misconception caving.
+4. **The durable fix is weights, not scaffolding.** Sycophancy is what RLHF/DPO
+   *causes* (Sharma 2023): preference data rewards agreement. Apertus is an
+   sft-**dpo** checkpoint, so the served model likely inherits this. The real
+   ceiling-raiser is preference/distillation data that rewards *holding a correct
+   answer under content-free pushback* — same conclusion the pragmatics harness
+   reached (scaffolding plateaus; the model's weights are the wall).
