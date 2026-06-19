@@ -63,6 +63,32 @@ const T = {
 			parameters: { type: "object", properties: {} }, // NO params — the documented bug
 		},
 	},
+	// Workaround test: same tool but with a single dummy OPTIONAL param so `properties` is
+	// non-empty (the bug is about empty properties).
+	get_server_status_dummy_opt: {
+		type: "function" as const,
+		function: {
+			name: "get_server_status",
+			description: "Return whether the service is currently up.",
+			parameters: {
+				type: "object",
+				properties: { _: { type: "string", description: "ignored; leave empty" } },
+			},
+		},
+	},
+	// And a dummy REQUIRED param, in case optional still serializes empty.
+	get_server_status_dummy_req: {
+		type: "function" as const,
+		function: {
+			name: "get_server_status",
+			description: "Return whether the service is currently up.",
+			parameters: {
+				type: "object",
+				properties: { noop: { type: "string", description: "pass any value, e.g. 'check'" } },
+				required: ["noop"],
+			},
+		},
+	},
 };
 
 async function probe(label: string, tools: unknown[], userMsg: string) {
@@ -95,6 +121,8 @@ async function main() {
 		[T.web_search, T.get_weather, T.get_server_status],
 		"Find the latest news on the EU AI Act."
 	);
+	await probe("D dummy-optional", [T.get_server_status_dummy_opt], "Is the service up? Check its status.");
+	await probe("E dummy-required", [T.get_server_status_dummy_req], "Is the service up? Check its status.");
 }
 main().catch((e) => {
 	console.error(e);

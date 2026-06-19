@@ -68,10 +68,17 @@ weak model. That's the framing to carry: tool decisions live outside the passive
 5. **Safety (non-negotiable):** the moderation pre-screen stays in front. **A Space's tool output is
    untrusted content** — treat as data, never instructions (injection guard on args *and* results).
    Per-Space allowlist; external tool calls are an execution surface.
-6. **Serving confirm:** verify CSCS serves Apertus with the **native tool-call parser + chat
-   template** (`--tool-call-parser apertus`, `tool_chat_template_apertus.jinja`) for multi-tool
-   reliability + arg formatting. Single calls already work, so it's not broken — but worth confirming
-   for N-tool use. (The known "tools without parameters" bug is documented upstream.)
+6. **Serving confirm — DONE** (`evals/tool-serving-probe/`, probed live CSCS): multi-tool
+   discrimination + arg extraction work cleanly (`get_weather({location:"Geneva"})`,
+   `web_search({query:...})` picked correctly among 2–3 tools). The **no-argument-tool case is
+   broken** — the documented Apertus "tools without parameters" bug is live (leaks
+   `<|tools_prefix|>` instead of a parseable call). **Our bare-router+code-invokes design
+   sidesteps it** (code constructs the call; no-arg tools need no model arg-extraction), so **no
+   serving change is required.** It would only matter if someone wired in-stream model-driven
+   `tool_calls` (we don't) — and even then there's a trivial **workaround, verified**: pad a
+   no-arg tool's schema with one dummy param (optional `_` → `{"_":""}`, or required `noop` →
+   `{"noop":"check"}`) and the model emits a clean parseable call; the code strips the dummy
+   before invoking the real tool. So the no-params bug is fully neutralizable either way.
 
 ## Shared dependency
 
