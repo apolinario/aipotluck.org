@@ -2,6 +2,7 @@ import { config } from "$lib/server/config";
 import { defaultModel } from "$lib/server/models";
 import { resolveServing } from "$lib/servingProvenance";
 import { resolveTriggerStrategy } from "$lib/search/triggerStrategy";
+import { getTuning } from "$lib/server/tuning";
 
 // Derive serving provenance ONCE, server-side, from the actual inference config
 // (base URL + served checkpoint) and ship only the honest labels to the client.
@@ -17,5 +18,8 @@ export const load = async () => {
 		searchTriggerStrategy: resolveTriggerStrategy(
 			Reflect.get(config, "PUBLIC_SEARCH_TRIGGER") as string | undefined
 		),
+		// TEMP (tuning panel): operator-overridden starter prompts, or null → the client
+		// falls back to the suggestions.ts defaults. Empty list also means "use default".
+		starters: (await getTuning()).starters?.length ? (await getTuning()).starters : null,
 	};
 };

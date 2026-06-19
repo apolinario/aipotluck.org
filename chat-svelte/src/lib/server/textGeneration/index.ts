@@ -11,6 +11,7 @@ import {
 	MessageUpdateStatus,
 } from "$lib/types/MessageUpdate";
 import { generate } from "./generate";
+import { getTuning } from "../tuning";
 import { mergeAsyncGenerators } from "$lib/utils/mergeAsyncGenerators";
 import type { TextGenerationContext } from "./types";
 
@@ -48,11 +49,16 @@ async function* textGenerationWithoutTitle(
 	const { conv, messages } = ctx;
 	const convId = conv._id;
 
+	// TEMP (pre-launch tuning panel): one cached read of the operator overrides for this
+	// turn — persona / grounding / decoding. Empty (→ code defaults) unless an editor has
+	// set them via /admin/tuning. See $lib/server/tuning.
+	const tuning = await getTuning();
+
 	// The honest Calm-AI persona is the FOUNDATION of every system prompt — identity
 	// derived from the served model id, closed-as-open guardrail, recency hedging,
 	// non-anthropomorphic voice. Any conv/model-configured preprompt is appended
 	// after it. Without this the fork regressed to rambling, confabulating answers.
-	const persona = buildPersonaPrompt(ctx.model.id ?? ctx.model.name);
+	const persona = buildPersonaPrompt(ctx.model.id ?? ctx.model.name, tuning.persona);
 	const basePreprompt = conv.preprompt?.trim() ? `${persona}\n\n${conv.preprompt}` : persona;
 
 	// Artifacts are opt-in per model (supportsArtifacts in the MODELS overrides),
@@ -68,7 +74,8 @@ async function* textGenerationWithoutTitle(
 		preprompt = injectSearchGroundingPrompt(
 			preprompt,
 			ctx.searchContext.evidence,
-			ctx.searchContext.asOf
+			ctx.searchContext.asOf,
+			tuning.grounding
 		);
 	}
 
@@ -80,7 +87,8 @@ async function* textGenerationWithoutTitle(
 	hardenLastUserTurn(processedMessages);
 
 	// Tool/MCP flow removed (B1-lite strip) — go straight to default text generation.
-	yield* generate({ ...ctx, messages: processedMessages }, preprompt);
+	// tuning.decoding (if set via the panel) is merged over GROUNDED_DECODING in generate.
+	yield* generate({ ...ctx, messages: processedMessages }, preprompt, tuning.decoding);
 
 	done.abort();
 }
