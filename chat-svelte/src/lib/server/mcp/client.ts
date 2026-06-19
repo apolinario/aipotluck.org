@@ -5,6 +5,7 @@
 // docs/mcp-restoration-scope.md); this module is just the transport + invocation.
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { logger } from "$lib/server/logger";
 import { mcpToolToOpenAITool, stripDummyArgs, type McpTool } from "./schema";
 import type OpenAI from "openai";
@@ -19,13 +20,19 @@ export type McpConnection = {
 	close(): Promise<void>;
 };
 
-/** Connect, handshake, and list tools. Caller owns close(). Throws on connect/list failure. */
-export async function connectMcp(url: string): Promise<McpConnection> {
-	const client = new Client(
-		{ name: "aipotluck-chat", version: "0.1.0" },
-		{ capabilities: {} }
-	);
-	const transport = new SSEClientTransport(new URL(url));
+/** Connect, handshake, and list tools. Caller owns close(). Throws on connect/list failure.
+ *  Transport: Streamable HTTP by default (the current standard — validated against a real MCP
+ *  server in evals/mcp-live-probe); legacy SSE only for an explicit `/sse` URL. `headers` lets
+ *  an authed server be reached (open Gradio Spaces need none). */
+export async function connectMcp(
+	url: string,
+	opts?: { headers?: Record<string, string> }
+): Promise<McpConnection> {
+	const client = new Client({ name: "aipotluck-chat", version: "0.1.0" }, { capabilities: {} });
+	const init = opts?.headers ? { requestInit: { headers: opts.headers } } : undefined;
+	const transport = url.endsWith("/sse")
+		? new SSEClientTransport(new URL(url), init)
+		: new StreamableHTTPClientTransport(new URL(url), init);
 	await client.connect(transport);
 
 	const listed = await client.listTools();
