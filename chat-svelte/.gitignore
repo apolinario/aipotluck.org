@@ -21,3 +21,8 @@ models/*
 
 # Playwright mobile-viewport screenshots (dev-only)
 .shots
+
+# calque (drift nose): commit the adjudicated registry — it's shared memory —
+# but ignore the local calibration telemetry it writes alongside it.
+.calque/fires.jsonl
+.calque/weights.json
