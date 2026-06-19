@@ -1,0 +1,387 @@
+"""Three conditions for the walk-or-drive pragmatic-trap eval.
+
+A  baseline   : raw single-shot, zero-shot.
+B  cot        : "think step by step" — the generic baseline to beat.
+C  hybrid     : decompose the implicit inference into explicit factual
+                sub-questions (each below the model's competence threshold),
+                synthesize a constraint deterministically, then let the model
+                give a final answer that is GATED by that constraint.
+
+The design bet of C: "should I walk or drive?" fails because purpose-inference
+is above an 8B's threshold. But "what does a car wash do, and to what object?"
+is a factual lookup it can do. We never ask the model to make the leap; we ask
+it the easy pieces and assemble the leap in Python.
+"""
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+
+from cscs_client import chat, DEFAULT_MODEL
+
+# ---------------------------------------------------------------------------
+# Answer extraction: every condition must reduce to walk | drive.
+# ---------------------------------------------------------------------------
+
+def classify_answer(text: str) -> str:
+    """Map free-text to 'walk' | 'drive' | 'unclear' using first decisive token."""
+    t = text.lower()
+    # Look for the first standalone occurrence of either verb.
+    walk = re.search(r"\bwalk(?:ing|s)?\b", t)
+    drive = re.search(r"\bdriv(?:e|ing|es)?\b", t)
+    # Also honor explicit "take the car" / "bring the car".
+    car = re.search(r"\b(take|bring|use)\b[^.]{0,20}\bcar\b", t)
+    if car and (not walk or car.start() < walk.start()):
+        return "drive"
+    if walk and drive:
+        return "walk" if walk.start() < drive.start() else "drive"
+    if walk:
+        return "walk"
+    if drive:
+        return "drive"
+    return "unclear"
+
+
+# ---------------------------------------------------------------------------
+# A — baseline
+# ---------------------------------------------------------------------------
+
+def cond_baseline(scenario: str, **kw) -> dict:
+    out = chat(
+        [{"role": "user", "content": scenario}],
+        max_tokens=256,
+        **kw,
+    )
+    return {"answer": classify_answer(out), "calls": 1, "raw": {"reply": out}}
+
+
+# ---------------------------------------------------------------------------
+# B — chain of thought
+# ---------------------------------------------------------------------------
+
+COT_SUFFIX = (
+    "\n\nThink step by step about the PURPOSE of the trip and what must travel "
+    "with you, then end with a single final line: 'ANSWER: walk' or 'ANSWER: drive'."
+)
+
+def cond_cot(scenario: str, **kw) -> dict:
+    out = chat(
+        [{"role": "user", "content": scenario + COT_SUFFIX}],
+        max_tokens=512,
+        **kw,
+    )
+    m = re.search(r"answer:\s*(walk|drive)", out, re.I)
+    ans = m.group(1).lower() if m else classify_answer(out)
+    return {"answer": ans, "calls": 1, "raw": {"reply": out}}
+
+
+# ---------------------------------------------------------------------------
+# C — simulate-then-gate  (the decompose trick, WITHOUT hardcoding the answer)
+#
+# Lineage from the 2024-2026 lit review (see README):
+#   FaR / Foresee-and-Reflect (arXiv:2310.03051) — force the model to state an
+#     action's consequences BEFORE choosing; lifted GPT-4 action-selection 50->71%.
+#   WebDreamer (arXiv:2411.06559) — LLM as world model simulates each candidate
+#     option's outcome, then pick the best; no tree search; works at 7B.
+#   LLM-Modulo (arXiv:2402.01817) + Small-Models-Need-Strong-Verifiers
+#     (arXiv:2404.17140) — model PROPOSES, an external/deterministic check
+#     DISPOSES. A deterministic rule is the strongest possible verifier and
+#     sidesteps "LLMs Cannot Self-Correct Reasoning Yet" (2310.01798), which is
+#     scoped ONLY to intrinsic (no-external-feedback) self-correction.
+#
+# The key difference from the rejected v1: there are NO hand-coded domain facts
+# (no "car wash -> vehicle -> drive" rules). The world knowledge lives entirely
+# in the model's simulation. Python contributes exactly ONE domain-agnostic
+# rule: prefer the cheaper option (walk) unless the simulation says it fails the
+# goal. That rule works for any "do X or Y to accomplish Z" question.
+# ---------------------------------------------------------------------------
+
+GOAL_SYS = (
+    "Restate the person's underlying goal in one short sentence: what they are "
+    "trying to accomplish, NOT how they travel. No advice, no walk/drive opinion."
+)
+
+# Note: the simulation is deliberately blind to any proposed answer (CoVe's
+# independence insight, 2309.11495) so it cannot rationalize a guess.
+SIM_USER = """A person is deciding how to make a short trip. The two options are WALK or DRIVE.
+Their goal: {goal}
+Scenario: {scenario}
+
+Imagine EACH option concretely and honestly, then judge it. Do not pick a
+winner — just simulate both. Return only JSON, no prose:
+{{"walk":  {{"arrive_with": "what they physically have on arrival", "achieves_goal": "yes|no", "why": "one short clause"}},
+  "drive": {{"arrive_with": "what they physically have on arrival", "achieves_goal": "yes|no", "why": "one short clause"}}}}"""
+
+
+def _parse_json(text: str) -> dict:
+    # Grab the first {...} block; models sometimes wrap it in prose/fences.
+    m = re.search(r"\{.*\}", text, re.S)
+    if not m:
+        return {}
+    try:
+        return json.loads(m.group(0))
+    except json.JSONDecodeError:
+        # tolerate trailing commas / single quotes minimally
+        cleaned = re.sub(r",\s*}", "}", m.group(0)).replace("'", '"')
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            return {}
+
+
+def _achieves(sim: dict, option: str) -> bool:
+    node = sim.get(option, {}) if isinstance(sim, dict) else {}
+    return str(node.get("achieves_goal", "")).strip().lower().startswith("y")
+
+
+def cond_hybrid(scenario: str, *, return_trace: bool = False, **kw) -> dict:
+    # Step 1 — extract the underlying goal (a sub-question below threshold).
+    goal = chat(
+        [{"role": "system", "content": GOAL_SYS}, {"role": "user", "content": scenario}],
+        max_tokens=80,
+        **kw,
+    ).strip()
+
+    # Step 2 — forward-simulate BOTH options, independent of any answer (FaR + CoVe).
+    raw_sim = chat(
+        [{"role": "user", "content": SIM_USER.format(goal=goal, scenario=scenario)}],
+        max_tokens=400,
+        **kw,
+    )
+    sim = _parse_json(raw_sim)
+    walk_ok = _achieves(sim, "walk")
+    drive_ok = _achieves(sim, "drive")
+
+    # Step 3 — domain-agnostic gate: cheapest option that achieves the goal.
+    # The ONLY rule. No domain facts. Prefer walk unless its simulation fails.
+    if walk_ok:
+        answer = "walk"
+    elif drive_ok:
+        answer = "drive"
+    else:
+        # Simulation says neither achieves the goal -> default to the
+        # capability-bearing option but flag low confidence for review.
+        answer = "drive"
+
+    result = {
+        "answer": answer,
+        "goal": goal,
+        "walk_ok": walk_ok,
+        "drive_ok": drive_ok,
+        "low_confidence": not (walk_ok or drive_ok),
+        "calls": 2,
+        "sim": sim,
+    }
+    if return_trace:
+        result["raw"] = {"goal": goal, "sim": raw_sim}
+    return result
+
+
+# ---------------------------------------------------------------------------
+# D — distance-occluded simulate-then-gate
+#
+# Diagnostic from the live run: the distance cue ("100m away") hijacks BOTH the
+# goal extraction and the simulation (HOB's causal-occlusion finding: distance
+# pulls 8.7-38x harder than the goal). So before simulating, strip the distance.
+# This is HOB's own occlusion method applied as a mitigation.
+#
+# Expectation (the bifurcation hypothesis): occlusion RECOVERS the physical-
+# capacity traps (heavy_box, fridge, bulky drop-offs) because the 8B *has* that
+# capability once the heuristic hook is gone — but it does NOT recover the
+# object-co-presence traps (car wash, gas, inspection), because the 8B lacks
+# that world-model primitive even when asked the crux question distance-free.
+# ---------------------------------------------------------------------------
+
+# matches "100m", "200 m", "150 meters", "0.2 km", optional "only/just" + trailing
+# "away / down the road / from my house"
+_DIST_RE = re.compile(
+    r"\b(only |just )?\d+(\.\d+)?\s?(m|km|meters?|metres?|kilom\w*)\b"
+    r"( away| down the road| from (my|the) (house|home))?",
+    re.I,
+)
+
+
+def occlude_distance(scenario: str) -> str:
+    return _DIST_RE.sub("nearby", scenario)
+
+
+def cond_hybrid_occluded(scenario: str, **kw) -> dict:
+    res = cond_hybrid(occlude_distance(scenario), **kw)
+    res["occluded_scenario"] = occlude_distance(scenario)
+    return res
+
+
+# ---------------------------------------------------------------------------
+# E — neutral pre-prompt reframe  (the "DSPy-esque" structure, done by hand)
+#
+# Fixes the LEADING reframe that turned the 8B into a yes-machine: the decompose
+# questions are NEUTRAL (no "e.g. the car is being serviced" hints). The model
+# supplies the world-facts; Python does ONE domain-agnostic composition (an AND
+# over model-supplied booleans). This is LLM-Modulo, not the rejected v1 rule
+# engine — there are no hand-coded domain facts (no "car wash -> vehicle").
+#
+# Covers two trap structures: object-co-presence (car wash, gas, inspection) and
+# bring-an-unportable-load (heavy box). It does NOT cover return-payload (buy a
+# fridge, carry it home) — that needs a separate question; left out on purpose
+# so the limit is visible rather than papered over.
+# ---------------------------------------------------------------------------
+
+REFRAME_SYS = (
+    "You extract neutral facts about a situation as JSON. You do NOT give travel "
+    "advice and you do NOT decide walk vs drive. Answer only the JSON object."
+)
+
+REFRAME_USER = """Situation: {scenario}
+
+Answer as JSON with exactly these keys (short factual answers):
+- "purpose": in one phrase, what is the person trying to accomplish?
+- "central_thing": the single object or being the purpose is mainly performed on or about
+- "needs_to_be_present": for the purpose to succeed, must central_thing be physically at the destination? "yes" or "no"
+- "location_before_trip": where central_thing is before the trip — "at_destination" or "with_person"
+- "hand_portable": can one ordinary person carry central_thing by hand on foot the whole way? "yes" or "no"
+- "leaves_with_unportable": will the person leave the destination carrying something too big or heavy to carry by hand all the way home? "yes" or "no"
+
+Return only the JSON object."""
+
+# NEGATIVE RESULT (2026-06-18): a 7th key "companion_can_walk" (animacy, to stop
+# the gate treating a walkable dog/kid as an uncarryable payload) helped the 70B
+# oracle path (+1) but HURT the single served 8B (-2). Tracing showed the 8B did
+# NOT misread the new key — adding it PERTURBED extraction of the *other* keys
+# (it flipped a car wash's location_before_trip to "at_destination"). For a weak
+# extractor every extra question is a liability; the minimal 6-key reframe wins.
+# Kept out on purpose. (The single-8B path never had the walk-flip it targeted.)
+
+
+def reframe_gate(f: dict) -> bool:
+    """Domain-agnostic gate over model-supplied facts (only ORs/ANDs, no domain
+    knowledge). Returns requires_vehicle.
+      (a) you must BRING an unportable thing that must be present, OR
+      (b) you LEAVE with an unportable load (return-payload).
+    """
+    def yes(k):
+        return str(f.get(k, "")).strip().lower().startswith("y")
+    with_person = "with_person" in str(f.get("location_before_trip", "")).lower()
+    bring_unportable = yes("needs_to_be_present") and with_person and not yes("hand_portable")
+    return bring_unportable or yes("leaves_with_unportable")
+
+
+def _do_reframe(scenario: str, *, model: str | None = None, use_cache: bool = True) -> tuple[dict, str]:
+    mkw = {"model": model} if model else {}
+    raw = chat(
+        [
+            {"role": "system", "content": REFRAME_SYS},
+            {"role": "user", "content": REFRAME_USER.format(scenario=occlude_distance(scenario))},
+        ],
+        max_tokens=200,
+        use_cache=use_cache,
+        **mkw,
+    )
+    return _parse_json(raw), raw
+
+
+def cond_reframe(scenario: str, *, return_trace: bool = False, **kw) -> dict:
+    f, raw = _do_reframe(scenario, **kw)
+    requires_vehicle = reframe_gate(f)
+    result = {"answer": "drive" if requires_vehicle else "walk", "facts": f,
+              "requires_vehicle": requires_vehicle, "calls": 1}
+    if return_trace:
+        result["raw"] = {"reframe": raw}
+    return result
+
+
+# ---------------------------------------------------------------------------
+# E2 — TIERED: a 70B oracle does the reframe; the cheap 8B does the answer.
+#
+# Product question: can an 8B-served chat model inherit 70B-quality co-presence
+# handling for one extra oracle call? Reports BOTH:
+#   - tier_a (answer): the 8B's natural-language decision given the oracle facts
+#                      (does the 8B USE supplied world-facts it can't generate?)
+#   - tier_b (gate_answer): the deterministic gate over those same facts
+#                      (the 8B only phrases the decision)
+# Their agreement tells you whether you can trust the 8B to read the facts, or
+# whether you must let the gate override it.
+# ---------------------------------------------------------------------------
+
+# The oracle tier is a deliberately-larger model (its own constant). The cheap
+# "chat" tier is whatever is actually being served — so it follows APERTUS_MODEL
+# (DEFAULT_MODEL) rather than a second hardcoded id / parallel env var.
+ORACLE_70B = "swiss-ai/Apertus-70B-Instruct-2509"
+CHAT_8B = DEFAULT_MODEL
+
+TIERED_ANSWER_USER = """{scenario}
+
+Established facts about this situation:
+{facts}
+
+Using these facts, should the person walk or drive? One sentence, then end with
+a line exactly 'ANSWER: walk' or 'ANSWER: drive'."""
+
+
+def cond_tiered(scenario, *, oracle_model=ORACLE_70B, answer_model=CHAT_8B,
+                return_trace=False, use_cache=True):
+    f, raw = _do_reframe(scenario, model=oracle_model, use_cache=use_cache)
+    gate_drive = reframe_gate(f)
+
+    ans = chat(
+        [{"role": "user", "content": TIERED_ANSWER_USER.format(
+            scenario=scenario, facts=json.dumps(f, ensure_ascii=False, indent=2))}],
+        model=answer_model, max_tokens=120, use_cache=use_cache,
+    )
+    m = re.search(r"answer:\s*(walk|drive)", ans, re.I)
+    tier_a = m.group(1).lower() if m else classify_answer(ans)
+    tier_b = "drive" if gate_drive else "walk"
+
+    result = {"answer": tier_a, "gate_answer": tier_b,
+              "agreed": tier_a == tier_b, "facts": f, "calls": 2}
+    if return_trace:
+        result["raw"] = {"reframe": raw, "answer": ans}
+    return result
+
+
+# ---------------------------------------------------------------------------
+# P — persona audit: same raw judgment as A_baseline, but under the REAL Gap
+# Chat system prompt the prod model actually answers with.
+#
+# Why: a sibling eval (chat search-decision) found the full persona suppresses an
+# in-context capability the bare 8B has (tool-calling 65% -> 0%). This tests the
+# same effect on the reasoning-trap class: does the heavy, conclusion-first
+# persona ("lead with the direct answer in the first sentence") INDUCE or WORSEN
+# the walk-or-drive failure vs the bare prompt? It also tells us whether a fix
+# must sit OUTSIDE the persona'd call (it does, if persona makes it worse).
+#
+# persona_prompt.txt is a verbatim snapshot of buildPersonaPrompt(
+# "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools") from chat-svelte
+# src/lib/server/textGeneration/persona.ts (branch chat-ui-migration, 2026-06-18).
+# Decoding is held at the harness default (temp 0) to isolate the prompt
+# variable; prod additionally applies GROUNDED_DECODING (temp 0.1 + penalties).
+# ---------------------------------------------------------------------------
+
+_PERSONA_PATH = Path(__file__).parent / "persona_prompt.txt"
+
+
+def _load_persona() -> str:
+    return _PERSONA_PATH.read_text().strip()
+
+
+def cond_baseline_persona(scenario: str, **kw) -> dict:
+    out = chat(
+        [
+            {"role": "system", "content": _load_persona()},
+            {"role": "user", "content": scenario},
+        ],
+        max_tokens=256,
+        **kw,
+    )
+    return {"answer": classify_answer(out), "calls": 1, "raw": {"reply": out}}
+
+
+CONDITIONS = {
+    "A_baseline": cond_baseline,
+    "B_cot": cond_cot,
+    "C_hybrid": cond_hybrid,
+    "D_occluded": cond_hybrid_occluded,
+    "E_reframe": cond_reframe,
+    "E2_tiered": cond_tiered,
+    "P_persona": cond_baseline_persona,
+}

@@ -1,0 +1,4 @@
+.cache/
+.env
+last_run.json
+__pycache__/
