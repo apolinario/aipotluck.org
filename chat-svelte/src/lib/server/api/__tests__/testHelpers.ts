@@ -1,5 +1,7 @@
 import { ObjectId } from "bson";
 import { collections } from "$lib/server/database";
+import { getDb } from "$lib/server/db/client";
+import { reports, contributions } from "$lib/server/db/schema";
 import type { User } from "$lib/types/User";
 import type { Session } from "$lib/types/Session";
 import type { Conversation } from "$lib/types/Conversation";
@@ -76,6 +78,13 @@ export async function createTestConversation(
 }
 
 export async function cleanupTestData() {
+	// reports/contributions are Drizzle-direct (NOT behind the Mongo adapter), and `reports` has a
+	// foreign key to conversations.id. Delete them FIRST — otherwise conversations.deleteMany() below
+	// hits an FK violation, aborts cleanup, and leaves rows that pollute whichever test file runs next
+	// (the in-suite flakiness: each spec is green alone but fails after the report spec). FK-safe order.
+	const db = getDb();
+	await db.delete(reports);
+	await db.delete(contributions);
 	await collections.conversations.deleteMany({});
 	await collections.abortedGenerations.deleteMany({});
 	await collections.users.deleteMany({});

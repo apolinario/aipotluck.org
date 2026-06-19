@@ -41,6 +41,13 @@ export default defineConfig({
 		include: ["uuid", "sharp", "clsx"],
 	},
 	test: {
+		// Run test FILES sequentially (root-level — the per-project knob doesn't reliably apply under
+		// `workspace`). The DB-integration specs share ONE database: in parallel, report.spec inserts a
+		// row that references a conversation while conversations.spec is deleting conversations, tripping
+		// the reports→conversations foreign key (PostgresError 23503) — green in isolation, flaky together.
+		// Serial execution + FK-safe cleanupTestData (deletes reports before conversations) makes them
+		// deterministic. Client/SSR specs are few and fast, so serializing them too costs little.
+		fileParallelism: false,
 		workspace: [
 			...(process.env.VITEST_BROWSER === "true"
 				? [
