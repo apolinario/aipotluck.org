@@ -104,15 +104,22 @@ each surfaced as a **live node on the "Under the hood" map** that pulses when th
 the thesis (a capable assistant *assembled from open parts*) made literal and visible. The chat
 gains a capability it lacks on its own, supplied by an open component, shown on the map.
 
-**Most likely / recommended concrete pick: an open vision / image-understanding Space.**
-- Apertus 1.5 is **text-only today** ("multimodal incoming" per the map) — an open vision Space
-  fills a *real, visible* capability gap, not a toy.
-- "The open stack gives the text model eyes" is the thesis in one sentence — the strongest demo
-  for the summit audience.
-- One Space, one tool (`analyze_image(image_url, question)`) = "relatively straightforward."
+**Hard constraint: no file uploads in the alpha.** So any tool whose input is a user-supplied
+file (vision/`analyze_image`, OCR, document, audio) has nothing to act on — **ruled out for the
+alpha** (revisit when uploads ship post-launch; a vision Space could still serve as a throwaway
+*wiring sample* if a clean one is handy).
 
-**Alternatives (identical wiring, only the schema + node change):** an open **translation** Space
-(serves "WE ARE MULTILINGUAL"), an **OCR/document** Space, or a partner's specific Space.
+**Recommended concrete pick (text-in, no files): an open translation Space.**
+- "Multilingual" is a literal *WE ARE* principle — an open MT model (NLLB / SeamlessM4T-text /
+  similar) lets the chat handle low-resource languages the base model is weak in. Directly serves
+  the global-south / sovereign framing for the summit audience.
+- Text → text, so the chat UI renders it with no new surface; serious tone (not a flashy gimmick).
+- One Space, one tool (`translate(text, target_language)`) = "relatively straightforward."
+
+**Alternatives (identical wiring, only schema + node change):** an open **image-generation** Space
+(text → image; visible artifact, but check tone for the ministerial audience + that the UI renders
+image output), a **specialized open-model** Space (route a domain query to a stronger open model),
+or a partner's specific Space. All are text-in, so all clear the no-upload constraint.
 
 **UX:** on a Space-tool call, the matching map node pulses (reuse the `ap:flash`/AgentStep pulse
 agent-service built), the answer is grounded in the Space's output, provenance attributes the
