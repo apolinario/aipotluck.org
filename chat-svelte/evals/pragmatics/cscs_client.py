@@ -40,9 +40,10 @@ def _key() -> str:
     return k
 
 
-def _cache_key(model: str, messages: list[dict], temperature: float, max_tokens: int) -> str:
+def _cache_key(model: str, messages: list[dict], temperature: float, max_tokens: int,
+               seed: int | None) -> str:
     blob = json.dumps(
-        {"model": model, "messages": messages, "t": temperature, "m": max_tokens},
+        {"model": model, "messages": messages, "t": temperature, "m": max_tokens, "s": seed},
         sort_keys=True,
         ensure_ascii=False,
     )
@@ -57,23 +58,30 @@ def chat(
     max_tokens: int = 512,
     use_cache: bool = True,
     retries: int = 3,
+    seed: int | None = None,
 ) -> str:
-    """Return the assistant message content. Cached on disk by content hash."""
+    """Return the assistant message content. Cached on disk by content hash.
+
+    seed: when set, sent to the endpoint AND folded into the cache key — so N
+    self-consistency samples at temperature>0 are distinct and reproducible
+    (without it, identical-content calls collapse to one cache entry).
+    """
     CACHE_DIR.mkdir(exist_ok=True)
-    ck = _cache_key(model, messages, temperature, max_tokens)
+    ck = _cache_key(model, messages, temperature, max_tokens, seed)
     cpath = CACHE_DIR / f"{ck}.json"
     if use_cache and cpath.exists():
         return json.loads(cpath.read_text())["content"]
 
-    payload = json.dumps(
-        {
-            "model": model,
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": max_tokens,
-            "stream": False,
-        }
-    ).encode("utf-8")
+    body = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "stream": False,
+    }
+    if seed is not None:
+        body["seed"] = seed
+    payload = json.dumps(body).encode("utf-8")
 
     last_err: Exception | None = None
     for attempt in range(retries):

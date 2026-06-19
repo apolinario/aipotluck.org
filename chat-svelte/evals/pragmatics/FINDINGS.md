@@ -76,6 +76,18 @@ via self-consistency voting (they may be unstable extractions).
 Lesson: when a decomposition is brittle, ask a *better-shaped question*, don't
 add keys. The principled single question beat the accreted multi-key schema.
 
+**Self-consistency voting (G_reframe2_vote) — NO gain, and that's the useful
+result.** Sampling the 2-key reframe 5× at temp 0.3 with distinct seeds and
+majority-voting the gate left the score unchanged (61/65) and missed the same 4
+traps — all 5 samples agreed on the wrong answer each time. So the residuals are
+**deterministic capability/schema misses, not unstable extractions**: the model
+robustly says `services_a_vehicle=no` for "fill the tank" (a real knowledge gap)
+and `moves_heavy_load=no` for propane / a 19L water bottle (arguably *defensible*
+— those may be label disputes, not model errors). Self-consistency is the wrong
+tool for a deterministic gap. **The 94% plateau is real; the last ~4 points need
+weights (distillation) or are debatable labels — not more inference-time
+scaffolding.** Voting at 5× cost for 0 gain is not the recommended config.
+
 Two results the templated set got WRONG:
 1. **On natural data, single-8B reframe ≥ tiered (88% vs 85%).** The templated
    "tiered 36/36 traps" was an artifact of structures aligned to the oracle's

@@ -402,6 +402,39 @@ def cond_reframe2(scenario: str, *, return_trace: bool = False, **kw) -> dict:
     return result
 
 
+# G — self-consistency over F_reframe2. Sample the 2-key reframe N times at a
+# small temperature with distinct seeds; majority-vote the gate decision. Targets
+# the residual hard traps (gas/propane/water-cooler/jump-start) on the hypothesis
+# that they are UNSTABLE extractions a vote can recover, not deterministic misses.
+VOTE_N = 5
+VOTE_TEMP = 0.3
+
+
+def cond_reframe2_vote(scenario: str, *, return_trace: bool = False,
+                       use_cache: bool = True, model: str | None = None, **_kw) -> dict:
+    mkw = {"model": model} if model else {}
+    votes, samples = [], []
+    for s in range(VOTE_N):
+        raw = chat(
+            [
+                {"role": "system", "content": REFRAME2_SYS},
+                {"role": "user", "content": REFRAME2_USER.format(scenario=occlude_distance(scenario))},
+            ],
+            max_tokens=120, temperature=VOTE_TEMP, seed=s, use_cache=use_cache, **mkw,
+        )
+        f = _parse_json(raw)
+        votes.append(reframe2_gate(f))
+        samples.append(f)
+    drive_votes = sum(1 for v in votes if v)
+    requires_vehicle = drive_votes > VOTE_N // 2
+    result = {"answer": "drive" if requires_vehicle else "walk",
+              "drive_votes": f"{drive_votes}/{VOTE_N}",
+              "requires_vehicle": requires_vehicle, "calls": VOTE_N}
+    if return_trace:
+        result["raw"] = {"samples": samples}
+    return result
+
+
 # ---------------------------------------------------------------------------
 # P — persona audit: same raw judgment as A_baseline, but under the REAL Gap
 # Chat system prompt the prod model actually answers with.
@@ -447,5 +480,6 @@ CONDITIONS = {
     "E_reframe": cond_reframe,
     "E2_tiered": cond_tiered,
     "F_reframe2": cond_reframe2,
+    "G_reframe2_vote": cond_reframe2_vote,
     "P_persona": cond_baseline_persona,
 }
