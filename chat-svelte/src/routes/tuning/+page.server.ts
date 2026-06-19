@@ -2,7 +2,7 @@
 // Gated by requireAdmin (on top of the app-wide Basic Auth gate). Remove this whole
 // routes/tuning/ dir + $lib/server/tuning.ts before public launch.
 import { requireAdmin } from "$lib/server/api/utils/requireAuth";
-import { getTuning, setTuning, type Tuning } from "$lib/server/tuning";
+import { getTuning, setTuning, TuningConflictError, type Tuning } from "$lib/server/tuning";
 import {
 	DEFAULT_PERSONA_TEMPLATE,
 	GROUNDED_DECODING,
@@ -103,10 +103,22 @@ export const actions: Actions = {
 				.filter(Boolean),
 		};
 
+		// Optimistic-concurrency token: the editedAt the editor loaded (empty if there was no row).
+		// setTuning rejects the write if the stored row changed since, so two editors can't silently
+		// clobber each other (the save is a full-document replace).
+		const expectedEditedAt = String(fd.get("expectedEditedAt") ?? "").trim() || undefined;
+
 		try {
-			const saved = await setTuning(next, locals.user?.username ?? "admin");
-			return { saved: true, warnings: safetyWarnings(saved) };
+			const saved = await setTuning(next, locals.user?.username ?? "admin", expectedEditedAt);
+			return { saved: true, warnings: safetyWarnings(saved), editedAt: saved.editedAt };
 		} catch (e) {
+			if (e instanceof TuningConflictError) {
+				return fail(409, {
+					conflict: true,
+					conflictBy: e.editedBy ?? "someone",
+					conflictAt: e.editedAt ?? "",
+				});
+			}
 			return fail(400, { error: e instanceof Error ? e.message : "save failed" });
 		}
 	},

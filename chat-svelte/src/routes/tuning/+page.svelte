@@ -20,6 +20,13 @@
 	// svelte-ignore state_referenced_locally
 	let starters = $state(data.current.starters?.join("\n") ?? "");
 
+	// Optimistic-concurrency token: the editedAt this editor's in-progress text is based on. Like the
+	// textareas it's set ONCE at load and advances ONLY on a successful save — NOT on a conflict
+	// reload (where the server's editedAt jumps to the other editor's save). Submitted as a hidden
+	// field; the server rejects the write if the stored row no longer matches it.
+	// svelte-ignore state_referenced_locally
+	let baseEditedAt = $state(data.current.editedAt ?? "");
+
 	// "Try it" — run a query against the UNSAVED draft persona (no save, no tab-switch).
 	let testQuery = $state("");
 	let testAnswer = $state("");
@@ -65,7 +72,15 @@
 				Last edited by {cur.editedBy} · {cur.editedAt?.replace("T", " ").slice(0, 16)} UTC
 			</p>
 		{/if}
-		{#if form?.error}
+		{#if form?.conflict}
+			<p role="alert" class="rounded bg-red-100 px-3 py-2 text-red-800">
+				<strong>Not saved.</strong> {form.conflictBy} changed the panel{form.conflictAt
+					? ` at ${form.conflictAt.replace("T", " ").slice(0, 16)} UTC`
+					: ""}, so saving now would overwrite their edits. Reload to see their changes, then
+				re-apply yours. (Reloading discards your unsaved edits — copy anything you want to keep
+				first.)
+			</p>
+		{:else if form?.error}
 			<p role="alert" class="rounded bg-red-100 px-3 py-2 text-red-800">Error: {form.error}</p>
 		{:else if form?.saved && form.warnings?.length}
 			<p role="status" aria-live="polite" class="rounded bg-yellow-100 px-3 py-2 text-yellow-900">
@@ -126,12 +141,23 @@
 		class="space-y-6"
 		use:enhance={() => {
 			saving = true;
-			return async ({ update }) => {
+			return async ({ result, update }) => {
+				// Advance the concurrency token ONLY on a successful save — the editor's text is now
+				// based on this new version. On a conflict (or error) leave it, so a re-submit without
+				// reloading still trips the guard instead of clobbering the other editor.
+				if (
+					result.type === "success" &&
+					result.data?.saved &&
+					typeof result.data.editedAt === "string"
+				) {
+					baseEditedAt = result.data.editedAt;
+				}
 				await update({ reset: false });
 				saving = false;
 			};
 		}}
 	>
+		<input type="hidden" name="expectedEditedAt" value={baseEditedAt} />
 		<div class="space-y-1">
 			<div class="flex items-baseline justify-between">
 				<span class="font-medium">System persona</span>

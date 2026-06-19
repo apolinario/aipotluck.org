@@ -5,7 +5,7 @@ vi.mock("$lib/server/database", () => ({
 	collections: { config: { findOne: vi.fn(async () => null), updateOne: vi.fn(async () => ({})) } },
 }));
 
-import { parseTuning, TuningSchema, setTuning } from "./tuning";
+import { parseTuning, TuningSchema, setTuning, TuningConflictError } from "./tuning";
 import { collections } from "$lib/server/database";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,6 +73,54 @@ describe("setTuning (writes reject invalid — never silently wipe)", () => {
 	it("THROWS on a wrong-typed field rather than dropping all overrides", async () => {
 		// @ts-expect-error — deliberately invalid input (simulates a non-form POST)
 		await expect(setTuning({ persona: 123 }, "laura")).rejects.toThrow();
+		expect(updateOne).not.toHaveBeenCalled();
+	});
+});
+
+describe("setTuning optimistic concurrency (two editors can't silently clobber)", () => {
+	const findOne = vi.mocked((collections as any).config.findOne);
+	beforeEach(() => {
+		updateOne.mockReset();
+		findOne.mockReset();
+		findOne.mockResolvedValue(null);
+		updateOne.mockResolvedValue({ matchedCount: 1 });
+	});
+
+	it("matching token → conditional update on {key, editedAt}, no upsert, lands", async () => {
+		const out = await setTuning({ persona: "X" }, "laura", "2026-06-19T10:00:00.000Z");
+		expect(out.persona).toBe("X");
+		const [filter, , opts] = updateOne.mock.calls[0];
+		expect(filter).toMatchObject({ key: "TUNING", editedAt: "2026-06-19T10:00:00.000Z" });
+		expect(opts).toMatchObject({ upsert: false });
+	});
+
+	it("stale token (matchedCount 0) → TuningConflictError with the current editor/time", async () => {
+		updateOne.mockResolvedValue({ matchedCount: 0 });
+		findOne.mockResolvedValue({
+			key: "TUNING",
+			persona: "Y",
+			editedBy: "julie",
+			editedAt: "2026-06-19T11:00:00.000Z",
+		});
+		await expect(
+			setTuning({ persona: "X" }, "laura", "2026-06-19T10:00:00.000Z")
+		).rejects.toMatchObject({
+			name: "TuningConflictError",
+			editedBy: "julie",
+			editedAt: "2026-06-19T11:00:00.000Z",
+		});
+	});
+
+	it("no token + no existing row → first-ever save upserts", async () => {
+		await setTuning({ persona: "X" }, "laura");
+		const [filter, , opts] = updateOne.mock.calls[0];
+		expect(filter).toMatchObject({ key: "TUNING" });
+		expect(opts).toMatchObject({ upsert: true });
+	});
+
+	it("no token but a row appeared since load → TuningConflictError, no write", async () => {
+		findOne.mockResolvedValue({ key: "TUNING", editedBy: "julie", editedAt: "2026-06-19T11:00:00.000Z" });
+		await expect(setTuning({ persona: "X" }, "laura")).rejects.toBeInstanceOf(TuningConflictError);
 		expect(updateOne).not.toHaveBeenCalled();
 	});
 });

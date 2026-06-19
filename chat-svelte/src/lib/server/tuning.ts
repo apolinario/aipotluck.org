@@ -49,13 +49,26 @@ export function parseTuning(raw: unknown): Tuning {
 type ConfigRowStore = {
 	findOne(filter: { key: string }): Promise<Record<string, unknown> | null>;
 	updateOne(
-		filter: { key: string },
+		filter: { key: string; editedAt?: string },
 		update: { $set: Record<string, unknown> },
 		opts: { upsert: boolean }
-	): Promise<unknown>;
+	): Promise<{ matchedCount: number }>;
 };
 function configStore(): ConfigRowStore {
 	return collections.config as unknown as ConfigRowStore;
+}
+
+/** Thrown by setTuning when the stored row changed since the editor loaded it (optimistic-
+ *  concurrency miss). Carries who/when of the conflicting save so the UI can tell the editor
+ *  to reload before overwriting. Distinct from a validation Error so the route can branch. */
+export class TuningConflictError extends Error {
+	constructor(
+		readonly editedBy?: string,
+		readonly editedAt?: string
+	) {
+		super("Tuning was changed by someone else since you loaded the panel");
+		this.name = "TuningConflictError";
+	}
 }
 
 /** Current tuning overrides (cached ~20s). Fails safe to {} on any read/parse error so a
@@ -78,15 +91,49 @@ export async function getTuning(): Promise<Tuning> {
 /** REPLACE the stored doc with a validated `next` (the admin form submits the full desired
  *  state, so an omitted field means "use the code default" — replace, not merge). Stamps
  *  editor + time, upserts, busts cache. THROWS on invalid input — writes must NOT fail-safe
- *  to {} (that would silently wipe every existing override); only reads do. */
-export async function setTuning(next: Tuning, editedBy: string): Promise<Tuning> {
+ *  to {} (that would silently wipe every existing override); only reads do.
+ *
+ *  Optimistic concurrency: `expectedEditedAt` is the editedAt the editor loaded. The write only
+ *  lands if the stored row STILL has that editedAt — otherwise a concurrent editor saved in
+ *  between and this would clobber them (the panel does a full-document replace, so even an edit to
+ *  a different field would overwrite the other's), so we throw TuningConflictError instead. Pass
+ *  undefined only when the editor loaded with NO row yet (first-ever save). */
+export async function setTuning(
+	next: Tuning,
+	editedBy: string,
+	expectedEditedAt?: string
+): Promise<Tuning> {
 	const parsed = TuningSchema.safeParse({ ...next, editedBy, editedAt: new Date().toISOString() });
 	if (!parsed.success) {
 		throw new Error(
 			parsed.error.issues.map((i) => `${i.path.join(".") || "value"}: ${i.message}`).join("; ")
 		);
 	}
-	await configStore().updateOne({ key: KEY }, { $set: parsed.data }, { upsert: true });
+	const store = configStore();
+
+	if (expectedEditedAt) {
+		// Conditional update: matches only while the row's editedAt is unchanged. matchedCount 0 →
+		// the row changed or vanished since load → conflict. No upsert (the row must already exist).
+		const res = await store.updateOne(
+			{ key: KEY, editedAt: expectedEditedAt },
+			{ $set: parsed.data },
+			{ upsert: false }
+		);
+		if (res.matchedCount === 0) {
+			const current = parseTuning(await store.findOne({ key: KEY }));
+			throw new TuningConflictError(current.editedBy, current.editedAt);
+		}
+	} else {
+		// Editor loaded with no existing row. Insert-if-absent: if a row appeared since (someone
+		// created the tuning while they edited from defaults), that's a conflict too. Small
+		// read-then-write window, acceptable for the once-ever first save.
+		const existing = parseTuning(await store.findOne({ key: KEY }));
+		if (existing.editedAt) {
+			throw new TuningConflictError(existing.editedBy, existing.editedAt);
+		}
+		await store.updateOne({ key: KEY }, { $set: parsed.data }, { upsert: true });
+	}
+
 	cache = { at: Date.now(), value: parsed.data };
 	return parsed.data;
 }
