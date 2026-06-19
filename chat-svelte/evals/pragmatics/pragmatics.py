@@ -472,6 +472,66 @@ def cond_baseline_persona(scenario: str, **kw) -> dict:
     return {"answer": classify_answer(out), "calls": 1, "raw": {"reply": out}}
 
 
+# ---------------------------------------------------------------------------
+# K — prompt-complexity ladder (the "Car Wash" follow-up: arXiv:2603.13351,
+# "Prompt Complexity Dilutes Structured Reasoning"). Holding the walk/drive
+# question FIXED, wrap it in increasing irrelevant prompt complexity and measure
+# whether accuracy degrades. The padding is deliberately ANSWER-NEUTRAL — generic
+# response guidelines that say nothing about travel, purpose, or co-location — so
+# any degradation is dilution of reasoning by load, not leakage or distraction
+# toward a wrong answer. K0 is just A_baseline (the lean reference).
+# ---------------------------------------------------------------------------
+
+_PAD_MEDIUM = (
+    "You are an AI assistant. Please follow these response guidelines: keep a "
+    "friendly, professional tone; be concise but complete; avoid unnecessary "
+    "jargon; briefly explain your reasoning where helpful; and make your final "
+    "answer clear. Here is the question:\n\n"
+)
+
+_PAD_HEAVY = (
+    "You are a knowledgeable, careful, and helpful AI assistant operating in a "
+    "high-stakes professional setting. Before responding, internalise ALL of the "
+    "following guidelines and apply them throughout your answer:\n"
+    "1. Maintain a warm yet professional tone at all times.\n"
+    "2. Be thorough but also concise; never pad your response.\n"
+    "3. Avoid jargon, but do not oversimplify.\n"
+    "4. Where useful, explain the reasoning behind your answer step by step.\n"
+    "5. Consider multiple perspectives before settling on a position.\n"
+    "6. Structure your response for maximum clarity and readability.\n"
+    "7. Acknowledge uncertainty where it genuinely exists.\n"
+    "8. Be culturally sensitive and inclusive in your phrasing.\n"
+    "9. Do not make assumptions beyond what is stated.\n"
+    "10. End with a single clear, unambiguous final answer.\n"
+    "Adhering to every guideline above, now respond to the following question:\n\n"
+)
+
+
+def _cond_padded(pad: str):
+    def _c(scenario: str, **kw) -> dict:
+        out = chat([{"role": "user", "content": pad + scenario}], max_tokens=256, **kw)
+        return {"answer": classify_answer(out), "calls": 1, "raw": {"reply": out}}
+    return _c
+
+
+cond_complex_medium = _cond_padded(_PAD_MEDIUM)
+cond_complex_heavy = _cond_padded(_PAD_HEAVY)
+
+
+# The FAITHFUL test of 2603.13351: take a prompt that elicits STRUCTURED
+# reasoning (B_cot) and dilute it with the same answer-neutral heavy padding.
+# If complexity dilutes structured reasoning, K_cot_heavy < B_cot.
+def cond_cot_heavy(scenario: str, **kw) -> dict:
+    out = chat(
+        [{"role": "user", "content": _PAD_HEAVY + scenario + COT_SUFFIX}],
+        max_tokens=512,
+        **kw,
+    )
+    m = re.search(r"answer:\s*(walk|drive)", out, re.I)
+    ans = m.group(1).lower() if m else classify_answer(out)
+    return {"answer": ans, "calls": 1, "raw": {"reply": out}}
+
+
 CONDITIONS = {
     "A_baseline": cond_baseline,
     "B_cot": cond_cot,
@@ -482,4 +542,7 @@ CONDITIONS = {
     "F_reframe2": cond_reframe2,
     "G_reframe2_vote": cond_reframe2_vote,
     "P_persona": cond_baseline_persona,
+    "K1_medium": cond_complex_medium,
+    "K2_heavy": cond_complex_heavy,
+    "K3_cot_heavy": cond_cot_heavy,
 }

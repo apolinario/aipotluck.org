@@ -308,3 +308,58 @@ live in the gate, not the model.
 - **Audit the persona prompt** (arXiv:2603.13351): a conclusion-first system
   prompt can *induce* this failure. Re-run with/without the Gap Chat voice rules.
 - Treat 20 hand items as a fast probe; HOB (2603.29025) is the real instrument.
+
+---
+
+## Prompt-complexity dimension (#11 — arXiv:2603.13351, the "Car Wash" follow-up)
+
+*Folded into this harness as conditions `K1_medium`, `K2_heavy`, `K3_cot_heavy`;
+run on the 65-item natural set. The claim under test: "prompt complexity dilutes
+structured reasoning." Padding is answer-NEUTRAL (generic response guidelines —
+nothing about travel, purpose, or co-location), so any effect is load, not leakage.*
+
+### Padding the BARE baseline → bias shift, not dilution
+
+| cond | overall | trap_recall | walk_preserved |
+|------|---------|-------------|----------------|
+| A_baseline (lean) | 36/65 (55%) | 4/30 | 32/35 |
+| K1_medium | 40/65 (62%) | 15/30 | 25/35 |
+| K2_heavy | 39/65 (60%) | 5/30 | 34/35 |
+
+Overall accuracy is **flat** (within noise across 36/40/39). What moves is the
+walk↔drive **response bias**: medium padding pushes toward "drive" (trap_recall
+up 4→15 but 10 walk false-flips), heavy padding pushes back toward "walk"
+(34/35 preserved, 5/30 traps). The bare baseline barely reasons (4/30 traps — it
+defaults to "walk"), so there is **no structured reasoning to dilute** — only a
+default to perturb. This is NOT the paper's effect; it is prompt-induced
+answer-bias drift.
+
+### Padding the STRUCTURED prompt (CoT) → the faithful test
+
+| cond | overall | trap_recall | walk_preserved |
+|------|---------|-------------|----------------|
+| B_cot | 50/65 (77%) | 19/30 | 31/35 |
+| K3_cot_heavy | 45/65 (69%) | 14/30 | 31/35 |
+
+This is the on-point replication: take a prompt that *does* elicit structured
+reasoning (step-by-step about purpose) and dilute it with the same heavy padding.
+It degrades **8 percentage points (77→69%), and every lost point is in
+trap_recall** (19→14) — `walk_preserved` is untouched (31/31). Paired McNemar:
+8 dropped vs 3 recovered, **p=0.227** — directional, not significant at n=65.
+
+### Read
+
+- **The paper's effect appears where it should and nowhere else.** Complexity
+  erodes the *effortful* reasoning (CoT on the hard trap cases), not the easy
+  defaults (walks are preserved exactly). On the bare model there is nothing
+  structured to erode, so complexity only shifts bias. Mechanistically clean.
+- **But it is a TREND, not a proven effect** at n=65 (p=0.227). The honest claim:
+  weak corroboration of "complexity dilutes structured reasoning" on this 8B —
+  the dilution is real-looking and falls on exactly the reasoning-dependent items,
+  but the natural set is too small to confirm it. A larger set (or the HOB 500)
+  would settle it.
+- **Cross-suite theme.** Same shape as GSM-Symbolic (added *depth* breaks problems
+  the model otherwise solves) and the sycophancy persona (a heavier prompt is
+  worse): on this 8B, added complexity costs the *effortful* reasoning first. For
+  Gap Chat, that argues for **lean prompts on reasoning-dependent turns** — the
+  persona/guideline weight is not free.

@@ -55,6 +55,8 @@ small models.
 | `E2_tiered` | 70B oracle does the reframe → gate decides → 8B phrases (oracle doesn't help on natural data) |
 | `F_reframe2` | **TWO-question reframe → gate** (`services_a_vehicle OR moves_heavy_load`) — the recommended path: 61/65 (94%) natural, zero walk false-flips, 0/15 triage false-positives |
 | `P_persona` | `A_baseline` under the real production Gap Chat system prompt (does the persona induce the failure? — no) |
+| `K1_medium` / `K2_heavy` | **prompt-complexity ladder** (arXiv:2603.13351): bare ask wrapped in increasing *answer-neutral* padding — on the bare model this shifts walk/drive bias, doesn't dilute |
+| `K3_cot_heavy` | the faithful dilution test: `B_cot` (structured reasoning) + heavy padding — degrades it 77→69%, all loss in trap_recall (p=0.227, a trend) |
 
 The gate is intentionally a **6-key** reframe; a 7th animacy key was tried and
 reverted (it perturbs a weak extractor's other keys — see FINDINGS, negative
