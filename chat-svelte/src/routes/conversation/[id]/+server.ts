@@ -114,21 +114,34 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	});
 
 	if (usageLimits?.messagesPerMinute) {
-		// check if the user is rate limited
-		const nEvents = Math.max(
-			await collections.messageEvents.countDocuments({
-				userId,
-				type: "message",
-				expiresAt: { $gt: new Date() },
-			}),
-			await collections.messageEvents.countDocuments({
+		// Per-SESSION limit (each guest/user has a unique sessionId) — the fair, NAT-SAFE primary
+		// limit: one person can't spam, but classmates sharing a public IP behind a NAT each get their
+		// own budget. (Hard-won lesson: a per-IP limit at the per-person rate once locked out a whole
+		// NAT'd classroom at once — exactly the education audience this alpha targets.)
+		const perSession = await collections.messageEvents.countDocuments({
+			userId,
+			type: "message",
+			expiresAt: { $gt: new Date() },
+		});
+		if (perSession > usageLimits.messagesPerMinute) {
+			error(429, ERROR_MESSAGES.rateLimited);
+		}
+		// Per-IP limiting is OFF by default — a single conference/lecture-hall wifi NAT can put a
+		// thousand phones behind ONE IP, so any per-IP cap risks locking out the whole room (the exact
+		// failure we're avoiding). Per-session above is the NAT-safe limiter; the global daily cap is
+		// the runaway-spend backstop. Enable a LOOSE per-IP anti-abuse ceiling only if a specific
+		// single-IP-many-sessions abuse appears, by setting RATE_LIMIT_IP_MULTIPLIER (× messagesPerMinute);
+		// keep it generous (it is a runaway ceiling, never the per-person rate).
+		const ipMultiplier = Number(Reflect.get(config, "RATE_LIMIT_IP_MULTIPLIER")) || 0;
+		if (ipMultiplier > 0) {
+			const perIp = await collections.messageEvents.countDocuments({
 				ip: getClientAddress(),
 				type: "message",
 				expiresAt: { $gt: new Date() },
-			})
-		);
-		if (nEvents > usageLimits.messagesPerMinute) {
-			error(429, ERROR_MESSAGES.rateLimited);
+			});
+			if (perIp > usageLimits.messagesPerMinute * ipMultiplier) {
+				error(429, ERROR_MESSAGES.rateLimited);
+			}
 		}
 	}
 
