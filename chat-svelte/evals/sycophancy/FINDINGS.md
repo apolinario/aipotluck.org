@@ -118,3 +118,92 @@ load-bearing inter-condition claim.
    inherits it. Same wall the pragmatics harness hit — scaffolding plateaus;
    preference/distillation data that rewards *holding a correct answer under
    content-free pushback* is the real ceiling-raiser.
+
+## Prod voice-edit A/B (2026-06-19): the shipped edit is NULL on caving
+
+The current prod persona shipped a 2-sentence voice edit (`s293ayesc`): *"if you
+do not know something, say so plainly rather than guessing"* + *"suggest
+conclusions the user did not ask for"* (anti-volunteering). We tested whether that
+edit moves caving, on the same N=280 set. Two conditions, both the **current full
+prod persona** (built verbatim from the deployed `persona.ts` by
+`build_persona_v2.py`, identity tokens filled), differing by exactly the 113 chars
+of the two added sentences:
+
+| cond | turn1_acc | **syco_rate** | self_corrected | final-acc under pushback |
+|------|-----------|---------------|----------------|--------------------------|
+| A_baseline (bare) | 136/259 | **46%** | 33/123 (27%) | 106/259 (41%) |
+| V_new_nolever (persona, pre-edit) | 149/278 | 58% | 3/129 (2%) | 66/278 (24%) |
+| V_new_full (persona + shipped edit) | 151/278 | **61%** | 4/127 (3%) | 63/278 (23%) |
+
+Paired McNemar (exact, two-sided):
+- **The edit: V_new_full vs V_new_nolever — p=0.743 (final-correct), p=0.572 (held
+  among 147 both-correct-at-t1). NULL.** "Say so plainly rather than guessing" did
+  not reduce caving (61% vs 58%, marginally the wrong way). This is the **third**
+  prompt-level mitigation to return null (anchor, persona-simplify-direction, now
+  this voice edit).
+- **The persona vs bare: V_new_full vs A_baseline — p=0.000, baseline better
+  (73 vs 25 discordant). SIGNIFICANT.** The full current persona ~halves
+  final-under-pushback accuracy (41%→23%) and collapses self-correction 27%→3% —
+  reproducing the original persona-harm result on the *current* deployed persona,
+  now at p<0.001 on final-answer accuracy.
+
+**Mechanism (the asymmetry):** under the persona the model *switches* its answer on
+"are you sure?" far more readily, but switches are undirected — right answers cave
+(61%) while wrong answers still don't get fixed (3%). The persona raises social
+capitulation; a voice rule about "guessing" doesn't touch the switching reflex.
+
+**For the persona/model team:** the shipped voice edit is fine for its actual
+purpose (honesty/anti-confabulation tone) but is **not** a sycophancy mitigation —
+do not count it as one. Caving is weights-level (ladder #4). If a prompt-level
+stopgap is wanted before DPO, the only untested lever left is **grounding on
+challenge** (ladder #3), not voice rules.
+
+## Persona-harm localization (2026-06-19): the harm is the BULK, and it's trimmable
+
+Follow-up to the above. Question: is the persona's caving harm intrinsic to having
+any persona, or is it the added instruction *bulk* — and if bulk, where? Two trims
+of the current prod persona, built by `build_persona_v2.py` from the deployed
+template, run on the same N=280 set:
+- **`V_id_only`** — identity paragraphs only (1268 chars; drops Voice/style/trust/
+  cultural/recency/project). The trimmability *bound*.
+- **`V_no_voice`** — full persona minus the single 1860-char `Voice` block.
+
+| cond | caving | held_correct | self_corrected | final-acc |
+|------|--------|--------------|----------------|-----------|
+| A_baseline (bare) | 46% | 73/136 (54%) | 33/123 (27%) | 106/259 (41%) |
+| V_new_full (full persona) | **61%** | 59/151 (39%) | 4/127 (3%) | 63/278 (23%) |
+| V_no_voice (− Voice block) | 36% | 97/152 (64%) | 9/126 (7%) | 106/278 (38%) |
+| V_id_only (identity only) | **18%** | 127/154 (82%) | 6/124 (5%) | 133/278 (48%) |
+
+Paired McNemar on final-correct:
+- **Trimmable, decisively.** `V_id_only` vs full **p=0.000** (82 vs 12 discordant);
+  `V_no_voice` vs full **p=0.000** (60 vs 17). The full persona's harm is NOT
+  intrinsic — it is removable, monotonically in persona size (61%→36%→18% caving).
+- **The Voice block is the single biggest contributor** (removing it: 61%→36%
+  caving), but the leanest persona does best — the harm is distributed across the
+  bulk, not one paragraph.
+- **`V_id_only` vs baseline: p=0.155 (ns), favors id_only.** Trimming lands you at
+  *bare-or-slightly-better*, not below.
+
+**Two-sided caveat (this is why the scoreboard has a self-correction column):**
+`V_id_only`'s low 18% caving is *partly rigidity* — self-correction also falls
+(27%→5%). It wins net accuracy only because it *holds* far more correct answers
+(82% vs 54%) than it loses to failed self-correction. So persona-trimming removes
+the persona's self-inflicted amplification; it does **not** push caving *below* the
+bare model's floor. Base sycophancy remains a grounding/weights problem.
+
+**Mechanism — the misconception slice:** on `truthful_qa` (true answer vs popular
+misconception), `V_no_voice` still caves 65% ≈ bare (59%), but `V_id_only` halves
+it to 28%. So *misconception*-caving is driven by the **non-Voice** paragraphs —
+prime suspect the `Trust: you aim to be accurate but can be wrong` line (in
+no_voice, absent in id_only), which may *license* the cave. Worth a single-line
+removal test.
+
+**Recommendation (tested, not guessed): ship a leaner persona.** "Shorter persona →
+less caving" is now a measured design principle. Identity-only isn't shippable (it
+drops the non-anthropomorphism + crisis-safety + brevity rules the persona exists
+for), so the work is a *bisection*: keep the safety/voice essentials, shed the
+rest, and gate each draft against this harness. Quick win: dropping the Voice block
+alone halves the persona's caving contribution (61%→36%). This is the prompt-level
+lever; it caps at ~bare, so pair it with grounding-on-challenge (#3) / weights (#4)
+for a fix that goes *below* the bare floor.

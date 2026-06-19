@@ -56,6 +56,31 @@ def _load_persona() -> str:
     return (_SIB / "persona_prompt.txt").read_text().strip()
 
 
+def _load_persona_v2() -> str:
+    """The CURRENT prod persona (s293ayesc): full DEFAULT_PERSONA_TEMPLATE with the
+    shipped "say so plainly rather than guessing" voice edit, identity tokens filled.
+    Built by build_persona_v2.py straight from the deployed persona.ts."""
+    return (Path(__file__).parent / "persona_prompt_v2.txt").read_text().strip()
+
+
+def _load_persona_v2_nolever() -> str:
+    """Same current prod persona with ONLY the two added voice sentences removed —
+    the pre-edit counterfactual. McNemar(v2_full vs v2_nolever) isolates the edit."""
+    return (Path(__file__).parent / "persona_prompt_v2_nolever.txt").read_text().strip()
+
+
+def _load_persona_v2_idonly() -> str:
+    """Lean BOUND: identity paragraphs only (no voice/style/trust/cultural). If this
+    still caves like the full persona, the harm is intrinsic, not trimmable."""
+    return (Path(__file__).parent / "persona_prompt_v2_idonly.txt").read_text().strip()
+
+
+def _load_persona_v2_novoice() -> str:
+    """Full prod persona MINUS the big 'Voice' block. Localizes whether the
+    deference-dense voice rules drive the caving harm."""
+    return (Path(__file__).parent / "persona_prompt_v2_novoice.txt").read_text().strip()
+
+
 _LETTER_RE = re.compile(r"\b(?:answer\s+is\s*)?\(?([A-E])\)?\b", re.IGNORECASE)
 
 
@@ -111,9 +136,36 @@ def cond_persona_anchor(question: str, **kw) -> dict:
     return ask_then_challenge(question, system=_load_persona() + "\n\n" + ANCHOR_SYSTEM, **kw)
 
 
+def cond_persona_v2(question: str, **kw) -> dict:
+    """Current prod persona WITH the shipped voice edit (the real deployed prompt)."""
+    return ask_then_challenge(question, system=_load_persona_v2(), **kw)
+
+
+def cond_persona_v2_nolever(question: str, **kw) -> dict:
+    """Current prod persona WITHOUT the two added voice sentences (pre-edit)."""
+    return ask_then_challenge(question, system=_load_persona_v2_nolever(), **kw)
+
+
+def cond_persona_v2_idonly(question: str, **kw) -> dict:
+    """Lean identity-only persona (the trimmability bound)."""
+    return ask_then_challenge(question, system=_load_persona_v2_idonly(), **kw)
+
+
+def cond_persona_v2_novoice(question: str, **kw) -> dict:
+    """Full prod persona minus the Voice block (culprit-localization)."""
+    return ask_then_challenge(question, system=_load_persona_v2_novoice(), **kw)
+
+
 CONDITIONS = {
     "A_baseline": cond_baseline,
     "P_persona": cond_persona,
     "C_anchor": cond_anchor,
     "PC_persona_anchor": cond_persona_anchor,
+    # prod voice-edit A/B (s293ayesc): full deployed persona vs the same persona
+    # with only the two added sentences stripped. Isolates the shipped edit.
+    "V_new_full": cond_persona_v2,
+    "V_new_nolever": cond_persona_v2_nolever,
+    # persona-harm localization: is the harm trimmable, and where does it live?
+    "V_id_only": cond_persona_v2_idonly,    # bound: identity paragraphs only
+    "V_no_voice": cond_persona_v2_novoice,  # full minus the Voice block
 }
