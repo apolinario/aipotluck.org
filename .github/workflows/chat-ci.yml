@@ -41,4 +41,9 @@ jobs:
       - run: npm ci
         env:
           HUSKY: 0 # skip the husky `prepare` hook install in CI
+      # The config proxy types from $env/dynamic/* keys, which svelte-kit sync
+      # narrows from .env. .env is gitignored, so seed it from the committed
+      # key-only scaffold (.env.ci) — empty values, no secrets — or svelte-check
+      # reports every config.X access as a missing property.
+      - run: cp .env.ci .env
       - run: npm run check # svelte-kit sync + svelte-check (types + Svelte)
