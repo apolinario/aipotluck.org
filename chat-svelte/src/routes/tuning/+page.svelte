@@ -19,6 +19,34 @@
 	let grounding = $state(data.current.grounding ?? "");
 	// svelte-ignore state_referenced_locally
 	let starters = $state(data.current.starters?.join("\n") ?? "");
+
+	// "Try it" — run a query against the UNSAVED draft persona (no save, no tab-switch).
+	let testQuery = $state("");
+	let testAnswer = $state("");
+	let testSystem = $state("");
+	let testing = $state(false);
+	let testError = $state("");
+	async function runTest() {
+		testing = true;
+		testError = "";
+		testAnswer = "";
+		try {
+			const r = await fetch(`${base}/tuning/try`, {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ query: testQuery, persona }),
+			});
+			const d = await r.json();
+			if (!r.ok) testError = d.message ?? d.error ?? `error ${r.status}`;
+			else {
+				testAnswer = d.answer;
+				testSystem = d.system;
+			}
+		} catch (e) {
+			testError = e instanceof Error ? e.message : "request failed";
+		}
+		testing = false;
+	}
 </script>
 
 <svelte:head><title>Gap Chat · tuning</title></svelte:head>
@@ -50,6 +78,47 @@
 			</p>
 		{/if}
 	</header>
+
+	<!-- Try the unsaved draft persona without saving-to-prod or switching to the chat. -->
+	<section class="space-y-2 rounded border border-dashed border-gray-300 p-3">
+		<span class="font-medium"
+			>Try it
+			<span class="text-xs font-normal text-gray-500"
+				>— runs your unsaved persona above, default decoding; nothing is saved</span
+			></span
+		>
+		<textarea
+			bind:value={testQuery}
+			aria-label="Test query"
+			rows="2"
+			placeholder="Type a user message to test the current draft persona…"
+			class="w-full rounded border p-2 text-xs"
+		></textarea>
+		<button
+			type="button"
+			onclick={runTest}
+			disabled={testing || !testQuery.trim()}
+			class="rounded bg-black px-3 py-1.5 text-xs text-white disabled:opacity-50"
+		>
+			{testing ? "Running…" : "Run"}
+		</button>
+		{#if testError}
+			<p role="alert" class="rounded bg-red-100 px-3 py-2 text-xs text-red-800">{testError}</p>
+		{/if}
+		{#if testAnswer}
+			<div
+				role="status"
+				aria-live="polite"
+				class="whitespace-pre-wrap rounded bg-gray-50 p-2 text-xs"
+			>
+				{testAnswer}
+			</div>
+			<details class="text-xs text-gray-500">
+				<summary class="cursor-pointer">Show the assembled system prompt sent to the model</summary>
+				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{testSystem}</pre>
+			</details>
+		{/if}
+	</section>
 
 	<form
 		method="POST"
