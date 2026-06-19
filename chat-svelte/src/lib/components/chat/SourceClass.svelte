@@ -26,15 +26,23 @@
 	}
 	let { kind }: Props = $props();
 
-	const META: Record<Props["kind"], { dot: string; text: string }> = {
+	// Each class leads with an uppercase LABEL so the source-class indicators read as a
+	// deliberate matched set with the web case (SourceStrip's "looked it up") — the deck's
+	// two-state badge treatment (p38). The label is the class; the text is the honest detail.
+	const META: Record<Props["kind"], { dot: string; label: string; text: string }> = {
 		// Muted ink dot, not the live green — parametric knowledge is static, not a live feed.
-		// "no live sources" (not "no live lookup"): true whether no search ran OR a search ran
+		// Label is "from training" (the class); the detail stays "no live sources" — NOT the
+		// deck's "no lookup". "no live sources" is true whether no search ran OR a search ran
 		// and found nothing — in both, no sources grounded the answer (webSearch is only set when
 		// sources.length > 0; see conversation/[id]/+server.ts). The honest invariant is "nothing
 		// live grounded this", not a claim about whether a lookup was attempted.
-		model: { dot: "var(--ap-ink-3)", text: "from the model’s own knowledge · no live sources" },
+		model: { dot: "var(--ap-ink-3)", label: "from training", text: "no live sources" },
 		// Distinct from web (live) and model (static): user-supplied grounding.
-		docs: { dot: "var(--ap-building)", text: "grounded in your uploaded documents" },
+		docs: {
+			dot: "var(--ap-building)",
+			label: "your docs",
+			text: "grounded in your uploaded documents",
+		},
 	};
 	let meta = $derived(META[kind]);
 </script>
@@ -47,6 +55,8 @@
 		: "This answer was grounded in documents you uploaded."}
 >
 	<span class="size-[6px] shrink-0 rounded-full" style="background: {meta.dot}"></span>
+	<span class="font-semibold tracking-[0.08em] text-[var(--ap-ink-2)] uppercase">{meta.label}</span>
+	<span class="text-[var(--ap-ink-3)]" aria-hidden="true">·</span>
 	<span>{meta.text}</span>
 	{#if kind === "model"}
 		<button

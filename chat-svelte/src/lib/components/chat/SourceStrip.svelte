@@ -54,6 +54,13 @@
 				onclick={() => (open = !open)}
 			>
 				<span class="size-[6px] shrink-0 rounded-full" style="background:var(--ap-live);"></span>
+				<!-- Leading label mirrors SourceClass's "from training" so the two source-class
+				     states read as a deliberate matched pair (deck p38). Web genuinely ran a lookup,
+				     so "looked it up" is honest here. -->
+				<span class="font-semibold tracking-[0.08em] text-[var(--ap-ink)] uppercase"
+					>looked it up</span
+				>
+				<span class="text-[var(--ap-ink-3)]" aria-hidden="true">·</span>
 				<span>
 					{sources.length} open source{sources.length === 1 ? "" : "s"}{date
 						? ` · as of ${date}`
