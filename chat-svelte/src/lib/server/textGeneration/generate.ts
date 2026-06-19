@@ -74,6 +74,19 @@ export async function* generate(
 	});
 
 	for await (const output of stream) {
+		// Agent step (Story B): the agent endpoint emits one of these per execution step. Forward it as an
+		// AgentStep update so the client beats the Hermes node on the live-stack map — then continue (the
+		// step's text already streamed inside the <think> block, so this carries no answer tokens).
+		if ("agentStep" in output && output.agentStep) {
+			const as = output.agentStep as { index: number; tool: string; total?: number };
+			yield {
+				type: MessageUpdateType.AgentStep,
+				index: as.index,
+				tool: as.tool,
+				total: as.total,
+			};
+			continue;
+		}
 		// Check if this output contains router metadata. Emit if either:
 		// 1) route+model are present (router models), or
 		// 2) provider-only is present (non-router models exposing x-inference-provider)

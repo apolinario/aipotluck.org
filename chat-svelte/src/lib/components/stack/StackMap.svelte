@@ -72,6 +72,11 @@
 	// ids. State-driven so the highlight survives the re-render an incoming chat
 	// message triggers.
 	let trailIds = $state<string[]>([]);
+	// Transient per-event "beat": flashing a node (web search resolved, or an agent step advanced) gives
+	// it a brief .ap-pulse on top of the static trail, so repeated flashes (one per agent step) read as
+	// the node actively working. Cleared after one breath; a fresh flash refreshes the timer.
+	let beatId = $state<string | undefined>(undefined);
+	let beatTimer: ReturnType<typeof setTimeout> | undefined;
 	let container = $state<HTMLElement | undefined>();
 
 	const scrollNodeIntoView = (id: string | undefined) => {
@@ -132,6 +137,10 @@
 			clearReveal(); // a manual "show on map" overrides any in-flight staged reveal
 			const ids = (e as CustomEvent<{ ids: string[] }>).detail?.ids ?? [];
 			trailIds = ids;
+			// transient beat on the just-flashed node (so per-step agent flashes visibly pulse)
+			beatId = ids.at(-1);
+			clearTimeout(beatTimer);
+			beatTimer = setTimeout(() => (beatId = undefined), 700);
 			requestAnimationFrame(() => scrollNodeIntoView(ids.at(-1)));
 		};
 		window.addEventListener("ap:flash", onFlash);
@@ -139,6 +148,7 @@
 		return () => {
 			cancelled = true;
 			clearReveal();
+			clearTimeout(beatTimer);
 			window.removeEventListener("ap:flash", onFlash);
 		};
 	});
@@ -235,7 +245,7 @@
 					{#each layer.nodes as node (node.id)}
 						<MapNode
 							{node}
-							pulsed={active && TURN_PULSE.includes(node.id)}
+							pulsed={(active && TURN_PULSE.includes(node.id)) || node.id === beatId}
 							trailed={trailIds.includes(node.id)}
 						/>
 					{/each}

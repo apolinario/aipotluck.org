@@ -8,6 +8,7 @@ export type MessageUpdate =
 	| MessageFinalAnswerUpdate
 	| MessageReasoningUpdate
 	| MessageRouterMetadataUpdate
+	| MessageAgentStepUpdate
 	| MessageSafetyUpdate;
 
 export enum MessageUpdateType {
@@ -18,6 +19,7 @@ export enum MessageUpdateType {
 	FinalAnswer = "finalAnswer",
 	Reasoning = "reasoning",
 	RouterMetadata = "routerMetadata",
+	AgentStep = "agentStep",
 	Safety = "safety",
 }
 
@@ -81,6 +83,17 @@ export interface MessageRouterMetadataUpdate {
 	route: string;
 	model: string;
 	provider?: InferenceProvider;
+}
+
+// Emitted mid-stream by the agent endpoint (Story B) once per execution step, so the live-stack map can
+// beat the Hermes agent node as the agent works. Animation-only: the per-step text already streams in the
+// <think> block and the verified answer persists, so this is NOT stamped onto a message field or persisted —
+// the client turns it into an `ap:flash` beat on the `hermes` node and the server drops it from the audit log.
+export interface MessageAgentStepUpdate {
+	type: MessageUpdateType.AgentStep;
+	index: number; // 0-based step index
+	tool: string; // the step's tool/action name (already redacted by the agent service)
+	total?: number; // total planned steps, when known (from the plan event)
 }
 
 // Emitted when the proactive safety pre-screen (toxic-bert / child-safety) declines a

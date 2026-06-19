@@ -445,6 +445,13 @@
 						route: update.route,
 						model: update.model,
 					};
+				} else if (update.type === MessageUpdateType.AgentStep) {
+					// Agent step (Story B): the agent service advanced one execution step. Beat the
+					// Hermes agent node on the live-stack map so it visibly pulses per step. The step
+					// text itself streams in the <think> block; this is the ambient map animation.
+					if (browser) {
+						window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["hermes"] } }));
+					}
 				} else if (update.type === MessageUpdateType.Safety) {
 					// Safety pre-screen declined this turn before the model ran. Stamp the marker
 					// so the answer renders as a safety decline (no Apertus provenance badge) and

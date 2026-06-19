@@ -52,8 +52,12 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 			messages: [{ from: "user", content: "how many files?" }],
 		} as Parameters<typeof factory>[0]);
 
-		const chunks: { token: { text: string }; generated_text: string | null; routerMetadata?: { model?: string } }[] =
-			[];
+		const chunks: {
+			token: { text: string };
+			generated_text: string | null;
+			routerMetadata?: { model?: string };
+			agentStep?: { index: number; tool: string; total?: number };
+		}[] = [];
 		for await (const c of stream) chunks.push(c as (typeof chunks)[number]);
 
 		// submit: POST /run with the prompt + synthesize:true + bearer auth
@@ -74,6 +78,14 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 		expect(text).toContain("There are 3 files."); // the answer streams after </think>
 		expect(finalChunk?.generated_text).toContain("<think>");
 		expect(finalChunk?.generated_text).toContain("There are 3 files.");
+
+		// per-step live-stack beat: one agentStep chunk per tool_call, carrying the step index, tool name,
+		// and the plan's total step count (→ generate.ts forwards as MessageUpdateType.AgentStep → the
+		// client beats the Hermes node on the map). Two tool_calls in the canned SSE → two agentStep chunks.
+		const steps = chunks.filter((c) => c.agentStep).map((c) => c.agentStep!);
+		expect(steps).toHaveLength(2);
+		expect(steps[0]).toMatchObject({ index: 0, tool: "tool", total: 2 });
+		expect(steps[1]).toMatchObject({ index: 1, tool: "write", total: 2 });
 	});
 
 	it("surfaces a submit failure as an answer instead of throwing", async () => {

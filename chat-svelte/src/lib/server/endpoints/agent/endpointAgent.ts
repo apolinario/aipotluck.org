@@ -15,9 +15,9 @@ import type { Endpoint, TextGenerationStreamOutputSimplified } from "../endpoint
  * agent service's HTTP boundary — this endpoint only translates transports. It never holds the upstream
  * model token; it carries only the per-deployment service token (a normal API credential).
  *
- * MVP scope (docs/agent-frontends.md §6 Story B): a free-form chat turn has no verify spec, so the
- * backend runs a single hybrid attempt (~88%), not best-of-N. The full per-step StackMap animation
- * (a dedicated AgentStep update + MapNode) is the follow-on.
+ * Per-step live-stack animation: each agent step also emits an `agentStep` chunk (→ MessageUpdateType
+ * .AgentStep) so the client beats the Hermes node on the StackMap as the agent works. The verify-spec is
+ * now auto-derived server-side for chat turns, so the backend runs best-of-N (not a single ~88% attempt).
  */
 export const endpointAgentParametersSchema = z.object({
 	weight: z.number().int().positive().default(1),
@@ -67,7 +67,12 @@ export async function endpointAgent(
 			let tokenId = 0;
 			const mk = (
 				text: string,
-				opts: { special?: boolean; generated_text?: string | null; router?: boolean } = {}
+				opts: {
+					special?: boolean;
+					generated_text?: string | null;
+					router?: boolean;
+					agentStep?: { index: number; tool: string; total?: number };
+				} = {}
 			): TextGenerationStreamOutputSimplified =>
 				({
 					token: { id: tokenId++, text, logprob: 0, special: opts.special ?? false },
@@ -76,6 +81,7 @@ export async function endpointAgent(
 					...(opts.router
 						? { routerMetadata: { route: "agent", model: provenanceModel, provider: provenanceProvider } }
 						: {}),
+					...(opts.agentStep ? { agentStep: opts.agentStep } : {}),
 				}) as TextGenerationStreamOutputSimplified;
 
 			// 1) submit the task
@@ -119,6 +125,7 @@ export async function endpointAgent(
 			yield* push("Working on it via the open agent (Apertus, hybrid)…\n");
 
 			let answer = "";
+			let totalSteps: number | undefined;
 			let thinkClosed = false;
 			const closeThink = function* () {
 				if (thinkClosed) return;
@@ -167,10 +174,16 @@ export async function endpointAgent(
 							}
 							if (etype === "plan") {
 								const steps = ev.steps ?? [];
+								totalSteps = steps.length;
 								const attempt = ev.attempt && ev.attempt > 1 ? ` (attempt ${ev.attempt})` : "";
 								yield* push(`Planned ${steps.length} step(s): ${steps.join(", ")}${attempt}\n`);
 							} else if (etype === "tool_call") {
 								yield* push(`→ step ${ev.step}: ${ev.tool}\n`);
+								// per-step live-stack beat: pulse the Hermes node on the map (text already streamed above)
+								yield mk("", {
+									special: true,
+									agentStep: { index: ev.step ?? 0, tool: ev.tool ?? "step", total: totalSteps },
+								});
 							} else if (etype === "tool_result") {
 								if (ev.summary) yield* push(`   ${ev.summary}\n`);
 							} else if (etype === "message") {
