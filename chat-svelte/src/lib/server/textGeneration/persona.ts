@@ -38,6 +38,15 @@ export const GROUNDED_DECODING = {
 // tuning panel can edit this prose, but the identity values are always the real ones —
 // so an edit can never make the chat claim a model it isn't running. Output is identical
 // to the previous hardcoded persona for any model that has a served checkpoint.
+// The recency hedge. Pulled out as a named constant so a grounded turn can DROP it: when the user
+// searched the open web this turn, the search-grounding suffix governs recency ("the sources ARE
+// current") and this blanket "your knowledge may be out of date / you cannot identify recent items"
+// directly contradicts it. On the 8B the hedge WINS the contradiction — observed in prod, the model
+// answered "I cannot perform live web searches" with 7 fresh sources sitting unused. Removing the
+// contradiction (rather than out-emphasising it) is the robust fix for a weak model. See
+// buildPersonaPrompt({ grounded }).
+export const RECENCY_CLAUSE = `Recency: you have a fixed knowledge cutoff but cannot reliably date it. Do NOT state a cutoff date as a confident fact (never "my training data goes up to early 2023"); if you reference it at all, make explicit you are unsure and only estimating, and that your knowledge may be out of date. Do not claim to know the newest / latest / most recent models, news, or events. If asked about the newest / latest / most recent models, news, or events, do NOT name specific items as the "newest" or "latest" — say plainly that your knowledge may be out of date and you cannot reliably identify the most recent ones.`;
+
 export const DEFAULT_PERSONA_TEMPLATE = `You are a neutral, open-source AI assistant for AI Potluck, served by Current AI. You run on {model}, an open-weights model developed by {maker}, served by Current AI. This alpha is served through an open inference provider (HuggingFace); the production stack runs on sovereign public compute (CSCS in Switzerland, LUMI in Finland). If asked where you run, say this honestly and do not name a specific datacenter as serving this request. The open stack you run on is shown live to the right of this chat ("Under the hood"); you may refer to it.
 
 Identity: if asked what model you are or who made you, say plainly that you are {model}, developed by {maker}, and that Current AI serves it — Current AI did NOT build the model. If asked for the exact model version, the served checkpoint is {served}. Do not claim to be custom-built, proprietary, or a model you are not. Do not restate your identity unless the user actually asks who or what you are. On your own openness: {training}.
@@ -46,7 +55,7 @@ About the project: Current AI is a nonprofit coalition assembling a full-stack, 
 
 Open vs closed: when you name tools, libraries, models, or datasets, only describe genuinely open-source ones as open-source. Never present a closed or proprietary product (for example Pinecone, ChatGPT, Claude, GPT-4) as open-source; if you are unsure whether something is open, do not call it open.
 
-Recency: you have a fixed knowledge cutoff but cannot reliably date it. Do NOT state a cutoff date as a confident fact (never "my training data goes up to early 2023"); if you reference it at all, make explicit you are unsure and only estimating, and that your knowledge may be out of date. Do not claim to know the newest / latest / most recent models, news, or events. If asked about the newest / latest / most recent models, news, or events, do NOT name specific items as the "newest" or "latest" — say plainly that your knowledge may be out of date and you cannot reliably identify the most recent ones.
+${RECENCY_CLAUSE}
 
 Trust: if asked whether you can be trusted or how accurate you are, do not say you can simply be trusted or are always accurate — say you aim to be accurate but can be wrong, and that important facts should be verified.
 
@@ -79,9 +88,20 @@ function fillIdentityTokens(
  * model swaps. (The override is free text, so a trusted editor could still write a wrong
  * name — the tokens prevent accidental staleness, not deliberate misstatement.)
  */
-export function buildPersonaPrompt(modelId?: string, override?: string): string {
+export function buildPersonaPrompt(
+	modelId?: string,
+	override?: string,
+	opts?: { grounded?: boolean }
+): string {
 	const identity = resolveModelIdentity(modelId);
-	const template = override?.trim() ? override : DEFAULT_PERSONA_TEMPLATE;
+	let template = override?.trim() ? override : DEFAULT_PERSONA_TEMPLATE;
+	// Grounded turn: the search-grounding suffix is the authority on recency, so drop the persona's
+	// recency hedge to remove the contradiction the 8B otherwise resolves the wrong way (disclaiming
+	// real-time access while fresh sources sit unused). Exact-constant match keeps this in sync with
+	// the default template; an override that doesn't contain the clause is simply left untouched.
+	if (opts?.grounded) {
+		template = template.replace(RECENCY_CLAUSE, "").replace(/\n{3,}/g, "\n\n").trim();
+	}
 	return fillIdentityTokens(template, identity);
 }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildPersonaPrompt, resolveDecoding, GROUNDED_DECODING } from "./persona";
+import { buildPersonaPrompt, resolveDecoding, GROUNDED_DECODING, RECENCY_CLAUSE } from "./persona";
 
 describe("buildPersonaPrompt", () => {
 	it("default: fills all identity tokens (no {token} placeholder leaks through)", () => {
@@ -25,6 +25,26 @@ describe("buildPersonaPrompt", () => {
 		const dflt = buildPersonaPrompt("m");
 		expect(buildPersonaPrompt("m", "")).toBe(dflt);
 		expect(buildPersonaPrompt("m", "   ")).toBe(dflt);
+	});
+
+	it("ungrounded turn keeps the recency hedge", () => {
+		expect(buildPersonaPrompt("m")).toContain(RECENCY_CLAUSE);
+	});
+
+	it("grounded turn DROPS the recency hedge (so it can't override the search grounding)", () => {
+		const grounded = buildPersonaPrompt("m", undefined, { grounded: true });
+		expect(grounded).not.toContain(RECENCY_CLAUSE);
+		// The rest of the persona (identity, voice) is untouched.
+		expect(grounded).toContain("AI Potluck");
+		expect(grounded).not.toMatch(/\n{3,}/); // no blank-paragraph scar where the clause was
+	});
+
+	it("grounded also strips the clause from an override that included it", () => {
+		const override = `Intro line.\n\n${RECENCY_CLAUSE}\n\nOutro line.`;
+		const grounded = buildPersonaPrompt("m", override, { grounded: true });
+		expect(grounded).not.toContain(RECENCY_CLAUSE);
+		expect(grounded).toContain("Intro line.");
+		expect(grounded).toContain("Outro line.");
 	});
 });
 

@@ -59,7 +59,11 @@ async function* textGenerationWithoutTitle(
 	// derived from the served model id, closed-as-open guardrail, recency hedging,
 	// non-anthropomorphic voice. Any conv/model-configured preprompt is appended
 	// after it. Without this the fork regressed to rambling, confabulating answers.
-	const persona = buildPersonaPrompt(ctx.model.id ?? ctx.model.name, tuning.persona);
+	// A turn grounded on a fresh open-web search must NOT carry the persona's recency hedge — it
+	// contradicts the grounding ("the sources ARE current") and the 8B follows the hedge, disclaiming
+	// real-time access while the retrieved sources go unused. Drop the hedge when grounded.
+	const grounded = !!ctx.searchContext?.evidence;
+	const persona = buildPersonaPrompt(ctx.model.id ?? ctx.model.name, tuning.persona, { grounded });
 	const basePreprompt = conv.preprompt?.trim() ? `${persona}\n\n${conv.preprompt}` : persona;
 
 	// Artifacts are opt-in per model (supportsArtifacts in the MODELS overrides),
