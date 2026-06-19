@@ -1,5 +1,6 @@
 import { building } from "$app/environment";
 import { config } from "$lib/server/config";
+import { MULTIMODAL_ENABLED } from "$lib/server/textOnly";
 import type { ChatTemplateInput } from "$lib/types/Template";
 import { z } from "zod";
 import endpoints, { endpointSchema, type Endpoint } from "./endpoints/endpoints";
@@ -304,8 +305,12 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 				description: m.description,
 				logoUrl,
 				providers: m.providers,
-				multimodal: supportsImageInput,
-				multimodalAcceptedMimetypes: supportsImageInput ? ["image/*"] : undefined,
+				// TEXT-ONLY ALPHA: force non-multimodal regardless of what the served model advertises,
+				// so the client never shows the image-attach affordance and no image is sent. Gated —
+				// flip MULTIMODAL_ENABLED post-July. See $lib/server/textOnly.
+				multimodal: MULTIMODAL_ENABLED && supportsImageInput,
+				multimodalAcceptedMimetypes:
+					MULTIMODAL_ENABLED && supportsImageInput ? ["image/*"] : undefined,
 				supportsTools,
 				endpoints: [
 					{
@@ -385,7 +390,7 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 				unlisted: false,
 			} as ModelConfig;
 
-			if (routerMultimodalEnabled) {
+			if (MULTIMODAL_ENABLED && routerMultimodalEnabled) {
 				aliasRaw.multimodal = true;
 				aliasRaw.multimodalAcceptedMimetypes = ["image/*"];
 			}

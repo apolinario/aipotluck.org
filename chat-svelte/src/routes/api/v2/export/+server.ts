@@ -4,6 +4,7 @@ import { authCondition } from "$lib/server/auth";
 import { config } from "$lib/server/config";
 import yazl from "yazl";
 import { downloadFile } from "$lib/server/files/downloadFile";
+import { MULTIMODAL_ENABLED } from "$lib/server/textOnly";
 import mimeTypes from "mime-types";
 import { logger } from "$lib/server/logger";
 
@@ -67,7 +68,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 							}
 						});
 						const files = await Promise.all(
-							hashes.map(async (hash) => {
+							// TEXT-ONLY ALPHA: never fetch attachment blobs for export (a download path); keeps
+							// export text-only even for pre-existing/crafted file refs. Gated; see textOnly.
+							(MULTIMODAL_ENABLED ? hashes : []).map(async (hash) => {
 								try {
 									const fileData = await downloadFile(hash, conversation._id);
 									return fileData;

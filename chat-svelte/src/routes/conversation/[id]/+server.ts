@@ -15,6 +15,7 @@ import {
 	type MessageStreamUpdate,
 } from "$lib/types/MessageUpdate";
 import { uploadFile } from "$lib/server/files/uploadFile";
+import { MULTIMODAL_ENABLED } from "$lib/server/textOnly";
 import {
 	moderateMessage,
 	checkChildSafety,
@@ -265,6 +266,13 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				};
 			})
 	);
+
+	// TEXT-ONLY ALPHA (until July 9): reject any attachment server-side. The UI hides upload, but
+	// enforce it here too so a crafted request can't slip a file/image through. Gated, not removed —
+	// flip MULTIMODAL_ENABLED post-July. See $lib/server/textOnly.
+	if (!MULTIMODAL_ENABLED && inputFiles.length > 0) {
+		error(415, "Attachments are disabled — this alpha is text-only.");
+	}
 
 	if (usageLimits?.messageLength && (newPrompt?.length ?? 0) > usageLimits.messageLength) {
 		error(400, "Message too long.");

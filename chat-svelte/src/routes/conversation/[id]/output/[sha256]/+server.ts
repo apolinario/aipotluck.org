@@ -5,9 +5,16 @@ import { ObjectId } from "bson";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 import { downloadFile } from "$lib/server/files/downloadFile";
+import { MULTIMODAL_ENABLED } from "$lib/server/textOnly";
 import mimeTypes from "mime-types";
 
 export const GET: RequestHandler = async ({ locals, params }) => {
+	// TEXT-ONLY ALPHA (until July 9): file download is disabled. With upload blocked there are no
+	// files to serve anyway, but enforce the seam so a crafted hash can't probe stored blobs. Gated.
+	if (!MULTIMODAL_ENABLED) {
+		error(403, "File download is disabled — this alpha is text-only.");
+	}
+
 	const sha256 = z.string().parse(params.sha256);
 
 	const userId = locals.user?._id ?? locals.sessionId;

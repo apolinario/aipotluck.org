@@ -2,6 +2,7 @@ import { error, json } from "@sveltejs/kit";
 import { config } from "$lib/server/config";
 import { getApiToken } from "$lib/server/apiToken";
 import { logger } from "$lib/server/logger";
+import { MULTIMODAL_ENABLED } from "$lib/server/textOnly";
 
 const MAX_AUDIO_SIZE = 25 * 1024 * 1024; // 25MB
 const TRANSCRIPTION_TIMEOUT = 60000; // 60 seconds
@@ -17,6 +18,11 @@ const ALLOWED_CONTENT_TYPES = [
 ];
 
 export async function POST({ request, locals }) {
+	// TEXT-ONLY ALPHA (until July 9): voice/audio input is disabled. Gated, not removed. See textOnly.
+	if (!MULTIMODAL_ENABLED) {
+		throw error(403, "Voice input is disabled — this alpha is text-only.");
+	}
+
 	const transcriptionModel = config.get("TRANSCRIPTION_MODEL");
 
 	if (!transcriptionModel) {
