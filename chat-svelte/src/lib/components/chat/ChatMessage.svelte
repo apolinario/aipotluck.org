@@ -22,6 +22,7 @@
 	import { MessageUpdateType } from "$lib/types/MessageUpdate";
 	import ImageLightbox from "./ImageLightbox.svelte";
 	import SourceStrip from "./SourceStrip.svelte";
+	import SourceClass from "./SourceClass.svelte";
 	import ProvenanceBadge from "./ProvenanceBadge.svelte";
 	import SafetyBadge from "./SafetyBadge.svelte";
 	import GapInvite from "./GapInvite.svelte";
@@ -463,12 +464,19 @@
 				{/if}
 			</div>
 
+			<!-- Source class: what the answer DREW ON (orthogonal to the model badge below).
+			     Web-grounded → SourceStrip (the rich, numbered, citable expression). Otherwise,
+			     on a completed non-declined answer → the honest "model's own knowledge" chip, so
+			     an ungrounded answer never silently reads as sourced as a grounded one. A safety
+			     decline gets neither (the model never ran; SafetyBadge speaks for it). -->
 			{#if message.webSearch?.sources?.length}
 				<SourceStrip
 					sources={message.webSearch.sources}
 					asOf={message.webSearch.asOf}
 					query={message.webSearch.query}
 				/>
+			{:else if !loading && message.content && !message.moderation?.flagged}
+				<SourceClass kind="model" />
 			{/if}
 
 			{#if !loading && message.content}
