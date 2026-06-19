@@ -163,10 +163,11 @@ type ExtraConfigKeys =
 	| "ENABLE_ASSISTANTS"
 	| "METRICS_ENABLED"
 	| "METRICS_PORT"
-	| "MCP_SERVERS"
-	| "MCP_FORWARD_HF_USER_TOKEN"
-	| "MCP_TOOL_TIMEOUT_MS"
-	| "EXA_API_KEY";
+	// Service-wide daily request cap (cost/abuse guardrail) — enforced in conversation/[id]/+server.
+	| "GLOBAL_DAILY_REQUEST_CAP";
+// Removed 2026-06-19 (config audit — nothing read them): EXA_API_KEY (Exa search rejected in favor of
+// all-open Wikipedia/Marginalia), and MCP_SERVERS / MCP_FORWARD_HF_USER_TOKEN / MCP_TOOL_TIMEOUT_MS
+// (upstream chat-ui MCP config; our MCP restoration uses SPACE_MCP_URL via Reflect.get instead).
 
 type ConfigProxy = ConfigManager & { [K in ConfigKey | ExtraConfigKeys]: string };
 

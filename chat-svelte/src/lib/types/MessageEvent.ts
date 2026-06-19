@@ -6,5 +6,6 @@ export interface MessageEvent extends Pick<Timestamps, "createdAt"> {
 	userId: User["_id"] | Session["sessionId"];
 	ip?: string;
 	expiresAt: Date;
-	type: "message" | "export";
+	// "globalDaily" = a row in the service-wide 24h request-cap window (see conversation/[id]/+server).
+	type: "message" | "export" | "globalDaily";
 }

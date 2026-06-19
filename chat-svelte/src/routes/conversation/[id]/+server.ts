@@ -132,6 +132,41 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		}
 	}
 
+	// Service-wide DAILY request cap — a cost/abuse guardrail for the limited CSCS/HF compute budget,
+	// distinct from the per-user/per-IP per-minute limit above. Counts requests in a rolling 24h window
+	// via a dedicated "globalDaily" messageEvent (the table + cleanup already GC by expiresAt). The DB
+	// count is approximate (the best-fit for serverless — no Redis): a brief overshoot under concurrency
+	// or a transient error is acceptable for a soft cap. FAIL-OPEN on a count error so a DB blip can't
+	// take the whole service down; logged when hit / on error. Disabled when the env var is unset/0.
+	const globalDailyCap = Number(config.GLOBAL_DAILY_REQUEST_CAP) || 0;
+	if (globalDailyCap > 0) {
+		let dailyCount: number | null = null;
+		try {
+			dailyCount = await collections.messageEvents.countDocuments({
+				type: "globalDaily",
+				expiresAt: { $gt: new Date() },
+			});
+		} catch (e) {
+			logger.warn(e, "[rate-limit] global daily cap count failed — failing open");
+		}
+		if (dailyCount !== null && dailyCount >= globalDailyCap) {
+			logger.warn({ dailyCount, globalDailyCap }, "[rate-limit] global daily request cap reached");
+			error(429, "The service has reached today's request limit. Please try again later.");
+		}
+		// Record this request in the 24h window (best-effort — a failed insert just under-counts).
+		try {
+			await collections.messageEvents.insertOne({
+				type: "globalDaily",
+				userId,
+				createdAt: new Date(),
+				expiresAt: new Date(Date.now() + 24 * 60 * 60_000),
+				ip: getClientAddress(),
+			});
+		} catch (e) {
+			logger.warn(e, "[rate-limit] global daily event insert failed");
+		}
+	}
+
 	if (usageLimits?.messages && conv.messages.length > usageLimits.messages) {
 		error(
 			429,
