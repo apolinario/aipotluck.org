@@ -6,6 +6,7 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	let saving = $state(false);
+	let confirmingReset = $state(false);
 
 	const cur = $derived(data.current);
 	const def = $derived(data.defaults);
@@ -171,6 +172,10 @@
 		{:else if form?.saved}
 			<p role="status" aria-live="polite" class="rounded bg-green-100 px-3 py-2 text-green-800">
 				Saved.
+			</p>
+		{:else if form?.reset}
+			<p role="status" aria-live="polite" class="rounded bg-green-100 px-3 py-2 text-green-800">
+				Reset — all overrides and history cleared; the chat now uses the built-in code defaults.
 			</p>
 		{/if}
 	</header>
@@ -502,5 +507,58 @@
 				No prior versions yet — they appear here after the next save.
 			</p>
 		{/if}
+	</section>
+
+	<!-- Danger zone: wipe ALL overrides + version history back to the code defaults (deletes the row).
+	     Two-step inline confirm (no browser modal). Distinct from a blank Save, which keeps history. -->
+	<section class="mt-8 space-y-2 border-t border-red-200 pt-6">
+		<h2 class="font-medium text-red-800">Danger zone</h2>
+		<form
+			method="POST"
+			action="?/reset"
+			use:enhance={() => {
+				return async ({ result, update }) => {
+					// On success the row is gone — clear every field back to "use default" so the editor
+					// reflects the wipe (the $state fields were init once and don't auto-resync on reload).
+					if (result.type === "success") {
+						persona = "";
+						grounding = "";
+						starters = "";
+						decoding = {
+							temperature: "",
+							frequency_penalty: "",
+							presence_penalty: "",
+							max_tokens: "",
+						};
+						baseEditedAt = "";
+					}
+					confirmingReset = false;
+					await update({ reset: false });
+				};
+			}}
+		>
+			{#if confirmingReset}
+				<p class="text-xs text-red-800">
+					This deletes ALL overrides AND the version history, reverting the chat to the built-in
+					code defaults. Can't be undone from here — Export first if you might want it back.
+				</p>
+				<button type="submit" class="rounded bg-red-700 px-3 py-1.5 text-xs text-white">
+					Confirm — reset to code defaults
+				</button>
+				<button
+					type="button"
+					onclick={() => (confirmingReset = false)}
+					class="rounded border px-3 py-1.5 text-xs hover:bg-gray-50">Cancel</button
+				>
+			{:else}
+				<button
+					type="button"
+					onclick={() => (confirmingReset = true)}
+					class="rounded border border-red-300 px-3 py-1.5 text-xs text-red-800 hover:bg-red-50"
+				>
+					Reset everything to code defaults
+				</button>
+			{/if}
+		</form>
 	</section>
 </div>

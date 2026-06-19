@@ -71,6 +71,7 @@ type ConfigRowStore = {
 		update: { $set: Record<string, unknown> },
 		opts: { upsert: boolean }
 	): Promise<{ matchedCount: number }>;
+	deleteOne(filter: { key: string }): Promise<{ deletedCount: number }>;
 };
 function configStore(): ConfigRowStore {
 	return collections.config as unknown as ConfigRowStore;
@@ -169,6 +170,14 @@ export async function setTuning(
 
 	cache = { at: Date.now(), value: parsed.data };
 	return parsed.data;
+}
+
+/** Delete the whole TUNING row → every read site reverts to its code default. The admin "reset to
+ *  defaults": wipes overrides AND the version history — a deliberate clean slate, distinct from a
+ *  blank Save (which keeps history). Busts the cache so the revert is visible within the TTL. */
+export async function clearTuning(): Promise<void> {
+	await configStore().deleteOne({ key: KEY });
+	cache = { at: Date.now(), value: {} };
 }
 
 export function bustTuningCache(): void {

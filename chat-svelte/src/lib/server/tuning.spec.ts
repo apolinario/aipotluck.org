@@ -2,14 +2,22 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the DB collection so setTuning's read/write hits an in-memory stub.
 vi.mock("$lib/server/database", () => ({
-	collections: { config: { findOne: vi.fn(async () => null), updateOne: vi.fn(async () => ({})) } },
+	collections: {
+		config: {
+			findOne: vi.fn(async () => null),
+			updateOne: vi.fn(async () => ({})),
+			deleteOne: vi.fn(async () => ({ deletedCount: 1 })),
+		},
+	},
 }));
 
-import { parseTuning, TuningSchema, setTuning, TuningConflictError } from "./tuning";
+import { parseTuning, TuningSchema, setTuning, clearTuning, TuningConflictError } from "./tuning";
 import { collections } from "$lib/server/database";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateOne = vi.mocked((collections as any).config.updateOne);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const deleteOne = vi.mocked((collections as any).config.deleteOne);
 
 describe("parseTuning (fail-safe validation)", () => {
 	it("accepts a valid partial doc and strips unknown keys (e.g. the row key)", () => {
@@ -154,6 +162,13 @@ describe("setTuning version-history backup (prior values are recoverable, not cl
 		await setTuning({ persona: "FIRST" }, "laura");
 		const written = (updateOne.mock.calls[0][1] as any).$set;
 		expect(written.history).toEqual([]);
+	});
+
+	it("clearTuning deletes the TUNING row (reset to code defaults)", async () => {
+		deleteOne.mockClear();
+		await clearTuning();
+		expect(deleteOne).toHaveBeenCalledOnce();
+		expect(deleteOne.mock.calls[0][0]).toEqual({ key: "TUNING" });
 	});
 
 	it("caps history at 20 entries (oldest drops off)", async () => {

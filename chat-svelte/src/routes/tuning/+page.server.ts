@@ -2,7 +2,13 @@
 // Gated by requireAdmin (on top of the app-wide Basic Auth gate). Remove this whole
 // routes/tuning/ dir + $lib/server/tuning.ts before public launch.
 import { requireAdmin } from "$lib/server/api/utils/requireAuth";
-import { getTuning, setTuning, TuningConflictError, type Tuning } from "$lib/server/tuning";
+import {
+	getTuning,
+	setTuning,
+	clearTuning,
+	TuningConflictError,
+	type Tuning,
+} from "$lib/server/tuning";
 import {
 	DEFAULT_PERSONA_TEMPLATE,
 	GROUNDED_DECODING,
@@ -120,6 +126,18 @@ export const actions: Actions = {
 				});
 			}
 			return fail(400, { error: e instanceof Error ? e.message : "save failed" });
+		}
+	},
+
+	// Wipe ALL overrides + version history back to the code defaults (deletes the TUNING row). A
+	// deliberate clean slate — the UI confirms first. Distinct from a blank Save, which keeps history.
+	reset: async ({ locals }) => {
+		requireAdmin(locals);
+		try {
+			await clearTuning();
+			return { reset: true };
+		} catch (e) {
+			return fail(400, { error: e instanceof Error ? e.message : "reset failed" });
 		}
 	},
 };
