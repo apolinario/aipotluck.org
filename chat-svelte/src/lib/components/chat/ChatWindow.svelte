@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Message, MessageFile } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
-	import { isRecencyQuery } from "$lib/search/recency";
+	import { isRecencyQueryDenoised } from "$lib/search/recency";
 	import { shouldRunSearch, usesModelClassifier, SEARCH_TRIGGER_STRATEGY } from "$lib/search/triggerStrategy";
 	import { onDestroy, onMount, tick } from "svelte";
 
@@ -169,7 +169,7 @@
 	// strategies). Drives the brief "thinking" affordance so the pre-answer
 	// classifier round-trip doesn't read as a stall. Dormant under "heuristic".
 	let deciding = $state(false);
-	let draftLooksRecent = $derived(isRecencyQuery(draft));
+	let draftLooksRecent = $derived(isRecencyQueryDenoised(draft));
 
 	// Active trigger strategy, resolved from PUBLIC_SEARCH_TRIGGER server-side and
 	// shipped via layout data (falls back to the safe code default). "tool" = the
@@ -212,7 +212,11 @@
 	// model's own when it tool-called, else the raw user text. Shared by the
 	// composer send flow and the starter-prompt path so both honor the strategy.
 	async function decideSearch(text: string): Promise<{ search: boolean; query: string }> {
-		const heuristicHit = isRecencyQuery(text);
+		// De-noised: the recency signal minus obvious coding/technical how-tos (where
+		// "current/status/latest" are false triggers). Lifts specificity without losing
+		// real recency — in "model"/"tool" strategies the classifier still catches any
+		// genuinely-current technical query the de-noise suppresses. See evals/search-decision.
+		const heuristicHit = isRecencyQueryDenoised(text);
 		let modelHit = false;
 		let modelQuery: string | undefined;
 		if (usesModelClassifier(searchStrategy)) {
