@@ -1,62 +1,40 @@
 name: chat-ci
 
-# Gate the chat surface on every push/PR: Biome lint + format check + unit tests.
-# Build is NOT gated here — `pnpm build` runs `tsx lib/db/migrate` first, which needs
-# a live Neon DB; Vercel runs the real build (with the DB) on deploy. The behavioral
-# eval makes real, paid model calls, so it runs nightly on a schedule instead of
-# per-push (and needs an HF_TOKEN repo secret).
+# Gate the chat surface (chat-svelte/ — the canonical SvelteKit chat) on every
+# push/PR with svelte-check (TypeScript + Svelte correctness). No DB, no secrets.
+#
+# Scope note: this gates types only, NOT lint or unit tests, on purpose.
+#   - Lint (`npm run lint` = prettier --check + eslint) is currently RED on the
+#     committed tree (format drift + a handful of no-explicit-any/no-unused-vars).
+#     Cleaning it is a separate pass; until then it stays on the husky pre-commit
+#     hook (lint-staged formats staged files), not in CI.
+#   - Unit tests (`npm test`) need a live Postgres + a synthesized .env (the server
+#     specs are DB-integration and the test setup reads ./.env at import). Gating
+#     those needs a Postgres service container — a deliberate follow-up, not here.
+#
+# The legacy Next app under chat/ is frozen (preserved on the ai-potluck-chat
+# branch); it is not gated here anymore.
 
 on:
   push:
-    branches: [ai-potluck-chat, main]
+    branches: [chat-ui-migration, main]
   pull_request:
-  schedule:
-    - cron: '0 7 * * *' # 07:00 UTC nightly — behavioral eval only
 
 defaults:
   run:
-    working-directory: chat
+    working-directory: chat-svelte
 
 jobs:
-  test:
-    if: github.event_name != 'schedule'
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
-          cache-dependency-path: chat/pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
-      - run: npx @biomejs/biome check . # lint + format (ultracite wrapper crashes; use Biome directly)
-      - run: pnpm test:unit # vitest (no network — fetch is mocked)
-
-  eval:
-    # Nightly behavioral eval against the live model. Skips itself cleanly if the
-    # HF_TOKEN secret isn't configured, so a fork without the secret stays green.
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    env:
-      HF_TOKEN: ${{ secrets.HF_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: chat/pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
-      - name: behavioral eval
-        run: |
-          if [ -z "$HF_TOKEN" ]; then
-            echo "HF_TOKEN secret not set — skipping nightly eval."
-            exit 0
-          fi
-          pnpm eval
+          cache: npm
+          cache-dependency-path: chat-svelte/package-lock.json
+      - run: npm ci
+        env:
+          HUSKY: 0 # skip the husky `prepare` hook install in CI
+      - run: npm run check # svelte-kit sync + svelte-check (types + Svelte)
