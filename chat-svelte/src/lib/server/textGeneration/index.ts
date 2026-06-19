@@ -51,7 +51,7 @@ async function* textGenerationWithoutTitle(
 
 	// TEMP (pre-launch tuning panel): one cached read of the operator overrides for this
 	// turn — persona / grounding / decoding. Empty (→ code defaults) unless an editor has
-	// set them via /admin/tuning. See $lib/server/tuning.
+	// set them via /tuning. See $lib/server/tuning.
 	const tuning = await getTuning();
 
 	// The honest Calm-AI persona is the FOUNDATION of every system prompt — identity

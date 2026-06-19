@@ -9,10 +9,19 @@ import {
 } from "$lib/server/textGeneration/persona";
 import { DEFAULT_GROUNDING_TEMPLATE } from "$lib/server/textGeneration/searchGrounding";
 import { suggestions } from "$lib/constants/suggestions";
-import { fail } from "@sveltejs/kit";
+import { adminTokenManager } from "$lib/server/adminToken";
+import { fail, redirect } from "@sveltejs/kit";
+import { base } from "$app/paths";
 import type { Actions, PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
+	// Convenience: a single bookmarkable link — /tuning?token=<secret> grants this session
+	// admin then redirects to the clean /tuning URL (keeps the secret out of the address
+	// bar / history). Falls through to requireAdmin for an already-admin session.
+	const token = url.searchParams.get("token");
+	if (token && locals.sessionId && adminTokenManager.checkToken(token, locals.sessionId)) {
+		redirect(303, `${base}/tuning`);
+	}
 	requireAdmin(locals);
 	return {
 		current: await getTuning(),

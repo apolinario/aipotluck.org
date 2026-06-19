@@ -11,6 +11,9 @@ import { getTuning } from "$lib/server/tuning";
 // Also resolve the active search-trigger strategy from PUBLIC_SEARCH_TRIGGER so
 // the client decides searches the same way the server endpoint does.
 export const load = async () => {
+	// TEMP (tuning panel): operator-overridden starters, else null → client uses the
+	// suggestions.ts defaults. Empty list also means "use default".
+	const tuningStarters = (await getTuning()).starters;
 	return {
 		servingProvenance: resolveServing(config.OPENAI_BASE_URL, defaultModel?.id),
 		// Reflect.get: PUBLIC_SEARCH_TRIGGER isn't in committed .env, so direct config.X
@@ -18,8 +21,6 @@ export const load = async () => {
 		searchTriggerStrategy: resolveTriggerStrategy(
 			Reflect.get(config, "PUBLIC_SEARCH_TRIGGER") as string | undefined
 		),
-		// TEMP (tuning panel): operator-overridden starter prompts, or null → the client
-		// falls back to the suggestions.ts defaults. Empty list also means "use default".
-		starters: (await getTuning()).starters?.length ? (await getTuning()).starters : null,
+		starters: tuningStarters?.length ? tuningStarters : null,
 	};
 };

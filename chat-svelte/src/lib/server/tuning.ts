@@ -1,11 +1,11 @@
 // TEMP: pre-launch tuning panel — lets Julie/Laura edit Gap Chat prompts + decoding
-// params + starter prompts via /admin/tuning WITHOUT a deploy. Stored as a single
-// "TUNING" row in the EXISTING `config` table (no new schema). Every field is optional;
-// read sites use `override ?? code-default`, so a missing/invalid row — or deleting the
-// whole panel — reverts to the hardcoded behavior.
+// params + starter prompts via /tuning WITHOUT a deploy. Stored as a single "TUNING" row
+// in the EXISTING `config` table (no new schema). Every field is optional; read sites use
+// `override ?? code-default`, so a missing/invalid row — or deleting the whole panel —
+// reverts to the hardcoded behavior.
 //
-// REMOVE BEFORE PUBLIC LAUNCH: delete this file + src/routes/admin/tuning/, drop the
-// TUNING config row, and the `?? default` read sites collapse back to the constants.
+// REMOVE BEFORE PUBLIC LAUNCH: delete this file + src/routes/tuning/, drop the TUNING
+// config row, and the `?? default` read sites collapse back to the constants.
 import { z } from "zod";
 import { collections } from "$lib/server/database";
 import { logger } from "$lib/server/logger";

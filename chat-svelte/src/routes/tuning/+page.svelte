@@ -23,7 +23,9 @@
 			deploy. <strong>Leave a field blank to use the built-in default.</strong>
 		</p>
 		{#if cur.editedBy}
-			<p class="text-xs text-gray-500">Last edited by {cur.editedBy} · {cur.editedAt}</p>
+			<p class="text-xs text-gray-500">
+				Last edited by {cur.editedBy} · {cur.editedAt?.replace("T", " ").slice(0, 16)} UTC
+			</p>
 		{/if}
 		{#if form?.saved}
 			<p role="status" aria-live="polite" class="rounded bg-green-100 px-3 py-2 text-green-800">
