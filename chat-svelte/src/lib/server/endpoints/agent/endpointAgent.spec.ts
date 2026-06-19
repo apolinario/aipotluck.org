@@ -88,6 +88,45 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 		expect(steps[1]).toMatchObject({ index: 1, tool: "write", total: 2 });
 	});
 
+	// Consumer half of the agent-service "Contract (BINDING)" (docs/streaming-spec.md). The done-frame
+	// `state` is the UPPERCASE State enum value; this endpoint compares against "COMPLETED". These pin that
+	// dependency so a backend casing change (or a refactor here) is caught cross-repo, not in prod.
+	async function runWithDone(done: Record<string, unknown>) {
+		const frames = [frame("plan", { attempt: 1, steps: ["write"] }), frame("done", done)];
+		const fetchMock = vi.fn(async (url: string | URL) => {
+			const u = String(url);
+			if (u.endsWith("/run"))
+				return { ok: true, status: 200, json: async () => ({ id: "t1" }), text: async () => "" } as Response;
+			if (u.includes("/run/t1/events"))
+				return { ok: true, status: 200, body: sseStream(frames) } as unknown as Response;
+			throw new Error(`unexpected url ${u}`);
+		});
+		vi.stubGlobal("fetch", fetchMock);
+		const factory = await endpointAgent({ type: "agent", baseURL: "http://agent.test", model: {} });
+		const stream = await factory({ messages: [{ from: "user", content: "go" }] } as Parameters<
+			typeof factory
+		>[0]);
+		const chunks: { token: { text: string }; generated_text: string | null }[] = [];
+		for await (const c of stream) chunks.push(c as (typeof chunks)[number]);
+		return chunks.find((c) => c.generated_text)?.generated_text ?? "";
+	}
+
+	it("treats UPPERCASE COMPLETED (no result) as success — casing is load-bearing", async () => {
+		const upper = await runWithDone({ state: "COMPLETED", verified: true });
+		expect(upper).toContain("Done.");
+		expect(upper).not.toContain("could not finish");
+		// the same frame with lowercase casing would be read as a non-completion — proving the consumer
+		// depends on the contract's UPPERCASE enum, so a backend that lowercased it would break here first.
+		const lower = await runWithDone({ state: "completed", verified: true });
+		expect(lower).toContain("could not finish");
+	});
+
+	it("handles a FAILED terminal gracefully (no throw, honest message)", async () => {
+		const failed = await runWithDone({ state: "FAILED", result: null });
+		expect(failed).toContain("could not finish");
+		expect(failed).toContain("FAILED");
+	});
+
 	it("surfaces a submit failure as an answer instead of throwing", async () => {
 		const fetchMock = vi.fn(async () => ({
 			ok: false,
