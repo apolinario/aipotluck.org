@@ -17,6 +17,8 @@
 	import ChatInput from "./ChatInput.svelte";
 	import WelcomeModal from "$lib/components/WelcomeModal.svelte";
 	import ContributeDialog from "./ContributeDialog.svelte";
+	import BlindSpotsModal from "./BlindSpotsModal.svelte";
+	import { blindSpotsOpen } from "$lib/stores/blindSpots";
 	import VoiceRecorder from "./VoiceRecorder.svelte";
 	import StopGeneratingBtn from "../StopGeneratingBtn.svelte";
 	import type { Model } from "$lib/types/Model";
@@ -736,6 +738,8 @@
 	<!-- Single, top-level contribute dialog (store-driven). Mounted here — not nested
 	     inside the welcome overlay — so its Modal backdrop intro plays correctly. -->
 	<ContributeDialog />
+	<!-- Honest "blind spots" disclosure, opened from the composer footer link. -->
+	<BlindSpotsModal />
 	<div
 		role="main"
 		aria-label="Chat"
@@ -1021,6 +1025,16 @@
 						>
 							Privacy
 						</a>
+						<span class="mx-1.5 opacity-50">·</span>
+						<!-- Honest-limitations disclosure (recency, language skew, not-advice, can-be-wrong).
+						     A button, not a route — opens the BlindSpotsModal mounted above. -->
+						<button
+							type="button"
+							class="inline-block cursor-pointer py-1.5 underline-offset-2 hover:text-[var(--ap-ink)] hover:underline"
+							onclick={() => blindSpotsOpen.set(true)}
+						>
+							Blind spots
+						</button>
 					</div>
 				</div>
 			</div>
