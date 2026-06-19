@@ -22,6 +22,7 @@ import {
 	MODERATION_DECLINE,
 	CHILD_SAFETY_DECLINE,
 } from "$lib/server/moderation";
+import { searchProvenance, moderationMarker } from "$lib/messageProvenance";
 import { convertLegacyConversation } from "$lib/utils/tree/convertLegacyConversation";
 import { isMessageId } from "$lib/utils/tree/isMessageId";
 import { buildSubtree } from "$lib/utils/tree/buildSubtree.js";
@@ -439,14 +440,11 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	}
 
 	// Stamp the answer's open-web provenance onto the assistant message so the
-	// citations strip + map highlight survive reload. `evidence` is dropped here
-	// — it only feeds the model (see ctx.searchContext below), never persistence.
-	if (searchContext?.sources.length) {
-		messageToWriteTo.webSearch = {
-			query: searchContext.query,
-			sources: searchContext.sources,
-			asOf: searchContext.asOf,
-		};
+	// citations strip + map highlight survive reload. Shape owned by searchProvenance
+	// (shared with the client's optimistic stamp in +page.svelte) so the two can't drift.
+	const webSearchProvenance = searchProvenance(searchContext);
+	if (webSearchProvenance) {
+		messageToWriteTo.webSearch = webSearchProvenance;
 	}
 
 	// update the conversation with the new messages
@@ -747,12 +745,11 @@ export async function POST({ request, locals, params, getClientAddress }) {
 
 				if (moderation.flagged) {
 					const isChild = childSafety.flagged;
-					messageToWriteTo.moderation = {
-						flagged: true,
+					messageToWriteTo.moderation = moderationMarker({
 						label: moderation.label,
 						score: moderation.score,
 						kind: isChild ? "child_safety" : "toxicity",
-					};
+					});
 					await update({
 						type: MessageUpdateType.Safety,
 						kind: isChild ? "child_safety" : "toxicity",

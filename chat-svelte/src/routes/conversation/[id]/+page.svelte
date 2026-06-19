@@ -12,6 +12,7 @@
 	import { findCurrentModel } from "$lib/utils/models";
 	import type { Message } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
+	import { searchProvenance, moderationMarker } from "$lib/messageProvenance";
 	import { MessageUpdateStatus, MessageUpdateType } from "$lib/types/MessageUpdate";
 	import { useConversationsStore } from "$lib/stores/conversations.svelte";
 	import file2base64 from "$lib/utils/file2base64";
@@ -240,13 +241,11 @@
 
 			// Mirror the server's webSearch stamp on the client message so the
 			// citations strip + map highlight appear live during streaming, not only
-			// after the post-stream reload re-hydrates from the DB.
-			if (searchContext?.sources.length) {
-				messageToWriteTo.webSearch = {
-					query: searchContext.query,
-					sources: searchContext.sources,
-					asOf: searchContext.asOf,
-				};
+			// after the post-stream reload re-hydrates from the DB. Shape owned by
+			// searchProvenance (shared with the server stamp) so the two can't drift.
+			const webSearchProvenance = searchProvenance(searchContext);
+			if (webSearchProvenance) {
+				messageToWriteTo.webSearch = webSearchProvenance;
 			}
 
 			const streamingMode = resolveStreamingMode($settings);
@@ -449,13 +448,13 @@
 				} else if (update.type === MessageUpdateType.Safety) {
 					// Safety pre-screen declined this turn before the model ran. Stamp the marker
 					// so the answer renders as a safety decline (no Apertus provenance badge) and
-					// the live-stack map highlights the toxic-bert node.
-					messageToWriteTo.moderation = {
-						flagged: true,
+					// the live-stack map highlights the toxic-bert node. Shape owned by
+					// moderationMarker (shared with the server stamp) so the two can't drift.
+					messageToWriteTo.moderation = moderationMarker({
 						label: update.label,
 						score: update.score,
 						kind: update.kind,
-					};
+					});
 				}
 			}
 
