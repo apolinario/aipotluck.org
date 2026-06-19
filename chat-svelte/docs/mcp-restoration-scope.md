@@ -93,6 +93,38 @@ agent as code-as-controller, so the model never carries that loop either.
 - Anything user-facing about the Space tool needs to obey the **same voice rules** (machine voice,
   no proactive follow-ups, plain-stated declines).
 
+## Predicted spec (draft to build against; refine when Josh confirms)
+
+Josh will specify this by reasoning about it (likely with an AI) — so here's the most probable
+shape, to start the vertical slice now. The integration is **Space-agnostic below the tool
+schema**, so his eventual answer only swaps the tool definition + map node.
+
+**What it almost certainly is:** wire one (or a few) open-source HF **Spaces** as callable tools,
+each surfaced as a **live node on the "Under the hood" map** that pulses when the chat uses it —
+the thesis (a capable assistant *assembled from open parts*) made literal and visible. The chat
+gains a capability it lacks on its own, supplied by an open component, shown on the map.
+
+**Most likely / recommended concrete pick: an open vision / image-understanding Space.**
+- Apertus 1.5 is **text-only today** ("multimodal incoming" per the map) — an open vision Space
+  fills a *real, visible* capability gap, not a toy.
+- "The open stack gives the text model eyes" is the thesis in one sentence — the strongest demo
+  for the summit audience.
+- One Space, one tool (`analyze_image(image_url, question)`) = "relatively straightforward."
+
+**Alternatives (identical wiring, only the schema + node change):** an open **translation** Space
+(serves "WE ARE MULTILINGUAL"), an **OCR/document** Space, or a partner's specific Space.
+
+**UX:** on a Space-tool call, the matching map node pulses (reuse the `ap:flash`/AgentStep pulse
+agent-service built), the answer is grounded in the Space's output, provenance attributes the
+component honestly — same "what's behind every answer" pattern as search.
+
+**Scope (for "straightforward"):** IN — 1 Space, gated, map node, bare-router decide+invoke,
+provenance. OUT — general MCP marketplace, user-added Spaces, multi-Space chaining.
+
+**The only genuine unknowns (Josh's call):** (1) which Space/capability (recommend vision; he may
+have a partner-specific one); (2) one showcase Space vs a small set; (3) builder attribution on the
+map. Everything below the tool schema we can build now.
+
 ## Sizing (honest)
 
 This is the not-started general MCP client ("B1b") — bigger than B1a. Decomposed: re-port the MCP
