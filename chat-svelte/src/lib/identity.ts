@@ -13,7 +13,7 @@
 // the badge can never disagree about who made the model.
 
 export type ModelIdentity = {
-	short: string; // display headline — the version brand, "Apertus 1.5" ("Opus 4.8" style)
+	short: string; // display headline — version brand + served size, "Apertus 1.5 8B"
 	served?: string; // the actual served checkpoint, e.g. "Apertus-70B-Instruct-2509" — technical detail
 	maker: string; // "the Swiss AI Initiative (SwissAI)"
 	makerShort: string; // "SwissAI"
@@ -30,16 +30,26 @@ const SWISSAI = "the Swiss AI Initiative (SwissAI)";
 const APERTUS_TRAINING =
 	"you are one of the few fully-open models: your weights, training recipe, AND training data are openly published. If asked what you were trained on, say this honestly — do NOT claim the details are undisclosed";
 
-function apertus(served?: string): ModelIdentity {
-	return { short: "Apertus 1.5", served, maker: SWISSAI, makerShort: "SwissAI", openness: "fully open", training: APERTUS_TRAINING };
+// Parameter size (e.g. "8B", "70B") read straight from the served checkpoint id, so the headline
+// names the model that's actually running. Drift-proof by construction — flip the served model and
+// the size updates itself. Empty for historical messages with no captured id (falls back to the
+// bare version brand).
+function sizeSuffix(served?: string): string {
+	const m = served?.match(/(\d+(?:\.\d+)?)b\b/i);
+	return m ? ` ${m[1]}B` : "";
 }
 
-// Canonical display-name policy (Josh + Ayah, 2026-06-18): every display surface shows the version
-// brand "Apertus 1.5" (the "Opus 4.8" style) regardless of the served size. The ACTUAL served
-// checkpoint (e.g. Apertus-70B-Instruct-2509) is carried in `served` and surfaced to technical users
-// — badge tooltip, the map node's HF link, a persona precision note — so the exact model stays
-// inspectable. (Earlier this resolver derived the headline from the served size and reserved "1.5"
-// for the id literally saying so; that's superseded by this branding decision.)
+function apertus(served?: string): ModelIdentity {
+	return { short: `Apertus 1.5${sizeSuffix(served)}`, served, maker: SWISSAI, makerShort: "SwissAI", openness: "fully open", training: APERTUS_TRAINING };
+}
+
+// Canonical display-name policy (updated 2026-06-19, Justin): the headline shows the version brand
+// AND the served parameter size — "Apertus 1.5 8B" — derived from the served checkpoint. The
+// differentiator here is radical honesty, and an open 8B doing this well is the story, not a
+// liability; hiding the size would be the kind of obscuring the product rejects. The full served
+// checkpoint (e.g. Apertus-1.5-8B-Instruct-sft-dpo-tools) is still carried in `served` and surfaced
+// to technical users — badge tooltip, the map node's HF link, a persona precision note. (Supersedes
+// the 2026-06-18 "version brand regardless of size" call.)
 export function resolveModelIdentity(rawId?: string): ModelIdentity {
 	const lo = (rawId ?? "").toLowerCase();
 	const served = rawId?.split("/").pop() || undefined;
