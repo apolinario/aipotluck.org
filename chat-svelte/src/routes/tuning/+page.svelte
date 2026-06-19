@@ -85,7 +85,9 @@
 				class="w-full rounded border p-2 font-mono text-xs"
 				bind:value={persona}
 			></textarea>
-			<details class="text-xs text-gray-500">
+			<!-- Expanded when no custom persona is set (show the default to start from);
+			     collapsed once a custom value exists. -->
+			<details class="text-xs text-gray-500" open={!cur.persona}>
 				<summary class="cursor-pointer">Show default</summary>
 				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.persona}</pre>
 			</details>
@@ -112,7 +114,7 @@
 				class="w-full rounded border p-2 font-mono text-xs"
 				bind:value={grounding}
 			></textarea>
-			<details class="text-xs text-gray-500">
+			<details class="text-xs text-gray-500" open={!cur.grounding}>
 				<summary class="cursor-pointer">Show default</summary>
 				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.grounding}</pre>
 			</details>
@@ -195,7 +197,7 @@
 				class="w-full rounded border p-2 text-xs"
 				bind:value={starters}
 			></textarea>
-			<details class="text-xs text-gray-500">
+			<details class="text-xs text-gray-500" open={!cur.starters?.length}>
 				<summary class="cursor-pointer">Show default</summary>
 				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.starters.join("\n")}</pre>
 			</details>
