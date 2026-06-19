@@ -26,10 +26,12 @@
 			<p class="text-xs text-gray-500">Last edited by {cur.editedBy} · {cur.editedAt}</p>
 		{/if}
 		{#if form?.saved}
-			<p class="rounded bg-green-100 px-3 py-2 text-green-800">Saved.</p>
+			<p role="status" aria-live="polite" class="rounded bg-green-100 px-3 py-2 text-green-800">
+				Saved.
+			</p>
 		{/if}
 		{#if form?.error}
-			<p class="rounded bg-red-100 px-3 py-2 text-red-800">Error: {form.error}</p>
+			<p role="alert" class="rounded bg-red-100 px-3 py-2 text-red-800">Error: {form.error}</p>
 		{/if}
 	</header>
 
@@ -54,6 +56,7 @@
 			>
 			<textarea
 				name="persona"
+				aria-label="System persona prompt"
 				rows="14"
 				class="w-full rounded border p-2 font-mono text-xs"
 				value={cur.persona ?? ""}
@@ -72,6 +75,7 @@
 			>
 			<textarea
 				name="grounding"
+				aria-label="Search grounding prompt"
 				rows="8"
 				class="w-full rounded border p-2 font-mono text-xs"
 				value={cur.grounding ?? ""}
@@ -89,6 +93,7 @@
 					><span class="block text-xs">temperature ({def.decoding.temperature})</span>
 					<input
 						name="temperature"
+						aria-label="temperature"
 						type="number"
 						step="0.05"
 						min="0"
@@ -101,6 +106,7 @@
 					><span class="block text-xs">frequency_penalty ({def.decoding.frequency_penalty})</span>
 					<input
 						name="frequency_penalty"
+						aria-label="frequency_penalty"
 						type="number"
 						step="0.05"
 						min="-2"
@@ -113,6 +119,7 @@
 					><span class="block text-xs">presence_penalty ({def.decoding.presence_penalty})</span>
 					<input
 						name="presence_penalty"
+						aria-label="presence_penalty"
 						type="number"
 						step="0.05"
 						min="-2"
@@ -125,6 +132,7 @@
 					><span class="block text-xs">max_tokens ({def.decoding.max_tokens})</span>
 					<input
 						name="max_tokens"
+						aria-label="max_tokens"
 						type="number"
 						step="1"
 						min="1"
@@ -141,6 +149,7 @@
 			<span class="block text-xs text-gray-500">One per line; blank = the defaults below.</span>
 			<textarea
 				name="starters"
+				aria-label="Starter prompts, one per line"
 				rows="5"
 				class="w-full rounded border p-2 text-xs"
 				value={cur.starters?.join("\n") ?? ""}
