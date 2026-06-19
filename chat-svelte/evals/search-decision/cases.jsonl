@@ -1,0 +1,40 @@
+{"id":"rw01","query":"What's the latest news on the EU AI Act?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw02","query":"Who won the most recent Formula 1 race?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw03","query":"What is the current price of Bitcoin?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw04","query":"What are today's top news headlines?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw05","query":"What's the weather right now in Zurich?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw06","query":"What are the latest developments in fusion energy this year?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw07","query":"What is the current status of US debt ceiling negotiations?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw08","query":"What are the newest breakthroughs in battery technology in 2026?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw09","query":"What is the up-to-date WHO guidance on COVID boosters?","needs_search":true,"bucket":"recency_worded"}
+{"id":"rw10","query":"What's been announced about the next iPhone recently?","needs_search":true,"bucket":"recency_worded"}
+{"id":"ru01","query":"Who is the Secretary-General of the United Nations?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru02","query":"Who is the prime minister of Japan?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru03","query":"How many member states does the European Union have?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru04","query":"What is the population of Lagos?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru05","query":"Who holds the record for most tennis Grand Slam singles titles?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru06","query":"Which stable release of Python should I install?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru07","query":"Who is the CEO of OpenAI?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru08","query":"What is the unemployment rate in Germany?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru09","query":"Which country hosts the next Summer Olympics?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ru10","query":"What is the going salary for a senior software engineer in Berlin?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"tl01","query":"What is a hash map and why are lookups O(1) on average?","needs_search":false,"bucket":"timeless"}
+{"id":"tl02","query":"Explain the difference between TCP and UDP.","needs_search":false,"bucket":"timeless"}
+{"id":"tl03","query":"How does photosynthesis work?","needs_search":false,"bucket":"timeless"}
+{"id":"tl04","query":"Write a Python function to reverse a linked list.","needs_search":false,"bucket":"timeless"}
+{"id":"tl05","query":"What is the capital of France?","needs_search":false,"bucket":"timeless"}
+{"id":"tl06","query":"Prove that the square root of 2 is irrational.","needs_search":false,"bucket":"timeless"}
+{"id":"tl07","query":"What's the difference between let and const in JavaScript?","needs_search":false,"bucket":"timeless"}
+{"id":"tl08","query":"Summarize the plot of Romeo and Juliet.","needs_search":false,"bucket":"timeless"}
+{"id":"tl09","query":"How do vaccines work in general?","needs_search":false,"bucket":"timeless"}
+{"id":"tl10","query":"Explain Bayes' theorem with a worked example.","needs_search":false,"bucket":"timeless"}
+{"id":"tl11","query":"What are the SOLID principles in software design?","needs_search":false,"bucket":"timeless"}
+{"id":"tl12","query":"What is the time complexity of quicksort?","needs_search":false,"bucket":"timeless"}
+{"id":"ts01","query":"How do I get the current date in Python?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"ts02","query":"What does 'current' mean in an electrical circuit?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"ts03","query":"What's the current flowing through a 10-ohm resistor at 5 volts?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"ts04","query":"How do I check the status of a systemd service?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"ts05","query":"What does the 'latest' tag mean in a Docker image?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"ts06","query":"How do I print the current working directory in bash?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"ts07","query":"In git, how do I see the status of my working tree?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"ts08","query":"How do I get the current timestamp in JavaScript?","needs_search":false,"bucket":"timeless_spicy"}

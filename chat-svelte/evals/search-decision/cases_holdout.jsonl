@@ -1,0 +1,40 @@
+{"id":"hw01","query":"What's the latest on the wildfire situation in California?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw02","query":"Give me the current headlines in world news.","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw03","query":"What's the stock market doing right now?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw04","query":"What are the most recent developments in the Ukraine conflict?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw05","query":"What's breaking in tech this week?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw06","query":"What's the newest version of the Linux kernel?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw07","query":"What is the latest stable Node.js release?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw08","query":"What's the price of gold today?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw09","query":"What films came out this week?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hw10","query":"What's the current top story on the news?","needs_search":true,"bucket":"recency_worded"}
+{"id":"hu01","query":"Who is the reigning Wimbledon champion?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu02","query":"Which team tops the Premier League table?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu03","query":"What film is number one at the box office?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu04","query":"How much does a barrel of Brent crude cost?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu05","query":"What is the world record for the men's marathon?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu06","query":"Who holds the world chess championship title?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu07","query":"How many people live in the Jakarta metro area?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu08","query":"Which smartphone has the best-rated camera?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu09","query":"What is the going mortgage interest rate?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"hu10","query":"Who is the head coach of the Golden State Warriors?","needs_search":true,"bucket":"recency_unworded"}
+{"id":"ht01","query":"What is a monad in functional programming?","needs_search":false,"bucket":"timeless"}
+{"id":"ht02","query":"Explain how DNS resolution works.","needs_search":false,"bucket":"timeless"}
+{"id":"ht03","query":"What causes the four seasons on Earth?","needs_search":false,"bucket":"timeless"}
+{"id":"ht04","query":"Write a haiku about autumn rain.","needs_search":false,"bucket":"timeless"}
+{"id":"ht05","query":"State and prove the Pythagorean theorem.","needs_search":false,"bucket":"timeless"}
+{"id":"ht06","query":"What's the difference between a process and a thread?","needs_search":false,"bucket":"timeless"}
+{"id":"ht07","query":"How does public-key cryptography work?","needs_search":false,"bucket":"timeless"}
+{"id":"ht08","query":"What is the boiling point of water at sea level?","needs_search":false,"bucket":"timeless"}
+{"id":"ht09","query":"Explain the difference between mitosis and meiosis.","needs_search":false,"bucket":"timeless"}
+{"id":"ht10","query":"What does 'idempotent' mean in API design?","needs_search":false,"bucket":"timeless"}
+{"id":"hs01","query":"How do I show the current branch in Mercurial?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs02","query":"What's the now() function in Excel?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs03","query":"How do I get the latest commit hash in Git?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs04","query":"How do I read the current value of a Terraform variable?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs05","query":"How do I print the current timestamp in Ruby?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs06","query":"What does the 'latest' tag mean for a Helm chart?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs07","query":"How do I check the current React state inside a hook?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs08","query":"How do I get the current working directory in PowerShell?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs09","query":"What's the syntax for the latest async features in Zig?","needs_search":false,"bucket":"timeless_spicy"}
+{"id":"hs10","query":"How do I view the current namespace status in Kubernetes?","needs_search":false,"bucket":"timeless_spicy"}
