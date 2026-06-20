@@ -656,12 +656,15 @@ export async function POST({ request, locals, params, getClientAddress }) {
 					}
 				}
 
-				// Append updates for audit/replay (streams too, to preserve ordering)
+				// Append updates for audit/replay (streams too, to preserve ordering). AgentStep is a
+				// transient live-stack animation beat (the step history persists in the <think> block and
+				// the verified answer), so it streams to the client but is NOT written to the audit log.
 				if (
 					!(
 						event.type === MessageUpdateType.Status &&
 						event.status === MessageUpdateStatus.KeepAlive
-					)
+					) &&
+					event.type !== MessageUpdateType.AgentStep
 				) {
 					messageToWriteTo?.updates?.push(
 						event.type === MessageUpdateType.Stream ? { ...event } : event

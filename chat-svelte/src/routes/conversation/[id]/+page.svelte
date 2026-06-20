@@ -445,6 +445,15 @@
 						route: update.route,
 						model: update.model,
 					};
+				} else if (update.type === MessageUpdateType.AgentStep) {
+					// Agent step (Story B): the agent service advanced one execution step. Beat BOTH the
+					// Apertus model node and the Hermes agent node — each step IS the sovereign model
+					// working, driven by the agent loop, so pulsing both keeps the animation coherent with
+					// the provenance badge (which centers on the Apertus node). The step text itself streams
+					// in the <think> block; this is the ambient map animation.
+					if (browser) {
+						window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["apertus", "hermes"] } }));
+					}
 				} else if (update.type === MessageUpdateType.Safety) {
 					// Safety pre-screen declined this turn before the model ran. Stamp the marker
 					// so the answer renders as a safety decline (no Apertus provenance badge) and

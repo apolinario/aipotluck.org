@@ -7,6 +7,7 @@ import type {
 } from "@huggingface/inference";
 import { z } from "zod";
 import { endpointOAIParametersSchema, endpointOai } from "./openai/endpointOai";
+import { endpointAgentParametersSchema, endpointAgent } from "./agent/endpointAgent";
 import type { Model } from "$lib/types/Model";
 import type { ObjectId } from "bson";
 
@@ -39,7 +40,11 @@ export type Endpoint = (
 // list of all endpoint generators
 export const endpoints = {
 	openai: endpointOai,
+	agent: endpointAgent,
 };
 
-export const endpointSchema = z.discriminatedUnion("type", [endpointOAIParametersSchema]);
+export const endpointSchema = z.discriminatedUnion("type", [
+	endpointOAIParametersSchema,
+	endpointAgentParametersSchema,
+]);
 export default endpoints;
