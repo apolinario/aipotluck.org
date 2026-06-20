@@ -134,6 +134,13 @@
 		let firstTokenWatchdog: ReturnType<typeof setTimeout> | undefined;
 		let firstContentSeen = false;
 		let watchdogTimedOut = false;
+		// Set when the early-failure path painted a pre-vetted cached answer onto the
+		// client message (HIT). The post-stream invalidation in `finally` must then be
+		// skipped: the server has no record of this turn (the request dropped before it
+		// landed, or before any token), so re-syncing would reconcile `messages` back to
+		// the empty server snapshot and WIPE the cached answer. Function scope so the
+		// finally can read it.
+		let cacheFallbackRendered = false;
 		// Assigned inside the try once the target message exists; called from the
 		// after-loop, the no-iterator early return, AND the catch — hence function
 		// scope rather than a try-local const.
@@ -291,6 +298,9 @@
 							asOf: cached.asOf ?? "",
 						};
 					}
+					// Mark so the finally skips the conversation re-sync that would
+					// otherwise wipe this client-only answer (see flag declaration).
+					cacheFallbackRendered = true;
 					return;
 				}
 				$error = ERROR_MESSAGES.connectionLost;
@@ -299,15 +309,25 @@
 			// Time-to-first-token watchdog (cause-agnostic). fetch() has no timeout, and
 			// a stream can stall or die before the first token with neither a token nor
 			// an error — so the for-await below can hang the spinner indefinitely. If
-			// nothing renders within the window, abort (unsticking any hung read) and
-			// take the EARLY-failure path. Generous window: search-grounded turns add
-			// retrieval latency before the first token.
+			// nothing arrives within the window, abort (unsticking any hung read) and
+			// take the EARLY-failure path.
+			//
+			// The window is re-armed on every inbound update (below), so this is purely
+			// a DEAD-CONNECTION detector: it fires only on TOTAL silence. A legitimately
+			// slow turn — e.g. a grounded answer doing >8s of retrieval, emitting status
+			// or keep-alive updates before the first answer token — keeps re-arming and
+			// is never false-tripped. The dead-connection regime it guards against
+			// produces no updates at all, so there is nothing to re-arm it with.
 			const FIRST_TOKEN_TIMEOUT_MS = 8000;
-			firstTokenWatchdog = setTimeout(() => {
-				if (firstContentSeen || $isAborted) return;
-				watchdogTimedOut = true;
-				messageUpdatesAbortController.abort();
-			}, FIRST_TOKEN_TIMEOUT_MS);
+			const armFirstTokenWatchdog = () => {
+				if (firstTokenWatchdog) clearTimeout(firstTokenWatchdog);
+				firstTokenWatchdog = setTimeout(() => {
+					if (firstContentSeen || $isAborted) return;
+					watchdogTimedOut = true;
+					messageUpdatesAbortController.abort();
+				}, FIRST_TOKEN_TIMEOUT_MS);
+			};
+			armFirstTokenWatchdog();
 
 			const messageUpdatesIterator = await fetchMessageUpdates(
 				convId,
@@ -369,6 +389,13 @@
 					messageUpdatesAbortController.abort();
 					return;
 				}
+
+				// Any inbound update proves the connection is alive: re-arm the
+				// first-token watchdog so a legitimately slow turn (long retrieval
+				// before the first token) isn't aborted as a false positive. Once real
+				// content is seen the watchdog is cleared for good, so this is a no-op
+				// after that point.
+				if (!firstContentSeen) armFirstTokenWatchdog();
 
 				// Remove null characters added due to remote keylogging prevention
 				// See server code for more details
@@ -616,7 +643,22 @@
 				if (stoppedHere) {
 					await waitForTerminalPersist(convId);
 				}
-				await Promise.all([safeInvalidate(UrlDependency.Conversation), convsStore.refresh()]);
+				if (cacheFallbackRendered) {
+					// The connection dropped before the server persisted this turn, so we
+					// painted a pre-vetted cached answer client-side. A conversation
+					// re-sync here would reconcile `messages` back to the empty/partial
+					// server snapshot and WIPE that answer (and the optimistic user turn),
+					// leaving a silently empty conversation. Skip the reload; still refresh
+					// the sidebar, which reads its own store. The cached answer is transient
+					// (gone on navigation/reload) — correct, since nothing was persisted;
+					// the user can resend to get a real, persisted turn.
+					await convsStore.refresh();
+				} else {
+					await Promise.all([
+						safeInvalidate(UrlDependency.Conversation),
+						convsStore.refresh(),
+					]);
+				}
 			}
 		}
 	}
