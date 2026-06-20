@@ -1,31 +1,31 @@
 {
 	"_note": "Warm RESPONSE CACHE: genuine model outputs captured from the live pipeline (persona + grounding + open-web search), not hand-authored demo answers. Served live-first with this as a flaky-connection fallback. Regenerate with `npm run warm-cache`.",
-	"generatedAt": "2026-06-20T01:29:42.641Z",
+	"generatedAt": "2026-06-20T02:21:05.099Z",
 	"base": "http://localhost:5173",
-	"model": "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools",
+	"model": "swiss-ai/Apertus-70B-Instruct-2509",
 	"keyScheme": "sha256(model + '\\n' + normalized-prompt)[:16]",
 	"entries": {
-		"98fae063090c49af": {
+		"c2520f6d14420873": {
 			"prompt": "I work in humanitarian policy in Geneva. Can this help me understand AI governance frameworks affecting public institutions?",
-			"answer": "Yes, the frameworks listed—NIST AI RMF 1.0, ISO/IEC 42001, EU AI Act, and US Executive Order on AI—provide institutional guidance for public institutions. However, their application varies by jurisdiction and context; specifics differ by country or region. Could you share your country or local context so I can tailor the information more precisely?",
+			"answer": "The governance frameworks you might find relevant in your work in humanitarian policy in Geneva include the NIST AI RMF 1.0, ISO/IEC 42001, and the EU AI Act. The US Executive Order on AI may also be of interest due to its global influence. However, the specific applicability of these frameworks can vary based on the context and jurisdiction of your work. Please provide more details about your specific role or project for a more tailored response.",
 			"sources": [],
 			"asOf": null,
 			"grounded": false,
-			"model": "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools",
-			"generatedAt": "2026-06-20T01:29:39.984Z"
+			"model": "swiss-ai/Apertus-70B-Instruct-2509",
+			"generatedAt": "2026-06-20T02:20:51.254Z"
 		},
-		"049372de42553254": {
+		"38d2cf6a901a2030": {
 			"prompt": "A farmer in Rwanda is asking about drought-resistant crops for this season. What can you actually help with, and where are your limits?",
-			"answer": "I can help by providing information on drought-resistant crop varieties suitable for Rwanda, general agricultural practices, and climate-resilient farming techniques. However, I cannot offer real-time weather data, local soil analysis, or direct access to agricultural extension services. My advice is based on general knowledge and may not account for specific regional conditions or recent changes in agricultural policy.",
+			"answer": "I can provide information on various drought-resistant crops suitable for Rwanda's climate, such as sorghum, millet, and certain types of beans. However, I am not able to provide personalized advice based on specific local conditions or soil types. I also cannot assist with physical farming tasks or supply seeds. For detailed advice, it would be best to consult with local agricultural experts or extension services.",
 			"sources": [],
 			"asOf": null,
 			"grounded": false,
-			"model": "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools",
-			"generatedAt": "2026-06-20T01:29:40.794Z"
+			"model": "swiss-ai/Apertus-70B-Instruct-2509",
+			"generatedAt": "2026-06-20T02:20:58.490Z"
 		},
-		"f660a4d8ae07baf5": {
+		"c35557416e788555": {
 			"prompt": "I need the current status of the EU AI Act for a policy briefing next week. How do you find that?",
-			"answer": "Based on the provided sources, the EU AI Act is a European Union regulation concerning artificial intelligence that entered into force on 1 August 2024. It establishes a common regulatory and legal framework for AI within the EU, covering most AI systems across various sectors with exemptions for military and national security uses. The regulation's provisions are scheduled to come into operation gradually over the following 6 to 36 months. [1]",
+			"answer": "The EU AI Act entered into force on 1 August 2024, with provisions to come into operation gradually over the following 6 to 36 months. The European Artificial Intelligence Office (source [2]) supports its implementation and enforcement. For more detailed information, refer to source [1] for the full scope of the regulation.",
 			"sources": [
 				{
 					"title": "Artificial Intelligence Act",
@@ -36,45 +36,54 @@
 					"n": 1
 				},
 				{
-					"title": "The EU AI Act: A Primer | Center for Security and Emerging Technology",
-					"url": "https://cset.georgetown.edu/article/the-eu-ai-act-a-primer/",
-					"snippet": "Mia HoffmannSeptember 26, 2023 The EU AI Act is nearing formal adoption and implementation. Read this blog post, with updated analysis following the December 2023 political agreement, by CSET’s resident EU expert and Research Fellow, Mia Hoffmann. Learn w",
-					"engine": "Marginalia",
+					"title": "European Artificial Intelligence Office",
+					"url": "https://en.wikipedia.org/wiki/European_Artificial_Intelligence_Office",
+					"snippet": "The European Artificial Intelligence Office (also known as the EU AI Office or AI Office) is a European Union office established within the European Commission that supports the implementation of the Artificial Intelligence Act and, at EU level, supervises and enforces the obligations for providers of general‑purpose AI (GPAI) models. The European AI Office plays a key role in implementing the AI Act (especially for general-purpose AI), fostering the development and use of tr",
+					"engine": "Wikipedia",
+					"asOf": "2026-06-14T23:04:35Z",
 					"n": 2
+				},
+				{
+					"title": "Environmental impact of AI",
+					"url": "https://en.wikipedia.org/wiki/Environmental_impact_of_AI",
+					"snippet": "The environmental impact of the design, training, deployment and use of artificial intelligence includes the greenhouse gas emissions from generating electricity for data centres and computing hardware, operational and upstream water use, and material impacts from hardware manufacturing, mining and electronic waste. Estimating AI's environmental effects can be difficult because results depend on how impacts are measured, including whether accounting includes only model comput",
+					"engine": "Wikipedia",
+					"asOf": "2026-06-16T23:02:33Z",
+					"n": 3
+				},
+				{
+					"title": "Preparing For Change: How Businesses Can Thrive Under The EU's AI Act - New Technology - European Union",
+					"url": "https://www.mondaq.com/new-technology/1426306/preparing-for-change-how-businesses-can-thrive-under-the-eus-ai-act",
+					"snippet": "ARTICLE 20 February 2024 More Contributor Norton Rose Fulbright provides a full scope of legal services to the world’s preeminent corporations and financial institutions. The global law firm has more than 3,000 lawyers advising clients across more than 50",
+					"engine": "Marginalia",
+					"n": 4
 				},
 				{
 					"title": "The EU AI Act: How to (truly) protect people on the move - Access Now",
 					"url": "https://www.accessnow.org/eu-ai-act-migration/",
 					"snippet": "The European Union Artificial Intelligence Act (EU AI Act) aims to promote the uptake of trustworthy AI and, at the same time, protect the rights of all people affected by AI systems. While EU policymakers are busy amending the text, one important questio",
 					"engine": "Marginalia",
-					"n": 3
+					"n": 5
 				},
 				{
-					"title": "The EU AI Act: How to (truly) protect people on the move - European Digital Rights (EDRi)",
-					"url": "https://edri.org/our-work/the-eu-ai-act-how-to-truly-protect-people-on-the-move/",
-					"snippet": "The European Union Artificial Intelligence Act (EU AI Act) aims to promote the uptake of trustworthy AI and, at the same time, protect the rights of all people affected by AI systems. While EU policymakers are busy amending the text, one important questio",
+					"title": "Will the EU AI Act work? Lessons learned from past legislative initiatives, future challenges | IAPP",
+					"url": "https://iapp.org/news/a/will-the-eu-ai-act-work-lessons-learned-from-past-legislative-initiatives-future-challenges",
+					"snippet": "Published17 April 2024 Laura Caroli Senior Fellow, Wadhwani AI Center Center for Strategic and International Studies The EU Artificial Intelligence Act is not yet published in the Official Journal of the European Union, yet its unquestionably disruptive v",
 					"engine": "Marginalia",
-					"n": 4
+					"n": 6
 				},
 				{
 					"title": "Contentious areas in the EU AI Act trilogues | IAPP",
 					"url": "https://iapp.org/news/a/contentious-areas-in-the-eu-ai-act-trilogues",
 					"snippet": "Published30 Aug. 2023 Müge Fazlioglu CIPP/E, CIPP/US Principal Researcher, Privacy Law and Policy IAPP The European Union's Artificial Intelligence Act is on track to the world's first comprehensive regulation of this emerging technology. As a first mover",
 					"engine": "Marginalia",
-					"n": 5
-				},
-				{
-					"title": "EU AI Act Trilogues - European Digital Rights (EDRi)",
-					"url": "https://edri.org/our-work/eu-ai-act-trilogues-status-of-fundamental-rights-recommendations/",
-					"snippet": "As the EU AI Act negotiations continue, a number of controversial issues remain open. At stake are vital issues including the extent to which general purpose/foundation models are regulated, but also crucially, how far does the AI Act effectively prevent",
-					"engine": "Marginalia",
-					"n": 6
+					"n": 7
 				}
 			],
-			"asOf": "2026-06-20T01:29:40.798Z",
+			"asOf": "2026-06-20T02:20:58.493Z",
 			"grounded": true,
-			"model": "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools",
-			"generatedAt": "2026-06-20T01:29:42.641Z"
+			"model": "swiss-ai/Apertus-70B-Instruct-2509",
+			"generatedAt": "2026-06-20T02:21:05.099Z"
 		}
 	}
 }
