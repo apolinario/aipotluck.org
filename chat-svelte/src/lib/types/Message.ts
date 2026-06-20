@@ -20,6 +20,14 @@ export type Message = Partial<Timestamps> & {
 	files?: MessageFile[];
 	interrupted?: boolean;
 
+	// TRANSIENT, client-render-only — deliberately NOT persisted (no JSONB column).
+	// Set when the time-to-first-token watchdog fell back to a pre-vetted starter
+	// answer because the live request never reached the server (conference-wifi
+	// request-lost-before-egress). Drives an honesty chip in ChatMessage. It must
+	// stay transient: a reloaded conversation re-fetches live and is no longer
+	// cache-served, so persisting it would misreport provenance on reload.
+	servedFromCache?: boolean;
+
 	// Router metadata when using llm-router
 	routerMetadata?: {
 		route: string;

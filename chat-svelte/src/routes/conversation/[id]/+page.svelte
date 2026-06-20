@@ -301,6 +301,10 @@
 				const cached = await getCachedAnswer(prompt ?? "", { base });
 				if (cached) {
 					messageToWriteTo.content = cached.answer;
+					// Transient honesty marker (client-render-only, never persisted): this turn
+					// was served from a pre-vetted starter answer because the live request never
+					// reached the server. ChatMessage renders an honesty chip off it.
+					messageToWriteTo.servedFromCache = true;
 					if (cached.sources.length > 0) {
 						messageToWriteTo.webSearch = {
 							query: prompt ?? "",
