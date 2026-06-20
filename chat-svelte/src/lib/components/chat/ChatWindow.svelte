@@ -24,6 +24,7 @@
 	import BlindSpotsModal from "./BlindSpotsModal.svelte";
 	import { blindSpotsOpen } from "$lib/stores/blindSpots";
 	import ShareButton from "./ShareButton.svelte";
+	import { downloadConversationMarkdown } from "$lib/utils/exportConversation";
 	import VoiceRecorder from "./VoiceRecorder.svelte";
 	import StopGeneratingBtn from "../StopGeneratingBtn.svelte";
 	import type { Model } from "$lib/types/Model";
@@ -99,6 +100,15 @@
 	// Friendly model name for the in-composer indicator — DERIVED from the served id
 	// (never hardcoded) and the same source as the provenance badge, so they can't drift.
 	let modelLabel = $derived(resolveModelIdentity(currentModel.id).short);
+
+	// Export the current conversation as a Markdown file. Fully client-side (nothing leaves
+	// the browser); title derived from the first user turn for a meaningful filename. The
+	// serializer excludes the system prompt/persona — see exportConversation.ts.
+	const exportChat = () => {
+		const firstUser = messages.find((m) => m.from === "user")?.content?.trim();
+		const title = firstUser ? firstUser.split(/\s+/).slice(0, 8).join(" ") : undefined;
+		downloadConversationMarkdown({ title, model: modelLabel, messages });
+	};
 
 	// Mobile only (below md): the split-screen collapses to a single column with a
 	// Chat / "Under the hood" tab switcher — on a phone the map is one tap away
@@ -741,9 +751,7 @@
 								gap={message.from === "assistant"
 									? gapForPrompt(messages[idx - 1]?.content)
 									: undefined}
-								question={message.from === "assistant"
-									? messages[idx - 1]?.content
-									: undefined}
+								question={message.from === "assistant" ? messages[idx - 1]?.content : undefined}
 								alternatives={messagesAlternatives.find((a) => a.includes(message.id)) ?? []}
 								isAuthor={!shared}
 								readOnly={isReadOnly}
@@ -994,6 +1002,16 @@
 						>
 							Blind spots
 						</button>
+						{#if messages.length}
+							<span class="mx-1.5 opacity-50">·</span>
+							<button
+								type="button"
+								class="inline-block cursor-pointer py-1.5 underline-offset-2 hover:text-[var(--ap-ink)] hover:underline"
+								onclick={exportChat}
+							>
+								Export
+							</button>
+						{/if}
 						<span class="mx-1.5 opacity-50">·</span>
 						<ShareButton class="py-1.5 align-baseline" />
 					</div>
