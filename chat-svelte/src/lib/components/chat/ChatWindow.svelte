@@ -34,6 +34,7 @@
 	import { base } from "$app/paths";
 	import { resolveModelIdentity } from "$lib/identity";
 	import ChatMessage from "./ChatMessage.svelte";
+	import ConnectionStatus from "./ConnectionStatus.svelte";
 	import ScrollToBottomBtn from "../ScrollToBottomBtn.svelte";
 	import ScrollToPreviousBtn from "../ScrollToPreviousBtn.svelte";
 	import { browser } from "$app/environment";
@@ -727,6 +728,7 @@
 		{#if featureAnnouncement && showFeatureAnnouncement}
 			<FeatureAnnouncementToast announcement={featureAnnouncement} />
 		{/if}
+		<ConnectionStatus />
 		<div
 			class="scrollbar-custom h-full overflow-y-auto"
 			use:snapScrollToBottom={scrollDependency}
