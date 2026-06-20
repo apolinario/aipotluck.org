@@ -31,10 +31,12 @@ export function fixAcronymExpansions(text: string): string {
 		return text;
 	}
 	return text
-		.replace(/\b([A-Za-z][A-Za-z0-9.+-]{1,7})\s+\(([^()]{1,90})\)/g, (m, tok: string, inner: string) =>
-			isAcronymTok(tok) && !isAside(inner) ? fixTok(tok) : m
+		.replace(
+			/\b([A-Za-z][A-Za-z0-9.+-]{1,7})\s+\(([^()]{1,90})\)/g,
+			(m, tok: string, inner: string) => (isAcronymTok(tok) && !isAside(inner) ? fixTok(tok) : m)
 		)
-		.replace(/\b([A-Za-z][A-Za-z0-9.+-]{1,7})\s+\(([^()]{0,90})$/, (m, tok: string, inner: string) =>
-			isAcronymTok(tok) && !isAside(inner) ? fixTok(tok) : m
+		.replace(
+			/\b([A-Za-z][A-Za-z0-9.+-]{1,7})\s+\(([^()]{0,90})$/,
+			(m, tok: string, inner: string) => (isAcronymTok(tok) && !isAside(inner) ? fixTok(tok) : m)
 		);
 }

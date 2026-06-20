@@ -61,7 +61,10 @@ async function shoot(browser, spec) {
 		for (const label of ["Start chatting", "Get started", "Continue"]) {
 			const btn = page.getByRole("button", { name: label });
 			if (await btn.count()) {
-				await btn.first().click().catch(() => {});
+				await btn
+					.first()
+					.click()
+					.catch(() => {});
 				break;
 			}
 		}
@@ -104,7 +107,10 @@ async function dismissWelcome(page) {
 		for (const label of ["Start chatting", "Get started", "Continue"]) {
 			const btn = page.getByRole("button", { name: label });
 			if (await btn.count()) {
-				await btn.first().click().catch(() => {});
+				await btn
+					.first()
+					.click()
+					.catch(() => {});
 				await btn
 					.first()
 					.waitFor({ state: "detached", timeout: 3000 })
@@ -150,12 +156,19 @@ async function shootSearch(browser, spec) {
 
 		// The citations strip appears as soon as the turn is created (client stamps
 		// webSearch before the answer streams); then let the answer stream a little.
-		await page.getByText(/open source/i).first().waitFor({ timeout: 15000 });
+		await page
+			.getByText(/open source/i)
+			.first()
+			.waitFor({ timeout: 15000 });
 		await page.waitForTimeout(9000);
 		await page.screenshot({ path: join(OUT, `${spec.name}-search-answer.png`), fullPage: false });
 
 		// Expand the strip to show the numbered sources on a narrow viewport.
-		await page.getByText(/open source/i).first().click().catch(() => {});
+		await page
+			.getByText(/open source/i)
+			.first()
+			.click()
+			.catch(() => {});
 		await page.waitForTimeout(250);
 		await page.screenshot({ path: join(OUT, `${spec.name}-search-sources.png`), fullPage: false });
 

@@ -7,9 +7,7 @@
 
 	// TEMP (tuning panel): operator-overridden starters from layout data, else the
 	// suggestions.ts defaults. See $lib/server/tuning.
-	const starters = $derived(
-		(page.data as { starters?: string[] | null }).starters ?? suggestions
-	);
+	const starters = $derived((page.data as { starters?: string[] | null }).starters ?? suggestions);
 
 	interface Props {
 		currentModel: Model;

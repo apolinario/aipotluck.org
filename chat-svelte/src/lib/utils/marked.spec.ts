@@ -8,7 +8,10 @@ function renderHtml(md: string): string {
 	return typeof textToken.html === "string" ? textToken.html : "";
 }
 
-function renderHtmlWithSources(md: string, sources: Array<{ title: string; link: string }>): string {
+function renderHtmlWithSources(
+	md: string,
+	sources: Array<{ title: string; link: string }>
+): string {
 	const tokens = processTokensSync(md, sources);
 	const textToken = tokens.find((token) => token.type === "text");
 	if (!textToken || textToken.type !== "text") return "";

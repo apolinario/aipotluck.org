@@ -1,1 +1,20 @@
 .vercel
+
+# Helm chart: templates/*.yaml are Go-templated and prettier's YAML parser
+# can't parse them; the chart is infra-as-code, not app source.
+chart
+
+# Local debug/scratch artifacts (also gitignored)
+.plancheck-debug.json
+
+# Eval result/output caches (mostly untracked JSON dumps — not source). The eval
+# runners live here too but eval scaffolding isn't held to the app's format bar.
+evals
+
+# drizzle-kit generated migration metadata (regenerated, not hand-edited)
+drizzle/meta
+
+# Vendored gap-map data — kept BYTE-IDENTICAL to app/public/data/categories.json
+# by scripts/sync-categories.mjs + its guard test. Formatting it would break the
+# byte-equality sync, so prettier must never touch it.
+src/lib/server/textGeneration/data/categories.json

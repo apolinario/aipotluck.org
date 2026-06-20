@@ -9,10 +9,7 @@ import {
 	TuningConflictError,
 	type Tuning,
 } from "$lib/server/tuning";
-import {
-	DEFAULT_PERSONA_TEMPLATE,
-	GROUNDED_DECODING,
-} from "$lib/server/textGeneration/persona";
+import { DEFAULT_PERSONA_TEMPLATE, GROUNDED_DECODING } from "$lib/server/textGeneration/persona";
 import { DEFAULT_GROUNDING_TEMPLATE } from "$lib/server/textGeneration/searchGrounding";
 import { suggestions } from "$lib/constants/suggestions";
 import { adminTokenManager, ADMIN_PROOF_COOKIE } from "$lib/server/adminToken";

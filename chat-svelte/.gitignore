@@ -26,3 +26,6 @@ models/*
 # but ignore the local calibration telemetry it writes alongside it.
 .calque/fires.jsonl
 .calque/weights.json
+
+# plancheck debug scratch
+.plancheck-debug.json

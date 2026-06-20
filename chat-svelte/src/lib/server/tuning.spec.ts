@@ -66,7 +66,10 @@ describe("setTuning (writes reject invalid — never silently wipe)", () => {
 	beforeEach(() => updateOne.mockClear());
 
 	it("persists a valid doc and stamps editedBy/editedAt", async () => {
-		const out = await setTuning({ persona: "Hi {model}.", decoding: { temperature: 0.3 } }, "laura");
+		const out = await setTuning(
+			{ persona: "Hi {model}.", decoding: { temperature: 0.3 } },
+			"laura"
+		);
 		expect(out.persona).toBe("Hi {model}.");
 		expect(out.editedBy).toBe("laura");
 		expect(out.editedAt).toBeTruthy();
@@ -86,6 +89,7 @@ describe("setTuning (writes reject invalid — never silently wipe)", () => {
 });
 
 describe("setTuning optimistic concurrency (two editors can't silently clobber)", () => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const findOne = vi.mocked((collections as any).config.findOne);
 	beforeEach(() => {
 		updateOne.mockReset();
@@ -127,13 +131,18 @@ describe("setTuning optimistic concurrency (two editors can't silently clobber)"
 	});
 
 	it("no token but a row appeared since load → TuningConflictError, no write", async () => {
-		findOne.mockResolvedValue({ key: "TUNING", editedBy: "julie", editedAt: "2026-06-19T11:00:00.000Z" });
+		findOne.mockResolvedValue({
+			key: "TUNING",
+			editedBy: "julie",
+			editedAt: "2026-06-19T11:00:00.000Z",
+		});
 		await expect(setTuning({ persona: "X" }, "laura")).rejects.toBeInstanceOf(TuningConflictError);
 		expect(updateOne).not.toHaveBeenCalled();
 	});
 });
 
 describe("setTuning version-history backup (prior values are recoverable, not clobbered)", () => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const findOne = vi.mocked((collections as any).config.findOne);
 	beforeEach(() => {
 		updateOne.mockReset();
@@ -150,7 +159,11 @@ describe("setTuning version-history backup (prior values are recoverable, not cl
 			history: [{ persona: "OLDER", editedBy: "laura", editedAt: "2026-06-18T00:00:00.000Z" }],
 		});
 		await setTuning({ persona: "NEW" }, "laura", "2026-06-19T10:00:00.000Z");
-		const written = (updateOne.mock.calls[0][1] as any).$set;
+		const written = (
+			updateOne.mock.calls[0][1] as {
+				$set: { persona?: string; history: Array<Record<string, unknown>> };
+			}
+		).$set;
 		expect(written.persona).toBe("NEW");
 		expect(written.history[0]).toMatchObject({ persona: "OLD", editedBy: "julie" });
 		expect(written.history[1]).toMatchObject({ persona: "OLDER" });
@@ -160,7 +173,11 @@ describe("setTuning version-history backup (prior values are recoverable, not cl
 	it("does not snapshot when there was no prior save (first ever → empty history)", async () => {
 		findOne.mockResolvedValue(null);
 		await setTuning({ persona: "FIRST" }, "laura");
-		const written = (updateOne.mock.calls[0][1] as any).$set;
+		const written = (
+			updateOne.mock.calls[0][1] as {
+				$set: { persona?: string; history: Array<Record<string, unknown>> };
+			}
+		).$set;
 		expect(written.history).toEqual([]);
 	});
 
@@ -182,7 +199,11 @@ describe("setTuning version-history backup (prior values are recoverable, not cl
 			history: old,
 		});
 		await setTuning({ persona: "NEW" }, "laura", "2026-06-19T10:00:00.000Z");
-		const written = (updateOne.mock.calls[0][1] as any).$set;
+		const written = (
+			updateOne.mock.calls[0][1] as {
+				$set: { persona?: string; history: Array<Record<string, unknown>> };
+			}
+		).$set;
 		expect(written.history).toHaveLength(20);
 		expect(written.history[0]).toMatchObject({ persona: "CURRENT" }); // newest = the replaced value
 		expect(written.history.at(-1)).toMatchObject({ persona: "v18" }); // oldest (v19) dropped

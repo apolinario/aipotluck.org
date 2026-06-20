@@ -25,16 +25,10 @@
 </script>
 
 {#if points}
-	<svg
-		aria-hidden="true"
-		class="overflow-visible"
-		{height}
-		viewBox="0 0 {width} {height}"
-		{width}
-	>
+	<svg aria-hidden="true" class="overflow-visible" {height} viewBox="0 0 {width} {height}" {width}>
 		<polyline
 			fill="none"
-			points={points}
+			{points}
 			stroke="var(--ap-live)"
 			stroke-linecap="round"
 			stroke-linejoin="round"

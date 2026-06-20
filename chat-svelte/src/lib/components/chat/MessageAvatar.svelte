@@ -4,10 +4,8 @@
 	// filled dot fixed the gloss but read too heavy ("hard black circle"). A 1.5px ring (transparent
 	// fill, border in the theme ink via currentColor / classNames `text-[var(--ap-ink)]`) is light
 	// and editorial. It gently pulses while a response streams; honors prefers-reduced-motion.
-	let {
-		animating = false,
-		classNames = "",
-	}: { animating?: boolean; classNames?: string } = $props();
+	let { animating = false, classNames = "" }: { animating?: boolean; classNames?: string } =
+		$props();
 </script>
 
 <span

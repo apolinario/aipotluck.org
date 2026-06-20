@@ -49,9 +49,9 @@ describe("parseToolDecision", () => {
 	});
 
 	it("only web_search counts — an unrelated tool call does not trigger search", () => {
-		expect(
-			parseToolDecision([{ function: { name: "some_other_tool", arguments: "{}" } }])
-		).toEqual({ shouldSearch: false });
+		expect(parseToolDecision([{ function: { name: "some_other_tool", arguments: "{}" } }])).toEqual(
+			{ shouldSearch: false }
+		);
 	});
 
 	it("called but malformed/empty args → search, no query (caller falls back to raw text)", () => {

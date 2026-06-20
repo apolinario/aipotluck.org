@@ -9,7 +9,10 @@ describe("buildPersonaPrompt", () => {
 	});
 
 	it("override: replaces the prose but still fills the identity tokens", () => {
-		const out = buildPersonaPrompt("swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools", "Intro. You run on {model}.");
+		const out = buildPersonaPrompt(
+			"swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools",
+			"Intro. You run on {model}."
+		);
 		expect(out.startsWith("Intro. You run on ")).toBe(true);
 		expect(out).not.toContain("{model}"); // token filled with the real identity
 		expect(out).not.toContain("neutral, open-source AI assistant"); // default prose gone

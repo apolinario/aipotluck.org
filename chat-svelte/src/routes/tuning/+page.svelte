@@ -156,7 +156,8 @@
 		{/if}
 		{#if form?.conflict}
 			<p role="alert" class="rounded bg-red-100 px-3 py-2 text-red-800">
-				<strong>Not saved.</strong> {form.conflictBy} changed the panel{form.conflictAt
+				<strong>Not saved.</strong>
+				{form.conflictBy} changed the panel{form.conflictAt
 					? ` at ${form.conflictAt.replace("T", " ").slice(0, 16)} UTC`
 					: ""}, so saving now would overwrite their edits. Reload to see their changes, then
 				re-apply yours. (Reloading discards your unsaved edits — copy anything you want to keep
@@ -210,13 +211,13 @@
 			<div
 				role="status"
 				aria-live="polite"
-				class="whitespace-pre-wrap rounded bg-gray-50 p-2 text-xs"
+				class="rounded bg-gray-50 p-2 text-xs whitespace-pre-wrap"
 			>
 				{testAnswer}
 			</div>
 			<details class="text-xs text-gray-500">
 				<summary class="cursor-pointer">Show the assembled system prompt sent to the model</summary>
-				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{testSystem}</pre>
+				<pre class="mt-1 rounded bg-gray-50 p-2 whitespace-pre-wrap">{testSystem}</pre>
 			</details>
 		{/if}
 	</section>
@@ -233,9 +234,9 @@
 		>
 		<p class="text-xs text-gray-500">
 			Each row checks one persona behavior. <strong>Green ✓</strong> = the persona handled it,
-			<strong>red ✗</strong> = it slipped. The “sycophancy” rows ask a question, push back with “Are
-			you sure?”, and check the model kept its correct answer instead of folding; the rest ask one
-			question and check the wording. A quick smoke test — for a real number, run the full suite.
+			<strong>red ✗</strong> = it slipped. The “sycophancy” rows ask a question, push back with “Are you
+			sure?”, and check the model kept its correct answer instead of folding; the rest ask one question
+			and check the wording. A quick smoke test — for a real number, run the full suite.
 		</p>
 		<button
 			type="button"
@@ -328,8 +329,8 @@
 			</div>
 			<span class="block text-xs text-gray-500"
 				>Use tokens <code>{"{model}"}</code> <code>{"{maker}"}</code> <code>{"{served}"}</code>
-				<code>{"{training}"}</code> for the identity — they're auto-filled from the live served
-				model, so the model name stays correct if we swap models. (Don't hardcode a model name.)</span
+				<code>{"{training}"}</code> for the identity — they're auto-filled from the live served model,
+				so the model name stays correct if we swap models. (Don't hardcode a model name.)</span
 			>
 			<textarea
 				name="persona"
@@ -342,7 +343,7 @@
 			     collapsed once a custom value exists. -->
 			<details class="text-xs text-gray-500" open={!cur.persona}>
 				<summary class="cursor-pointer">Show default</summary>
-				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.persona}</pre>
+				<pre class="mt-1 rounded bg-gray-50 p-2 whitespace-pre-wrap">{def.persona}</pre>
 			</details>
 		</div>
 
@@ -357,8 +358,8 @@
 				>
 			</div>
 			<span class="block text-xs text-gray-500"
-				>Tokens <code>{"{asOf}"}</code> and <code>{"{evidence}"}</code> are auto-filled with the
-				retrieved sources.</span
+				>Tokens <code>{"{asOf}"}</code> and <code>{"{evidence}"}</code> are auto-filled with the retrieved
+				sources.</span
 			>
 			<textarea
 				name="grounding"
@@ -369,7 +370,7 @@
 			></textarea>
 			<details class="text-xs text-gray-500" open={!cur.grounding}>
 				<summary class="cursor-pointer">Show default</summary>
-				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.grounding}</pre>
+				<pre class="mt-1 rounded bg-gray-50 p-2 whitespace-pre-wrap">{def.grounding}</pre>
 			</details>
 		</div>
 
@@ -452,7 +453,7 @@
 			></textarea>
 			<details class="text-xs text-gray-500" open={!cur.starters?.length}>
 				<summary class="cursor-pointer">Show default</summary>
-				<pre class="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2">{def.starters.join("\n")}</pre>
+				<pre class="mt-1 rounded bg-gray-50 p-2 whitespace-pre-wrap">{def.starters.join("\n")}</pre>
 			</details>
 		</div>
 
@@ -485,7 +486,9 @@
 				{#each cur.history as snap, i (i)}
 					<li class="flex items-start justify-between gap-3 rounded border p-2 text-xs">
 						<div class="min-w-0">
-							<div class="text-gray-600">{snap.editedBy ?? "unknown"} · {fmtWhen(snap.editedAt)}</div>
+							<div class="text-gray-600">
+								{snap.editedBy ?? "unknown"} · {fmtWhen(snap.editedAt)}
+							</div>
 							<div class="truncate text-gray-500">
 								{snap.persona ? snap.persona.slice(0, 120) : "(default persona)"}
 							</div>

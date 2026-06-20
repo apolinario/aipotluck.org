@@ -14,6 +14,7 @@ SvelteKit-handler structural, or eval-harness-sibling false alarms.
 ## Real drift — collapse candidates
 
 ### sanitizeJSONEnv — byte-identical triplet → COLLAPSED
+
 The exact same backtick-unquoting env sanitizer was copy-pasted into three files.
 ✅ RESOLVED 2026-06-19: collapsed to one shared helper at `src/lib/server/envParse.ts`;
 all three sites now `import { sanitizeJSONEnv } from "$lib/server/envParse"`. The drift
@@ -37,6 +38,7 @@ folded in (no fallback param, client layer) — different contract, stays separa
 ## Intentionally parallel — in sync (contracted-twin-ok)
 
 ### stripReasoningBlocks — near-twin, divergent regex
+
 Same 3-line shape but DIFFERENT regex constants (`REASONING_BLOCK_REGEX` vs
 `ROUTER_REASONING_REGEX`) and different wrappers (the routing copy also deletes a
 `reasoning` field). Intentional divergence, not a copy. Low-pri: a shared core
@@ -47,6 +49,7 @@ Same 3-line shape but DIFFERENT regex constants (`REASONING_BLOCK_REGEX` vs
 - reviewed: 2026-06-19
 
 ### uploadFile / downloadFile — shared filename-key convention
+
 Self-witnessed (comment: "Filename mirrors the GridFS convention so downloadFile
 can locate it: `${convId}-${sha}`"). Write side and read side must agree on the
 key format — currently a comment, not a shared function. File path is gated off
@@ -57,6 +60,7 @@ for the text-only alpha; low-pri. Consider extracting a `blobKey(convId, sha)`.
 - reviewed: 2026-06-19
 
 ### v1/v2 DELETE conversations — parallel API versions
+
 High overlap (shared-calls=6); v1 and v2 delete handlers run in parallel. If v1 is
 deprecated, removing it kills the twin; until then verify they delete identically.
 
@@ -65,6 +69,7 @@ deprecated, removing it kills the twin; until then verify they delete identicall
 - reviewed: 2026-06-19
 
 ### settings POST — same override fields, two endpoints
+
 Both write `parsedSettings.{multimodal,reasoning,tools}Overrides` (legacy nav form
 vs v2 API). Parallel persistence of one settings shape; keep field handling in sync.
 
@@ -73,6 +78,7 @@ vs v2 API). Parallel persistence of one settings shape; keep field handling in s
 - reviewed: 2026-06-19
 
 ### model subscribe — model-level vs namespace-level
+
 Parallel subscribe handlers (one model, whole namespace). Consider a shared helper.
 
 - pair: src/routes/api/v2/models/[namespace]/[model]/subscribe/+server.ts::POST | src/routes/api/v2/models/[namespace]/subscribe/+server.ts::POST
@@ -80,6 +86,7 @@ Parallel subscribe handlers (one model, whole namespace). Consider a shared help
 - reviewed: 2026-06-19
 
 ### scroll-affordance sibling components
+
 ScrollToBottomBtn and ScrollToPreviousBtn are parallel scroll buttons; their
 visibility/teardown logic is intentionally parallel.
 
@@ -95,6 +102,7 @@ visibility/teardown logic is intentionally parallel.
 ## False alarms — coincidental signal (suppressed)
 
 ### Modal `close()` handlers — name coincidence
+
 Each modal has a trivial local `close()` (`dialog.close()` / `open=false`); distinct
 components, no shared contract.
 
@@ -118,6 +126,7 @@ components, no shared contract.
 - reviewed: 2026-06-19
 
 ### confirmDelete — parallel but deliberately separate
+
 Delete-all vs delete-one are intentionally different scopes, not a drifting twin.
 
 - pair: src/lib/components/DeleteAllConversationsModal.svelte::confirmDelete | src/lib/components/DeleteConversationModal.svelte::confirmDelete
@@ -125,6 +134,7 @@ Delete-all vs delete-one are intentionally different scopes, not a drifting twin
 - reviewed: 2026-06-19
 
 ### matchesAllowed — different allow-lists
+
 UploadedFile checks file MIME types; UrlFetchModal checks URL hosts. Same name,
 different domains.
 
@@ -133,6 +143,7 @@ different domains.
 - reviewed: 2026-06-19
 
 ### handleKeydown — every modal's Esc handler
+
 Component-local keyboard handlers; name coincidence, no shared contract.
 
 - pair: src/lib/components/Modal.svelte::handleKeydown | src/lib/components/chat/ImageLightbox.svelte::handleKeydown
@@ -155,6 +166,7 @@ Component-local keyboard handlers; name coincidence, no shared contract.
 - reviewed: 2026-06-19
 
 ### SvelteKit GET handlers — structural false alarm
+
 Distinct route endpoints; the shared signal is the framework handler signature.
 
 - pair: src/routes/api/v2/models/[namespace]/+server.ts::GET | src/routes/api/v2/models/[namespace]/[model]/+server.ts::GET
@@ -165,6 +177,7 @@ Distinct route endpoints; the shared signal is the framework handler signature.
 - reviewed: 2026-06-19
 
 ### eval-harness siblings — independent throwaway scripts
+
 Duplicated boilerplate across separate eval dirs (env-load, churn metric, verify
 scaffold, dataset download, CoT variants). Not shipping contracts; some belong to
 sibling tracks (verifier-loop, pragmatics). Suppressed.

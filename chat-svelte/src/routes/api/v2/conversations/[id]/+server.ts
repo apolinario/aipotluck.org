@@ -8,7 +8,7 @@ import { ObjectId } from "bson";
 import { validModelIdSchema } from "$lib/server/models";
 import { deleteConversationsCascade } from "$lib/server/db/deleteConversations";
 
-export const GET: RequestHandler = async ({ locals, params, url }) => {
+export const GET: RequestHandler = async ({ locals, params }) => {
 	requireAuth(locals);
 
 	const conversation = await resolveConversation(params.id ?? "", locals);

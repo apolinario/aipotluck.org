@@ -13,7 +13,6 @@
 	import CarbonUpload from "~icons/carbon/upload";
 	import CarbonLink from "~icons/carbon/link";
 	import CarbonChevronRight from "~icons/carbon/chevron-right";
-	import CarbonClose from "~icons/carbon/close";
 	import UrlFetchModal from "./UrlFetchModal.svelte";
 	import { TEXT_MIME_ALLOWLIST, IMAGE_MIME_ALLOWLIST_DEFAULT } from "$lib/constants/mime";
 
@@ -30,8 +29,6 @@
 		disabled?: boolean;
 		// tools removed
 		modelIsMultimodal?: boolean;
-		// Whether the currently selected model supports tool calling (incl. overrides)
-		modelSupportsTools?: boolean;
 		// Open-web search composer toggle (the P0 differentiator). When the toggle
 		// is shown, the user can ground a turn on Wikipedia + Marginalia. Currently
 		// hidden (showWebSearch={false}): search is auto-triggered by the recency
@@ -66,7 +63,6 @@
 		disabled = false,
 
 		modelIsMultimodal = false,
-		modelSupportsTools = true,
 		showWebSearch = false,
 		webSearchEnabled = $bindable(false),
 		webSearching = false,

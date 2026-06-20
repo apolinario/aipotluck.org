@@ -38,6 +38,7 @@ function toStorage(value: unknown): unknown {
 		// Unicode escape sequence"). A pasted or crafted null byte anywhere in a message would otherwise
 		// fail the whole conversation write (a 500 on send). Strip it at the storage boundary so every
 		// write is safe; the includes() guard keeps the normal path allocation-free.
+		// eslint-disable-next-line no-control-regex -- stripping U+0000 is the intent (see above)
 		return value.includes("\u0000") ? value.replace(/\u0000/g, "") : value;
 	}
 	if (value instanceof Date) return { $dt: value.toISOString() };
@@ -170,7 +171,9 @@ export function mongoCollection<T = Doc>(spec: CollectionSpec): AdaptedCollectio
 				// Fallback to a JSONB path for any non-indexed field (rare; runtime filters are all indexed).
 				if (isOperatorObject(val) && "$exists" in val) {
 					conds.push(
-						val.$exists ? sql`${col(table, "doc")} ? ${key}` : sql`NOT (${col(table, "doc")} ? ${key})`
+						val.$exists
+							? sql`${col(table, "doc")} ? ${key}`
+							: sql`NOT (${col(table, "doc")} ? ${key})`
 					);
 				} else {
 					conds.push(sql`${col(table, "doc")}->>${key} = ${String(val)}`);

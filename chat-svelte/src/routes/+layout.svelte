@@ -244,7 +244,6 @@
 	<MobileNav title={mobileNavTitle}>
 		<NavMenu
 			conversations={convsStore.list}
-			user={data.user}
 			ondeleteConversation={(id) => deleteConversation(id)}
 			ondeleteAllConversations={() => deleteAllConversations()}
 		/>
@@ -256,7 +255,6 @@
 	>
 		<NavMenu
 			conversations={convsStore.list}
-			user={data.user}
 			isCollapsed={isNavCollapsed}
 			onToggleCollapse={() => (isNavCollapsed = !isNavCollapsed)}
 			ondeleteConversation={(id) => deleteConversation(id)}

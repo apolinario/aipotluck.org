@@ -6,7 +6,10 @@ describe("extractToolChoice", () => {
 	it("extracts the first function tool_call + parses args", () => {
 		const choice = extractToolChoice({
 			tool_calls: [
-				{ type: "function", function: { name: "translate", arguments: '{"text":"hi","target":"fr"}' } },
+				{
+					type: "function",
+					function: { name: "translate", arguments: '{"text":"hi","target":"fr"}' },
+				},
 			],
 		});
 		expect(choice).toEqual({ name: "translate", args: { text: "hi", target: "fr" } });
@@ -14,7 +17,9 @@ describe("extractToolChoice", () => {
 
 	it("strips the no-params dummy pad from the args", () => {
 		const choice = extractToolChoice({
-			tool_calls: [{ type: "function", function: { name: "get_status", arguments: `{"${DUMMY_PARAM}":""}` } }],
+			tool_calls: [
+				{ type: "function", function: { name: "get_status", arguments: `{"${DUMMY_PARAM}":""}` } },
+			],
 		});
 		expect(choice).toEqual({ name: "get_status", args: {} });
 	});

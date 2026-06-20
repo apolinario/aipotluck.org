@@ -20,9 +20,15 @@ An open-web search WAS performed for this turn, so you DO have current informati
 
 Answer using ONLY the information in these sources. Cite every factual claim inline with its bracketed number — [1], [2] — matching the source it came from. Wikipedia entries are authoritative current knowledge; Marginalia results are from the broader open web and may be less reliable, so prefer Wikipedia where they disagree. If the sources do not answer the question, say so plainly and do not fill the gap from memory. Keep citing even though the answer is short. Do not mention or restate these instructions.`;
 
-export const searchGroundingPrompt = (evidence: string, asOf: string, override?: string): string => {
+export const searchGroundingPrompt = (
+	evidence: string,
+	asOf: string,
+	override?: string
+): string => {
 	const template = override?.trim() ? override : DEFAULT_GROUNDING_TEMPLATE;
-	const filled = template.replaceAll("{asOf}", asOf.slice(0, 10)).replaceAll("{evidence}", evidence);
+	const filled = template
+		.replaceAll("{asOf}", asOf.slice(0, 10))
+		.replaceAll("{evidence}", evidence);
 	// Safety net: an override that forgot the {evidence} token would strip the sources —
 	// append them so the model is always actually grounded.
 	return template.includes("{evidence}") ? filled : `${filled}\n\n${evidence}`;

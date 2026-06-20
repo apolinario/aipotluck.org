@@ -40,7 +40,14 @@ function sizeSuffix(served?: string): string {
 }
 
 function apertus(served?: string): ModelIdentity {
-	return { short: `Apertus 1.5${sizeSuffix(served)}`, served, maker: SWISSAI, makerShort: "SwissAI", openness: "fully open", training: APERTUS_TRAINING };
+	return {
+		short: `Apertus 1.5${sizeSuffix(served)}`,
+		served,
+		maker: SWISSAI,
+		makerShort: "SwissAI",
+		openness: "fully open",
+		training: APERTUS_TRAINING,
+	};
 }
 
 // Canonical display-name policy (updated 2026-06-19, Justin): the headline shows the version brand
@@ -64,7 +71,14 @@ export function resolveModelIdentity(rawId?: string): ModelIdentity {
 		.replace(/-instruct.*$/i, "")
 		.replace(/[-_]/g, " ")
 		.trim();
-	return { short: pretty, served, maker: "an open-source community", makerShort: "open-source", openness: "open weights", training: "" };
+	return {
+		short: pretty,
+		served,
+		maker: "an open-source community",
+		makerShort: "open-source",
+		openness: "open weights",
+		training: "",
+	};
 }
 
 // Friendly names for known HF inference providers (the raw header value is a
@@ -80,5 +94,7 @@ const PROVIDER_NAMES: Record<string, string> = {
 // back to the honest serving label rather than inventing one.
 export function providerDisplay(provider?: string): string {
 	if (!provider) return "Public AI";
-	return PROVIDER_NAMES[provider.toLowerCase()] ?? provider.replace(/\b\w/g, (c) => c.toUpperCase());
+	return (
+		PROVIDER_NAMES[provider.toLowerCase()] ?? provider.replace(/\b\w/g, (c) => c.toUpperCase())
+	);
 }

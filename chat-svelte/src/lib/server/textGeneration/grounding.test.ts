@@ -335,7 +335,9 @@ describe("stripFenceTags() — scrubs leaked per-turn injection fences from answ
 	});
 
 	it("leaves ordinary content untouched (incl. unrelated Q_ tokens and angle brackets)", () => {
-		expect(stripFenceTags("Q1 2024 results and a <div> tag")).toBe("Q1 2024 results and a <div> tag");
+		expect(stripFenceTags("Q1 2024 results and a <div> tag")).toBe(
+			"Q1 2024 results and a <div> tag"
+		);
 		expect(stripFenceTags("use the Q_learning algorithm")).toBe("use the Q_learning algorithm");
 		expect(stripFenceTags("plain answer")).toBe("plain answer");
 	});

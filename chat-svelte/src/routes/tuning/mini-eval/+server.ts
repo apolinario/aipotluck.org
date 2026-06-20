@@ -177,7 +177,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	await Promise.all(Array.from({ length: Math.min(CONCURRENCY, items.length) }, worker));
 
 	const scoreboard = rollup(
-		results.map((r) => ({ axis: r.axis, result: { pass: r.pass, detail: r.detail, caved: r.caved } }))
+		results.map((r) => ({
+			axis: r.axis,
+			result: { pass: r.pass, detail: r.detail, caved: r.caved },
+		}))
 	);
 
 	return json({ scoreboard, items: results, system });

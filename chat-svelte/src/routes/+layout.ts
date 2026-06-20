@@ -2,7 +2,6 @@ import type { ConvSidebar } from "$lib/types/ConvSidebar";
 import { useAPIClient, handleResponse } from "$lib/APIClient";
 import { getConfigManager } from "$lib/utils/PublicConfig.svelte";
 import type { GETModelsResponse, FeatureFlags } from "$lib/server/api/types";
-import { base } from "$app/paths";
 
 interface ConversationListItem {
 	_id: { toString(): string };

@@ -77,7 +77,10 @@ async function main() {
 		createdAt: new Date(),
 		updatedAt: new Date(Date.now() + 1000),
 	});
-	check("countDocuments by session", (await collections.conversations.countDocuments({ sessionId })) === 2);
+	check(
+		"countDocuments by session",
+		(await collections.conversations.countDocuments({ sessionId })) === 2
+	);
 	const sorted = await collections.conversations
 		.find({ sessionId })
 		.sort({ updatedAt: -1 })
@@ -88,17 +91,26 @@ async function main() {
 	// 5. ownership-scoped deleteOne
 	const del = await collections.conversations.deleteOne({ _id: convId, sessionId });
 	check("deleteOne removes one", del.deletedCount === 1);
-	check("delete respects filter (other survives)", (await collections.conversations.countDocuments({ sessionId })) === 1);
+	check(
+		"delete respects filter (other survives)",
+		(await collections.conversations.countDocuments({ sessionId })) === 1
+	);
 
 	// 6. settings upsert with $set + $setOnInsert (authCondition anon)
 	await collections.settings.updateOne(
 		{ sessionId, userId: { $exists: false } },
-		{ $set: { activeModel: "apertus", multimodalOverrides: { x: true } }, $setOnInsert: { createdAt: new Date() } },
+		{
+			$set: { activeModel: "apertus", multimodalOverrides: { x: true } },
+			$setOnInsert: { createdAt: new Date() },
+		},
 		{ upsert: true }
 	);
 	const st = await collections.settings.findOne({ sessionId, userId: { $exists: false } });
 	check("settings upsert seeds sessionId from filter", st?.sessionId === sessionId);
-	check("settings wide field round-trips (JSONB doc)", (st?.multimodalOverrides as { x?: boolean })?.x === true);
+	check(
+		"settings wide field round-trips (JSONB doc)",
+		(st?.multimodalOverrides as { x?: boolean })?.x === true
+	);
 	check("settings $setOnInsert applied", st?.createdAt instanceof Date);
 	await collections.settings.updateOne(
 		{ sessionId, userId: { $exists: false } },
@@ -120,7 +132,11 @@ async function main() {
 		updatedAt: new Date(),
 	});
 	await collections.users.updateOne({ _id: uId }, { $set: { name: "Ada Lovelace" } });
-	check("users updateOne by _id", (await collections.users.findOne({ hfUserId: "hf-" + uId.toHexString() }))?.name === "Ada Lovelace");
+	check(
+		"users updateOne by _id",
+		(await collections.users.findOne({ hfUserId: "hf-" + uId.toHexString() }))?.name ===
+			"Ada Lovelace"
+	);
 	await collections.settings.updateOne(
 		{ sessionId },
 		{ $set: { userId: uId, updatedAt: new Date() }, $unset: { sessionId: "" } }
@@ -149,15 +165,26 @@ async function main() {
 
 	// 9. semaphores — unique-key lock: second insert with same key must THROW (lock held)
 	const lockKey = "lock-" + new ObjectId().toHexString();
-	await collections.semaphores.insertOne({ _id: new ObjectId(), key: lockKey, createdAt: new Date() });
+	await collections.semaphores.insertOne({
+		_id: new ObjectId(),
+		key: lockKey,
+		createdAt: new Date(),
+	});
 	let threw = false;
 	try {
-		await collections.semaphores.insertOne({ _id: new ObjectId(), key: lockKey, createdAt: new Date() });
+		await collections.semaphores.insertOne({
+			_id: new ObjectId(),
+			key: lockKey,
+			createdAt: new Date(),
+		});
 	} catch {
 		threw = true;
 	}
 	check("semaphore duplicate-key insert throws (lock primitive)", threw);
-	check("isDBLocked-style count", (await collections.semaphores.countDocuments({ key: lockKey })) === 1);
+	check(
+		"isDBLocked-style count",
+		(await collections.semaphores.countDocuments({ key: lockKey })) === 1
+	);
 
 	// 10. abortedGenerations upsert by conversationId
 	const aConv = new ObjectId();
@@ -167,13 +194,23 @@ async function main() {
 		{ upsert: true }
 	);
 	const marker = await collections.abortedGenerations.findOne({ conversationId: aConv });
-	check("abortedGenerations upsert + conversationId ObjectId revived", marker?.conversationId instanceof ObjectId);
+	check(
+		"abortedGenerations upsert + conversationId ObjectId revived",
+		marker?.conversationId instanceof ObjectId
+	);
 
 	// 11. config key/value table (identity = key, no _id emitted)
-	await collections.config.updateOne({ key: "flags" }, { $set: { value: { web_search: true } } }, { upsert: true });
+	await collections.config.updateOne(
+		{ key: "flags" },
+		{ $set: { value: { web_search: true } } },
+		{ upsert: true }
+	);
 	const cfgs = await collections.config.find({}).toArray();
 	const flag = cfgs.find((c) => (c as { key?: string }).key === "flags");
-	check("config find({}) returns key/value", (flag?.value as { web_search?: boolean })?.web_search === true);
+	check(
+		"config find({}) returns key/value",
+		(flag?.value as { web_search?: boolean })?.web_search === true
+	);
 	check("config emits no _id", flag?._id === undefined);
 
 	await closeDb();

@@ -44,9 +44,7 @@ export async function handleRequest({ event, resolve }: HandleInput): Promise<Re
 			if (previewPassword) {
 				const p = event.url.pathname;
 				const exempt =
-					p.endsWith("/api/cleanup") ||
-					p.endsWith("/healthcheck") ||
-					p.includes("/.well-known/");
+					p.endsWith("/api/cleanup") || p.endsWith("/healthcheck") || p.includes("/.well-known/");
 				if (!exempt) {
 					const header = event.request.headers.get("authorization") ?? "";
 					let authorized = false;

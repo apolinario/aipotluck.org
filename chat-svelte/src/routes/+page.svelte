@@ -96,7 +96,11 @@
 				updatedAt: new Date(),
 			});
 			await goto(`${base}/conversation/${conversationId}`, {
-				state: { pendingMessage: message, pendingFilesNonce, pendingSearchContext: opts?.searchContext },
+				state: {
+					pendingMessage: message,
+					pendingFilesNonce,
+					pendingSearchContext: opts?.searchContext,
+				},
 			});
 		} catch (err) {
 			error.set((err as Error).message || ERROR_MESSAGES.default);

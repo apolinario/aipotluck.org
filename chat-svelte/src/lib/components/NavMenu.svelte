@@ -20,9 +20,7 @@
 
 	import NavConversationItem from "./NavConversationItem.svelte";
 	import DeleteAllConversationsModal from "./DeleteAllConversationsModal.svelte";
-	import type { LayoutData } from "../../routes/$types";
 	import type { ConvSidebar } from "$lib/types/ConvSidebar";
-	import { page } from "$app/state";
 	import InfiniteScroll from "./InfiniteScroll.svelte";
 	import { CONV_NUM_PER_PAGE } from "$lib/constants/pagination";
 	import { usePublicConfig } from "$lib/utils/PublicConfig.svelte";
@@ -34,7 +32,6 @@
 
 	interface Props {
 		conversations: ConvSidebar[];
-		user: LayoutData["user"];
 		p?: number;
 		/** When true, render the icon-only rail (labels + history hidden). */
 		isCollapsed?: boolean;
@@ -47,7 +44,6 @@
 
 	let {
 		conversations = $bindable(),
-		user,
 		p = $bindable(0),
 		isCollapsed = false,
 		onToggleCollapse,

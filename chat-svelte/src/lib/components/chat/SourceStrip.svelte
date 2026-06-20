@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from "svelte";
 	import { fly } from "svelte/transition";
 	import { prefersReducedMotion } from "svelte/motion";
 	import type { SearchSource } from "$lib/types/Search";
@@ -32,7 +33,9 @@
 	// which is tomorrow for an evening-in-the-Americas reader. SSR uses the UTC slice as a
 	// hydration-stable fallback; the $effect (client-only) upgrades it to the local date, so first paint
 	// matches on both sides and the swap is benign.
-	let date = $state(asOf?.slice(0, 10) ?? "");
+	// untrack: the initial value is deliberately the UTC slice (a stable SSR/hydration fallback);
+	// capturing only asOf's initial value here is intended, the $effect below owns later updates.
+	let date = $state(untrack(() => asOf?.slice(0, 10) ?? ""));
 	$effect(() => {
 		if (!asOf) return;
 		const d = new Date(asOf);

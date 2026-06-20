@@ -2,8 +2,12 @@
 	import type { Message, MessageFile } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
 	import { isRecencyQueryDenoised } from "$lib/search/recency";
-	import { shouldRunSearch, usesModelClassifier, SEARCH_TRIGGER_STRATEGY } from "$lib/search/triggerStrategy";
-	import { onDestroy, onMount, tick } from "svelte";
+	import {
+		shouldRunSearch,
+		usesModelClassifier,
+		SEARCH_TRIGGER_STRATEGY,
+	} from "$lib/search/triggerStrategy";
+	import { onMount, tick } from "svelte";
 
 	import ArtifactPanel from "./ArtifactPanel.svelte";
 	import StackMap from "$lib/components/stack/StackMap.svelte";
@@ -153,9 +157,6 @@
 	// Voice recording state
 	let isRecording = $state(false);
 	let isTranscribing = $state(false);
-	let transcriptionEnabled = $derived(
-		!!(page.data as { transcriptionEnabled?: boolean }).transcriptionEnabled
-	);
 	let isTouchDevice = $derived(browser && navigator.maxTouchPoints > 0);
 
 	// Open-web search (P0 differentiator). Per Julie (2026-06-18) this is no longer
@@ -338,42 +339,12 @@
 			return undefined;
 		})()
 	);
-	let streamingRouterMetadata = $derived(streamingAssistantMessage?.routerMetadata ?? null);
-	let streamingRouterModelName = $derived(
-		streamingRouterMetadata?.model
-			? (streamingRouterMetadata.model.split("/").pop() ?? streamingRouterMetadata.model)
-			: ""
-	);
-
 	let lastIsError = $derived(
 		!loading &&
 			(streamingAssistantMessage?.updates?.findIndex(
 				(u) => u.type === "status" && u.status === "error"
 			) ?? -1) !== -1
 	);
-
-	let showRouterDetails = $state(false);
-	let routerDetailsTimeout: ReturnType<typeof setTimeout> | undefined;
-
-	$effect(() => {
-		if (!currentModel.isRouter || !loading) {
-			showRouterDetails = false;
-			if (routerDetailsTimeout) {
-				clearTimeout(routerDetailsTimeout);
-				routerDetailsTimeout = undefined;
-			}
-			return;
-		}
-
-		if (routerDetailsTimeout) {
-			clearTimeout(routerDetailsTimeout);
-		}
-
-		showRouterDetails = false;
-		routerDetailsTimeout = setTimeout(() => {
-			showRouterDetails = true;
-		}, 500);
-	});
 
 	let sources = $derived(
 		files?.map<Promise<MessageFile>>((file) =>
@@ -385,12 +356,6 @@
 			}))
 		)
 	);
-
-	onDestroy(() => {
-		if (routerDetailsTimeout) {
-			clearTimeout(routerDetailsTimeout);
-		}
-	});
 
 	let chatContainer: HTMLElement | undefined = $state();
 
@@ -551,15 +516,6 @@
 	// Respect per‑model multimodal toggle from settings (force enable)
 	let modelIsMultimodalOverride = $derived($settings.multimodalOverrides?.[currentModel.id]);
 	let modelIsMultimodal = $derived((modelIsMultimodalOverride ?? currentModel.multimodal) === true);
-
-	// Tools/MCP removed (B1-lite strip).
-	let modelSupportsTools = $derived(false);
-
-	// Get provider override for the current model (HuggingChat only)
-	let providerOverride = $derived($settings.providerOverrides?.[currentModel.id]);
-	let hasProviderOverride = $derived(
-		providerOverride && providerOverride !== "auto" && !currentModel.isRouter
-	);
 
 	// Always allow common text-like files; add images only when model is multimodal
 	import { TEXT_MIME_ALLOWLIST, IMAGE_MIME_ALLOWLIST_DEFAULT } from "$lib/constants/mime";
@@ -968,7 +924,6 @@
 									{onPaste}
 									disabled={isReadOnly || lastIsError}
 									{modelIsMultimodal}
-									{modelSupportsTools}
 									showWebSearch={false}
 									{modelLabel}
 									bind:webSearchEnabled

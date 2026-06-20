@@ -100,7 +100,10 @@ export function buildPersonaPrompt(
 	// real-time access while fresh sources sit unused). Exact-constant match keeps this in sync with
 	// the default template; an override that doesn't contain the clause is simply left untouched.
 	if (opts?.grounded) {
-		template = template.replace(RECENCY_CLAUSE, "").replace(/\n{3,}/g, "\n\n").trim();
+		template = template
+			.replace(RECENCY_CLAUSE, "")
+			.replace(/\n{3,}/g, "\n\n")
+			.trim();
 	}
 	return fillIdentityTokens(template, identity);
 }
