@@ -40,6 +40,24 @@ type SmoothStreamConfig = {
 	};
 };
 
+/**
+ * Thrown when the server returns 409 for a duplicate generationId (W2 idempotency): the SAME logical
+ * turn is already running or finished server-side — a network auto-retry (W3) re-POSTed it. The caller
+ * treats this as "attach to the existing run", NOT an error worth a toast or a second submission.
+ */
+export class GenerationConflictError extends Error {
+	readonly status: "in_flight" | "complete" | "error";
+	readonly conversationId: string;
+	readonly messageId?: string;
+	constructor(info: { status: string; conversationId: string; messageId?: string }) {
+		super(`generation already ${info.status}`);
+		this.name = "GenerationConflictError";
+		this.status = info.status === "complete" || info.status === "error" ? info.status : "in_flight";
+		this.conversationId = info.conversationId;
+		this.messageId = info.messageId;
+	}
+}
+
 export async function fetchMessageUpdates(
 	conversationId: string,
 	opts: MessageUpdateRequestOptions,
@@ -74,6 +92,18 @@ export async function fetchMessageUpdates(
 		signal: abortController.signal,
 	});
 
+	if (response.status === 409) {
+		// W2 idempotency: this generationId is already running/finished server-side (a duplicate POST from
+		// a network auto-retry). Surface a typed conflict so the caller attaches to the existing run rather
+		// than toasting an error or double-submitting.
+		const info = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+		throw new GenerationConflictError({
+			status: typeof info.status === "string" ? info.status : "in_flight",
+			conversationId:
+				typeof info.conversationId === "string" ? info.conversationId : conversationId,
+			messageId: typeof info.messageId === "string" ? info.messageId : undefined,
+		});
+	}
 	if (!response.ok) {
 		const errorMessage = await response
 			.json()

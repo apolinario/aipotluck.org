@@ -233,3 +233,26 @@ export const contributions = pgTable(
 export type ContributionRow = typeof contributions.$inferSelect;
 export type NewContributionRow = typeof contributions.$inferInsert;
 export type FileRow = typeof files.$inferSelect;
+
+// ── generations (W2 idempotency ledger) ──────────────────────────────────────────
+// One row per client-minted generationId (the turn's idempotency key). Lets a re-sent POST — a
+// network auto-retry of the SAME logical turn (W3) — be deduplicated instead of spawning a parallel
+// run. The claim is one statement: INSERT … ON CONFLICT (id) DO UPDATE … WHERE status='error', which
+// (a) inserts a fresh row, (b) re-claims a previously-errored row for a new attempt, or (c) no-ops when
+// a complete/in-flight row already exists — in case (c) the route returns 409 and the client attaches
+// to the existing run rather than double-submitting. Not a document collection (no `doc`/Mongo adapter):
+// written via raw drizzle in $lib/server/generations.ts. Pruned alongside conversations (db/cleanup.ts).
+export const generations = pgTable(
+	"generations",
+	{
+		id: text("id").primaryKey(), // = client-minted generationId (uuid); the PK IS the idempotency key
+		conversationId: text("conversation_id").notNull(),
+		messageId: text("message_id"), // assistant message this run wrote (reference)
+		status: text("status", { enum: ["in_flight", "complete", "error"] }).notNull(),
+		createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+		completedAt: timestamp("completed_at", { withTimezone: true }),
+	},
+	(t) => [index("generations_conversation_idx").on(t.conversationId, t.createdAt)]
+);
+
+export type GenerationRow = typeof generations.$inferSelect;

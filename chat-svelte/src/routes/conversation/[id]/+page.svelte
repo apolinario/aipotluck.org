@@ -18,7 +18,11 @@
 	import file2base64 from "$lib/utils/file2base64";
 	import { addChildren } from "$lib/utils/tree/addChildren";
 	import { addSibling } from "$lib/utils/tree/addSibling";
-	import { fetchMessageUpdates, resolveStreamingMode } from "$lib/utils/messageUpdates";
+	import {
+		fetchMessageUpdates,
+		resolveStreamingMode,
+		GenerationConflictError,
+	} from "$lib/utils/messageUpdates";
 	import { getCachedAnswer } from "$lib/utils/starterCache";
 	import { v4 } from "uuid";
 	import { useSettingsStore } from "$lib/stores/settings.js";
@@ -360,6 +364,15 @@
 				},
 				messageUpdatesAbortController.signal
 			).catch((err) => {
+				// W2 idempotency: a 409 means this generationId is already running/finished server-side (a
+				// duplicate POST from a network auto-retry). Don't toast and don't re-submit — attach to the
+				// existing run by registering it as a background generation (the SSE poller delivers its
+				// completion) and refresh the conversation so the in-flight/finished turn surfaces.
+				if (err instanceof GenerationConflictError) {
+					addBackgroundGeneration({ id: convId, startedAt: Date.now() });
+					void safeInvalidate(UrlDependency.Conversation);
+					return;
+				}
 				// A user abort rejects the fetch; that is not an error worth a toast
 				if (!$isAborted && !(err instanceof DOMException && err.name === "AbortError")) {
 					error.set(err.message);

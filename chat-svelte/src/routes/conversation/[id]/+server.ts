@@ -36,6 +36,7 @@ import { AbortRegistry } from "$lib/server/abortRegistry";
 import { clampStoppedContent } from "$lib/server/stopTruncation";
 import { MetricsServer } from "$lib/server/metrics";
 import { deleteConversationsCascade } from "$lib/server/db/deleteConversations";
+import { claimGeneration, readGeneration, finishGeneration } from "$lib/server/generations";
 
 // How long a stop marker is protected from the pre-flight cleanup of a new
 // generation. A marker younger than this may still be awaiting observation by
@@ -445,6 +446,30 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	const webSearchProvenance = searchProvenance(searchContext);
 	if (webSearchProvenance) {
 		messageToWriteTo.webSearch = webSearchProvenance;
+	}
+
+	// W2 idempotency: claim this turn by its client-minted generationId BEFORE persisting the new
+	// messages, so a duplicate POST — a network auto-retry of the SAME logical turn (W3) — cannot create
+	// a second turn. claimGeneration is atomic: a fresh (or previously-errored) id is claimed and we
+	// proceed; a complete/in-flight id loses the claim → return 409 with the existing turn's status so the
+	// client attaches to the running stream (or refreshes a finished turn) instead of double-submitting.
+	// Only guards when the client sent a generationId (always, for v4-minted runs); legacy callers without
+	// one keep prior behavior. A user-initiated regenerate mints a NEW id, so it isn't deduped against this.
+	if (generationId) {
+		const claimed = await claimGeneration(generationId, convId.toString(), messageToWriteTo.id);
+		if (!claimed) {
+			const existing = await readGeneration(generationId);
+			// NB: `json` from @sveltejs/kit is shadowed by a local `json` (the parsed form field) in this
+			// scope, so build the 409 Response directly.
+			return new Response(
+				JSON.stringify({
+					status: existing?.status ?? "in_flight",
+					conversationId: convId.toString(),
+					messageId: existing?.messageId ?? messageToWriteTo.id,
+				}),
+				{ status: 409, headers: { "content-type": "application/json" } }
+			);
+		}
 	}
 
 	// update the conversation with the new messages
@@ -881,6 +906,14 @@ export async function POST({ request, locals, params, getClientAddress }) {
 			}
 
 			await persistConversation();
+			// W2: mark this generation terminal. 'complete' covers a user-interrupted turn too (a final
+			// answer was persisted); 'error' leaves the id re-claimable by a fresh retry of the same turn
+			// (claimGeneration's WHERE status='error'). Best-effort: a failure here must not break the run.
+			if (generationId) {
+				await finishGeneration(generationId, hasError ? "error" : "complete").catch((err) =>
+					logger.warn(err, "Failed to finalize generation idempotency record")
+				);
+			}
 			clearInterval(abortMarkerWatcher);
 			abortRegistry.unregister(conversationKey, ctrl);
 

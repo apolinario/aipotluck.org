@@ -15,6 +15,13 @@
       "when": 1781738357519,
       "tag": "0001_goofy_expediter",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781941605828,
+      "tag": "0002_add_generations",
+      "breakpoints": true
     }
   ]
 }
