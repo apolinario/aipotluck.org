@@ -2,3 +2,4 @@
 .env
 last_run.json
 __pycache__/
+*.local.md
