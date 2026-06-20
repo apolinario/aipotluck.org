@@ -3,4 +3,3 @@ last_run*.json
 __pycache__/
 .env
 *.pyc
-*.local.md
