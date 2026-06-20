@@ -220,12 +220,23 @@
 	async function modelDecide(
 		query: string
 	): Promise<{ shouldSearch?: boolean; query?: string; ok?: boolean }> {
+		// Timeout matters: "margin" is the default strategy, so this fetch is on EVERY turn's
+		// critical path. A slow/hung classify endpoint (e.g. conference wifi → CSCS) must not hang
+		// the turn on the "deciding" spinner — abort after ~4.5s and return ok:false so decideSearch
+		// falls back to the recency heuristic. (A plain fetch error already returns ok:false; this
+		// also covers the no-response hang, which is the real conf-wifi failure mode.)
+		const ctrl = new AbortController();
+		const timer = setTimeout(() => ctrl.abort(), 4500);
 		try {
-			const res = await fetch(`${base}/api/search/classify?q=${encodeURIComponent(query)}`);
+			const res = await fetch(`${base}/api/search/classify?q=${encodeURIComponent(query)}`, {
+				signal: ctrl.signal,
+			});
 			if (!res.ok) return { shouldSearch: false, ok: false };
 			return (await res.json()) as { shouldSearch?: boolean; query?: string; ok?: boolean };
 		} catch {
 			return { shouldSearch: false, ok: false };
+		} finally {
+			clearTimeout(timer);
 		}
 	}
 
