@@ -1,13 +1,17 @@
 // Open-knowledge web search for the chat — genuinely-open sources only, called
 // directly over HTTPS from the SvelteKit server route (no self-hosted service,
-// no closed vendor). Wikipedia (open public knowledge, no key) carries
-// explainers and current policy; Marginalia (open independent crawler, public
-// key) adds general-web reach at indie scale. A Google-scale open web index does
-// not exist — that stays an honest GAP on the map, not something we fake.
-// Ported from the Next chat/ app (lib/search/open-search.ts).
+// no closed vendor). Three open engines, all keyless or open-key:
+//   • Wikipedia — open public knowledge; queried in English AND, when the query
+//     is in another language, that language's edition (multilingual reference).
+//   • Marginalia — open independent crawler (general open-web reach, indie scale).
+//   • OpenAlex — open scholarly index (academic/research, with real publication
+//     dates + source language; no key, polite pool via mailto).
+// A Google-scale open web index still does not exist — that stays an honest GAP
+// on the map, not something we fake. Ported from the Next chat/ app.
 
 import { distillQuery } from "./distill";
 import { rerankByRelevance, rerankModel } from "./rerank";
+import { reconstructAbstract, detectWikiLang } from "./searchUtil";
 import { config } from "$lib/server/config";
 import type { OpenSearchResult, SearchSource } from "$lib/types/Search";
 
@@ -28,12 +32,15 @@ async function getJSON(
 }
 
 // Wikipedia: top search hits WITH intro extracts in a single generator query.
+// `lang` selects the language edition (default English); non-English sources are
+// tagged so the citation can show a language chip.
 async function searchWikipedia(
 	query: string,
 	limit: number,
+	lang = "en",
 	signal?: AbortSignal
 ): Promise<Omit<SearchSource, "n">[]> {
-	const u = new URL("https://en.wikipedia.org/w/api.php");
+	const u = new URL(`https://${lang}.wikipedia.org/w/api.php`);
 	u.search = new URLSearchParams({
 		action: "query",
 		generator: "search",
@@ -61,10 +68,11 @@ async function searchWikipedia(
 		.filter((p) => p.extract?.trim())
 		.map((p) => ({
 			title: p.title,
-			url: p.fullurl ?? `https://en.wikipedia.org/wiki/${encodeURIComponent(p.title)}`,
+			url: p.fullurl ?? `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(p.title)}`,
 			snippet: (p.extract ?? "").replace(/\s+/g, " ").trim().slice(0, 480),
 			engine: "Wikipedia" as const,
 			asOf: p.touched, // last-edited timestamp — the honest "as of" for the claim
+			...(lang !== "en" ? { lang } : {}),
 		}));
 }
 
@@ -118,6 +126,56 @@ async function searchMarginalia(
 		}));
 }
 
+// OpenAlex: open scholarly index (works metadata). Keyless — the free "polite
+// pool" only asks for a mailto. Each work carries a real publication_date and a
+// language, so academic sources get honest dates (which Marginalia can't give).
+interface OpenAlexWork {
+	id: string;
+	title?: string;
+	doi?: string | null;
+	publication_date?: string;
+	language?: string;
+	abstract_inverted_index?: Record<string, number[]> | null;
+	primary_location?: {
+		landing_page_url?: string | null;
+		source?: { display_name?: string } | null;
+	};
+	open_access?: { oa_url?: string | null };
+}
+async function searchOpenAlex(
+	query: string,
+	limit: number,
+	signal?: AbortSignal
+): Promise<Omit<SearchSource, "n">[]> {
+	const u = new URL("https://api.openalex.org/works");
+	u.searchParams.set("search", query);
+	u.searchParams.set("per-page", String(limit));
+	u.searchParams.set("mailto", "contact@aipotluck.org"); // polite pool (no key needed)
+	const data = (await getJSON(u.toString(), signal)) as { results?: OpenAlexWork[] };
+	return (data.results ?? [])
+		.filter((w) => w.title?.trim())
+		.map((w) => {
+			const venue = w.primary_location?.source?.display_name;
+			const abstract = reconstructAbstract(w.abstract_inverted_index);
+			const snippet = (
+				abstract || [venue, w.publication_date?.slice(0, 4)].filter(Boolean).join(" · ")
+			)
+				.replace(/\s+/g, " ")
+				.trim()
+				.slice(0, 360);
+			const url = w.doi || w.primary_location?.landing_page_url || w.open_access?.oa_url || w.id;
+			return {
+				title: (w.title ?? "").trim(),
+				url,
+				snippet,
+				engine: "OpenAlex" as const,
+				...(w.publication_date ? { asOf: w.publication_date } : {}),
+				...(w.language && w.language !== "en" ? { lang: w.language } : {}),
+			};
+		})
+		.filter((s) => s.url && s.snippet);
+}
+
 function dedupe(items: Omit<SearchSource, "n">[]): Omit<SearchSource, "n">[] {
 	const seen = new Set<string>();
 	const out: Omit<SearchSource, "n">[] = [];
@@ -134,7 +192,13 @@ function dedupe(items: Omit<SearchSource, "n">[]): Omit<SearchSource, "n">[] {
 
 export async function openSearch(
 	query: string,
-	opts: { wikipedia?: number; marginalia?: number; keep?: number; timeoutMs?: number } = {}
+	opts: {
+		wikipedia?: number;
+		marginalia?: number;
+		openalex?: number;
+		keep?: number;
+		timeoutMs?: number;
+	} = {}
 ): Promise<OpenSearchResult> {
 	// With a reranker configured, cast a WIDER net and let the cross-encoder pick
 	// the best — recall from the wide retrieval, precision from the rerank. Without
@@ -143,6 +207,7 @@ export async function openSearch(
 	const {
 		wikipedia = reranking ? 6 : 3,
 		marginalia = reranking ? 10 : 4,
+		openalex = reranking ? 6 : 3,
 		keep = 6,
 		timeoutMs = 8000,
 	} = opts;
@@ -154,30 +219,41 @@ export async function openSearch(
 	const timer = setTimeout(() => controller.abort(), timeoutMs);
 	const asOf = new Date().toISOString();
 	try {
-		// Both run in parallel; either failing degrades rather than breaks.
-		const [wiki, marg] = await Promise.allSettled([
-			searchWikipedia(searchQuery, wikipedia, controller.signal),
+		// All engines run in parallel; any one failing degrades rather than breaks.
+		// English Wikipedia always; a non-English edition too when the query looks
+		// non-English (multilingual reference); plus Marginalia (open web) + OpenAlex
+		// (scholarly). Wall-clock = the slowest engine, not the sum.
+		const wikiLang = detectWikiLang(searchQuery);
+		const engines: Promise<Omit<SearchSource, "n">[]>[] = [
+			searchWikipedia(searchQuery, wikipedia, "en", controller.signal),
 			searchMarginalia(searchQuery, marginalia, controller.signal),
-		]);
-		let merged = dedupe([
-			...(wiki.status === "fulfilled" ? wiki.value : []),
-			...(marg.status === "fulfilled" ? marg.value : []),
-		]).filter((s) => s.snippet);
+			searchOpenAlex(searchQuery, openalex, controller.signal),
+		];
+		if (wikiLang)
+			engines.push(searchWikipedia(searchQuery, wikipedia, wikiLang, controller.signal));
+		const settled = await Promise.allSettled(engines);
+
+		let merged = dedupe(settled.flatMap((r) => (r.status === "fulfilled" ? r.value : []))).filter(
+			(s) => s.snippet
+		);
 
 		// Cross-encoder rerank by true query-relevance, keeping the best `keep` and
 		// dropping clearly off-topic hits (the failure mode that returned generic AI
 		// pages for an "EU AI Act" query). Best-effort: a no-op when disabled or on
-		// any reranker error, so retrieval order survives.
+		// any reranker error, so retrieval order survives. Without a reranker, still
+		// cap to `keep` so more engines don't bloat the grounding context.
 		if (reranking) {
 			merged = await rerankByRelevance(searchQuery, merged, { topK: keep, minScore: 0.01 });
+		} else {
+			merged = merged.slice(0, keep);
 		}
 
 		const sources: SearchSource[] = merged.map((s, i) => ({ ...s, n: i + 1 }));
 		const evidence = sources
-			.map(
-				(s) =>
-					`[${s.n}] ${s.title} (${s.engine}${s.asOf ? `, updated ${s.asOf.slice(0, 10)}` : ""})\n${s.snippet}\n${s.url}`
-			)
+			.map((s) => {
+				const tag = `${s.engine}${s.lang ? ` ${s.lang.toUpperCase()}` : ""}${s.asOf ? `, ${s.asOf.slice(0, 10)}` : ""}`;
+				return `[${s.n}] ${s.title} (${tag})\n${s.snippet}\n${s.url}`;
+			})
 			.join("\n\n");
 		return { query: searchQuery, sources, evidence, asOf };
 	} finally {

@@ -8,8 +8,9 @@ export type SearchSource = {
 	title: string;
 	url: string;
 	snippet: string;
-	engine: "Wikipedia" | "Marginalia";
-	asOf?: string; // ISO date for time-sensitive sources (Wikipedia last-edit)
+	engine: "Wikipedia" | "Marginalia" | "OpenAlex";
+	asOf?: string; // ISO date for time-sensitive sources (Wikipedia last-edit, OpenAlex publication)
+	lang?: string; // BCP-47-ish source language for non-English sources (e.g. "fr")
 };
 
 export type OpenSearchResult = {

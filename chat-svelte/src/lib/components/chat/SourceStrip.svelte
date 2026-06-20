@@ -21,6 +21,7 @@
 	const ENGINE_META: Record<SearchSource["engine"], { note: string; color: string }> = {
 		Wikipedia: { note: "open public knowledge", color: "var(--ap-live)" },
 		Marginalia: { note: "broader open web · varies", color: "var(--ap-building)" },
+		OpenAlex: { note: "open scholarly index", color: "var(--ap-live)" },
 	};
 
 	const flashWebsearch = () =>
