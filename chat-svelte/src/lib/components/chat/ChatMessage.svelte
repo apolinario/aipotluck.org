@@ -22,11 +22,13 @@
 	import { MessageUpdateType } from "$lib/types/MessageUpdate";
 	import ImageLightbox from "./ImageLightbox.svelte";
 	import ProvenanceTrace from "./ProvenanceTrace.svelte";
+	import CacheNotice from "./CacheNotice.svelte";
 	import GapInvite from "./GapInvite.svelte";
 	import type { StarterGap } from "$lib/constants/starterGaps";
 	import ReportButton from "./ReportButton.svelte";
 	import { splitArtifactSegments, stripArtifacts } from "$lib/utils/artifacts";
 	import type { ArtifactOperation } from "$lib/utils/artifacts";
+	import { showsLiveProvenanceTrace, showsCacheNotice } from "$lib/messageProvenance";
 
 	interface Props {
 		message: Message;
@@ -466,6 +468,14 @@
 				{/if}
 			</div>
 
+			<!-- Conference-wifi honesty chip: this turn was served from a pre-vetted starter
+			     because the live request never reached the server, so the provenance trace below
+			     describes the pipeline this answer did NOT run. Render it above the trace to
+			     qualify it. Transient (message.servedFromCache) — gone on reload. -->
+			{#if showsCacheNotice(message)}
+				<CacheNotice {message} {onretry} />
+			{/if}
+
 			<!-- The inline provenance TRACE: the stack diagram, inlined. One persistent spine
 			     that draws itself segment-by-segment as each layer activates (retrieve → ground
 			     → generate → verify) and STAYS DRAWN — a receipt that persists in scrollback,
@@ -474,7 +484,7 @@
 			     ProvenanceBadge / SafetyBadge / SecondOpinion) as its segment bodies, so the
 			     honesty copy lives in one place. Reversible: revert this line + the `traced`
 			     props to restore the flat badge stack. -->
-			{#if message.from === "assistant"}
+			{#if showsLiveProvenanceTrace(message)}
 				<ProvenanceTrace {message} {modelId} {loading} {question} />
 			{/if}
 

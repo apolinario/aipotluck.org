@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { searchProvenance, moderationMarker } from "./messageProvenance";
+import {
+	searchProvenance,
+	moderationMarker,
+	showsLiveProvenanceTrace,
+	showsCacheNotice,
+} from "./messageProvenance";
 import type { SearchContext } from "$lib/types/Search";
+import type { Message } from "$lib/types/Message";
 
 // These helpers are the SINGLE authority for the provenance markers that the server
 // (+server.ts, persisted) and the client (+page.svelte, optimistic during streaming)
@@ -77,5 +83,41 @@ describe("moderationMarker", () => {
 
 	it("preserves a null label", () => {
 		expect(moderationMarker({ label: null, score: 0.8, kind: "toxicity" }).label).toBeNull();
+	});
+});
+
+describe("cache-fallback provenance gate", () => {
+	const msg = (over: Partial<Message>): Pick<Message, "from" | "servedFromCache"> => ({
+		from: "assistant",
+		servedFromCache: undefined,
+		...over,
+	});
+
+	it("shows the live trace (not the cache notice) for a normal assistant answer", () => {
+		const m = msg({});
+		expect(showsLiveProvenanceTrace(m)).toBe(true);
+		expect(showsCacheNotice(m)).toBe(false);
+	});
+
+	it("shows the cache notice (not the live trace) when served from cache", () => {
+		const m = msg({ servedFromCache: true });
+		expect(showsCacheNotice(m)).toBe(true);
+		expect(showsLiveProvenanceTrace(m)).toBe(false);
+	});
+
+	it("is mutually exclusive for every assistant message — never claims both at once", () => {
+		// The core honesty invariant: a turn can never read as BOTH "served from a saved
+		// answer" AND "freshly generated live". Exactly one surface shows on an assistant turn.
+		for (const servedFromCache of [undefined, false, true]) {
+			const m = msg({ servedFromCache });
+			expect(showsLiveProvenanceTrace(m)).not.toBe(showsCacheNotice(m));
+		}
+	});
+
+	it("shows neither on user or system turns", () => {
+		for (const from of ["user", "system"] as const) {
+			expect(showsLiveProvenanceTrace(msg({ from }))).toBe(false);
+			expect(showsCacheNotice(msg({ from, servedFromCache: true }))).toBe(false);
+		}
 	});
 });

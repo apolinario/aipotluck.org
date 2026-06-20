@@ -34,6 +34,25 @@ export function searchProvenance(
 	};
 }
 
+// Read-side provenance gate for the conference-wifi fallback. A turn served from the
+// pre-vetted starter cache (message.servedFromCache — set only when the time-to-first-token
+// watchdog gave up because the live request never reached the server) did NOT run the live
+// pipeline. So the inline provenance trace, which would otherwise assert "Apertus generated
+// this" / "grounded on N sources" / "verified by a second model", MUST be suppressed and
+// replaced by the honest CacheNotice. These two predicates are mutually exclusive by
+// construction for any assistant message, so the UI can never simultaneously claim BOTH
+// "served from a saved answer" AND "freshly generated live" — the core honesty invariant.
+// Both false for user/system turns (neither surface belongs on them).
+export function showsLiveProvenanceTrace(
+	message: Pick<Message, "from" | "servedFromCache">
+): boolean {
+	return message.from === "assistant" && !message.servedFromCache;
+}
+
+export function showsCacheNotice(message: Pick<Message, "from" | "servedFromCache">): boolean {
+	return message.from === "assistant" && Boolean(message.servedFromCache);
+}
+
 // Safety-decline marker: stamped when the pre-screen declined a turn before the
 // model ran. The decision (toxic-bert toxicity vs child-safety) is made upstream and
 // differs per call site — the server computes it; the client reads it off the emitted
