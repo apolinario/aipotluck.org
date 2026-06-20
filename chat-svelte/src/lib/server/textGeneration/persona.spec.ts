@@ -4,7 +4,7 @@ import { buildPersonaPrompt, resolveDecoding, GROUNDED_DECODING, RECENCY_CLAUSE 
 describe("buildPersonaPrompt", () => {
 	it("default: fills all identity tokens (no {token} placeholder leaks through)", () => {
 		const out = buildPersonaPrompt("swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools");
-		expect(out).not.toMatch(/\{(model|maker|served|training)\}/);
+		expect(out).not.toMatch(/\{(model|maker|served|serving|training)\}/);
 		expect(out).toContain("AI Potluck");
 	});
 
@@ -48,6 +48,33 @@ describe("buildPersonaPrompt", () => {
 		expect(grounded).not.toContain(RECENCY_CLAUSE);
 		expect(grounded).toContain("Intro line.");
 		expect(grounded).toContain("Outro line.");
+	});
+});
+
+describe("buildPersonaPrompt — serving clause (calque dual-path C)", () => {
+	it("HF (non-sovereign): names the provider; frames sovereign compute as the production TARGET", () => {
+		const out = buildPersonaPrompt("m", undefined, {
+			serving: { providerLabel: "HuggingFace", isSovereign: false },
+		});
+		expect(out).toContain("HuggingFace");
+		expect(out).toContain("production stack runs on sovereign public compute");
+		expect(out).not.toContain("{serving}");
+	});
+
+	it("CSCS (sovereign) FLIPS it: says it runs ON sovereign compute; does NOT claim HuggingFace", () => {
+		const out = buildPersonaPrompt("m", undefined, {
+			serving: { providerLabel: "CSCS", isSovereign: true },
+		});
+		expect(out).toContain("runs on sovereign public compute (CSCS)");
+		expect(out).not.toContain("HuggingFace");
+		expect(out).not.toContain("{serving}");
+	});
+
+	it("no serving facts: provider-agnostic (never hardcodes a host that may be stale)", () => {
+		const out = buildPersonaPrompt("m");
+		expect(out).toContain("an open inference provider");
+		expect(out).not.toContain("HuggingFace");
+		expect(out).not.toContain("{serving}");
 	});
 });
 

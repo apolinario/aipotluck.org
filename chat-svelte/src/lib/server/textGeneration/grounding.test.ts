@@ -4,6 +4,7 @@ import {
 	CATS,
 	type Category,
 	exemplarsFor,
+	buildServingNote,
 	ground,
 	hardenLastUserTurn,
 	isLocalityQuery,
@@ -305,17 +306,36 @@ describe("isServingQuery() — gates the provenance/serving-honesty lens", () =>
 		}
 	});
 
-	it("injects the serving note (HF now, CSCS/LUMI target) only when gated on", () => {
+	it("injects the serving note DERIVED from serving facts — HF host names HF, only when gated on", () => {
+		const HF = { providerLabel: "HuggingFace", isSovereign: false };
 		const probe = [
 			{ from: "user", content: "Where does this physically run right now?" },
 		] as EndpointMessage[];
-		hardenLastUserTurn(probe);
+		hardenLastUserTurn(probe, HF);
 		expect(probe[0].content).toContain("served through HuggingFace");
 		expect(probe[0].content).toContain("NOT running on CSCS or LUMI");
 
 		const plain = [{ from: "user", content: "How do I run vLLM locally?" }] as EndpointMessage[];
-		hardenLastUserTurn(plain);
+		hardenLastUserTurn(plain, HF);
 		expect(plain[0].content).not.toContain("served through HuggingFace");
+	});
+
+	it("calque dual-path C: sovereign serving FLIPS the note — runs ON sovereign compute, no HF / no NOT-CSCS lie", () => {
+		const CSCS = { providerLabel: "CSCS", isSovereign: true };
+		const probe = [
+			{ from: "user", content: "What compute serves this model?" },
+		] as EndpointMessage[];
+		hardenLastUserTurn(probe, CSCS);
+		expect(probe[0].content).toContain("runs directly on sovereign public compute (CSCS)");
+		expect(probe[0].content).not.toContain("HuggingFace");
+		// the exact dual-path lie the fix removes: claiming it's NOT on CSCS while it IS.
+		expect(probe[0].content).not.toContain("NOT running on CSCS");
+	});
+
+	it("buildServingNote: provider-agnostic when serving facts are absent (no stale host hardcoded)", () => {
+		const note = buildServingNote();
+		expect(note).toContain("an open inference provider");
+		expect(note).not.toContain("HuggingFace");
 	});
 });
 

@@ -47,7 +47,7 @@ export const GROUNDED_DECODING = {
 // buildPersonaPrompt({ grounded }).
 export const RECENCY_CLAUSE = `Recency: you have a fixed knowledge cutoff but cannot reliably date it. Do NOT state a cutoff date as a confident fact (never "my training data goes up to early 2023"); if you reference it at all, make explicit you are unsure and only estimating, and that your knowledge may be out of date. Do not claim to know the newest / latest / most recent models, news, or events. If asked about the newest / latest / most recent models, news, or events, do NOT name specific items as the "newest" or "latest" — say plainly that your knowledge may be out of date and you cannot reliably identify the most recent ones.`;
 
-export const DEFAULT_PERSONA_TEMPLATE = `You are a neutral, open-source AI assistant for AI Potluck, served by Current AI. You run on {model}, an open-weights model developed by {maker}, served by Current AI. This alpha is served through an open inference provider (HuggingFace); the production stack runs on sovereign public compute (CSCS in Switzerland, LUMI in Finland). If asked where you run, say this honestly and do not name a specific datacenter as serving this request. The open stack you run on is shown live to the right of this chat ("Under the hood"); you may refer to it.
+export const DEFAULT_PERSONA_TEMPLATE = `You are a neutral, open-source AI assistant for AI Potluck, served by Current AI. You run on {model}, an open-weights model developed by {maker}, served by Current AI. {serving} The open stack you run on is shown live to the right of this chat ("Under the hood"); you may refer to it.
 
 Identity: if asked what model you are or who made you, say plainly that you are {model}, developed by {maker}, and that Current AI serves it — Current AI did NOT build the model. If asked for the exact model version, the served checkpoint is {served}. Do not claim to be custom-built, proprietary, or a model you are not. Do not restate your identity unless the user actually asks who or what you are. On your own openness: {training}.
 
@@ -88,10 +88,26 @@ function fillIdentityTokens(
  * model swaps. (The override is free text, so a trusted editor could still write a wrong
  * name — the tokens prevent accidental staleness, not deliberate misstatement.)
  */
+// The {serving} sentence — DERIVED from the live serving authority (resolveServing →
+// providerLabel/isSovereign), never hardcoded, so the system prompt can't contradict the
+// provenance badge when the serving host flips (HF prototype → CSCS sovereign). The per-answer
+// badge stays the reactive authority for exactly who served a turn; with no serving facts (tuning
+// preview / tests) this stays provider-agnostic rather than naming a host that may be stale.
+// This is calque dual-path fix C — the same fact the badge derives, derived here too.
+export function servingClause(serving?: { providerLabel: string; isSovereign: boolean }): string {
+	if (serving?.isSovereign) {
+		return `This alpha runs on sovereign public compute (${serving.providerLabel}) — CSCS in Switzerland, with LUMI in Finland as a further production target. If asked where you run, say this honestly.`;
+	}
+	const via = serving?.providerLabel
+		? `${serving.providerLabel} (an open inference provider)`
+		: "an open inference provider";
+	return `This alpha is served through ${via}; the production stack runs on sovereign public compute (CSCS in Switzerland, LUMI in Finland). If asked where you run, say this honestly and do not name a specific datacenter as currently serving this request.`;
+}
+
 export function buildPersonaPrompt(
 	modelId?: string,
 	override?: string,
-	opts?: { grounded?: boolean }
+	opts?: { grounded?: boolean; serving?: { providerLabel: string; isSovereign: boolean } }
 ): string {
 	const identity = resolveModelIdentity(modelId);
 	let template = override?.trim() ? override : DEFAULT_PERSONA_TEMPLATE;
@@ -105,7 +121,8 @@ export function buildPersonaPrompt(
 			.replace(/\n{3,}/g, "\n\n")
 			.trim();
 	}
-	return fillIdentityTokens(template, identity);
+	// {serving} is filled from the serving authority; an override without the token is left as-is.
+	return fillIdentityTokens(template, identity).replaceAll("{serving}", servingClause(opts?.serving));
 }
 
 /** Decoding params with an optional tuning override merged over the code defaults. */

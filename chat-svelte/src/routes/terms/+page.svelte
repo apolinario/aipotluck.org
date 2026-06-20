@@ -1,4 +1,7 @@
 <script lang="ts">
+	// RETENTION_DAYS is the single source the server actually sweeps on (db/cleanup.ts) and the
+	// privacy page renders — terms derives it too so the three can't drift (calque dual-path fix D).
+	import { RETENTION_DAYS } from "$lib/constants/retention";
 	const UPDATED = "2026-06-15";
 </script>
 
@@ -78,7 +81,7 @@
 		<h2 class="text-lg font-medium">Data</h2>
 		<p class="text-[var(--ap-ink-2)]">
 			Conversations are stored to operate the service, and guest conversations are automatically
-			deleted after 30 days. Do not enter sensitive personal information. See the <a
+			deleted after {RETENTION_DAYS} days. Do not enter sensitive personal information. See the <a
 				class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 				href="/privacy">Privacy</a
 			> page for details.

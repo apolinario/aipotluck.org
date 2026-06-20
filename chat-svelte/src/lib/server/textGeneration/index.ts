@@ -6,6 +6,8 @@ import { injectSearchGroundingPrompt } from "./searchGrounding";
 import { buildPersonaPrompt } from "./persona";
 import { hardenLastUserTurn } from "./grounding";
 import { maybeWorldModelNote, injectWorldModelNote } from "./worldModel";
+import { config } from "$lib/server/config";
+import { resolveServing } from "$lib/servingProvenance";
 import {
 	type MessageUpdate,
 	MessageUpdateType,
@@ -64,7 +66,13 @@ async function* textGenerationWithoutTitle(
 	// contradicts the grounding ("the sources ARE current") and the 8B follows the hedge, disclaiming
 	// real-time access while the retrieved sources go unused. Drop the hedge when grounded.
 	const grounded = !!ctx.searchContext?.evidence;
-	const persona = buildPersonaPrompt(ctx.model.id ?? ctx.model.name, tuning.persona, { grounded });
+	// Serving facts from the ONE authority (resolveServing) so the system prompt's serving claim
+	// can't drift from the provenance badge when the host flips (HF prototype → CSCS sovereign).
+	const serving = resolveServing(config.OPENAI_BASE_URL, ctx.model.id ?? ctx.model.name);
+	const persona = buildPersonaPrompt(ctx.model.id ?? ctx.model.name, tuning.persona, {
+		grounded,
+		serving,
+	});
 	const basePreprompt = conv.preprompt?.trim() ? `${persona}\n\n${conv.preprompt}` : persona;
 
 	// Artifacts are opt-in per model (supportsArtifacts in the MODELS overrides),
@@ -114,7 +122,7 @@ async function* textGenerationWithoutTitle(
 	// Ground the last user turn to a real catalog category and wrap it in an
 	// unguessable fence: the brevity + identity-lock + injection guard live in the
 	// USER role because Apertus under-weights the system role. Mutates in place.
-	hardenLastUserTurn(processedMessages);
+	hardenLastUserTurn(processedMessages, serving);
 
 	// Tool/MCP flow removed (B1-lite strip) — go straight to default text generation.
 	// tuning.decoding (if set via the panel) is merged over GROUNDED_DECODING in generate.

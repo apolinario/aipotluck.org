@@ -338,8 +338,17 @@ export function isServingQuery(text: string): boolean {
 	return SERVING_TERMS_RE.test(t) || SERVING_WHERE_RE.test(t) || SERVING_COMPUTE_RE.test(t);
 }
 
-const SERVING_NOTE =
-	"If this is about where THIS system runs or what compute serves it: be honest and precise. Right now this prototype is served through HuggingFace's open inference router (the provider is shown in the answer's provenance badge) — it is NOT running on CSCS or LUMI. CSCS (Switzerland) and LUMI (Finland) are the sovereign production-serving TARGET and where Apertus was trained; they do NOT serve this request today. Do not claim the inference runs on CSCS/LUMI or on European/sovereign compute, and do not claim it avoids US-based infrastructure — HuggingFace is the current serving path. Present the sovereign compute as the goal, not the present.";
+// Serving honesty note — DERIVED from the live serving authority (resolveServing →
+// providerLabel/isSovereign), never hardcoded, so the in-prompt serving claim can't contradict the
+// provenance badge when the host flips (HF prototype → CSCS sovereign). Provider-agnostic when
+// serving facts are absent. Same fact the badge + persona derive — calque dual-path fix C.
+export function buildServingNote(serving?: { providerLabel: string; isSovereign: boolean }): string {
+	if (serving?.isSovereign) {
+		return `If this is about where THIS system runs or what compute serves it: be honest and precise. This prototype runs directly on sovereign public compute (${serving.providerLabel}); CSCS (Switzerland) and LUMI (Finland) are the sovereign production target and where Apertus was trained. Say plainly that it runs on sovereign public compute now, and do not overclaim beyond what the provenance badge shows.`;
+	}
+	const provider = serving?.providerLabel ?? "an open inference provider";
+	return `If this is about where THIS system runs or what compute serves it: be honest and precise. Right now this prototype is served through ${provider} (the provider is shown in the answer's provenance badge) — it is NOT running on CSCS or LUMI. CSCS (Switzerland) and LUMI (Finland) are the sovereign production-serving TARGET and where Apertus was trained; they do NOT serve this request today. Do not claim the inference runs on CSCS/LUMI or on European/sovereign compute, and do not claim it avoids US-based infrastructure — ${provider} is the current serving path. Present the sovereign compute as the goal, not the present.`;
+}
 
 // Mutates `messages` in place: grounds the last user turn and replaces its text
 // with the hardened preamble + fenced original. Returns the matched category id
@@ -357,7 +366,10 @@ export function stripFenceTags(text: string): string {
 	return text.replace(FENCE_TAG_RE, "").replace(/ {2,}/g, " ");
 }
 
-export function hardenLastUserTurn(messages: EndpointMessage[]): string {
+export function hardenLastUserTurn(
+	messages: EndpointMessage[],
+	servingInfo?: { providerLabel: string; isSovereign: boolean }
+): string {
 	const userTexts = messages.filter((m) => m.from === "user").map((m) => m.content ?? "");
 	const cat = groundConversation(userTexts);
 
@@ -372,7 +384,7 @@ export function hardenLastUserTurn(messages: EndpointMessage[]): string {
 		// guard/preamble, each gated on the raw turn so they only fire for the
 		// question type they target (no blanket caveating).
 		const locality = isLocalityQuery(original) ? `\n\n${LOCALITY_NOTE}` : "";
-		const serving = isServingQuery(original) ? `\n\n${SERVING_NOTE}` : "";
+		const serving = isServingQuery(original) ? `\n\n${buildServingNote(servingInfo)}` : "";
 		m.content = `${preambleFor(cat, fence)}${locality}${serving}\n\n<${fence}>\n${original}\n</${fence}>`;
 		break;
 	}
