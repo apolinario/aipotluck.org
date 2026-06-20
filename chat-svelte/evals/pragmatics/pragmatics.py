@@ -532,8 +532,158 @@ def cond_cot_heavy(scenario: str, **kw) -> dict:
     return {"answer": ans, "calls": 1, "raw": {"reply": out}}
 
 
+# ---------------------------------------------------------------------------
+# H — general precondition pre-pass (NO domain knowledge, NO walk/drive gate).
+#
+# The product ask: not a co-presence/walk-drive-specific gate (F_reframe2), but a
+# DOMAIN-FREE pre-pass that defeats heuristic-override (Einstellung) on any turn.
+# Mechanism = the generalization of the validated reframe:
+#   Stage 1 (analysis): NEUTRAL, no answer hint — surface the goal + the concrete
+#     preconditions the obvious answer needs, marking each holds/fails/unstated.
+#     Pointedness comes from STRUCTURE (enumerate + mark), not from domain keys,
+#     so it stays falsifiable without being sycophantic toward feasibility
+#     (the open-ended "does this achieve the goal?" failure of C_hybrid).
+#   Stage 2 (answer): answer the user's ACTUAL question conditioned on stage 1,
+#     instructed to respect any [fails] precondition over the superficial option.
+# Unlike F_reframe2 there is NO deterministic Python gate — the model decides.
+# That is the generality price; it is only affordable because the served 8B
+# DEFERS to elicited facts (co_presence 5/16 -> 16/16 when reasoning over them).
+# Nothing here mentions cars, vehicles, loads, distance, or walk/drive: the same
+# two prompts apply to riddles, emoji-existence, etc. No distance occlusion — the
+# pure general test; if the salient cue still hooks it, that is a real finding.
+# ---------------------------------------------------------------------------
+
+GENERAL_ANALYSIS_SYS = (
+    "You analyse a situation to surface what it physically or logically requires. "
+    "You NEVER answer the user's question and you NEVER give advice or a "
+    "recommendation — you only describe preconditions. Be concrete and literal, "
+    "and rely only on what the situation actually states."
+)
+
+GENERAL_ANALYSIS_USER = """Situation: {scenario}
+
+1. Goal: in one short phrase, what is the person actually trying to accomplish?
+2. Preconditions: list the concrete physical or logical things that MUST be true
+   for the most obvious, low-effort response to actually accomplish that goal.
+3. For each precondition, mark [holds], [fails], or [unstated], judging ONLY from
+   the situation as written.
+
+Be brief. Do not give an answer, recommendation, or opinion."""
+
+GENERAL_ANSWER_USER = """{scenario}
+
+A prior analysis of what this situation actually requires:
+{analysis}
+
+Now respond to the person directly and practically. If any precondition is
+marked [fails], your response must respect that physical reality rather than the
+superficially easy option."""
+
+
+def cond_general(scenario: str, *, return_trace: bool = False, **kw) -> dict:
+    # Stage 1 — neutral precondition analysis (no answer hint).
+    analysis = chat(
+        [
+            {"role": "system", "content": GENERAL_ANALYSIS_SYS},
+            {"role": "user", "content": GENERAL_ANALYSIS_USER.format(scenario=scenario)},
+        ],
+        max_tokens=300,
+        **kw,
+    ).strip()
+
+    # Stage 2 — answer the actual question, conditioned on the analysis. The model
+    # decides (no deterministic gate); we only read its free-text decision.
+    answer = chat(
+        [{"role": "user", "content": GENERAL_ANSWER_USER.format(
+            scenario=scenario, analysis=analysis)}],
+        max_tokens=256,
+        **kw,
+    )
+    result = {"answer": classify_answer(answer), "analysis": analysis, "calls": 2}
+    if return_trace:
+        result["raw"] = {"analysis": analysis, "answer": answer}
+    return result
+
+
+# ---------------------------------------------------------------------------
+# H2 — sharpened general: end-state goal + GENERAL co-location principle, kept
+# as STRUCTURED extraction feeding a deterministic gate (so no false-flip tax).
+#
+# H_general failed two ways the trace exposed: (1) goal mis-framed as "efficient
+# transport" not the real end-state ("the car is clean"); (2) free-text stage-2
+# re-decided and over-corrected. Fix BOTH while staying domain-free:
+#   - Force the goal to the post-errand WORLD END-STATE, explicitly ignoring travel.
+#   - Ask the co-presence invariant GENERICALLY (no "vehicle"/"car"): what does the
+#     errand change the state of, is that thing with the person now, can a person
+#     carry it on foot, is it a being that walks itself. This is the generalization
+#     of co-presence: the PATIENT of the action must be co-located with the action.
+#   - Keep a deterministic gate (the false-flip killer), but over GENERAL keys.
+# If this still misses co_presence, the primitive is genuinely weights-bound and
+# "general" is dominated on this model — a decisive negative, not a prompt nit.
+# ---------------------------------------------------------------------------
+
+GENERAL2_SYS = (
+    "You extract neutral facts about a situation as JSON. You do NOT give travel "
+    "advice and you do NOT decide how the person should travel. Reason about the "
+    "PURPOSE of the errand and the physical object it acts on — never about "
+    "distance or transport. Answer only the JSON object."
+)
+
+GENERAL2_USER = """Situation: {scenario}
+
+Think about what the errand is FOR, ignoring entirely how the person gets there.
+Answer as JSON with exactly these keys (short, factual):
+- "end_state": in one phrase, the real-world result the person wants once the errand is done (NOT "get there", NOT "travel")
+- "acted_on": the single physical object or being whose state that result changes
+- "acted_on_now_with_person": is "acted_on" currently with the person (as opposed to already at the destination or somewhere else)? "yes" or "no"
+- "must_be_at_destination": for end_state to happen, must "acted_on" be physically present at the destination? "yes" or "no"
+- "hand_portable_on_foot": could one ordinary person carry "acted_on" by hand on foot the whole way? "yes" or "no"
+- "walks_itself": is "acted_on" a person or animal that can walk the distance on its own legs (not an object, not a vehicle the person drives)? "yes" or "no"
+
+Return only the JSON object."""
+
+
+def general2_gate(f: dict) -> bool:
+    """Domain-agnostic gate over model-supplied facts (no domain knowledge).
+    A vehicle is required when the action's PATIENT must be co-located with the
+    action but can't make the trip on foot:
+      bring it: it's with the person, must be at destination, not hand-portable,
+                not a self-walking being  -> must be driven/brought, OR
+      it's already the immovable subject at the destination that you must service
+                in place AND you'd have to bring something unportable.
+    We reduce to the robust general case: the patient must be present, the person
+    holds it now, it is neither hand-portable nor self-walking.
+    """
+    def yes(k):
+        return str(f.get(k, "")).strip().lower().startswith("y")
+    must_present = yes("must_be_at_destination")
+    with_person = yes("acted_on_now_with_person")
+    portable = yes("hand_portable_on_foot")
+    walks = yes("walks_itself")
+    return must_present and with_person and not portable and not walks
+
+
+def cond_general2(scenario: str, *, return_trace: bool = False, **kw) -> dict:
+    raw = chat(
+        [
+            {"role": "system", "content": GENERAL2_SYS},
+            {"role": "user", "content": GENERAL2_USER.format(scenario=occlude_distance(scenario))},
+        ],
+        max_tokens=200, **kw,
+    )
+    f = _parse_json(raw)
+    requires_vehicle = general2_gate(f)
+    result = {"answer": "drive" if requires_vehicle else "walk", "facts": f,
+              "requires_vehicle": requires_vehicle, "calls": 1}
+    if return_trace:
+        result["raw"] = {"reframe": raw}
+    return result
+
+
 CONDITIONS = {
     "A_baseline": cond_baseline,
+    "H_general": cond_general,
+    "H2_general": cond_general2,
     "B_cot": cond_cot,
     "C_hybrid": cond_hybrid,
     "D_occluded": cond_hybrid_occluded,

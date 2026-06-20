@@ -1,0 +1,17 @@
+.cache/
+last_run.json
+unpuzzles_run.json
+delta_run.json
+logit_probe.json
+contrast_probe.json
+__pycache__/
+*.local.md
+# third-party CC-BY data — fetched via fetch_unpuzzles.sh, not vendored
+data/
+carwash_probe.json
+models_probe.json
+hf_probe.json
+spike_run.json
+spike_tradeoff.json
+demo_assets.json
+recite-demo.html
