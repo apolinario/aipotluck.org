@@ -61,6 +61,30 @@
 			] as (StepKind | null)[]
 		).filter((s): s is StepKind => s !== null)
 	);
+
+	// Mirror the live trace onto the right-hand stack map: while THIS turn streams, emit a
+	// SUSTAINED pulse on the map nodes whose layer is genuinely running, and clear it when
+	// the turn ends. The model node is the through-line of every turn; the web-search node
+	// joins it only when the turn was actually grounded on open sources. We deliberately do
+	// NOT fake a precise retrieve→generate boundary from the client — we pulse the layers
+	// that ran, which is the honest claim. (Map ids match the existing ap:flash seam.)
+	const MAP_MODEL_NODES = ["apertus", "cscs"];
+	const MAP_RETRIEVE_NODES = ["websearch"];
+	let pulsedNodes: string[] = [];
+	const emitPulse = (ids: string[], on: boolean) => {
+		if (!ids.length || typeof window === "undefined") return;
+		window.dispatchEvent(new CustomEvent(on ? "ap:pulse-on" : "ap:pulse-off", { detail: { ids } }));
+	};
+	$effect(() => {
+		const next = loading ? [...MAP_MODEL_NODES, ...(grounded ? MAP_RETRIEVE_NODES : [])] : [];
+		const off = pulsedNodes.filter((n) => !next.includes(n));
+		const on = next.filter((n) => !pulsedNodes.includes(n));
+		emitPulse(off, false);
+		emitPulse(on, true);
+		pulsedNodes = next;
+	});
+	// Belt-and-suspenders: if this trace unmounts mid-stream (turn reconcile / nav), drop its pulse.
+	$effect(() => () => emitPulse(pulsedNodes, false));
 </script>
 
 {#if steps.length || loading}
