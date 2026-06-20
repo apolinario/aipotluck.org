@@ -49,15 +49,33 @@ export type Message = Partial<Timestamps> & {
 		kind: ModerationKind;
 	};
 
-	// Second-opinion provenance: set when the user requested an independent take from a
-	// more-capable open model (a real, user-initiated routing event). Persisted via JSONB
-	// so the comparison + the routing map event survive reload, mirroring webSearch above.
-	secondOpinion?: {
+	// Independent cross-checks the user opted into, in the order they were requested
+	// (second opinion, then third, …). Each is ANOTHER open model's take on the same
+	// question — neutral triangulation so the user can compare, never a synthesized
+	// consensus or an oracle. Convergence across independent labs is more trustworthy;
+	// divergence is worth scrutiny. Persisted via JSONB so the comparison + the routing
+	// map events survive reload, mirroring webSearch above.
+	opinions?: {
 		model: string;
 		modelShort: string;
 		openness: string;
 		sovereign: boolean;
 		answer: string;
+	}[];
+
+	// Collective cross-check verdict over the panel of independent opinions (above) AS A
+	// JUDGMENT ON the primary answer — never a merged/synthesized answer of its own. The
+	// fanout VERIFIES the answer already given; it does not replace it. `agreement` is the
+	// honest calibrated confidence signal (cross-model agreement is the only per-answer
+	// confidence we can measure); `headline` is its one-line surfacing. consensus /
+	// contradictions / blindSpots mirror the open Fusion-style analysis (we deliberately
+	// stop before any synthesis step). Persisted via JSONB alongside opinions[].
+	verdict?: {
+		agreement: "high" | "mixed" | "low";
+		headline: string;
+		consensus: string[];
+		contradictions: string[];
+		blindSpots: string[];
 	};
 
 	// needed for conversation trees

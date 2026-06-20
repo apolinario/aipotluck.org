@@ -21,11 +21,7 @@
 	import ArtifactCard from "./ArtifactCard.svelte";
 	import { MessageUpdateType } from "$lib/types/MessageUpdate";
 	import ImageLightbox from "./ImageLightbox.svelte";
-	import SourceStrip from "./SourceStrip.svelte";
-	import SourceClass from "./SourceClass.svelte";
-	import ProvenanceBadge from "./ProvenanceBadge.svelte";
-	import SafetyBadge from "./SafetyBadge.svelte";
-	import SecondOpinion from "./SecondOpinion.svelte";
+	import ProvenanceTrace from "./ProvenanceTrace.svelte";
 	import GapInvite from "./GapInvite.svelte";
 	import type { StarterGap } from "$lib/constants/starterGaps";
 	import ReportButton from "./ReportButton.svelte";
@@ -470,40 +466,16 @@
 				{/if}
 			</div>
 
-			<!-- Source class: what the answer DREW ON (orthogonal to the model badge below).
-			     Web-grounded → SourceStrip (the rich, numbered, citable expression). Otherwise,
-			     on a completed non-declined answer → the honest "model's own knowledge" chip, so
-			     an ungrounded answer never silently reads as sourced as a grounded one. A safety
-			     decline gets neither (the model never ran; SafetyBadge speaks for it). -->
-			{#if message.webSearch?.sources?.length}
-				<SourceStrip
-					sources={message.webSearch.sources}
-					asOf={message.webSearch.asOf}
-					query={message.webSearch.query}
-				/>
-			{:else if !loading && message.content && !message.moderation?.flagged}
-				<SourceClass kind="model" />
-			{/if}
-
-			{#if !loading && message.content}
-				{#if message.moderation?.flagged}
-					<!-- Safety decline: the model never ran, so the Apertus provenance badge would
-					     be dishonest. Name the open classifier that actually made the call instead. -->
-					<SafetyBadge kind={message.moderation.kind} label={message.moderation.label} />
-				{:else}
-					<ProvenanceBadge
-						modelId={message.routerMetadata?.model || modelId}
-						provider={message.routerMetadata?.provider}
-					/>
-				{/if}
-			{/if}
-
-			<!-- Opt-in escalation: a more-capable open model's independent take, on a
-			     non-sovereign provider, shown so the user can compare. Never on a safety
-			     decline (no answer to second-guess). The route returns { available:false }
-			     when the feature isn't configured, so this renders nothing then. -->
-			{#if !loading && message.content && !message.moderation?.flagged && message.from === "assistant" && question}
-				<SecondOpinion {question} messageId={message.id} persisted={message.secondOpinion} />
+			<!-- The inline provenance TRACE: the stack diagram, inlined. One persistent spine
+			     that draws itself segment-by-segment as each layer activates (retrieve → ground
+			     → generate → verify) and STAYS DRAWN — a receipt that persists in scrollback,
+			     mobile-native (single column, no split pane), and legible without a flash to
+			     catch. It reuses the same honest per-layer badges (SourceStrip / SourceClass /
+			     ProvenanceBadge / SafetyBadge / SecondOpinion) as its segment bodies, so the
+			     honesty copy lives in one place. Reversible: revert this line + the `traced`
+			     props to restore the flat badge stack. -->
+			{#if message.from === "assistant"}
+				<ProvenanceTrace {message} {modelId} {loading} {question} />
 			{/if}
 
 			<!-- Honest "touches an open gap → get involved" CTA. Only when this turn's prompt

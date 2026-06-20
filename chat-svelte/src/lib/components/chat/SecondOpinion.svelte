@@ -1,70 +1,60 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import { env as publicEnv } from "$env/dynamic/public";
-	import CarbonArrowRight from "~icons/carbon/arrow-right";
 	import CarbonRenew from "~icons/carbon/renew";
+	import CarbonGroup from "~icons/carbon/group";
+	import MarkdownRenderer from "./MarkdownRenderer.svelte";
 	import type { Message } from "$lib/types/Message";
 
-	// Opt-in escalation, honest by construction. The sovereign Apertus answer is
-	// already shown above; this asks a MORE CAPABLE OPEN model (on a non-sovereign
-	// provider) for an independent take, so the user can compare. We never claim the
-	// first answer was "low confidence" — we proved that can't be detected honestly
-	// per-answer; we surface a real second answer and let the disagreement speak.
+	// Collective second opinion, honest by construction. The Apertus answer is shown
+	// above; one click fans the question out to a panel of independent open models in
+	// parallel, then surfaces a VERDICT ON that answer — an agreement headline + where the
+	// panel confirms it, challenges it, and what they all miss — plus the raw takes. It
+	// never merges them into a new answer: the answer already exists; the panel verifies
+	// it. Convergence is "more trustworthy", divergence is "scrutinise" — never an oracle.
+	// The agreement summary is an automated read OVER the visible takes, not a verdict on
+	// truth, and the panel isn't fully independent (some share lineage) — both said plainly.
+	type Opinion = NonNullable<Message["opinions"]>[number];
+	type Verdict = NonNullable<Message["verdict"]>;
+
 	interface Props {
 		question?: string;
-		// Target assistant message id — the second opinion is persisted onto it so the
-		// comparison survives reload.
+		// Target assistant message id — the verdict + takes persist onto it.
 		messageId?: string;
-		// Persisted second opinion (from message.secondOpinion); when present we render
-		// it straight away instead of showing the button.
-		persisted?: Message["secondOpinion"];
+		// Persisted panel + verdict (rendered straight away on reload).
+		opinions?: Message["opinions"];
+		verdict?: Message["verdict"];
 	}
-	let { question, messageId, persisted }: Props = $props();
+	let { question, messageId, opinions, verdict }: Props = $props();
 
-	// Flow A (default): opt-in button. Flow B: PUBLIC_SECOND_OPINION_AUTO=true makes
-	// it auto-fetch after each answer. Read at runtime from the public env.
-	const auto = publicEnv.PUBLIC_SECOND_OPINION_AUTO === "true";
-
-	type State =
-		| { kind: "idle" }
-		| { kind: "loading" }
-		| { kind: "unavailable" }
-		| {
-				kind: "done";
-				answer: string;
-				modelShort: string;
-				openness: string;
-				sovereign: boolean;
-		  };
-
-	// Start from the persisted second opinion when it exists (survives reload). The
-	// initial value is intentional — `persisted` is set once per message (no in-place
-	// change without a remount), so capturing it at init is correct.
 	// svelte-ignore state_referenced_locally
-	let state = $state<State>(
-		persisted
-			? {
-					kind: "done",
-					answer: persisted.answer,
-					modelShort: persisted.modelShort,
-					openness: persisted.openness,
-					sovereign: persisted.sovereign,
-				}
-			: { kind: "idle" }
-	);
+	let takes = $state<Opinion[]>(opinions ? [...opinions] : []);
+	// svelte-ignore state_referenced_locally
+	let panelVerdict = $state<Verdict | undefined>(verdict);
+	let loading = $state(false);
+	let unavailable = $state(false);
+	let showTakes = $state(false);
+
+	let done = $derived(takes.length > 0 && !!panelVerdict);
+
+	// Headline tone tracks the real cross-model agreement — the only honest per-answer
+	// confidence signal. high = panel confirms the answer; low = panel disputes it.
+	const TONE: Record<Verdict["agreement"], { dot: string; text: string; label: string }> = {
+		high: { dot: "var(--ap-live)", text: "var(--ap-live-text)", label: "panel agrees" },
+		mixed: { dot: "var(--ap-building)", text: "var(--ap-building-text)", label: "mixed" },
+		low: { dot: "var(--ap-gap)", text: "var(--ap-gap-text)", label: "panel disputes" },
+	};
 
 	function flashRoute() {
-		// A real, user-initiated routing event — graduates the honestly-"building"
-		// router node to a live route, because a route actually happened.
 		if (typeof window !== "undefined") {
 			window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["router"] } }));
 		}
 	}
 
-	async function getSecondOpinion() {
+	async function getCollective() {
 		const q = (question ?? "").trim();
-		if (!q || state.kind === "loading") return;
-		state = { kind: "loading" };
+		if (!q || loading) return;
+		loading = true;
+		unavailable = false;
 		flashRoute();
 		try {
 			const res = await fetch("/api/second-opinion", {
@@ -73,63 +63,111 @@
 				body: JSON.stringify({ question: q, conversationId: $page.params.id, messageId }),
 			});
 			const data = await res.json();
-			if (!data?.available) {
-				state = { kind: "unavailable" };
+			if (!data?.available || !Array.isArray(data.opinions) || !data.opinions.length) {
+				unavailable = true;
 				return;
 			}
-			state = {
-				kind: "done",
-				answer: data.answer,
-				modelShort: data.modelShort ?? "a more capable open model",
-				openness: data.openness ?? "open weights",
-				sovereign: Boolean(data.sovereign),
-			};
+			takes = data.opinions as Opinion[];
+			panelVerdict = data.verdict as Verdict;
 		} catch {
-			state = { kind: "unavailable" };
+			unavailable = true;
+		} finally {
+			loading = false;
 		}
 	}
-
-	// Flow B: auto-fetch once, after the answer is in. Still honest — it surfaces a
-	// real second answer; it just doesn't wait for a click.
-	let started = false;
-	$effect(() => {
-		if (auto && !started && question && state.kind === "idle") {
-			started = true;
-			getSecondOpinion();
-		}
-	});
 </script>
 
-{#if state.kind === "idle"}
-	<button
-		onclick={getSecondOpinion}
-		class="group inline-flex items-center gap-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-		title="This ran on a smaller open model — bigger isn't always better. Compare with a more capable open model."
-	>
-		Compare with a more capable model
-		<CarbonArrowRight class="text-[0.7rem] transition-transform group-hover:translate-x-0.5" />
-	</button>
-{:else if state.kind === "loading"}
-	<div class="inline-flex items-center gap-1.5 text-xs text-gray-400">
+{#if done && panelVerdict}
+	<div class="mt-1.5 rounded-lg border border-gray-200 bg-gray-50/60 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800/40">
+		<!-- Verdict headline ON the primary answer — tone earned from cross-model agreement. -->
+		<div class="flex items-start gap-2">
+			<span class="mt-[5px] size-[8px] shrink-0 rounded-full" style="background: {TONE[panelVerdict.agreement].dot}"></span>
+			<div class="min-w-0">
+				<div class="text-[0.7rem] font-mono uppercase tracking-[0.08em]" style="color: {TONE[panelVerdict.agreement].text}">
+					Collective second opinion · {takes.length} open models · {TONE[panelVerdict.agreement].label}
+				</div>
+				<div class="mt-0.5 text-sm text-gray-800 dark:text-gray-200">{panelVerdict.headline}</div>
+			</div>
+		</div>
+
+		<!-- Agreement map: confirm / challenge / blind spots. Only non-empty sections show. -->
+		{#if panelVerdict.consensus.length || panelVerdict.contradictions.length || panelVerdict.blindSpots.length}
+			<div class="mt-2 flex flex-col gap-2 border-t border-gray-200/70 pt-2 dark:border-gray-700/70">
+				{#if panelVerdict.consensus.length}
+					<div>
+						<div class="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-[var(--ap-live-text)]">They agree on</div>
+						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
+							{#each panelVerdict.consensus as c (c)}<li>{c}</li>{/each}
+						</ul>
+					</div>
+				{/if}
+				{#if panelVerdict.contradictions.length}
+					<div>
+						<div class="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-[var(--ap-gap-text)]">Where they split</div>
+						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
+							{#each panelVerdict.contradictions as c (c)}<li>{c}</li>{/each}
+						</ul>
+					</div>
+				{/if}
+				{#if panelVerdict.blindSpots.length}
+					<div>
+						<div class="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-[var(--ap-building-text)]">Blind spots</div>
+						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
+							{#each panelVerdict.blindSpots as c (c)}<li>{c}</li>{/each}
+						</ul>
+					</div>
+				{/if}
+			</div>
+		{/if}
+
+		<!-- Raw takes, one tap away — the summary above is a convenience OVER these. -->
+		<button
+			type="button"
+			class="mt-2 text-[0.7rem] text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
+			onclick={() => (showTakes = !showTakes)}
+		>
+			{showTakes ? "Hide" : "Show"} the {takes.length} individual takes ↓
+		</button>
+		{#if showTakes}
+			<div class="mt-1.5 flex flex-col gap-2 border-t border-gray-200/70 pt-2 dark:border-gray-700/70">
+				{#each takes as take (take.model)}
+					<div>
+						<div class="mb-0.5 flex items-center gap-2 text-[0.7rem] text-gray-500 dark:text-gray-400">
+							<span class="font-medium text-gray-600 dark:text-gray-300">{take.modelShort}</span>
+							<span class="rounded-sm bg-amber-100 px-1 py-px text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+								{take.openness}{take.sovereign ? "" : " · not sovereign"}
+							</span>
+						</div>
+						<div class="prose prose-sm max-w-none text-sm dark:prose-invert">
+							<MarkdownRenderer content={take.answer} />
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
+
+		<div class="mt-2 text-[0.65rem] text-gray-400 italic">
+			Automated summary over {takes.length} independent open models — a cross-check on the answer above,
+			not a source of truth. Convergence is more trustworthy; divergence is worth scrutiny. The models
+			are not fully independent (some share lineage), so agreement is evidence, not proof.
+		</div>
+	</div>
+{:else if loading}
+	<div class="mt-1.5 inline-flex items-center gap-1.5 text-xs text-gray-400">
 		<CarbonRenew class="animate-spin text-[0.7rem]" />
-		Routing to a more capable open model…
+		Asking a panel of independent open models…
 	</div>
-{:else if state.kind === "unavailable"}
-	<div class="text-xs text-gray-400 italic">
-		Second opinion unavailable right now — the sovereign answer above stands on its own.
+{:else if unavailable}
+	<div class="mt-1.5 text-xs text-gray-400 italic">
+		Collective second opinion unavailable right now — the answer above stands on its own.
 	</div>
-{:else if state.kind === "done"}
-	<div class="mt-1 rounded-lg border border-gray-200 bg-gray-50/60 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800/40">
-		<div class="mb-1 flex items-center gap-2 text-[0.7rem] text-gray-500 dark:text-gray-400">
-			<span class="font-medium text-gray-600 dark:text-gray-300">Second opinion · {state.modelShort}</span>
-			<span class="rounded-sm bg-amber-100 px-1 py-px text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
-				{state.openness}{state.sovereign ? "" : " · not sovereign"}
-			</span>
-		</div>
-		<div class="text-sm whitespace-pre-line text-gray-800 dark:text-gray-200">{state.answer}</div>
-		<div class="mt-1.5 text-[0.7rem] text-gray-400 italic">
-			An independent take from a more capable open model on a non-sovereign provider — shown so you can
-			compare with the sovereign answer above. Comparing two independent answers is more reliable than trusting either alone.
-		</div>
-	</div>
+{:else if question}
+	<button
+		onclick={getCollective}
+		class="group mt-1.5 inline-flex items-center gap-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+		title="Fan this question out to a panel of independent open models and see where they agree with, and challenge, the answer above."
+	>
+		<CarbonGroup class="text-[0.8rem]" />
+		Get a collective second opinion
+	</button>
 {/if}

@@ -20,6 +20,12 @@
 	let grounding = $state(data.current.grounding ?? "");
 	// svelte-ignore state_referenced_locally
 	let starters = $state(data.current.starters?.join("\n") ?? "");
+	// svelte-ignore state_referenced_locally
+	let panelistPrompt = $state(data.current.panelistPrompt ?? "");
+	// svelte-ignore state_referenced_locally
+	let aggregatorPrompt = $state(data.current.aggregatorPrompt ?? "");
+	// svelte-ignore state_referenced_locally
+	let searchClassifierPrompt = $state(data.current.searchClassifierPrompt ?? "");
 
 	// Optimistic-concurrency token: the editedAt this editor's in-progress text is based on. Like the
 	// textareas it's set ONCE at load and advances ONLY on a successful save — NOT on a conflict
@@ -44,6 +50,9 @@
 		persona = snap.persona ?? "";
 		grounding = snap.grounding ?? "";
 		starters = (snap.starters ?? []).join("\n");
+		panelistPrompt = snap.panelistPrompt ?? "";
+		aggregatorPrompt = snap.aggregatorPrompt ?? "";
+		searchClassifierPrompt = snap.searchClassifierPrompt ?? "";
 		decoding = {
 			temperature: snap.decoding?.temperature ?? "",
 			frequency_penalty: snap.decoding?.frequency_penalty ?? "",
@@ -371,6 +380,88 @@
 			<details class="text-xs text-gray-500" open={!cur.grounding}>
 				<summary class="cursor-pointer">Show default</summary>
 				<pre class="mt-1 rounded bg-gray-50 p-2 whitespace-pre-wrap">{def.grounding}</pre>
+			</details>
+		</div>
+
+		<div class="space-y-1">
+			<div class="flex items-baseline justify-between">
+				<span class="font-medium">Collective second opinion — panelist prompt</span>
+				<button
+					type="button"
+					class="text-xs text-gray-500 hover:underline disabled:opacity-40"
+					disabled={!panelistPrompt}
+					onclick={() => (panelistPrompt = "")}>Reset to default</button
+				>
+			</div>
+			<span class="block text-xs text-gray-500"
+				>Each panel model answers the question independently with this instruction.</span
+			>
+			<textarea
+				name="panelistPrompt"
+				aria-label="Panelist prompt"
+				rows="5"
+				class="w-full rounded border p-2 font-mono text-xs"
+				bind:value={panelistPrompt}
+			></textarea>
+			<details class="text-xs text-gray-500" open={!cur.panelistPrompt}>
+				<summary class="cursor-pointer">Show default</summary>
+				<pre class="mt-1 rounded bg-gray-50 p-2 whitespace-pre-wrap">{def.panelistPrompt}</pre>
+			</details>
+		</div>
+
+		<div class="space-y-1">
+			<div class="flex items-baseline justify-between">
+				<span class="font-medium">Collective second opinion — aggregator (verdict) prompt</span>
+				<button
+					type="button"
+					class="text-xs text-gray-500 hover:underline disabled:opacity-40"
+					disabled={!aggregatorPrompt}
+					onclick={() => (aggregatorPrompt = "")}>Reset to default</button
+				>
+			</div>
+			<span class="block text-xs text-gray-500"
+				>Audits whether the panel agrees with the given answer and emits the verdict JSON (<code
+					>agreement / headline / consensus / contradictions / blindSpots</code
+				>). It must analyse, not write a merged answer — keep the JSON contract intact.</span
+			>
+			<textarea
+				name="aggregatorPrompt"
+				aria-label="Aggregator prompt"
+				rows="10"
+				class="w-full rounded border p-2 font-mono text-xs"
+				bind:value={aggregatorPrompt}
+			></textarea>
+			<details class="text-xs text-gray-500" open={!cur.aggregatorPrompt}>
+				<summary class="cursor-pointer">Show default</summary>
+				<pre class="mt-1 rounded bg-gray-50 p-2 whitespace-pre-wrap">{def.aggregatorPrompt}</pre>
+			</details>
+		</div>
+
+		<div class="space-y-1">
+			<div class="flex items-baseline justify-between">
+				<span class="font-medium">Web-search decision (classifier) prompt</span>
+				<button
+					type="button"
+					class="text-xs text-gray-500 hover:underline disabled:opacity-40"
+					disabled={!searchClassifierPrompt}
+					onclick={() => (searchClassifierPrompt = "")}>Reset to default</button
+				>
+			</div>
+			<span class="block text-xs text-gray-500"
+				>Decides whether a turn needs an open-web search. Must output only <code>yes</code> or
+				<code>no</code>.</span
+			>
+			<textarea
+				name="searchClassifierPrompt"
+				aria-label="Search classifier prompt"
+				rows="6"
+				class="w-full rounded border p-2 font-mono text-xs"
+				bind:value={searchClassifierPrompt}
+			></textarea>
+			<details class="text-xs text-gray-500" open={!cur.searchClassifierPrompt}>
+				<summary class="cursor-pointer">Show default</summary>
+				<pre
+					class="mt-1 rounded bg-gray-50 p-2 whitespace-pre-wrap">{def.searchClassifierPrompt}</pre>
 			</details>
 		</div>
 

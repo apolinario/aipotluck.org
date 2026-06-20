@@ -17,8 +17,11 @@
 		modelId?: string;
 		// The inference-provider slug from the router header, e.g. "publicai".
 		provider?: string;
+		// When rendered inside ProvenanceTrace, the trace draws the spine node, so the
+		// badge suppresses its own leading dot to avoid a doubled marker.
+		traced?: boolean;
 	}
-	let { modelId, provider }: Props = $props();
+	let { modelId, provider, traced = false }: Props = $props();
 
 	// "show on map" flashes the MODEL node — the thing the badge names that the
 	// answer genuinely ran on. The compute it used is the inference provider (named
@@ -43,7 +46,9 @@
 		? ` · served model: ${identity.served}`
 		: ''} · served via {providerName}; sovereign-compute target: CSCS (Switzerland) & LUMI (Finland)"
 >
-	<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-live)"></span>
+	{#if !traced}
+		<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-live)"></span>
+	{/if}
 	<span>{identity.short} · {identity.makerShort} · {providerName}</span>
 	<button
 		type="button"
