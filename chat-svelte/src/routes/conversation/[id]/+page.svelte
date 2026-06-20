@@ -2,7 +2,7 @@
 	import ChatWindow from "$lib/components/chat/ChatWindow.svelte";
 	import { consumePendingFiles } from "$lib/utils/pendingFiles";
 	import { isAborted } from "$lib/stores/isAborted";
-	import { onMount, untrack } from "svelte";
+	import { onDestroy, onMount, untrack } from "svelte";
 	import { page } from "$app/state";
 	import { beforeNavigate, replaceState } from "$app/navigation";
 	import { UrlDependency } from "$lib/types/UrlDependency";
@@ -30,6 +30,7 @@
 	import {
 		addBackgroundGeneration,
 		removeBackgroundGeneration,
+		MAX_TRACK_DURATION_MS,
 	} from "$lib/stores/backgroundGenerations";
 	import type { TreeNode, TreeId } from "$lib/utils/tree/tree";
 	import "katex/dist/katex.min.css";
@@ -65,20 +66,52 @@
 	// snapshot-staleness check for the generation streaming in this very tab.
 	let writeMessageInFlight = false;
 	let messageUpdatesAbortController = new AbortController();
-	// Set to the conversation id when writeMessage painted a pre-vetted cached
-	// answer client-side for a turn the server never recorded (the request dropped
-	// before egress or before any token). While set for the open conversation:
-	//   - the generation-state effect must treat the turn as FINISHED, not active.
-	//     The cache-painted assistant carries no terminal update, so without this
-	//     it reads as "still generating" — which both re-arms the spinner forever
-	//     AND registers a background generation whose poller then fires an
-	//     isTerminal reconcile (the server has no such turn) that
-	//   - the reconcile effect must NOT honour: syncing `messages` to the empty
-	//     server snapshot would WIPE the answer (and the optimistic user turn).
-	// Cleared on a fresh writeMessage (a resend supersedes the fallback) and reset
-	// naturally on conversation change / remount. The answer is transient — gone on
-	// reload — which is correct, since nothing was ever persisted.
+	// Set to the conversation id when writeMessage left an UNPERSISTED optimistic turn that the
+	// server never recorded (the request dropped before egress or before any token). Two cases:
+	//   - cache HIT: we painted a pre-vetted cached answer client-side.
+	//   - cache MISS: no cached answer, but the user's typed message + the blank assistant are still
+	//     on screen and the turn is retryable.
+	// In BOTH cases, while set for the open conversation:
+	//   - the generation-state effect must treat the turn as FINISHED, not active. The optimistic
+	//     assistant carries no terminal update, so without this it reads as "still generating" —
+	//     re-arming the spinner forever AND registering a background generation whose poller fires
+	//     an isTerminal reconcile (the server has no such turn) that
+	//   - the reconcile effect must NOT honour: syncing `messages` to the empty server snapshot would
+	//     WIPE the optimistic turn (the answer on a HIT; on a MISS, the user's own message — so they
+	//     lose what they typed along with seeing the error). This veto preserves it so they can retry.
+	// Cleared on a fresh writeMessage (a resend supersedes it), on conversation change / remount, and
+	// — crucially — by a MAX_TRACK_DURATION_MS timer (see setCacheFallback): if the request actually
+	// DID reach the server but we never saw its egress, the veto must eventually release so the real
+	// persisted turn can reconcile in, instead of the optimistic-only turn being protected forever.
+	// The painted answer is transient (gone on reload) — correct, since nothing was ever persisted.
 	let cacheFallbackConvId = $state<string | null>(null);
+	let cacheFallbackTimer: ReturnType<typeof setTimeout> | undefined;
+	// Arm/replace the unpersisted-turn veto for `id`, plus its expiry. On expiry, drop the veto and (if
+	// still viewing that conversation) reconcile, so a turn that reached the server surfaces; if nothing
+	// was persisted the reconcile is a harmless no-op.
+	const setCacheFallback = (id: string) => {
+		cacheFallbackConvId = id;
+		if (cacheFallbackTimer) clearTimeout(cacheFallbackTimer);
+		cacheFallbackTimer = setTimeout(() => {
+			cacheFallbackTimer = undefined;
+			if (cacheFallbackConvId !== id) return; // superseded by a resend / another conversation
+			cacheFallbackConvId = null;
+			if (browser && page.params.id === id) {
+				void safeInvalidate(UrlDependency.Conversation);
+			}
+		}, MAX_TRACK_DURATION_MS);
+	};
+	const clearCacheFallback = () => {
+		cacheFallbackConvId = null;
+		if (cacheFallbackTimer) {
+			clearTimeout(cacheFallbackTimer);
+			cacheFallbackTimer = undefined;
+		}
+	};
+	// Don't leak the veto timer past unmount (leaving the [id] route entirely).
+	onDestroy(() => {
+		if (cacheFallbackTimer) clearTimeout(cacheFallbackTimer);
+	});
 
 	let files: File[] = $state([]);
 
@@ -161,9 +194,9 @@
 			$isAborted = false;
 			$loading = true;
 			pending = true;
-			// A fresh attempt (incl. a resend) supersedes any prior client-only cache
-			// fallback for this conversation; re-enable the normal server reconcile.
-			cacheFallbackConvId = null;
+			// A fresh attempt (incl. a resend) supersedes any prior unpersisted-turn veto
+			// for this conversation; re-enable the normal server reconcile.
+			clearCacheFallback();
 			writeMessageInFlight = true;
 			// Create the controller before any await: a Stop click during file
 			// encoding or MCP hydration must abort THIS request, not whichever
@@ -320,9 +353,16 @@
 					// generation-state effect treats the turn as finished (no spinner, no
 					// background-generation registration) and the reconcile effect refuses
 					// to overwrite it with the empty server snapshot (see flag declaration).
-					cacheFallbackConvId = convId;
+					setCacheFallback(convId);
 					return;
 				}
+				// Cache MISS: no pre-vetted answer to paint, but the user's typed message and the
+				// blank assistant are still on screen. Veto the reconcile here too — without it the
+				// finally block's invalidate would sync `messages` to the empty server snapshot and
+				// WIPE the user's own message along with showing the error. With the veto, the turn is
+				// preserved and retryable; the timer releases it later in case the request did reach
+				// the server. Show the connection-lost error so the failure is visible.
+				setCacheFallback(convId);
 				$error = ERROR_MESSAGES.connectionLost;
 			};
 

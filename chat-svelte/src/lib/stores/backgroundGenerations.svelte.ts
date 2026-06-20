@@ -3,6 +3,16 @@ export type BackgroundGeneration = {
 	startedAt: number;
 };
 
+/**
+ * Maximum time an unpersisted client turn is tracked before we give up and let the normal
+ * server reconcile resume. Shared by two consumers so they expire on the same clock:
+ *   - BackgroundGenerationPoller: evict a tracked background generation that never reported terminal.
+ *   - conversation/[id]/+page.svelte: release the client-only cache/early-failure veto so a turn
+ *     that DID reach the server (but whose egress we never saw) can finally surface, instead of the
+ *     optimistic-only turn being protected from reconcile forever.
+ */
+export const MAX_TRACK_DURATION_MS = 3 * 60_000;
+
 export const backgroundGenerationEntries = $state<BackgroundGeneration[]>([]);
 
 export function addBackgroundGeneration(entry: BackgroundGeneration) {

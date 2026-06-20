@@ -7,15 +7,10 @@
 	import {
 		backgroundGenerationEntries,
 		removeBackgroundGeneration,
+		MAX_TRACK_DURATION_MS,
 	} from "$lib/stores/backgroundGenerations";
 	import { UrlDependency } from "$lib/types/UrlDependency";
 	import { useConversationsStore } from "$lib/stores/conversations.svelte";
-
-	/**
-	 * Maximum time a background generation entry is tracked before we give up
-	 * and invalidate anyway. Mirrors the old 1Hz poller's MAX_POLL_DURATION_MS.
-	 */
-	const MAX_TRACK_DURATION_MS = 3 * 60_000;
 
 	/**
 	 * How long to wait before reconnecting the SSE stream after it closes

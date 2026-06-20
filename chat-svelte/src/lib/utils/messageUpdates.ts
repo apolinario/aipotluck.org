@@ -6,6 +6,8 @@ import {
 } from "$lib/types/MessageUpdate";
 import type { StreamingMode } from "$lib/types/Settings";
 import type { SearchContext } from "$lib/types/Search";
+import { retryWithBackoff } from "./backoff";
+import { noteHeartbeat } from "$lib/stores/connectionState";
 
 type MessageUpdateRequestOptions = {
 	base: string;
@@ -58,6 +60,93 @@ export class GenerationConflictError extends Error {
 	}
 }
 
+/** Connect-establishment timeout (ms). fetch() itself has no timeout — on flaky conference wifi the
+ *  request can hang in the TCP/TLS/headers phase with neither a response nor an error. This is the
+ *  SHORT bound on getting the response headers; it is deliberately separate from (and shorter than)
+ *  the 8s time-to-first-token watchdog in +page.svelte, which guards a connected-but-silent stream. */
+const CONNECT_TIMEOUT_MS = 3500;
+/** Total connect attempts, including the first. 3 = first + 2 jittered retries. */
+const CONNECT_ATTEMPTS = 3;
+
+/** A pre-first-byte connect failure that is safe to retry: a network-layer fetch throw (no response:
+ *  DNS/TCP/TLS/offline → TypeError) or our own connect-timeout abort. Caller-initiated aborts (user
+ *  Stop / watchdog / navigation) are excluded by the shouldRetry guard, not here. */
+function isConnectError(err: unknown): boolean {
+	if (err instanceof TypeError) return true;
+	if (err instanceof DOMException && (err.name === "AbortError" || err.name === "TimeoutError"))
+		return true;
+	return false;
+}
+
+export interface ConnectRetryOptions {
+	timeoutMs?: number;
+	attempts?: number;
+	/** Injectables for deterministic tests (no real network/timers). */
+	fetchImpl?: typeof fetch;
+	sleep?: (ms: number) => Promise<void>;
+	random?: () => number;
+	onRetry?: (err: unknown, attempt: number, delayMs: number) => void;
+}
+
+/**
+ * Open the generation stream with a connect-timeout and pre-first-byte jittered auto-retry. Returns
+ * the Response once the headers arrive; the caller handles status (409/!ok/body) and streams the body.
+ *
+ * Retry scope is the CONNECT phase only — this resolves before any NDJSON byte is read, so a turn that
+ * has already started streaming can never be silently restarted (the spec's "shouldRetry=false after
+ * the first byte" holds by construction). The generationId rides in the request body unchanged across
+ * attempts; W2 idempotency makes the duplicate POST safe (the server returns 409 → the caller attaches
+ * to the existing run rather than double-generating). Full-jitter backoff spreads reconnects so a room
+ * full of clients recovering from the same micro-drop doesn't thundering-herd.
+ */
+export async function connectWithRetry(
+	url: string,
+	init: RequestInit,
+	callerSignal: AbortSignal,
+	opts: ConnectRetryOptions = {}
+): Promise<Response> {
+	const {
+		timeoutMs = CONNECT_TIMEOUT_MS,
+		attempts = CONNECT_ATTEMPTS,
+		fetchImpl = fetch,
+		sleep,
+		random,
+		onRetry,
+	} = opts;
+
+	return retryWithBackoff(
+		async () => {
+			// Caller already gave up before we (re)connected — don't open a connection against it.
+			if (callerSignal.aborted) throw new DOMException("Aborted", "AbortError");
+
+			// Per-attempt controller: fires on our connect-timeout OR a caller abort, whichever first.
+			const timeoutController = new AbortController();
+			const onCallerAbort = () => timeoutController.abort();
+			callerSignal.addEventListener("abort", onCallerAbort);
+			const timer = setTimeout(() => timeoutController.abort(), timeoutMs);
+			try {
+				return await fetchImpl(url, { ...init, signal: timeoutController.signal });
+			} finally {
+				clearTimeout(timer);
+				callerSignal.removeEventListener("abort", onCallerAbort);
+			}
+		},
+		{
+			attempts,
+			onRetry,
+			...(sleep ? { sleep } : {}),
+			...(random ? { random } : {}),
+			shouldRetry: (err) => {
+				// Never retry once the caller aborted: a user Stop / TTFT watchdog / navigation is intent,
+				// not a flaky link — re-POSTing would fight the user. (A caller abort surfaces here as an
+				// AbortError too, so this guard, not isConnectError, is what excludes it.)
+				if (callerSignal.aborted) return false;
+				return isConnectError(err);
+			},
+		}
+	);
+}
+
 export async function fetchMessageUpdates(
 	conversationId: string,
 	opts: MessageUpdateRequestOptions,
@@ -86,11 +175,14 @@ export async function fetchMessageUpdates(
 
 	form.append("data", optsJSON);
 
-	const response = await fetch(`${opts.base}/conversation/${conversationId}`, {
-		method: "POST",
-		body: form,
-		signal: abortController.signal,
-	});
+	// Connect with a short timeout + pre-first-byte jittered retry (flaky-wifi resilience). Mid-stream
+	// abort still flows through `abortController` → reader.cancel() in endpointStreamToIterator; this
+	// only governs establishing the response.
+	const response = await connectWithRetry(
+		`${opts.base}/conversation/${conversationId}`,
+		{ method: "POST", body: form },
+		abortController.signal
+	);
 
 	if (response.status === 409) {
 		// W2 idempotency: this generationId is already running/finished server-side (a duplicate POST from
@@ -166,6 +258,11 @@ async function* endpointStreamToIterator(
 			break;
 		}
 		if (!value) continue;
+
+		// Every inbound chunk is proof the link is alive. Feed the shared connectivity store so a
+		// mid-stream stall surfaces as "reconnecting…" in the indicator without any further wiring;
+		// it's a cheap timestamp set and a no-op when the store is unmounted / on the server.
+		noteHeartbeat();
 
 		const { messageUpdates, remainingText } = parseMessageUpdates(prevChunk + value);
 		prevChunk = remainingText;
