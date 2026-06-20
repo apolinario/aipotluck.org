@@ -741,6 +741,9 @@
 								gap={message.from === "assistant"
 									? gapForPrompt(messages[idx - 1]?.content)
 									: undefined}
+								question={message.from === "assistant"
+									? messages[idx - 1]?.content
+									: undefined}
 								alternatives={messagesAlternatives.find((a) => a.includes(message.id)) ?? []}
 								isAuthor={!shared}
 								readOnly={isReadOnly}

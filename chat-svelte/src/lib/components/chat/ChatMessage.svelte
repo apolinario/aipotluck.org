@@ -25,6 +25,7 @@
 	import SourceClass from "./SourceClass.svelte";
 	import ProvenanceBadge from "./ProvenanceBadge.svelte";
 	import SafetyBadge from "./SafetyBadge.svelte";
+	import SecondOpinion from "./SecondOpinion.svelte";
 	import GapInvite from "./GapInvite.svelte";
 	import type { StarterGap } from "$lib/constants/starterGaps";
 	import ReportButton from "./ReportButton.svelte";
@@ -51,6 +52,10 @@
 		gap?: StarterGap;
 		onretry?: (payload: { id: Message["id"]; content?: string }) => void;
 		onshowAlternateMsg?: (payload: { id: Message["id"] }) => void;
+		// The user prompt this assistant answer responds to (resolved by ChatWindow from
+		// the preceding message, like `gap`). Lets the user request an independent second
+		// opinion on the same question. Undefined for user messages / no prior prompt.
+		question?: string;
 	}
 
 	let {
@@ -64,6 +69,7 @@
 		isLast = false,
 		modelId,
 		gap,
+		question,
 		onretry,
 		onshowAlternateMsg,
 	}: Props = $props();
@@ -490,6 +496,14 @@
 						provider={message.routerMetadata?.provider}
 					/>
 				{/if}
+			{/if}
+
+			<!-- Opt-in escalation: a more-capable open model's independent take, on a
+			     non-sovereign provider, shown so the user can compare. Never on a safety
+			     decline (no answer to second-guess). The route returns { available:false }
+			     when the feature isn't configured, so this renders nothing then. -->
+			{#if !loading && message.content && !message.moderation?.flagged && message.from === "assistant" && question}
+				<SecondOpinion {question} />
 			{/if}
 
 			<!-- Honest "touches an open gap → get involved" CTA. Only when this turn's prompt
