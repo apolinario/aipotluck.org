@@ -5,6 +5,7 @@ import { injectArtifactsPrompt } from "./artifacts";
 import { injectSearchGroundingPrompt } from "./searchGrounding";
 import { buildPersonaPrompt } from "./persona";
 import { hardenLastUserTurn } from "./grounding";
+import { maybeWorldModelNote, injectWorldModelNote } from "./worldModel";
 import {
 	type MessageUpdate,
 	MessageUpdateType,
@@ -95,6 +96,17 @@ async function* textGenerationWithoutTitle(
 	if (lastUserText) {
 		const mcp = await maybeRunMcpTool(lastUserText);
 		if (mcp) preprompt = injectMcpResult(preprompt, mcp);
+	}
+
+	// World-model pre-pass (heuristic-override mitigation) — INERT unless
+	// WORLD_MODEL_PREPASS=true. On an implicit-world-model turn ("the car wash is
+	// 100m away, walk or drive?") a neutral 2-fact extraction feeds a deterministic
+	// gate; when it fires we inject a world-state note so the model phrases the
+	// physically-correct answer instead of the surface "it's close, just walk".
+	// Fail-open: maybeWorldModelNote never throws, so it can't block the answer.
+	if (lastUserText) {
+		const note = await maybeWorldModelNote(lastUserText, ctx.locals);
+		if (note) preprompt = injectWorldModelNote(preprompt, note);
 	}
 
 	const processedMessages = await preprocessMessages(messages, convId);
