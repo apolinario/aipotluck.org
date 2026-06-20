@@ -164,7 +164,13 @@ type ExtraConfigKeys =
 	| "METRICS_ENABLED"
 	| "METRICS_PORT"
 	// Service-wide daily request cap (cost/abuse guardrail) — enforced in conversation/[id]/+server.
-	| "GLOBAL_DAILY_REQUEST_CAP";
+	| "GLOBAL_DAILY_REQUEST_CAP"
+	// Marginalia open-web search auth (api2 endpoint). Unset → shared "public" demo key.
+	// MARGINALIA_FILTER names a server-side custom filter (e.g. temporal-bias RECENT) applied to
+	// open-web searches when set. NOTE: a personal key is DEV-ONLY (1000 queries/day hard cap);
+	// production must use Public AI's own metered commercial key.
+	| "MARGINALIA_API_KEY"
+	| "MARGINALIA_FILTER";
 // Removed 2026-06-19 (config audit — nothing read them): EXA_API_KEY (Exa search rejected in favor of
 // all-open Wikipedia/Marginalia), and MCP_SERVERS / MCP_FORWARD_HF_USER_TOKEN / MCP_TOOL_TIMEOUT_MS
 // (upstream chat-ui MCP config; our MCP restoration uses SPACE_MCP_URL via Reflect.get instead).

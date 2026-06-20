@@ -8,14 +8,19 @@
 
 import { distillQuery } from "./distill";
 import { rerankByRelevance, rerankModel } from "./rerank";
+import { config } from "$lib/server/config";
 import type { OpenSearchResult, SearchSource } from "$lib/types/Search";
 
 export type { OpenSearchResult, SearchSource };
 
 const UA = "AIPotluck/0.1 (open-knowledge search; contact@aipotluck.org)";
 
-async function getJSON(url: string, signal?: AbortSignal): Promise<unknown> {
-	const res = await fetch(url, { headers: { "User-Agent": UA }, signal });
+async function getJSON(
+	url: string,
+	signal?: AbortSignal,
+	headers?: Record<string, string>
+): Promise<unknown> {
+	const res = await fetch(url, { headers: { "User-Agent": UA, ...headers }, signal });
 	if (!res.ok) {
 		throw new Error(`${url} → ${res.status}`);
 	}
@@ -84,14 +89,23 @@ function isFringe(url: string): boolean {
 	return FRINGE.some((d) => h.includes(d));
 }
 
-// Marginalia: open independent crawler, public JSON API (key=public, rate-limited).
+// Marginalia: open independent crawler, JSON API (api2 endpoint, API-Key header).
+// Auth: MARGINALIA_API_KEY or the shared "public" demo key (rate-limited). When
+// MARGINALIA_FILTER names a server-side custom filter (e.g. temporal-bias RECENT),
+// it's applied to bias results by recency — the structural fix for stale-source drift,
+// since Marginalia estimates publication dates internally but never returns them per-result.
 async function searchMarginalia(
 	query: string,
 	limit: number,
 	signal?: AbortSignal
 ): Promise<Omit<SearchSource, "n">[]> {
-	const url = `https://api.marginalia.nu/public/search/${encodeURIComponent(query)}?key=public&count=${limit}`;
-	const data = (await getJSON(url, signal)) as {
+	const apiKey = config.MARGINALIA_API_KEY || "public";
+	const filter = config.MARGINALIA_FILTER;
+	const u = new URL("https://api2.marginalia-search.com/search");
+	u.searchParams.set("query", query);
+	u.searchParams.set("count", String(limit));
+	if (filter) u.searchParams.set("filter", filter);
+	const data = (await getJSON(u.toString(), signal, { "API-Key": apiKey })) as {
 		results?: { url: string; title: string; description?: string }[];
 	};
 	return (data.results ?? [])
