@@ -114,8 +114,14 @@ async function* endpointStreamToIterator(
 	const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
 	if (!reader) throw Error("Response for endpoint had no body");
 
-	// Handle any cases where we must abort
-	reader.closed.then(() => abortController.abort());
+	// Handle any cases where we must abort. `reader.closed` REJECTS when the stream
+	// errors (mid-stream network drop), so a bare `.then()` would both miss the
+	// abort and leak an unhandled rejection; `.catch(() => abort())` covers the
+	// error path too — the read loop below surfaces the actual error by rejecting.
+	reader.closed.then(
+		() => abortController.abort(),
+		() => abortController.abort()
+	);
 
 	// Handle logic for aborting
 	abortController.signal.addEventListener("abort", () => reader.cancel());

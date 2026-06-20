@@ -19,6 +19,7 @@
 	import { addChildren } from "$lib/utils/tree/addChildren";
 	import { addSibling } from "$lib/utils/tree/addSibling";
 	import { fetchMessageUpdates, resolveStreamingMode } from "$lib/utils/messageUpdates";
+	import { getCachedAnswer } from "$lib/utils/starterCache";
 	import { v4 } from "uuid";
 	import { useSettingsStore } from "$lib/stores/settings.js";
 	import { browser } from "$app/environment";
@@ -128,6 +129,15 @@
 		isRetry?: boolean;
 		searchContext?: SearchContext;
 	}): Promise<void> {
+		// Time-to-first-token watchdog state (see where it's armed, below). Declared
+		// at function scope so the finally can always clear the timer.
+		let firstTokenWatchdog: ReturnType<typeof setTimeout> | undefined;
+		let firstContentSeen = false;
+		let watchdogTimedOut = false;
+		// Assigned inside the try once the target message exists; called from the
+		// after-loop, the no-iterator early return, AND the catch — hence function
+		// scope rather than a try-local const.
+		let applyEarlyStreamFailure: (() => Promise<void>) | undefined;
 		try {
 			stopRequestedFor = null;
 			$isAborted = false;
@@ -250,6 +260,55 @@
 
 			const streamingMode = resolveStreamingMode($settings);
 
+			// Mark the moment real output starts (first token, or a final answer that
+			// arrives without prior streaming) so the watchdog below stands down.
+			const markFirstContent = () => {
+				firstContentSeen = true;
+				if (firstTokenWatchdog) {
+					clearTimeout(firstTokenWatchdog);
+					firstTokenWatchdog = undefined;
+				}
+			};
+
+			// EARLY-failure path: the watchdog fired before anything rendered — the
+			// connection stalled at setup, or the stream died before the first token
+			// (the conference-wifi hang). Without this the for-await below would await
+			// forever and the "…" spinner would never clear.
+			//
+			// Live-first resilience: on failure (only) look up a pre-vetted starter
+			// answer. On a HIT render the real dated Apertus output — same content
+			// surface as live (answer text + cited sources + asOf), no "cached" badge,
+			// so nothing misleads. On a MISS fall back to a retryable message; since no
+			// tokens streamed, the turn is safe to resend.
+			applyEarlyStreamFailure = async () => {
+				const cached = await getCachedAnswer(prompt ?? "", { base });
+				if (cached) {
+					messageToWriteTo.content = cached.answer;
+					if (cached.sources.length > 0) {
+						messageToWriteTo.webSearch = {
+							query: prompt ?? "",
+							sources: cached.sources,
+							asOf: cached.asOf ?? "",
+						};
+					}
+					return;
+				}
+				$error = ERROR_MESSAGES.connectionLost;
+			};
+
+			// Time-to-first-token watchdog (cause-agnostic). fetch() has no timeout, and
+			// a stream can stall or die before the first token with neither a token nor
+			// an error — so the for-await below can hang the spinner indefinitely. If
+			// nothing renders within the window, abort (unsticking any hung read) and
+			// take the EARLY-failure path. Generous window: search-grounded turns add
+			// retrieval latency before the first token.
+			const FIRST_TOKEN_TIMEOUT_MS = 8000;
+			firstTokenWatchdog = setTimeout(() => {
+				if (firstContentSeen || $isAborted) return;
+				watchdogTimedOut = true;
+				messageUpdatesAbortController.abort();
+			}, FIRST_TOKEN_TIMEOUT_MS);
+
 			const messageUpdatesIterator = await fetchMessageUpdates(
 				convId,
 				{
@@ -270,7 +329,13 @@
 					error.set(err.message);
 				}
 			});
-			if (messageUpdatesIterator === undefined) return;
+			if (messageUpdatesIterator === undefined) {
+				// The connection itself never produced an iterator. If our watchdog
+				// aborted it (a setup stall), take the EARLY-failure path; the finally
+				// still resets the spinner.
+				if (watchdogTimedOut) await applyEarlyStreamFailure?.();
+				return;
+			}
 
 			files = [];
 			let buffer = "";
@@ -357,7 +422,11 @@
 						streamStart();
 					}
 					pending = false;
+					markFirstContent();
 				} else if (update.type === MessageUpdateType.FinalAnswer) {
+					// Real output has arrived (possibly as a single final answer with no
+					// prior streaming) — stand the watchdog down.
+					markFirstContent();
 					// Mirror server-side merge behavior so the UI reflects the
 					// final text once tools complete, while preserving any
 					// pre‑tool streamed content when appropriate.
@@ -455,6 +524,9 @@
 						window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["apertus", "hermes"] } }));
 					}
 				} else if (update.type === MessageUpdateType.Safety) {
+					// A safety decline is a real terminal response (just not a token), so stand
+					// the watchdog down — it must not later clobber the decline with a fallback.
+					markFirstContent();
 					// Safety pre-screen declined this turn before the model ran. Stamp the marker
 					// so the answer renders as a safety decline (no Apertus provenance badge) and
 					// the live-stack map highlights the toxic-bert node. Shape owned by
@@ -470,20 +542,47 @@
 			if (buffer.length > 0) {
 				flushBuffer(new Date());
 			}
+
+			// The watchdog aborted before any token rendered, which ends the stream
+			// cleanly (reader.cancel resolves the read as done) rather than throwing —
+			// so handle the EARLY-failure path here too, not just in catch.
+			if (watchdogTimedOut && !firstContentSeen) {
+				await applyEarlyStreamFailure?.();
+			}
 		} catch (err) {
 			if ($isAborted || (err instanceof DOMException && err.name === "AbortError")) {
-				// User-initiated abort, not an error
+				// The watchdog also aborts the request, which on some platforms surfaces
+				// here as a thrown AbortError rather than a clean stream end. If that's why
+				// we're here (no user Stop, nothing rendered), take the EARLY-failure path;
+				// otherwise this is a genuine user Stop, not an error.
+				if (watchdogTimedOut && !firstContentSeen) {
+					await applyEarlyStreamFailure?.();
+				}
 			} else if (err instanceof Error && err.message.includes("overloaded")) {
 				$error = "Too much traffic, please try again.";
 			} else if (err instanceof Error && err.message.includes("429")) {
 				$error = ERROR_MESSAGES.rateLimited;
+			} else if (!firstContentSeen && applyEarlyStreamFailure) {
+				// EARLY failure: a non-abort stream/connection error threw before any
+				// token rendered — same regime as the watchdog timeout, so take the same
+				// path (cached answer if we have one, else a retryable message) rather
+				// than surfacing a raw browser error string. Guarded on the handler being
+				// assigned: an error thrown before that point falls through to a real message.
+				await applyEarlyStreamFailure();
 			} else if (err instanceof Error) {
+				// LATE failure: a partial answer is already on screen — keep it and
+				// surface the error rather than replacing it with a fallback.
 				$error = err.message;
 			} else {
 				$error = ERROR_MESSAGES.default;
 			}
 			console.error(err);
 		} finally {
+			// Always clear the watchdog so a late fire can't abort a later request.
+			if (firstTokenWatchdog) {
+				clearTimeout(firstTokenWatchdog);
+				firstTokenWatchdog = undefined;
+			}
 			writeMessageInFlight = false;
 			activeGenerationId = undefined;
 			$loading = false;
