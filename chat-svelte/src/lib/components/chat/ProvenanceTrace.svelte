@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fly } from "svelte/transition";
 	import { prefersReducedMotion } from "svelte/motion";
+	import { page } from "$app/state";
 	import type { Message } from "$lib/types/Message";
 	import SourceStrip from "./SourceStrip.svelte";
 	import SourceClass from "./SourceClass.svelte";
@@ -8,6 +9,8 @@
 	import SafetyBadge from "./SafetyBadge.svelte";
 	import SecondOpinion from "./SecondOpinion.svelte";
 	import { blindSpotsOpen } from "$lib/stores/blindSpots";
+	import { computePulseNodes } from "../stack/reveal";
+	import { resolveServing } from "$lib/servingProvenance";
 
 	// The inline provenance TRACE — the stack diagram, inlined into the conversation.
 	//
@@ -64,19 +67,21 @@
 
 	// Mirror the live trace onto the right-hand stack map: while THIS turn streams, emit a
 	// SUSTAINED pulse on the map nodes whose layer is genuinely running, and clear it when
-	// the turn ends. The model node is the through-line of every turn; the web-search node
-	// joins it only when the turn was actually grounded on open sources. We deliberately do
-	// NOT fake a precise retrieve→generate boundary from the client — we pulse the layers
-	// that ran, which is the honest claim. (Map ids match the existing ap:flash seam.)
-	const MAP_MODEL_NODES = ["apertus", "cscs"];
-	const MAP_RETRIEVE_NODES = ["websearch"];
+	// the turn ends. Node set comes from the ONE authority (computePulseNodes in reveal.ts),
+	// which applies the same honesty gates as the turn-end reveal: model always, web-search
+	// only when grounded, and sovereign compute (cscs) ONLY when the answer truly runs on it
+	// — never flash CSCS while HF-served. We deliberately don't fake a precise
+	// retrieve→generate boundary from the client; we pulse the layers that ran.
+	const serving = $derived(page.data.servingProvenance ?? resolveServing());
 	let pulsedNodes: string[] = [];
 	const emitPulse = (ids: string[], on: boolean) => {
 		if (!ids.length || typeof window === "undefined") return;
 		window.dispatchEvent(new CustomEvent(on ? "ap:pulse-on" : "ap:pulse-off", { detail: { ids } }));
 	};
 	$effect(() => {
-		const next = loading ? [...MAP_MODEL_NODES, ...(grounded ? MAP_RETRIEVE_NODES : [])] : [];
+		const next = loading
+			? computePulseNodes({ grounded, servedOnSovereignCompute: serving.isSovereign })
+			: [];
 		const off = pulsedNodes.filter((n) => !next.includes(n));
 		const on = next.filter((n) => !pulsedNodes.includes(n));
 		emitPulse(off, false);
@@ -96,7 +101,9 @@
 		     Spots disclosure (the slide-39 "why provenance matters" content already lives there —
 		     recency, lookup-isn't-recall, language coverage, one-perspective), so we don't fork
 		     a second copy of that honest copy. -->
-		<div class="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] text-[var(--ap-ink-3)]/80 uppercase">
+		<div
+			class="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] text-[var(--ap-ink-3)]/80 uppercase"
+		>
 			<span>How this answer was made</span>
 			<button
 				type="button"
@@ -111,59 +118,65 @@
 
 		<!-- pl reserves the spine gutter; the spine line sits behind the nodes. -->
 		<div class="ap-trace relative flex flex-col gap-2 pl-4">
-		<!-- The spine: one persistent hairline, anchored to the first node's center so it
+			<!-- The spine: one persistent hairline, anchored to the first node's center so it
 		     doesn't float above the trace. Low-ink; the nodes carry the signal. -->
-		<div
-			class="pointer-events-none absolute top-[8px] bottom-2 left-[5px] w-px"
-			style="background: color-mix(in oklab, var(--ap-ink-3) 30%, transparent)"
-			aria-hidden="true"
-		></div>
-
-		{#each steps as step (step)}
 			<div
-				class="relative"
-				in:fly={{ y: 6, duration: reduce ? 0 : 320 }}
-			>
-				<!-- spine node: solid marker, paper ring so it cleanly breaks the line -->
-				<span
-					class="absolute top-[4px] -left-[12.5px] size-[8px] rounded-full ring-2 ring-[var(--ap-paper)]"
-					style="background: {DOT[step]}"
-					aria-hidden="true"
-				></span>
+				class="pointer-events-none absolute top-[8px] bottom-2 left-[5px] w-px"
+				style="background: color-mix(in oklab, var(--ap-ink-3) 30%, transparent)"
+				aria-hidden="true"
+			></div>
 
-				{#if step === "retrieve" && message.webSearch}
-					<SourceStrip
-						sources={message.webSearch.sources}
-						asOf={message.webSearch.asOf}
-						query={message.webSearch.query}
-					/>
-				{:else if step === "recall"}
-					<SourceClass kind="model" traced />
-				{:else if step === "declined" && message.moderation}
-					<SafetyBadge kind={message.moderation.kind} label={message.moderation.label} traced />
-				{:else if step === "generate"}
-					<ProvenanceBadge modelId={message.routerMetadata?.model || modelId} provider={message.routerMetadata?.provider} traced />
-				{:else if step === "verify" && question}
-					<SecondOpinion {question} messageId={message.id} opinions={message.opinions} verdict={message.verdict} />
-				{/if}
-			</div>
-		{/each}
+			{#each steps as step (step)}
+				<div class="relative" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
+					<!-- spine node: solid marker, paper ring so it cleanly breaks the line -->
+					<span
+						class="absolute top-[4px] -left-[12.5px] size-[8px] rounded-full ring-2 ring-[var(--ap-paper)]"
+						style="background: {DOT[step]}"
+						aria-hidden="true"
+					></span>
 
-		<!-- Live tail node: the trace is still drawing. The active layer pulses at the
+					{#if step === "retrieve" && message.webSearch}
+						<SourceStrip
+							sources={message.webSearch.sources}
+							asOf={message.webSearch.asOf}
+							query={message.webSearch.query}
+						/>
+					{:else if step === "recall"}
+						<SourceClass kind="model" traced />
+					{:else if step === "declined" && message.moderation}
+						<SafetyBadge kind={message.moderation.kind} label={message.moderation.label} traced />
+					{:else if step === "generate"}
+						<ProvenanceBadge
+							modelId={message.routerMetadata?.model || modelId}
+							provider={message.routerMetadata?.provider}
+							traced
+						/>
+					{:else if step === "verify" && question}
+						<SecondOpinion
+							{question}
+							messageId={message.id}
+							opinions={message.opinions}
+							verdict={message.verdict}
+						/>
+					{/if}
+				</div>
+			{/each}
+
+			<!-- Live tail node: the trace is still drawing. The active layer pulses at the
 		     growing end of the spine, so the user sees WHICH layer is working right now. -->
-		{#if loading}
-			<div class="relative" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
-				<span
-					class="absolute top-[3px] -left-[13px] size-[9px] rounded-full ring-2 ring-[var(--ap-paper)]"
-					style="background: var(--ap-live)"
-					class:animate-pulse={!reduce}
-					aria-hidden="true"
-				></span>
-				<span class="font-mono text-[10.5px] text-[var(--ap-ink-3)]">
-					{grounded ? "Grounding · writing…" : "Writing…"}
-				</span>
-			</div>
-		{/if}
+			{#if loading}
+				<div class="relative" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
+					<span
+						class="absolute top-[3px] -left-[13px] size-[9px] rounded-full ring-2 ring-[var(--ap-paper)]"
+						style="background: var(--ap-live)"
+						class:animate-pulse={!reduce}
+						aria-hidden="true"
+					></span>
+					<span class="font-mono text-[10.5px] text-[var(--ap-ink-3)]">
+						{grounded ? "Grounding · writing…" : "Writing…"}
+					</span>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}

@@ -3,6 +3,7 @@
 	import { fly } from "svelte/transition";
 	import { prefersReducedMotion } from "svelte/motion";
 	import type { SearchSource } from "$lib/types/Search";
+	import { WEBSEARCH_NODE } from "../stack/reveal";
 
 	// Provenance for a search-grounded answer: the numbered open sources the model
 	// was told to cite. Collapsible to stay out of the way; every [n] in the answer
@@ -25,7 +26,7 @@
 	};
 
 	const flashWebsearch = () =>
-		window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["websearch"] } }));
+		window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: [WEBSEARCH_NODE] } }));
 
 	let open = $state(false);
 

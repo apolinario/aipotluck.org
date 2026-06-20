@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ModerationKind } from "$lib/types/MessageUpdate";
+	import { SAFETY_NODES } from "../stack/reveal";
 
 	// The honest provenance line for a SAFETY DECLINE — shown in place of ProvenanceBadge
 	// when a turn was stopped by the pre-screen before the model ran. The whole product
@@ -15,7 +16,6 @@
 	}
 	let { kind = "toxicity", label, traced = false }: Props = $props();
 
-	const SAFETY_NODES = ["toxicbert"];
 	let source = $derived(
 		kind === "child_safety"
 			? "child-safety classifier"

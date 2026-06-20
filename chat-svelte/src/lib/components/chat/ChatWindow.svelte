@@ -11,6 +11,8 @@
 
 	import ArtifactPanel from "./ArtifactPanel.svelte";
 	import StackMap from "$lib/components/stack/StackMap.svelte";
+	import { MODEL_NODES, COMPUTE_NODE, WEBSEARCH_NODE } from "../stack/reveal";
+	import { resolveServing } from "$lib/servingProvenance";
 	import { collectArtifacts } from "$lib/utils/artifacts";
 	import { setArtifactsContext } from "$lib/utils/artifactsContext";
 	import { artifactPanel } from "$lib/stores/artifactPanel.svelte";
@@ -181,11 +183,14 @@
 	// model decides via tool-calling; "model" = yes/no classifier; "heuristic" =
 	// regex only.
 	const searchStrategy = $derived(page.data.searchTriggerStrategy ?? SEARCH_TRIGGER_STRATEGY);
+	// Serving provenance — so map flashes can gate the sovereign-compute node honestly
+	// (never flash CSCS while HF-served), the same gate reveal.ts applies per answer.
+	const serving = $derived(page.data.servingProvenance ?? resolveServing());
 
 	async function runOpenSearch(query: string): Promise<SearchContext | undefined> {
 		try {
 			// Mirror the chat event on the live-stack map the instant search starts.
-			window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["websearch"] } }));
+			window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: [WEBSEARCH_NODE] } }));
 			const res = await fetch(`${base}/api/search?q=${encodeURIComponent(query)}`);
 			if (!res.ok) return undefined;
 			const result = (await res.json()) as SearchContext;
@@ -506,9 +511,12 @@
 			mobileTab = "map";
 			mapHasActivity = false;
 		} else if (browser) {
-			// Defer past the dismiss re-render, or it would wipe the flash class.
+			// Defer past the dismiss re-render, or it would wipe the flash class. Light the
+			// model node, plus the sovereign-compute node ONLY if we genuinely serve on it —
+			// the welcome beat must not claim CSCS while HF-served (same gate as reveal.ts).
 			setTimeout(() => {
-				window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["apertus", "cscs"] } }));
+				const ids = [...MODEL_NODES, ...(serving.isSovereign ? [COMPUTE_NODE] : [])];
+				window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids } }));
 			}, 0);
 		}
 	}
@@ -741,9 +749,7 @@
 								gap={message.from === "assistant"
 									? gapForPrompt(messages[idx - 1]?.content)
 									: undefined}
-								question={message.from === "assistant"
-									? messages[idx - 1]?.content
-									: undefined}
+								question={message.from === "assistant" ? messages[idx - 1]?.content : undefined}
 								alternatives={messagesAlternatives.find((a) => a.includes(message.id)) ?? []}
 								isAuthor={!shared}
 								readOnly={isReadOnly}

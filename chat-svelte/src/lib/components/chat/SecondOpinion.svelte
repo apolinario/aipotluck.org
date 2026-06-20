@@ -4,6 +4,7 @@
 	import CarbonGroup from "~icons/carbon/group";
 	import MarkdownRenderer from "./MarkdownRenderer.svelte";
 	import type { Message } from "$lib/types/Message";
+	import { ROUTER_NODE } from "../stack/reveal";
 
 	// Collective second opinion, honest by construction. The Apertus answer is shown
 	// above; one click fans the question out to a panel of independent open models in
@@ -46,7 +47,7 @@
 
 	function flashRoute() {
 		if (typeof window !== "undefined") {
-			window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["router"] } }));
+			window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: [ROUTER_NODE] } }));
 		}
 	}
 
@@ -78,13 +79,22 @@
 </script>
 
 {#if done && panelVerdict}
-	<div class="mt-1.5 rounded-lg border border-gray-200 bg-gray-50/60 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800/40">
+	<div
+		class="mt-1.5 rounded-lg border border-gray-200 bg-gray-50/60 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800/40"
+	>
 		<!-- Verdict headline ON the primary answer — tone earned from cross-model agreement. -->
 		<div class="flex items-start gap-2">
-			<span class="mt-[5px] size-[8px] shrink-0 rounded-full" style="background: {TONE[panelVerdict.agreement].dot}"></span>
+			<span
+				class="mt-[5px] size-[8px] shrink-0 rounded-full"
+				style="background: {TONE[panelVerdict.agreement].dot}"
+			></span>
 			<div class="min-w-0">
-				<div class="text-[0.7rem] font-mono uppercase tracking-[0.08em]" style="color: {TONE[panelVerdict.agreement].text}">
-					Collective second opinion · {takes.length} open models · {TONE[panelVerdict.agreement].label}
+				<div
+					class="font-mono text-[0.7rem] tracking-[0.08em] uppercase"
+					style="color: {TONE[panelVerdict.agreement].text}"
+				>
+					Collective second opinion · {takes.length} open models · {TONE[panelVerdict.agreement]
+						.label}
 				</div>
 				<div class="mt-0.5 text-sm text-gray-800 dark:text-gray-200">{panelVerdict.headline}</div>
 			</div>
@@ -92,10 +102,16 @@
 
 		<!-- Agreement map: confirm / challenge / blind spots. Only non-empty sections show. -->
 		{#if panelVerdict.consensus.length || panelVerdict.contradictions.length || panelVerdict.blindSpots.length}
-			<div class="mt-2 flex flex-col gap-2 border-t border-gray-200/70 pt-2 dark:border-gray-700/70">
+			<div
+				class="mt-2 flex flex-col gap-2 border-t border-gray-200/70 pt-2 dark:border-gray-700/70"
+			>
 				{#if panelVerdict.consensus.length}
 					<div>
-						<div class="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-[var(--ap-live-text)]">They agree on</div>
+						<div
+							class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-live-text)] uppercase"
+						>
+							They agree on
+						</div>
 						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
 							{#each panelVerdict.consensus as c (c)}<li>{c}</li>{/each}
 						</ul>
@@ -103,7 +119,11 @@
 				{/if}
 				{#if panelVerdict.contradictions.length}
 					<div>
-						<div class="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-[var(--ap-gap-text)]">Where they split</div>
+						<div
+							class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-gap-text)] uppercase"
+						>
+							Where they split
+						</div>
 						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
 							{#each panelVerdict.contradictions as c (c)}<li>{c}</li>{/each}
 						</ul>
@@ -111,7 +131,11 @@
 				{/if}
 				{#if panelVerdict.blindSpots.length}
 					<div>
-						<div class="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-[var(--ap-building-text)]">Blind spots</div>
+						<div
+							class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-building-text)] uppercase"
+						>
+							Blind spots
+						</div>
 						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
 							{#each panelVerdict.blindSpots as c (c)}<li>{c}</li>{/each}
 						</ul>
@@ -129,12 +153,18 @@
 			{showTakes ? "Hide" : "Show"} the {takes.length} individual takes ↓
 		</button>
 		{#if showTakes}
-			<div class="mt-1.5 flex flex-col gap-2 border-t border-gray-200/70 pt-2 dark:border-gray-700/70">
+			<div
+				class="mt-1.5 flex flex-col gap-2 border-t border-gray-200/70 pt-2 dark:border-gray-700/70"
+			>
 				{#each takes as take (take.model)}
 					<div>
-						<div class="mb-0.5 flex items-center gap-2 text-[0.7rem] text-gray-500 dark:text-gray-400">
+						<div
+							class="mb-0.5 flex items-center gap-2 text-[0.7rem] text-gray-500 dark:text-gray-400"
+						>
 							<span class="font-medium text-gray-600 dark:text-gray-300">{take.modelShort}</span>
-							<span class="rounded-sm bg-amber-100 px-1 py-px text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+							<span
+								class="rounded-sm bg-amber-100 px-1 py-px text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+							>
 								{take.openness}{take.sovereign ? "" : " · not sovereign"}
 							</span>
 						</div>
