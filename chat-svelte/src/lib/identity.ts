@@ -39,9 +39,21 @@ function sizeSuffix(served?: string): string {
 	return m ? ` ${m[1]}B` : "";
 }
 
+// Version brand (e.g. "1.5") read from the served checkpoint, NOT hardcoded — so flipping the
+// served model carries the brand with it and no surface can claim a version that isn't running.
+// "Apertus-1.5-8B-…" → " 1.5"; the 2509 release "Apertus-70B-Instruct-2509" has no decimal version
+// in its id → "" (renders the plain "Apertus 70B" brand). This is the drift-proof replacement for the
+// previously hardcoded brand: the alpha runs on the officially-released Apertus-70B-Instruct-2509, and
+// will adopt Apertus 1.5 once SwissAI officially releases it — at which point flipping MODEL_ALLOWLIST
+// to the 1.5 checkpoint restores "Apertus 1.5 8B" with zero code change.
+function versionSuffix(served?: string): string {
+	const m = served?.match(/apertus[-\s]?(\d+\.\d+)/i);
+	return m ? ` ${m[1]}` : "";
+}
+
 function apertus(served?: string): ModelIdentity {
 	return {
-		short: `Apertus 1.5${sizeSuffix(served)}`,
+		short: `Apertus${versionSuffix(served)}${sizeSuffix(served)}`,
 		served,
 		maker: SWISSAI,
 		makerShort: "SwissAI",

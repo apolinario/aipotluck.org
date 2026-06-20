@@ -27,6 +27,7 @@ import OpenAI from "openai";
 import { isRecencyQuery } from "$lib/search/recency";
 import { buildPersonaPrompt } from "$lib/server/textGeneration/persona";
 import { WEB_SEARCH_TOOL } from "$lib/server/search/toolSearch";
+import { marginFromLogprobs, CLASSIFIER_PREPROMPT } from "$lib/server/search/searchMargin";
 
 // The tool-use directive appended to the system prompt in the persona_tool condition,
 // so that condition reflects a realistic "persona + advertise the tool" prompt.
@@ -182,6 +183,32 @@ async function decideViaModel(cond: Condition, query: string): Promise<boolean> 
 	return searched;
 }
 
+// Margin gate (trigger strategy "margin"): one classifier call WITH logprobs; cache the RAW
+// margin (pYes−pNo) so a threshold sweep costs no extra calls. Scores the production
+// CLASSIFIER_PREPROMPT + marginFromLogprobs (no drift). No tool-calling — works on 70B-2509.
+async function marginRaw(query: string): Promise<number> {
+	const key = createHash("sha256").update(`margin|${MODEL}|${query}`).digest("hex").slice(0, 16);
+	const cacheFile = join(CACHE, `${key}.json`);
+	if (!noCache && existsSync(cacheFile)) return JSON.parse(readFileSync(cacheFile, "utf8")).margin;
+	const res = await openai.chat.completions.create({
+		model: MODEL,
+		messages: [
+			{ role: "system", content: CLASSIFIER_PREPROMPT },
+			{ role: "user", content: `User message: "${query}"` },
+		],
+		max_tokens: 1,
+		temperature: 0,
+		logprobs: true,
+		top_logprobs: 10,
+		stream: false,
+	});
+	const top = res.choices?.[0]?.logprobs?.content?.[0]?.top_logprobs ?? [];
+	const { margin } = marginFromLogprobs(top, 0);
+	if (!existsSync(CACHE)) mkdirSync(CACHE, { recursive: true });
+	writeFileSync(cacheFile, JSON.stringify({ margin, query }, null, 2));
+	return margin;
+}
+
 async function decide(cond: Condition, c: Case): Promise<boolean> {
 	if (cond === "heuristic") return isRecencyQuery(c.query);
 	if (cond === "heur_denoise") return heuristicDenoise(c.query);
@@ -208,7 +235,35 @@ async function main() {
 		results[u.name] = {};
 		for (const c of cases) results[u.name][c.id] = results[u.of[0]][c.id] || results[u.of[1]][c.id];
 	}
-	const DISPLAY: string[] = [...ACTIVE_CONDITIONS, ...ACTIVE_UNIONS.map((u) => u.name)];
+
+	// Margin gate (the 70B-compatible candidate): one logprob call/case (cached), then a free
+	// threshold sweep + the heuristic∪margin union (the recommended prod shape). Lower T = more recall.
+	const MARGIN_THRESHOLDS = [-1, -0.9, -0.75, -0.5, -0.25, 0];
+	const rawMargins: Record<string, number> = {};
+	for (const c of cases) rawMargins[c.id] = await marginRaw(c.query);
+	process.stdout.write(`✓ margin (raw, logprob)\n`);
+	const marginNames: string[] = [];
+	for (const T of MARGIN_THRESHOLDS) {
+		const name = `margin@${T}`;
+		const uname = `heur∪${name}`; // plain recency regex OR margin (noisy heuristic)
+		const uname2 = `heur+∪${name}`; // de-noised+entity regex OR margin (both 100%-specific)
+		results[name] = {};
+		results[uname] = {};
+		results[uname2] = {};
+		for (const c of cases) {
+			const m = rawMargins[c.id] >= T;
+			results[name][c.id] = m;
+			results[uname][c.id] = isRecencyQuery(c.query) || m;
+			results[uname2][c.id] = heuristicDenoisePlus(c.query) || m;
+		}
+		marginNames.push(name, uname, uname2);
+	}
+
+	const DISPLAY: string[] = [
+		...ACTIVE_CONDITIONS,
+		...ACTIVE_UNIONS.map((u) => u.name),
+		...marginNames,
+	];
 
 	const needs = cases.filter((c) => c.needs_search);
 	const skips = cases.filter((c) => !c.needs_search);
@@ -238,7 +293,7 @@ async function main() {
 	}
 
 	console.log("\n=== residual disagreements for the candidate union configs ===");
-	for (const cond of UNIONS.map((u) => u.name)) {
+	for (const cond of DISPLAY.filter((c) => c.includes("∪") && results[c])) {
 		const wrong = cases.filter((c) => results[cond][c.id] !== c.needs_search);
 		console.log(`\n${cond}: ${wrong.length} wrong`);
 		for (const c of wrong) {

@@ -217,13 +217,15 @@
 	// whether this turn needs open-web grounding. Under "tool" the model decides
 	// via real tool-calling AND authors the search query; under "model" it's a
 	// yes/no classifier (no query). Best-effort — a failure means "don't search".
-	async function modelDecide(query: string): Promise<{ shouldSearch?: boolean; query?: string }> {
+	async function modelDecide(
+		query: string
+	): Promise<{ shouldSearch?: boolean; query?: string; ok?: boolean }> {
 		try {
 			const res = await fetch(`${base}/api/search/classify?q=${encodeURIComponent(query)}`);
-			if (!res.ok) return { shouldSearch: false };
-			return (await res.json()) as { shouldSearch?: boolean; query?: string };
+			if (!res.ok) return { shouldSearch: false, ok: false };
+			return (await res.json()) as { shouldSearch?: boolean; query?: string; ok?: boolean };
 		} catch {
-			return { shouldSearch: false };
+			return { shouldSearch: false, ok: false };
 		}
 	}
 
@@ -240,6 +242,7 @@
 		const heuristicHit = isRecencyQueryDenoised(text);
 		let modelHit = false;
 		let modelQuery: string | undefined;
+		let marginOk = true;
 		if (usesModelClassifier(searchStrategy)) {
 			// Surface the "thinking" affordance during the decision round-trip.
 			deciding = true;
@@ -247,6 +250,9 @@
 				const r = await modelDecide(text);
 				modelHit = !!r.shouldSearch;
 				modelQuery = r.query;
+				// "margin" strategy: ok=false (call failed / no logprobs) → shouldRunSearch falls
+				// back to the recency heuristic. Other strategies don't send `ok` (defaults true).
+				marginOk = r.ok ?? true;
 			} finally {
 				deciding = false;
 			}
@@ -254,6 +260,7 @@
 		const search = shouldRunSearch({
 			heuristicHit,
 			classifierHit: modelHit,
+			marginOk,
 			strategy: searchStrategy,
 		});
 		return { search, query: modelHit && modelQuery ? modelQuery : text };

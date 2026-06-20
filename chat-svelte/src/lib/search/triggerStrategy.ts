@@ -8,12 +8,20 @@
 //   "tool"      — real OpenAI tool-calling (the model emits a web_search call).
 //                 Scaffolded only (see $lib/server/search/toolSearch.ts); the
 //                 tool loop was stripped from this fork and Apertus's
-//                 tool-calling is unreliable until 1.5. Until it is wired,
-//                 "tool" degrades to the classifier so search still works.
+//                 tool-calling is unreliable. Until it is wired, "tool" degrades
+//                 to the classifier so search still works.
+//   "margin"    — the PROVEN prod path for Apertus-70B-2509 (weak at native
+//                 tool-calling): the model decides via a yes/no classifier read by
+//                 LOGPROB MARGIN (decideSearchViaMargin). Unlike model/tool it is
+//                 NOT OR'd with the recency regex — the regex's false-positives would
+//                 break its 100% specificity; the heuristic is only an on-error
+//                 fallback. Threshold via SEARCH_MARGIN_THRESHOLD (default -0.75).
+//                 Validated on evals/search-decision: held-out 85% recall / 100%
+//                 specificity on the served 70B (regex configs overfit; margin didn't).
 //
 // Single switch for the alpha. To make it deploy-tunable without a code change,
 // read PUBLIC_SEARCH_TRIGGER here and fall back to this default.
-export type SearchTriggerStrategy = "heuristic" | "model" | "tool";
+export type SearchTriggerStrategy = "heuristic" | "model" | "tool" | "margin";
 
 // Code default = "heuristic" — the prod-SAFE default. Deployments select the
 // active strategy via the PUBLIC_SEARCH_TRIGGER env var (resolved through
@@ -35,17 +43,20 @@ export const SEARCH_TRIGGER_STRATEGY: SearchTriggerStrategy = "heuristic";
  */
 export function resolveTriggerStrategy(raw?: string | null): SearchTriggerStrategy {
 	const v = (raw ?? "").trim().toLowerCase();
-	return v === "heuristic" || v === "model" || v === "tool" ? v : SEARCH_TRIGGER_STRATEGY;
+	return v === "heuristic" || v === "model" || v === "tool" || v === "margin"
+		? v
+		: SEARCH_TRIGGER_STRATEGY;
 }
 
 /**
- * Whether the model classifier should arbitrate when the recency heuristic
- * abstains. True for "model" and (until tool-calling is wired) "tool".
+ * Whether the client should ask the server for a model-driven decision (vs. the recency
+ * heuristic alone). True for "model", "tool", and "margin". For model/tool the heuristic is a
+ * fast-path OR; for margin the server decision is PRIMARY (see shouldRunSearch).
  */
 export function usesModelClassifier(
 	strategy: SearchTriggerStrategy = SEARCH_TRIGGER_STRATEGY
 ): boolean {
-	return strategy === "model" || strategy === "tool";
+	return strategy === "model" || strategy === "tool" || strategy === "margin";
 }
 
 /**
@@ -58,10 +69,19 @@ export function usesModelClassifier(
 export function shouldRunSearch(opts: {
 	heuristicHit: boolean;
 	classifierHit?: boolean;
+	marginOk?: boolean;
 	strategy?: SearchTriggerStrategy;
 }): boolean {
+	const strategy = opts.strategy ?? SEARCH_TRIGGER_STRATEGY;
+	if (strategy === "margin") {
+		// Margin is the PRIMARY decider (100% specificity on held-out eval) — NOT OR'd with the
+		// recency regex (that OR tanked specificity 100→50). classifierHit carries the margin
+		// verdict; only on a FAILED margin call (marginOk === false) do we fall back to the
+		// recency heuristic so search still works.
+		return opts.marginOk === false ? opts.heuristicHit : !!opts.classifierHit;
+	}
 	if (opts.heuristicHit) return true;
-	if (usesModelClassifier(opts.strategy ?? SEARCH_TRIGGER_STRATEGY)) {
+	if (usesModelClassifier(strategy)) {
 		return !!opts.classifierHit;
 	}
 	return false;

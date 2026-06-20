@@ -59,4 +59,41 @@ describe("shouldRunSearch — signal composition", () => {
 		// classifierHit undefined (didn't run / failed) → no search.
 		expect(shouldRunSearch({ heuristicHit: false, strategy: "model" })).toBe(false);
 	});
+
+	// "margin" — the proven 70B path. The margin verdict (classifierHit) is PRIMARY; unlike
+	// model/tool it is NOT OR'd with the recency heuristic (the eval showed that OR tanks
+	// specificity). The heuristic is only used when the margin call failed (marginOk === false).
+	it("under margin strategy, the margin verdict decides — heuristic is NOT OR'd in", () => {
+		// margin says search → search.
+		expect(shouldRunSearch({ heuristicHit: false, classifierHit: true, strategy: "margin" })).toBe(
+			true
+		);
+		// KEY: heuristic hits but margin says NO → DO NOT search (no OR; preserves 100% specificity).
+		expect(shouldRunSearch({ heuristicHit: true, classifierHit: false, strategy: "margin" })).toBe(
+			false
+		);
+	});
+
+	it("under margin strategy, a failed margin call (marginOk:false) falls back to the heuristic", () => {
+		expect(
+			shouldRunSearch({
+				heuristicHit: true,
+				classifierHit: false,
+				marginOk: false,
+				strategy: "margin",
+			})
+		).toBe(true);
+		expect(
+			shouldRunSearch({
+				heuristicHit: false,
+				classifierHit: false,
+				marginOk: false,
+				strategy: "margin",
+			})
+		).toBe(false);
+		// marginOk omitted (defaults true) → trust the margin verdict.
+		expect(shouldRunSearch({ heuristicHit: true, classifierHit: false, strategy: "margin" })).toBe(
+			false
+		);
+	});
 });

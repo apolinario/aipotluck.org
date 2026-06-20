@@ -1,5 +1,18 @@
 # Findings — search-decision (summary)
 
+**Update 2026-06-20 — margin-gate chosen for Apertus-70B-Instruct-2509 (released model).**
+With the alpha on the released 70B (weak at native tool-calling), we evaluated a margin-based
+logprob gate: a yes/no classifier whose decision is read from the first-token `top_logprobs`
+margin P(yes)−P(no) (no tool-calling — just logprobs, confirmed on CSCS-direct + HF router).
+Headline: the **margin gate generalizes; the regex configs overfit.** On the held-out set the
+margin gate (threshold −0.75) reached the highest recall that still holds 100% specificity, and
+held-out ≥ in-sample (the opposite of the regex configs, whose recall dropped sharply on unseen
+queries). The plain recency regex was weakest on both sets, and OR-ing it with the margin gate
+collapsed specificity — so the production `margin` strategy uses the margin verdict as the
+PRIMARY decider, NOT OR'd with the regex; the recency heuristic is only an on-error fallback.
+Tunable via `SEARCH_MARGIN_THRESHOLD` (lower = more recall). Reproduce:
+`npx vite-node evals/search-decision/run.ts` (+ `--cases cases_holdout.jsonl`).
+
 > The served model is evaluated here at a **high level only**. The full
 > per-condition numbers, and the exact served checkpoint, live in the private
 > `FINDINGS.local.md` (gitignored) — the model under test is a pre-release
