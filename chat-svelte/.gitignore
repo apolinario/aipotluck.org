@@ -29,3 +29,6 @@ models/*
 
 # plancheck debug scratch
 .plancheck-debug.json
+
+# warm-cache diagnostic spread (regenerable, not served)
+static/data/starterCache.review.json

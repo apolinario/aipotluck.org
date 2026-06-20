@@ -19,6 +19,7 @@
 		"db:push": "drizzle-kit push",
 		"sync:categories": "node scripts/sync-categories.mjs",
 		"check:categories": "node scripts/sync-categories.mjs --check",
+		"warm-cache": "node scripts/warm-cache.mjs",
 		"updateLocalEnv": "vite-node --options.transformMode.ssr='/.*/' scripts/updateLocalEnv.ts",
 		"populate": "vite-node --options.transformMode.ssr='/.*/' scripts/populate.ts",
 		"config": "vite-node --options.transformMode.ssr='/.*/' scripts/config.ts",
