@@ -51,7 +51,7 @@
 
 <div class="relative inline-flex">
 	<button
-		class="btn inline-flex min-h-7 min-w-7 items-center justify-center rounded-xs p-1 text-xs text-gray-400 hover:text-gray-500 focus:ring-0 dark:text-gray-400 dark:hover:text-gray-300"
+		class="btn inline-flex min-h-7 min-w-7 items-center justify-center rounded-xs p-1 text-xs text-[var(--ap-ink-3)] hover:text-[var(--ap-ink-2)] focus:ring-0"
 		title="Report a problem"
 		aria-label="Report a problem"
 		type="button"

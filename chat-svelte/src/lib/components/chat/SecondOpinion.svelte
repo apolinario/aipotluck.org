@@ -80,7 +80,7 @@
 
 {#if done && panelVerdict}
 	<div
-		class="mt-1.5 rounded-lg border border-gray-200 bg-gray-50/60 px-3 py-2.5 dark:border-gray-700 dark:bg-gray-800/40"
+		class="py-2.5/40 mt-1.5 rounded-lg border border-[var(--ap-rule)] bg-[var(--ap-paper)]/60 px-3"
 	>
 		<!-- Verdict headline ON the primary answer — tone earned from cross-model agreement. -->
 		<div class="flex items-start gap-2">
@@ -96,15 +96,13 @@
 					Collective second opinion · {takes.length} open models · {TONE[panelVerdict.agreement]
 						.label}
 				</div>
-				<div class="mt-0.5 text-sm text-gray-800 dark:text-gray-200">{panelVerdict.headline}</div>
+				<div class="mt-0.5 text-sm text-[var(--ap-ink)]">{panelVerdict.headline}</div>
 			</div>
 		</div>
 
 		<!-- Agreement map: confirm / challenge / blind spots. Only non-empty sections show. -->
 		{#if panelVerdict.consensus.length || panelVerdict.contradictions.length || panelVerdict.blindSpots.length}
-			<div
-				class="mt-2 flex flex-col gap-2 border-t border-gray-200/70 pt-2 dark:border-gray-700/70"
-			>
+			<div class="pt-2/70 mt-2 flex flex-col gap-2 border-t border-[var(--ap-rule)]/70">
 				{#if panelVerdict.consensus.length}
 					<div>
 						<div
@@ -112,7 +110,7 @@
 						>
 							They agree on
 						</div>
-						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
+						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-[var(--ap-ink-2)]">
 							{#each panelVerdict.consensus as c (c)}<li>{c}</li>{/each}
 						</ul>
 					</div>
@@ -124,7 +122,7 @@
 						>
 							Where they split
 						</div>
-						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
+						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-[var(--ap-ink-2)]">
 							{#each panelVerdict.contradictions as c (c)}<li>{c}</li>{/each}
 						</ul>
 					</div>
@@ -136,7 +134,7 @@
 						>
 							Blind spots
 						</div>
-						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-gray-700 dark:text-gray-300">
+						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-[var(--ap-ink-2)]">
 							{#each panelVerdict.blindSpots as c (c)}<li>{c}</li>{/each}
 						</ul>
 					</div>
@@ -153,15 +151,11 @@
 			{showTakes ? "Hide" : "Show"} the {takes.length} individual takes ↓
 		</button>
 		{#if showTakes}
-			<div
-				class="mt-1.5 flex flex-col gap-2 border-t border-gray-200/70 pt-2 dark:border-gray-700/70"
-			>
+			<div class="pt-2/70 mt-1.5 flex flex-col gap-2 border-t border-[var(--ap-rule)]/70">
 				{#each takes as take (take.model)}
 					<div>
-						<div
-							class="mb-0.5 flex items-center gap-2 text-[0.7rem] text-gray-500 dark:text-gray-400"
-						>
-							<span class="font-medium text-gray-600 dark:text-gray-300">{take.modelShort}</span>
+						<div class="mb-0.5 flex items-center gap-2 text-[0.7rem] text-[var(--ap-ink-3)]">
+							<span class="font-medium text-[var(--ap-ink-2)]">{take.modelShort}</span>
 							<span
 								class="rounded-sm bg-amber-100 px-1 py-px text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
 							>
@@ -176,25 +170,25 @@
 			</div>
 		{/if}
 
-		<div class="mt-2 text-[0.65rem] text-gray-400 italic">
+		<div class="mt-2 text-[0.65rem] text-[var(--ap-ink-3)] italic">
 			Automated summary over {takes.length} independent open models — a cross-check on the answer above,
 			not a source of truth. Convergence is more trustworthy; divergence is worth scrutiny. The models
 			are not fully independent (some share lineage), so agreement is evidence, not proof.
 		</div>
 	</div>
 {:else if loading}
-	<div class="mt-1.5 inline-flex items-center gap-1.5 text-xs text-gray-400">
+	<div class="mt-1.5 inline-flex items-center gap-1.5 text-xs text-[var(--ap-ink-3)]">
 		<CarbonRenew class="animate-spin text-[0.7rem]" />
 		Asking a panel of independent open models…
 	</div>
 {:else if unavailable}
-	<div class="mt-1.5 text-xs text-gray-400 italic">
+	<div class="mt-1.5 text-xs text-[var(--ap-ink-3)] italic">
 		Collective second opinion unavailable right now — the answer above stands on its own.
 	</div>
 {:else if question}
 	<button
 		onclick={getCollective}
-		class="group mt-1.5 inline-flex items-center gap-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+		class="group mt-1.5 inline-flex items-center gap-1.5 text-xs text-[var(--ap-ink-3)] transition-colors hover:text-[var(--ap-ink)]"
 		title="Fan this question out to a panel of independent open models and see where they agree with, and challenge, the answer above."
 	>
 		<CarbonGroup class="text-[0.8rem]" />

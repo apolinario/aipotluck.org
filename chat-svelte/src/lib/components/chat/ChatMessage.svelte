@@ -368,7 +368,7 @@
 	// em-scaled child (code, pre, lists, tables, KaTeX) — in line with the rest
 	// of the UI. Single source for both the streaming and final render branches.
 	const proseClasses =
-		"prose max-w-none text-smd dark:prose-invert prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-pre:bg-gray-800 prose-img:my-0 prose-img:cursor-pointer prose-img:rounded-lg dark:prose-pre:bg-gray-900";
+		"prose max-w-none text-smd dark:prose-invert prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-pre:bg-gray-800 prose-img:my-0 prose-img:cursor-pointer prose-img:rounded-lg";
 
 	let editMode = $derived(editMsdgId === message.id);
 	$effect(() => {
@@ -400,7 +400,7 @@
 			animating={isLast && loading}
 		/>
 		<div
-			class="relative flex min-w-[60px] flex-col gap-2 rounded-2xl border border-gray-100 bg-linear-to-br from-gray-50 px-5 py-3.5 wrap-break-word text-gray-600 dark:border-gray-800 dark:from-gray-800/80 dark:text-gray-300 prose-pre:my-2"
+			class="relative flex min-w-[60px] flex-col gap-2 rounded-2xl border border-[var(--ap-rule)] bg-linear-to-br from-gray-50 px-5 py-3.5 wrap-break-word text-[var(--ap-ink-2)]/80 prose-pre:my-2"
 		>
 			{#if message.files?.length}
 				<div class="flex h-fit flex-wrap gap-x-5 gap-y-2">
@@ -569,7 +569,7 @@
 			<div class="flex w-full flex-row flex-nowrap">
 				{#if !editMode}
 					<p
-						class="disabled w-full appearance-none bg-inherit px-5 py-3.5 text-wrap wrap-break-word whitespace-break-spaces text-gray-500 dark:text-gray-400"
+						class="disabled w-full appearance-none bg-inherit px-5 py-3.5 text-wrap wrap-break-word whitespace-break-spaces text-[var(--ap-ink-3)]"
 					>
 						{message.content.trim()}
 					</p>
@@ -584,7 +584,7 @@
 						}}
 					>
 						<textarea
-							class="w-full rounded-xl bg-gray-100 px-5 py-3.5 wrap-break-word whitespace-break-spaces text-gray-500 *:h-max focus:outline-hidden dark:bg-gray-800 dark:text-gray-400"
+							class="w-full rounded-xl bg-[var(--ap-paper)] px-5 py-3.5 wrap-break-word whitespace-break-spaces text-[var(--ap-ink-3)] *:h-max focus:outline-hidden"
 							rows="5"
 							bind:this={editContentEl}
 							value={message.content.trim()}
@@ -596,8 +596,8 @@
 								type="submit"
 								class="btn rounded-lg px-3 py-1.5 text-sm
                                 {loading
-									? 'bg-gray-200 text-gray-400 dark:bg-gray-800 dark:text-gray-600'
-									: 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800 focus:ring-0 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200'}
+									? 'bg-[var(--ap-paper-2)] text-[var(--ap-ink-3)]'
+									: 'bg-[var(--ap-paper)] text-[var(--ap-ink-2)] hover:bg-[var(--ap-paper-3)] hover:text-[var(--ap-ink)] focus:ring-0'}
 								"
 								disabled={loading}
 							>
@@ -627,7 +627,7 @@
 				{/if}
 				{#if (alternatives.length > 1 && editMsdgId === null) || (!loading && !editMode)}
 					<button
-						class="hidden h-5 cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-gray-400 group-hover:flex hover:flex hover:bg-gray-100 hover:text-gray-500 lg:-right-2 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+						class="hidden h-5 cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-[var(--ap-ink-3)] group-hover:flex hover:flex hover:bg-[var(--ap-paper-2)] hover:text-[var(--ap-ink-2)] lg:-right-2"
 						title="Edit"
 						type="button"
 						onclick={() => {
@@ -639,9 +639,9 @@
 						Edit
 					</button>
 					<button
-						class="hidden h-5 cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-xs group-hover:flex hover:flex hover:bg-gray-100 lg:-right-2 dark:hover:bg-gray-800 {isUserMsgCopied
+						class="hidden h-5 cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-xs group-hover:flex hover:flex hover:bg-[var(--ap-paper-2)] lg:-right-2 {isUserMsgCopied
 							? 'text-green-500 dark:text-green-400'
-							: 'text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-300'}"
+							: 'text-[var(--ap-ink-3)] hover:text-[var(--ap-ink-2)]'}"
 						title="Copy to clipboard"
 						type="button"
 						onclick={async () => {

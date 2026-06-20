@@ -846,19 +846,19 @@
 		</div>
 
 		<div
-			class="pointer-events-none absolute inset-x-0 bottom-0 z-0 mx-auto flex w-full
-			max-w-3xl flex-col items-center justify-center bg-linear-to-t from-[var(--ap-paper)]
-			via-[var(--ap-paper)] to-[var(--ap-paper)]/0 px-3.5 pt-2 *:pointer-events-auto
-			max-sm:py-0 sm:px-5
-			md:pb-4 xl:max-w-4xl dark:border-gray-800 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900/0"
+			class="xl:max-w-4xl/0 pointer-events-none absolute inset-x-0 bottom-0 z-0 mx-auto flex
+			w-full max-w-3xl flex-col items-center justify-center bg-linear-to-t
+			from-[var(--ap-paper)] via-[var(--ap-paper)] to-[var(--ap-paper)]/0 px-3.5 pt-2
+			*:pointer-events-auto max-sm:py-0
+			sm:px-5 md:pb-4"
 		>
 			{#if !draft.length && !messages.length && !sources.length && !loading && currentModel.isRouter && activeExamples.length && !hideRouterExamples && !lastIsError}
 				<div
-					class="mb-3 no-scrollbar flex w-full justify-start gap-2 overflow-x-auto whitespace-nowrap text-gray-400 select-none dark:text-gray-500"
+					class="mb-3 no-scrollbar flex w-full justify-start gap-2 overflow-x-auto whitespace-nowrap text-[var(--ap-ink-3)] select-none"
 				>
 					{#each activeExamples as ex}
 						<button
-							class="flex items-center gap-1 rounded-lg bg-gray-100/90 px-2 py-0.5 text-center text-sm backdrop-blur-sm hover:text-gray-500 dark:bg-gray-700/50 dark:hover:text-gray-400"
+							class="flex items-center gap-1 rounded-lg bg-[var(--ap-paper)]/90 px-2 py-0.5 text-center text-sm backdrop-blur-sm hover:text-[var(--ap-ink-2)]/50"
 							onclick={() => startExample(ex)}
 						>
 							{ex.title}
@@ -871,12 +871,12 @@
 			{/if}
 			{#if shouldShowRouterFollowUps && !lastIsError}
 				<div
-					class="mb-3 no-scrollbar flex w-full justify-start gap-2 overflow-x-auto whitespace-nowrap text-gray-400 select-none dark:text-gray-500"
+					class="mb-3 no-scrollbar flex w-full justify-start gap-2 overflow-x-auto whitespace-nowrap text-[var(--ap-ink-3)] select-none"
 				>
-					<!-- <span class=" text-gray-500 dark:text-gray-400">Follow ups</span> -->
+					<!-- <span class=" text-[var(--ap-ink-3)]">Follow ups</span> -->
 					{#each routerFollowUps as followUp}
 						<button
-							class="flex items-center gap-1 rounded-lg bg-gray-100/90 px-2 py-0.5 text-center text-sm backdrop-blur-sm hover:text-gray-500 dark:bg-gray-700/50 dark:hover:text-gray-400"
+							class="flex items-center gap-1 rounded-lg bg-[var(--ap-paper)]/90 px-2 py-0.5 text-center text-sm backdrop-blur-sm hover:text-[var(--ap-ink-2)]/50"
 							onclick={() => startFollowUp(followUp)}
 						>
 							<CarbonDirectionRight class="scale-y-[-1] text-xs" />
@@ -926,7 +926,7 @@
 						handleSubmit();
 					}}
 					class={{
-						"relative flex w-full max-w-4xl flex-1 items-center rounded-xl border bg-gray-100 dark:border-gray-700 dark:bg-gray-800": true,
+						"relative flex w-full max-w-4xl flex-1 items-center rounded-xl border bg-[var(--ap-paper)]": true,
 						"opacity-30": isReadOnly,
 						"max-sm:mb-4": focused && isVirtualKeyboard(),
 					}}
@@ -980,13 +980,13 @@
 										onstop?.();
 									}}
 									showBorder={true}
-									classNames="absolute bottom-2 right-2 size-8 sm:size-7 self-end rounded-xl border bg-white text-black shadow-sm transition-none dark:border-transparent dark:bg-gray-600 dark:text-white"
+									classNames="absolute bottom-2 right-2 size-8 sm:size-7 self-end rounded-xl border bg-white text-black shadow-sm transition-none dark:border-transparent dark:text-white"
 								/>
 							{:else}
 								<!-- Voice/mic removed for the alpha: voice is a WANTED / "open invitation" node on the
 							     stack map (not built); a working mic would contradict our own honest gap map. -->
 								<button
-									class="absolute right-2 bottom-2 btn size-8 self-end rounded-xl border bg-white text-black shadow transition-none enabled:hover:bg-white enabled:hover:shadow-inner sm:size-7 dark:border-transparent dark:bg-gray-600 dark:text-white dark:hover:enabled:bg-black {!draft.trim() ||
+									class="absolute right-2 bottom-2 btn size-8 self-end rounded-xl border bg-white text-black shadow transition-none enabled:hover:bg-white enabled:hover:shadow-inner sm:size-7 dark:border-transparent dark:text-white dark:hover:enabled:bg-black {!draft.trim() ||
 									isReadOnly
 										? ''
 										: 'bg-black! text-white! dark:bg-white! dark:text-black!'}"
@@ -1056,14 +1056,14 @@
 	<!-- Mobile-only tab switcher. Lives in the column flow (root is flex-col below
 	     md) so neither panel sits under it; hidden from md up where both show. -->
 	<nav
-		class="pointer-events-auto flex shrink-0 items-stretch border-t border-gray-200 bg-white md:hidden dark:border-gray-800 dark:bg-gray-900"
+		class="pointer-events-auto flex shrink-0 items-stretch border-t border-[var(--ap-rule)] bg-white md:hidden"
 	>
 		<button
 			type="button"
 			class="flex-1 py-2.5 font-mono text-[11px] tracking-[0.1em] uppercase transition-colors {mobileTab ===
 			'chat'
-				? 'text-gray-900 dark:text-gray-100'
-				: 'text-gray-400 dark:text-gray-500'}"
+				? 'text-[var(--ap-ink)]'
+				: 'text-[var(--ap-ink-3)]'}"
 			onclick={() => (mobileTab = "chat")}
 		>
 			Chat
@@ -1072,8 +1072,8 @@
 			type="button"
 			class="relative flex-1 py-2.5 font-mono text-[11px] tracking-[0.1em] uppercase transition-colors {mobileTab ===
 			'map'
-				? 'text-gray-900 dark:text-gray-100'
-				: 'text-gray-400 dark:text-gray-500'}"
+				? 'text-[var(--ap-ink)]'
+				: 'text-[var(--ap-ink-3)]'}"
 			onclick={() => {
 				mobileTab = "map";
 				mapHasActivity = false;

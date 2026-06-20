@@ -330,7 +330,7 @@
 		inputmode="text"
 		aria-label="Message AI Potluck"
 		class="scrollbar-custom max-h-[4lh] w-full resize-none overflow-x-hidden overflow-y-auto border-0 bg-transparent px-2.5 py-2.5 outline-hidden focus:ring-0 focus-visible:ring-0 sm:px-3 md:max-h-[8lh]"
-		class:text-gray-400={disabled}
+		class:text-[var(--ap-ink-3)]={disabled}
 		bind:value
 		bind:this={textareaElement}
 		onkeydown={handleKeydown}
@@ -346,7 +346,7 @@
 	{#if showToolsRow}
 		<div
 			class={[
-				"-ml-0.5 scrollbar-custom flex max-w-[calc(100%-40px)] flex-wrap items-center justify-start gap-2.5 px-3 pt-1.5 pb-2.5 text-gray-500 max-md:flex-nowrap max-md:overflow-x-auto sm:gap-2 dark:text-gray-400",
+				"-ml-0.5 scrollbar-custom flex max-w-[calc(100%-40px)] flex-wrap items-center justify-start gap-2.5 px-3 pt-1.5 pb-2.5 text-[var(--ap-ink-3)] max-md:flex-nowrap max-md:overflow-x-auto sm:gap-2",
 			]}
 		>
 			{#if showFileUpload}
@@ -378,7 +378,7 @@
 						}}
 					>
 						<DropdownMenu.Trigger
-							class="btn size-8 rounded-full border bg-white text-black shadow-sm transition-none enabled:hover:bg-white enabled:hover:shadow-inner sm:size-7 dark:border-transparent dark:bg-gray-600/50 dark:text-white dark:hover:enabled:bg-gray-600"
+							class="btn size-8 rounded-full border bg-white text-black shadow-sm transition-none enabled:hover:bg-white enabled:hover:shadow-inner sm:size-7 dark:border-transparent/50 dark:text-white"
 							disabled={loading}
 							aria-label="Add attachment"
 						>
@@ -386,7 +386,7 @@
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Portal>
 							<DropdownMenu.Content
-								class="z-50 rounded-xl border border-gray-200 bg-white/95 p-1 text-gray-800 shadow-lg backdrop-blur-sm dark:border-gray-700/60 dark:bg-gray-800/95 dark:text-gray-100"
+								class="backdrop-blur-sm/60/95 z-50 rounded-xl border border-[var(--ap-rule)] bg-white/95 p-1 text-[var(--ap-ink)] shadow-lg"
 								side="top"
 								sideOffset={8}
 								align="start"
@@ -396,7 +396,7 @@
 							>
 								{#if modelIsMultimodal}
 									<DropdownMenu.Item
-										class="flex h-9 items-center gap-1 rounded-md px-2 text-sm text-gray-700 select-none focus-visible:outline-hidden data-highlighted:bg-gray-100 sm:h-8 dark:text-gray-200 dark:data-highlighted:bg-white/10"
+										class="flex h-9 items-center gap-1 rounded-md px-2 text-sm text-[var(--ap-ink-2)] select-none focus-visible:outline-hidden data-highlighted:bg-[var(--ap-paper)] sm:h-8 dark:data-highlighted:bg-white/10"
 										onSelect={() => openFilePickerImage()}
 									>
 										<CarbonImage class="size-4 opacity-90 dark:opacity-80" />
@@ -406,7 +406,7 @@
 
 								<DropdownMenu.Sub>
 									<DropdownMenu.SubTrigger
-										class="flex h-9 items-center gap-1 rounded-md px-2 text-sm text-gray-700 select-none focus-visible:outline-hidden data-highlighted:bg-gray-100 data-[state=open]:bg-gray-100 sm:h-8 dark:text-gray-200 dark:data-highlighted:bg-white/10 dark:data-[state=open]:bg-white/10"
+										class="flex h-9 items-center gap-1 rounded-md px-2 text-sm text-[var(--ap-ink-2)] select-none focus-visible:outline-hidden data-highlighted:bg-[var(--ap-paper)] data-[state=open]:bg-[var(--ap-paper)] sm:h-8 dark:data-highlighted:bg-white/10 dark:data-[state=open]:bg-white/10"
 									>
 										<div class="flex items-center gap-1">
 											<CarbonDocument class="size-4 opacity-90 dark:opacity-80" />
@@ -417,21 +417,21 @@
 										</div>
 									</DropdownMenu.SubTrigger>
 									<DropdownMenu.SubContent
-										class="z-50 rounded-xl border border-gray-200 bg-white/95 p-1 text-gray-800 shadow-lg backdrop-blur-sm dark:border-gray-700/60 dark:bg-gray-800/95 dark:text-gray-100"
+										class="backdrop-blur-sm/60/95 z-50 rounded-xl border border-[var(--ap-rule)] bg-white/95 p-1 text-[var(--ap-ink)] shadow-lg"
 										sideOffset={10}
 										trapFocus={false}
 										onCloseAutoFocus={(e) => e.preventDefault()}
 										interactOutsideBehavior="defer-otherwise-close"
 									>
 										<DropdownMenu.Item
-											class="flex h-9 items-center gap-1 rounded-md px-2 text-sm text-gray-700 select-none focus-visible:outline-hidden data-highlighted:bg-gray-100 sm:h-8 dark:text-gray-200 dark:data-highlighted:bg-white/10"
+											class="flex h-9 items-center gap-1 rounded-md px-2 text-sm text-[var(--ap-ink-2)] select-none focus-visible:outline-hidden data-highlighted:bg-[var(--ap-paper)] sm:h-8 dark:data-highlighted:bg-white/10"
 											onSelect={() => openFilePickerText()}
 										>
 											<CarbonUpload class="size-4 opacity-90 dark:opacity-80" />
 											Upload from device
 										</DropdownMenu.Item>
 										<DropdownMenu.Item
-											class="flex h-9 items-center gap-1 rounded-md px-2 text-sm text-gray-700 select-none focus-visible:outline-hidden data-highlighted:bg-gray-100 sm:h-8 dark:text-gray-200 dark:data-highlighted:bg-white/10"
+											class="flex h-9 items-center gap-1 rounded-md px-2 text-sm text-[var(--ap-ink-2)] select-none focus-visible:outline-hidden data-highlighted:bg-[var(--ap-paper)] sm:h-8 dark:data-highlighted:bg-white/10"
 											onSelect={() => (isUrlModalOpen = true)}
 										>
 											<CarbonLink class="size-4 opacity-90 dark:opacity-80" />

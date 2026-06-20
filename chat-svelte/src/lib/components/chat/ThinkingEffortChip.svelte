@@ -51,19 +51,19 @@
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Portal>
 		<DropdownMenu.Content
-			class="z-50 min-w-40 rounded-xl border border-gray-200 bg-white/95 p-1 text-gray-800 shadow-lg backdrop-blur-sm dark:border-gray-700/60 dark:bg-gray-800/95 dark:text-gray-100"
+			class="backdrop-blur-sm/60/95 z-50 min-w-40 rounded-xl border border-[var(--ap-rule)] bg-white/95 p-1 text-[var(--ap-ink)] shadow-lg"
 			side="top"
 			align="end"
 			sideOffset={6}
 		>
 			{#each OPTIONS as opt (opt.label)}
 				<DropdownMenu.Item
-					class="flex h-8 cursor-pointer items-center justify-between gap-2 rounded-md px-2 text-sm select-none focus-visible:outline-hidden data-highlighted:bg-gray-100 dark:data-highlighted:bg-white/10"
+					class="flex h-8 cursor-pointer items-center justify-between gap-2 rounded-md px-2 text-sm select-none focus-visible:outline-hidden data-highlighted:bg-[var(--ap-paper)] dark:data-highlighted:bg-white/10"
 					onSelect={() => setEffort(opt.value)}
 				>
 					<span>{opt.label}</span>
 					{#if current === opt.value}
-						<LucideCheck class="size-4 text-gray-500" />
+						<LucideCheck class="size-4 text-[var(--ap-ink-3)]" />
 					{/if}
 				</DropdownMenu.Item>
 			{/each}

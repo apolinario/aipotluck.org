@@ -28,17 +28,17 @@
 	class="font-white group/navbranch z-0 flex h-6 w-fit items-center justify-center gap-1 text-sm whitespace-nowrap select-none {classNames}"
 >
 	<button
-		class="inline text-lg font-thin text-gray-400 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-25 dark:text-gray-500 dark:hover:text-gray-200"
+		class="inline text-lg font-thin text-[var(--ap-ink-3)] hover:text-[var(--ap-ink)] disabled:pointer-events-none disabled:opacity-25"
 		onclick={() => onshowAlternateMsg?.({ id: alternatives[Math.max(0, currentIdx - 1)] })}
 		disabled={currentIdx === 0 || loading}
 	>
 		<CarbonChevronLeft class="text-sm" />
 	</button>
-	<span class=" text-gray-400 dark:text-gray-500">
+	<span class=" text-[var(--ap-ink-3)]">
 		{currentIdx + 1} / {alternatives.length}
 	</span>
 	<button
-		class="inline text-lg font-thin text-gray-400 hover:text-gray-800 disabled:pointer-events-none disabled:opacity-25 dark:text-gray-500 dark:hover:text-gray-200"
+		class="inline text-lg font-thin text-[var(--ap-ink-3)] hover:text-[var(--ap-ink)] disabled:pointer-events-none disabled:opacity-25"
 		onclick={() =>
 			onshowAlternateMsg?.({
 				id: alternatives[Math.min(alternatives.length - 1, currentIdx + 1)],
@@ -68,7 +68,7 @@
 			}}
 		>
 			<div
-				class="flex items-center justify-center text-xs text-gray-400 hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-200"
+				class="flex items-center justify-center text-xs text-[var(--ap-ink-3)] hover:text-[var(--ap-ink)]"
 			>
 				<CarbonTrashCan />
 			</div>

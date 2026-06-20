@@ -47,17 +47,17 @@
 		aria-label={isOpen ? "Collapse" : "Expand"}
 	>
 		<span
-			class="text-sm font-medium transition-colors group-hover/header:text-gray-600 dark:group-hover/header:text-gray-300 {isOpen
-				? 'text-gray-600 dark:text-gray-300'
-				: 'text-gray-500 dark:text-gray-400'}"
+			class="text-sm font-medium transition-colors group-hover/header:text-[var(--ap-ink-2)] dark:group-hover/header:text-[var(--ap-ink-3)] {isOpen
+				? 'text-[var(--ap-ink-2)]'
+				: 'text-[var(--ap-ink-3)]'}"
 			class:thinking-shimmer={loading}
 		>
 			Thinking
 		</span>
 		<CarbonChevronRight
-			class="size-3.5 transition-all duration-200 group-hover/header:text-gray-600 dark:group-hover/header:text-gray-300 {isOpen
-				? 'rotate-90 text-gray-600 dark:text-gray-300'
-				: 'text-gray-400'}"
+			class="size-3.5 transition-all duration-200 group-hover/header:text-[var(--ap-ink-2)] dark:group-hover/header:text-[var(--ap-ink-3)] {isOpen
+				? 'rotate-90 text-[var(--ap-ink-2)]'
+				: 'text-[var(--ap-ink-3)]'}"
 		/>
 	</button>
 
@@ -76,14 +76,14 @@
 			>
 				<div
 					bind:clientHeight={contentHeight}
-					class="prose prose-sm max-w-none text-sm leading-relaxed text-gray-500 *:first:mt-0 *:last:mb-0 dark:text-gray-400 dark:prose-invert"
+					class="prose prose-sm max-w-none text-sm leading-relaxed text-[var(--ap-ink-3)] *:first:mt-0 *:last:mb-0 dark:prose-invert"
 				>
 					<MarkdownRenderer {content} {loading} />
 				</div>
 			</div>
 		{:else}
 			<div
-				class="prose prose-sm mt-2 max-w-none text-sm leading-relaxed text-gray-500 dark:text-gray-400 dark:prose-invert"
+				class="prose prose-sm mt-2 max-w-none text-sm leading-relaxed text-[var(--ap-ink-3)] dark:prose-invert"
 			>
 				<MarkdownRenderer {content} {loading} />
 			</div>
