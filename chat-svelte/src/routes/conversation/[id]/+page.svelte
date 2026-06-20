@@ -61,6 +61,20 @@
 	// snapshot-staleness check for the generation streaming in this very tab.
 	let writeMessageInFlight = false;
 	let messageUpdatesAbortController = new AbortController();
+	// Set to the conversation id when writeMessage painted a pre-vetted cached
+	// answer client-side for a turn the server never recorded (the request dropped
+	// before egress or before any token). While set for the open conversation:
+	//   - the generation-state effect must treat the turn as FINISHED, not active.
+	//     The cache-painted assistant carries no terminal update, so without this
+	//     it reads as "still generating" — which both re-arms the spinner forever
+	//     AND registers a background generation whose poller then fires an
+	//     isTerminal reconcile (the server has no such turn) that
+	//   - the reconcile effect must NOT honour: syncing `messages` to the empty
+	//     server snapshot would WIPE the answer (and the optimistic user turn).
+	// Cleared on a fresh writeMessage (a resend supersedes the fallback) and reset
+	// naturally on conversation change / remount. The answer is transient — gone on
+	// reload — which is correct, since nothing was ever persisted.
+	let cacheFallbackConvId = $state<string | null>(null);
 
 	let files: File[] = $state([]);
 
@@ -134,13 +148,6 @@
 		let firstTokenWatchdog: ReturnType<typeof setTimeout> | undefined;
 		let firstContentSeen = false;
 		let watchdogTimedOut = false;
-		// Set when the early-failure path painted a pre-vetted cached answer onto the
-		// client message (HIT). The post-stream invalidation in `finally` must then be
-		// skipped: the server has no record of this turn (the request dropped before it
-		// landed, or before any token), so re-syncing would reconcile `messages` back to
-		// the empty server snapshot and WIPE the cached answer. Function scope so the
-		// finally can read it.
-		let cacheFallbackRendered = false;
 		// Assigned inside the try once the target message exists; called from the
 		// after-loop, the no-iterator early return, AND the catch — hence function
 		// scope rather than a try-local const.
@@ -150,6 +157,9 @@
 			$isAborted = false;
 			$loading = true;
 			pending = true;
+			// A fresh attempt (incl. a resend) supersedes any prior client-only cache
+			// fallback for this conversation; re-enable the normal server reconcile.
+			cacheFallbackConvId = null;
 			writeMessageInFlight = true;
 			// Create the controller before any await: a Stop click during file
 			// encoding or MCP hydration must abort THIS request, not whichever
@@ -298,9 +308,11 @@
 							asOf: cached.asOf ?? "",
 						};
 					}
-					// Mark so the finally skips the conversation re-sync that would
-					// otherwise wipe this client-only answer (see flag declaration).
-					cacheFallbackRendered = true;
+					// Mark the conversation as carrying a client-only cache answer so the
+					// generation-state effect treats the turn as finished (no spinner, no
+					// background-generation registration) and the reconcile effect refuses
+					// to overwrite it with the empty server snapshot (see flag declaration).
+					cacheFallbackConvId = convId;
 					return;
 				}
 				$error = ERROR_MESSAGES.connectionLost;
@@ -643,7 +655,7 @@
 				if (stoppedHere) {
 					await waitForTerminalPersist(convId);
 				}
-				if (cacheFallbackRendered) {
+				if (cacheFallbackConvId === convId) {
 					// The connection dropped before the server persisted this turn, so we
 					// painted a pre-vetted cached answer client-side. A conversation
 					// re-sync here would reconcile `messages` back to the empty/partial
@@ -774,8 +786,13 @@
 
 		// Don't resume tracking for stale snapshots: a generation that has gone
 		// this long without a DB write died with its pod and will never finish.
+		// Also skip a turn that just resolved to a client-only cache fallback: the
+		// cache-painted assistant has no terminal update, so it would otherwise read
+		// as active and register a background generation whose poller then wipes it.
 		const streaming =
-			isConversationGenerationActive(messages) && !isGenerationStale(data.updatedAt);
+			cacheFallbackConvId !== convId &&
+			isConversationGenerationActive(messages) &&
+			!isGenerationStale(data.updatedAt);
 		if (streaming) {
 			addBackgroundGeneration({ id: convId, startedAt: Date.now() });
 			$loading = true;
@@ -838,7 +855,16 @@
 		const convChanged = currentConvId !== _lastSyncedConvId;
 		const dataChanged = newMessages !== _lastSyncedMessages;
 
-		if (convChanged || (dataChanged && untrack(() => !pending))) {
+		// Additionally: a client-only cache fallback is painted for THIS conversation
+		// (the server never recorded the turn), so a data-driven sync would reconcile
+		// `messages` to the empty server snapshot and wipe the answer. Treat it like
+		// `pending` and block the data-change sync (read untracked, same as `pending`,
+		// per constraint #1). A genuine conversation change still syncs — the guard is
+		// keyed to the current conv id, never set for a conv we're navigating to — and
+		// a resend clears the flag.
+		const cacheFallbackHere = untrack(() => cacheFallbackConvId) === currentConvId;
+
+		if (convChanged || (dataChanged && untrack(() => !pending) && !cacheFallbackHere)) {
 			messages = newMessages;
 			rootMessageId = data.rootMessageId;
 			_lastSyncedConvId = currentConvId;
@@ -848,6 +874,12 @@
 
 	$effect(() => {
 		const streaming =
+			// A client-only cache fallback for this conv is a FINISHED turn, not an
+			// active generation: its assistant carries no terminal update, so without
+			// this guard it would keep the spinner on and re-register a background
+			// generation (whose poller wipes it). Tracked, so the flag flipping at
+			// watchdog time re-runs this effect and clears the spinner immediately.
+			cacheFallbackConvId !== convId &&
 			isConversationGenerationActive(messages) &&
 			// A snapshot that has gone this long without a database write belongs
 			// to a pod that died before persisting a terminal state; never
