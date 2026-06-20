@@ -43,11 +43,17 @@ export const GET: RequestHandler = async ({ locals, url, request }) => {
 	// `cursor` is an ISO timestamp; events with updatedAt > cursor are sent.
 	// On the very first connection the client passes cursor=0 (epoch) so all
 	// in-flight conversations are surfaced immediately.
+	// Resume order: prefer the SSE `Last-Event-ID` header — the browser's built-in auto-reconnect (a
+	// transient wifi drop within the stream's lifetime) replays the URL verbatim but adds this header set
+	// to the last event id it received, which is fresher than the now-stale `?cursor` baked into that URL.
+	// Fall back to the explicit `?cursor` the client opens with (used by the poller's own reconnect, which
+	// builds a fresh URL and sends no Last-Event-ID), then epoch. We emit `id:` = each event's updatedAt
+	// (see `encode` below) so a reconnect resumes server-side instead of re-walking from epoch.
 	// An unparseable cursor yields an Invalid Date whose NaN time BSON-serializes
 	// as epoch while never advancing (NaN comparisons are false), so every tick
 	// would re-emit up to 50 conversations for the stream's whole lifetime.
 	// Treat invalid cursors as epoch instead.
-	const cursorParam = url.searchParams.get("cursor");
+	const cursorParam = request.headers.get("last-event-id") || url.searchParams.get("cursor");
 	const parsedCursor = cursorParam ? new Date(cursorParam) : null;
 	let cursor = parsedCursor && !isNaN(parsedCursor.getTime()) ? parsedCursor : new Date(0);
 
@@ -56,8 +62,10 @@ export const GET: RequestHandler = async ({ locals, url, request }) => {
 			const signal = request.signal;
 			const deadline = Date.now() + MAX_LIFETIME_MS;
 
+			// Emit `id:` = the event's updatedAt so the browser's built-in reconnect echoes it back as the
+			// `Last-Event-ID` header and we resume from there (see cursor resolution above).
 			const encode = (data: ConvUpdate) =>
-				new TextEncoder().encode(`event: update\ndata: ${JSON.stringify(data)}\n\n`);
+				new TextEncoder().encode(`id: ${data.updatedAt}\nevent: update\ndata: ${JSON.stringify(data)}\n\n`);
 
 			const sendHeartbeat = () => controller.enqueue(new TextEncoder().encode(": heartbeat\n\n"));
 
@@ -119,11 +127,19 @@ export const GET: RequestHandler = async ({ locals, url, request }) => {
 						const lastAssistant = [...conv.messages]
 							.reverse()
 							.find((m) => m.from === "assistant") as Message | undefined;
-						// Stale non-terminal conversations belong to pods that died
-						// before persisting; report them terminal so clients stop
-						// tracking them instead of spinning forever.
+						// ABSENT != TERMINAL. A conversation with NO assistant row has no server-recorded
+						// turn — so it is not terminal. Reporting it terminal would tell a client that is
+						// optimistically holding a turn (whose POST was lost before any pod recorded it) to
+						// wipe that turn, leaving an empty conversation. (`isAssistantGenerationTerminal`
+						// returns true for an absent message — correct for "is it actively generating?", wrong
+						// for "should the client stop tracking?" — so gate the whole verdict on `started`.)
+						// Only a genuinely finished turn, or a turn that DID start and then went stale (its pod
+						// died mid-generation), is terminal. The client's own in-flight guard + the poller's
+						// MAX_TRACK_DURATION_MS eviction clean up an optimistic turn that never reaches a pod.
+						const started = lastAssistant !== undefined;
 						const isTerminal =
-							isAssistantGenerationTerminal(lastAssistant) || isGenerationStale(conv.updatedAt);
+							started &&
+							(isAssistantGenerationTerminal(lastAssistant) || isGenerationStale(conv.updatedAt));
 
 						const event: ConvUpdate = {
 							id: conv._id.toString(),
