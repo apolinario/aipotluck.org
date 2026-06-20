@@ -49,6 +49,17 @@ export type Message = Partial<Timestamps> & {
 		kind: ModerationKind;
 	};
 
+	// Second-opinion provenance: set when the user requested an independent take from a
+	// more-capable open model (a real, user-initiated routing event). Persisted via JSONB
+	// so the comparison + the routing map event survive reload, mirroring webSearch above.
+	secondOpinion?: {
+		model: string;
+		modelShort: string;
+		openness: string;
+		sovereign: boolean;
+		answer: string;
+	};
+
 	// needed for conversation trees
 	ancestors?: Message["id"][];
 

@@ -503,7 +503,7 @@
 			     decline (no answer to second-guess). The route returns { available:false }
 			     when the feature isn't configured, so this renders nothing then. -->
 			{#if !loading && message.content && !message.moderation?.flagged && message.from === "assistant" && question}
-				<SecondOpinion {question} />
+				<SecondOpinion {question} messageId={message.id} persisted={message.secondOpinion} />
 			{/if}
 
 			<!-- Honest "touches an open gap → get involved" CTA. Only when this turn's prompt

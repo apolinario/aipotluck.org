@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import { env as publicEnv } from "$env/dynamic/public";
 	import CarbonArrowRight from "~icons/carbon/arrow-right";
 	import CarbonRenew from "~icons/carbon/renew";
+	import type { Message } from "$lib/types/Message";
 
 	// Opt-in escalation, honest by construction. The sovereign Apertus answer is
 	// already shown above; this asks a MORE CAPABLE OPEN model (on a non-sovereign
@@ -10,8 +12,14 @@
 	// per-answer; we surface a real second answer and let the disagreement speak.
 	interface Props {
 		question?: string;
+		// Target assistant message id — the second opinion is persisted onto it so the
+		// comparison survives reload.
+		messageId?: string;
+		// Persisted second opinion (from message.secondOpinion); when present we render
+		// it straight away instead of showing the button.
+		persisted?: Message["secondOpinion"];
 	}
-	let { question }: Props = $props();
+	let { question, messageId, persisted }: Props = $props();
 
 	// Flow A (default): opt-in button. Flow B: PUBLIC_SECOND_OPINION_AUTO=true makes
 	// it auto-fetch after each answer. Read at runtime from the public env.
@@ -29,7 +37,21 @@
 				sovereign: boolean;
 		  };
 
-	let state = $state<State>({ kind: "idle" });
+	// Start from the persisted second opinion when it exists (survives reload). The
+	// initial value is intentional — `persisted` is set once per message (no in-place
+	// change without a remount), so capturing it at init is correct.
+	// svelte-ignore state_referenced_locally
+	let state = $state<State>(
+		persisted
+			? {
+					kind: "done",
+					answer: persisted.answer,
+					modelShort: persisted.modelShort,
+					openness: persisted.openness,
+					sovereign: persisted.sovereign,
+				}
+			: { kind: "idle" }
+	);
 
 	function flashRoute() {
 		// A real, user-initiated routing event — graduates the honestly-"building"
@@ -48,7 +70,7 @@
 			const res = await fetch("/api/second-opinion", {
 				method: "POST",
 				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ question: q }),
+				body: JSON.stringify({ question: q, conversationId: $page.params.id, messageId }),
 			});
 			const data = await res.json();
 			if (!data?.available) {
@@ -82,9 +104,9 @@
 	<button
 		onclick={getSecondOpinion}
 		class="group inline-flex items-center gap-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-		title="Ask a more capable open model for an independent take"
+		title="This ran on a smaller open model — bigger isn't always better. Compare with a more capable open model."
 	>
-		Get a second opinion
+		Compare with a more capable model
 		<CarbonArrowRight class="text-[0.7rem] transition-transform group-hover:translate-x-0.5" />
 	</button>
 {:else if state.kind === "loading"}
