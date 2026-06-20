@@ -4,6 +4,7 @@ import { config } from "$lib/server/config";
 import { models, validModelIdSchema } from "$lib/server/models";
 import { ERROR_MESSAGES } from "$lib/stores/errors";
 import type { Message } from "$lib/types/Message";
+import { SEARCH_ENGINES } from "$lib/types/Search";
 import { error } from "@sveltejs/kit";
 import { ObjectId } from "bson";
 import { z } from "zod";
@@ -259,7 +260,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 								title: z.string(),
 								url: z.string(),
 								snippet: z.string(),
-								engine: z.enum(["Wikipedia", "Marginalia"]),
+								engine: z.enum(SEARCH_ENGINES),
 								asOf: z.string().optional(),
 							})
 						)

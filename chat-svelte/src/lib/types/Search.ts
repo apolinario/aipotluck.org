@@ -3,12 +3,19 @@
 // types are kept here so client components (the citations strip) and the message
 // schema can reference them without importing server code.
 
+// Single source of truth for the open search engines. The TS union below AND the runtime Zod
+// validation in routes/conversation/[id]/+server.ts both derive from this — so adding an engine
+// in openSearch.ts can't silently drift the conversation endpoint's schema (which previously
+// rejected "OpenAlex" with a 500, killing any grounded turn whose sources included it).
+export const SEARCH_ENGINES = ["Wikipedia", "Marginalia", "OpenAlex"] as const;
+export type SearchEngine = (typeof SEARCH_ENGINES)[number];
+
 export type SearchSource = {
 	n: number; // citation number
 	title: string;
 	url: string;
 	snippet: string;
-	engine: "Wikipedia" | "Marginalia" | "OpenAlex";
+	engine: SearchEngine;
 	asOf?: string; // ISO date for time-sensitive sources (Wikipedia last-edit, OpenAlex publication)
 	lang?: string; // BCP-47-ish source language for non-English sources (e.g. "fr")
 };
