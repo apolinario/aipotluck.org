@@ -84,6 +84,14 @@
 	// stack diagram"). A node stays pulsed until its stage emits pulse-off (or the turn
 	// ends), unlike the beat which self-clears.
 	let pulseIds = $state<Set<string>>(new Set());
+	// Coalesce a pulse-off that's immediately followed by a pulse-on for the same node: chat
+	// reconcile swaps the streaming message's trace component at stream start, so the old
+	// instance's teardown fires pulse-off ~1ms before the replacement's pulse-on (a sub-frame
+	// flicker). A short debounce on REMOVALS lets the re-on cancel the off, so the node pulses
+	// smoothly. Additions stay immediate.
+	const PULSE_OFF_DEBOUNCE_MS = 120;
+	let pendingOff = new Set<string>();
+	let offTimer: ReturnType<typeof setTimeout> | undefined;
 	let container = $state<HTMLElement | undefined>();
 
 	const scrollNodeIntoView = (id: string | undefined) => {
@@ -159,6 +167,7 @@
 		const onPulseOn = (e: Event) => {
 			const ids = (e as CustomEvent<{ ids: string[] }>).detail?.ids ?? [];
 			if (!ids.length) return;
+			ids.forEach((id) => pendingOff.delete(id)); // a re-on cancels a queued removal
 			const next = new Set(pulseIds);
 			ids.forEach((id) => next.add(id));
 			pulseIds = next;
@@ -166,12 +175,22 @@
 		const onPulseOff = (e: Event) => {
 			const ids = (e as CustomEvent<{ ids: string[] }>).detail?.ids ?? [];
 			if (!ids.length) {
+				// empty list = turn-level reset: clear immediately, cancel any queued removals.
+				pendingOff.clear();
+				clearTimeout(offTimer);
 				pulseIds = new Set();
 				return;
 			}
-			const next = new Set(pulseIds);
-			ids.forEach((id) => next.delete(id));
-			pulseIds = next;
+			// Debounce the removal so a near-immediate re-on (trace component swap) cancels it.
+			ids.forEach((id) => pendingOff.add(id));
+			clearTimeout(offTimer);
+			offTimer = setTimeout(() => {
+				if (!pendingOff.size) return;
+				const next = new Set(pulseIds);
+				pendingOff.forEach((id) => next.delete(id));
+				pendingOff.clear();
+				pulseIds = next;
+			}, PULSE_OFF_DEBOUNCE_MS);
 		};
 		window.addEventListener("ap:pulse-on", onPulseOn);
 		window.addEventListener("ap:pulse-off", onPulseOff);
@@ -180,6 +199,7 @@
 			cancelled = true;
 			clearReveal();
 			clearTimeout(beatTimer);
+			clearTimeout(offTimer);
 			window.removeEventListener("ap:flash", onFlash);
 			window.removeEventListener("ap:pulse-on", onPulseOn);
 			window.removeEventListener("ap:pulse-off", onPulseOff);
@@ -205,6 +225,8 @@
 			wasActive = false;
 			// Turn finished: drop any sustained pulse so the staged reveal/trail takes over as
 			// the persistent highlight (guards against a missed pulse-off, e.g. a dropped turn).
+			pendingOff.clear();
+			clearTimeout(offTimer);
 			if (pulseIds.size) pulseIds = new Set();
 			const lastAnswer = [...messages].reverse().find((m) => m.from === "assistant");
 			if (!lastAnswer) return;
