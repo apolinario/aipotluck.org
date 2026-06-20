@@ -210,6 +210,12 @@ export async function decideSearchViaMargin(
 			return { shouldSearch: false, ok: false, margin: 0 };
 		}
 		const v = marginFromLogprobs(top, threshold);
+		// Inconclusive: the first token carried NO yes/no probability mass (e.g. the model ignored
+		// the single-word format and led with prose). Don't default to searching — signal ok:false
+		// so the caller falls back to the recency heuristic instead of over-searching.
+		if (v.pYes === 0 && v.pNo === 0) {
+			return { shouldSearch: false, ok: false, margin: 0 };
+		}
 		return { shouldSearch: v.shouldSearch, ok: true, margin: v.margin };
 	} catch (e) {
 		logger.error(e, "search-need margin decision failed");
