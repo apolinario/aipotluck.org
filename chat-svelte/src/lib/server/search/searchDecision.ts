@@ -3,6 +3,7 @@ import { getReturnFromGenerator } from "$lib/utils/getReturnFromGenerator";
 import { logger } from "$lib/server/logger";
 import { config } from "$lib/server/config";
 import { defaultModel } from "$lib/server/models";
+import { getTuning } from "$lib/server/tuning";
 import { WEB_SEARCH_TOOL } from "./toolSearch";
 
 // Model-driven "does this turn need an open-web search?" classifier. Used by the
@@ -14,7 +15,9 @@ import { WEB_SEARCH_TOOL } from "./toolSearch";
 
 // The user message is untrusted text to be CLASSIFIED, not obeyed — mirrors the
 // hardening in title.ts so a jailbreak in the draft can't flip the verdict.
-const CLASSIFIER_PREPROMPT = `You decide whether answering a user's message well requires CURRENT or EXTERNAL information that a language model could not know reliably from its training data — recent events, today's facts, fast-changing or post-cutoff topics, specific live data, or anything the user explicitly asks you to look up or fact-check.
+// Exported so the /tuning admin panel can expose it as an editable default; classifySearchNeed
+// reads any override via getTuning() and falls back to this constant.
+export const CLASSIFIER_PREPROMPT = `You decide whether answering a user's message well requires CURRENT or EXTERNAL information that a language model could not know reliably from its training data — recent events, today's facts, fast-changing or post-cutoff topics, specific live data, or anything the user explicitly asks you to look up or fact-check.
 
 Answer "yes" if a fresh open-web search would materially improve the answer. Answer "no" for timeless or general-knowledge questions (definitions, how-things-work, math, coding, writing, reasoning, opinion) that a well-trained model can answer without external sources.
 
@@ -46,10 +49,12 @@ export async function classifySearchNeed(
 		return false;
 	}
 	try {
+		// Live-tunable (admin /tuning panel) with the constant as fallback.
+		const preprompt = (await getTuning()).searchClassifierPrompt || CLASSIFIER_PREPROMPT;
 		const raw = await getReturnFromGenerator(
 			generateFromDefaultEndpoint({
 				messages: [{ from: "user", content: `User message: "${q}"` }],
-				preprompt: CLASSIFIER_PREPROMPT,
+				preprompt,
 				generateSettings: { max_tokens: 3, temperature: 0 },
 				locals,
 			})

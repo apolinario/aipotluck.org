@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ModerationKind } from "$lib/types/MessageUpdate";
+	import { SAFETY_NODES } from "../stack/reveal";
 
 	// The honest provenance line for a SAFETY DECLINE — shown in place of ProvenanceBadge
 	// when a turn was stopped by the pre-screen before the model ran. The whole product
@@ -9,10 +10,12 @@
 	interface Props {
 		kind?: ModerationKind;
 		label?: string | null;
+		// When rendered inside ProvenanceTrace, the trace draws the spine node, so the
+		// badge suppresses its own leading dot to avoid a doubled marker.
+		traced?: boolean;
 	}
-	let { kind = "toxicity", label }: Props = $props();
+	let { kind = "toxicity", label, traced = false }: Props = $props();
 
-	const SAFETY_NODES = ["toxicbert"];
 	let source = $derived(
 		kind === "child_safety"
 			? "child-safety classifier"
@@ -29,7 +32,9 @@
 		? ` Flagged label: ${label}.`
 		: ''}"
 >
-	<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-gap)"></span>
+	{#if !traced}
+		<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-gap)"></span>
+	{/if}
 	<span>Flagged by {source}</span>
 	<button
 		type="button"

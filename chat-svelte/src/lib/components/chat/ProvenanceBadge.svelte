@@ -2,6 +2,7 @@
 	import { fly } from "svelte/transition";
 	import { prefersReducedMotion } from "svelte/motion";
 	import { providerDisplay, resolveModelIdentity } from "$lib/identity";
+	import { MODEL_NODES } from "../stack/reveal";
 
 	// The honest provenance line for an assistant answer: what model ran, who made
 	// it, and which inference provider actually served THIS request. The whole
@@ -17,15 +18,18 @@
 		modelId?: string;
 		// The inference-provider slug from the router header, e.g. "publicai".
 		provider?: string;
+		// When rendered inside ProvenanceTrace, the trace draws the spine node, so the
+		// badge suppresses its own leading dot to avoid a doubled marker.
+		traced?: boolean;
 	}
-	let { modelId, provider }: Props = $props();
+	let { modelId, provider, traced = false }: Props = $props();
 
 	// "show on map" flashes the MODEL node — the thing the badge names that the
 	// answer genuinely ran on. The compute it used is the inference provider (named
 	// in the badge text), which has no map node; the sovereign-compute nodes
 	// (CSCS/LUMI) stay as the static production-target layer rather than flashing
-	// per-answer (this alpha is HF-served, not run on them).
-	const MODEL_NODES = ["apertus"];
+	// per-answer (this alpha is HF-served, not run on them). MODEL_NODES is the shared
+	// authority (reveal.ts), not a local literal.
 
 	let identity = $derived(resolveModelIdentity(modelId));
 	let providerName = $derived(providerDisplay(provider));
@@ -43,7 +47,9 @@
 		? ` · served model: ${identity.served}`
 		: ''} · served via {providerName}; sovereign-compute target: CSCS (Switzerland) & LUMI (Finland)"
 >
-	<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-live)"></span>
+	{#if !traced}
+		<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-live)"></span>
+	{/if}
 	<span>{identity.short} · {identity.makerShort} · {providerName}</span>
 	<button
 		type="button"

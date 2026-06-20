@@ -11,6 +11,8 @@ import {
 } from "$lib/server/tuning";
 import { DEFAULT_PERSONA_TEMPLATE, GROUNDED_DECODING } from "$lib/server/textGeneration/persona";
 import { DEFAULT_GROUNDING_TEMPLATE } from "$lib/server/textGeneration/searchGrounding";
+import { PANELIST_PREPROMPT, AGGREGATOR_PREPROMPT } from "$lib/server/comparePrompts";
+import { CLASSIFIER_PREPROMPT } from "$lib/server/search/searchDecision";
 import { suggestions } from "$lib/constants/suggestions";
 import { adminTokenManager, ADMIN_PROOF_COOKIE } from "$lib/server/adminToken";
 import { secure, sameSite } from "$lib/server/auth";
@@ -46,6 +48,9 @@ export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 			grounding: DEFAULT_GROUNDING_TEMPLATE,
 			decoding: GROUNDED_DECODING,
 			starters: suggestions,
+			panelistPrompt: PANELIST_PREPROMPT,
+			aggregatorPrompt: AGGREGATOR_PREPROMPT,
+			searchClassifierPrompt: CLASSIFIER_PREPROMPT,
 		},
 	};
 };
@@ -104,6 +109,9 @@ export const actions: Actions = {
 				.split("\n")
 				.map((s) => s.trim())
 				.filter(Boolean),
+			panelistPrompt: String(fd.get("panelistPrompt") ?? "").trim(),
+			aggregatorPrompt: String(fd.get("aggregatorPrompt") ?? "").trim(),
+			searchClassifierPrompt: String(fd.get("searchClassifierPrompt") ?? "").trim(),
 		};
 
 		// Optimistic-concurrency token: the editedAt the editor loaded (empty if there was no row).

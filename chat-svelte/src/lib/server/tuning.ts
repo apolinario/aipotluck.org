@@ -35,6 +35,11 @@ const SnapshotSchema = z
 		grounding: z.string().max(20000),
 		decoding: DecodingSchema,
 		starters: z.array(z.string().min(1).max(2000)).max(8),
+		// Collective second opinion (panel fanout + verdict) prompts + the web-search-decision
+		// classifier prompt. Optional; read sites use `override || code-default`.
+		panelistPrompt: z.string().max(20000),
+		aggregatorPrompt: z.string().max(20000),
+		searchClassifierPrompt: z.string().max(20000),
 		editedBy: z.string().max(200),
 		editedAt: z.string().max(40),
 	})

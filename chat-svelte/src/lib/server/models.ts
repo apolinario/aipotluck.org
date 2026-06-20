@@ -463,45 +463,62 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 			logger.info({ baseURL: agentUrl }, "[models] Registered Public AI agent model (apertus-agent)");
 		}
 
-		// Second-opinion model (capable open reasoner on a DIFFERENT provider). The
-		// sovereign Apertus primary stays on its own base (CSCS); this registers a
-		// more-capable open-weights model — e.g. GLM-5.2 on the HF router — as its
-		// OWN endpoint (its own baseURL + key), so a user-requested "second opinion"
-		// runs through the native per-model-endpoint machinery with honest provenance
-		// (no duplicate client, no closed provider). Unlisted: it's an escalation
-		// target, not a primary chat choice. Gated on SECOND_OPINION_* so it appears
-		// only where configured (off by default → safe for the alpha).
+		// Compare-model stack (independent open models on a DIFFERENT provider). The
+		// sovereign Apertus primary stays on its own base (CSCS); these register the
+		// ordered "compare with another model" stack — a SECOND opinion (e.g. GLM-5.2)
+		// and an optional THIRD (e.g. Mistral Large 3, the European Apache-2.0 model) —
+		// each as an unlisted per-model endpoint with honest provenance. Both ride the
+		// SAME compare endpoint (e.g. the HF router): same baseURL + key, different model
+		// id. Neutral triangulation, not "a more capable model" (we don't assert a
+		// hierarchy). Gated on SECOND_OPINION_* so they appear only where configured
+		// (off by default → safe for the alpha); the third is dormant until
+		// THIRD_OPINION_MODEL is set.
 		const soBaseURL = ((Reflect.get(config, "SECOND_OPINION_BASE_URL") as string | undefined) ?? "").trim();
-		const soModelId = ((Reflect.get(config, "SECOND_OPINION_MODEL") as string | undefined) ?? "").trim();
 		const soApiKey = ((Reflect.get(config, "SECOND_OPINION_API_KEY") as string | undefined) ?? "").trim();
-		if (soBaseURL && soModelId && soApiKey) {
-			const soRaw = {
-				id: soModelId,
-				name: soModelId,
-				displayName:
-					((Reflect.get(config, "SECOND_OPINION_DISPLAY_NAME") as string | undefined) ?? "").trim() ||
-					soModelId.split("/").pop() ||
-					soModelId,
-				description:
-					"A more capable open-weights model, offered as an opt-in second opinion on hard reasoning turns. Open weights, served on a non-sovereign provider — labeled as such.",
-				preprompt: "",
-				endpoints: [
-					{
-						type: "openai" as const,
-						baseURL: soBaseURL.replace(/\/$/, ""),
-						apiKey: soApiKey,
-					},
-				],
-				// escalation target, not a primary choice
-				unlisted: true,
-			} as ModelConfig;
-			const soModel = {
-				...addEndpoint(await processModel(soRaw)),
-				isRouter: false as boolean,
-				hasInferenceAPI: false,
-			} as ProcessedModel;
-			decorated = [...decorated, soModel];
-			logger.info({ baseURL: soBaseURL, model: soModelId }, "[models] Registered second-opinion model");
+		// The panel = COMPARE_PANEL (comma-separated, for the collective fanout) when set,
+		// else the sequential [SECOND, THIRD] pair. Plus the AGGREGATOR_MODEL (the verdict
+		// writer) if it isn't already a panelist. All ride the same compare endpoint.
+		const secondId = ((Reflect.get(config, "SECOND_OPINION_MODEL") as string | undefined) ?? "").trim();
+		const thirdId = ((Reflect.get(config, "THIRD_OPINION_MODEL") as string | undefined) ?? "").trim();
+		const panelRaw = ((Reflect.get(config, "COMPARE_PANEL") as string | undefined) ?? "").trim();
+		const aggId = ((Reflect.get(config, "AGGREGATOR_MODEL") as string | undefined) ?? "").trim();
+		const panelIds = panelRaw
+			? panelRaw.split(",").map((s) => s.trim()).filter(Boolean)
+			: [secondId, thirdId].filter(Boolean);
+		// Display-name hints for the two named singles; panel ids derive a name from the id.
+		const nameHints: Record<string, string> = {};
+		const secondName = ((Reflect.get(config, "SECOND_OPINION_DISPLAY_NAME") as string | undefined) ?? "").trim();
+		const thirdName = ((Reflect.get(config, "THIRD_OPINION_DISPLAY_NAME") as string | undefined) ?? "").trim();
+		if (secondId && secondName) nameHints[secondId] = secondName;
+		if (thirdId && thirdName) nameHints[thirdId] = thirdName;
+		const compareIds = [...new Set([...panelIds, ...(aggId ? [aggId] : [])])];
+		if (soBaseURL && soApiKey && compareIds.length) {
+			for (const id of compareIds) {
+				const raw = {
+					id,
+					name: id,
+					displayName: nameHints[id] || id.split("/").pop() || id,
+					description:
+						"An independent open-weights model, offered as an opt-in cross-check (compare with another model / collective second opinion). Open weights, served on a non-sovereign provider — labeled as such.",
+					preprompt: "",
+					endpoints: [
+						{
+							type: "openai" as const,
+							baseURL: soBaseURL.replace(/\/$/, ""),
+							apiKey: soApiKey,
+						},
+					],
+					// compare/panel target, not a primary choice
+					unlisted: true,
+				} as ModelConfig;
+				const model = {
+					...addEndpoint(await processModel(raw)),
+					isRouter: false as boolean,
+					hasInferenceAPI: false,
+				} as ProcessedModel;
+				decorated = [...decorated, model];
+				logger.info({ baseURL: soBaseURL, model: id }, "[models] Registered compare model");
+			}
 		}
 
 		return decorated;

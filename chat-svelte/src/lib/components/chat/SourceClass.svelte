@@ -23,8 +23,11 @@
 
 	interface Props {
 		kind: "model" | "docs";
+		// When rendered inside ProvenanceTrace, the trace draws the spine node, so the
+		// indicator suppresses its own leading dot to avoid a doubled marker.
+		traced?: boolean;
 	}
-	let { kind }: Props = $props();
+	let { kind, traced = false }: Props = $props();
 
 	// Each class leads with an uppercase LABEL so the source-class indicators read as a
 	// deliberate matched set with the web case (SourceStrip's "looked it up") — the deck's
@@ -54,7 +57,9 @@
 		? "No live sources grounded this answer — it’s drawn from the model’s training, which it cannot reliably date and which can be wrong. See Blind spots."
 		: "This answer was grounded in documents you uploaded."}
 >
-	<span class="size-[6px] shrink-0 rounded-full" style="background: {meta.dot}"></span>
+	{#if !traced}
+		<span class="size-[6px] shrink-0 rounded-full" style="background: {meta.dot}"></span>
+	{/if}
 	<span class="font-semibold tracking-[0.08em] text-[var(--ap-ink-2)] uppercase">{meta.label}</span>
 	<span class="text-[var(--ap-ink-3)]" aria-hidden="true">·</span>
 	<span>{meta.text}</span>

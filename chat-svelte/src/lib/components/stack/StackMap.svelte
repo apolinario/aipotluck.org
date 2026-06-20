@@ -77,6 +77,21 @@
 	// the node actively working. Cleared after one breath; a fresh flash refreshes the timer.
 	let beatIds = $state<Set<string>>(new Set());
 	let beatTimer: ReturnType<typeof setTimeout> | undefined;
+	// SUSTAINED per-stage pulse (distinct from the 700ms one-shot beat): the inline
+	// provenance trace drives `ap:pulse-on`/`ap:pulse-off` as each pipeline stage goes
+	// live and completes DURING streaming, so the map breathes the exact layer the
+	// inline trace is drawing right now (CF: "inline trace segments activate parts of the
+	// stack diagram"). A node stays pulsed until its stage emits pulse-off (or the turn
+	// ends), unlike the beat which self-clears.
+	let pulseIds = $state<Set<string>>(new Set());
+	// Coalesce a pulse-off that's immediately followed by a pulse-on for the same node: chat
+	// reconcile swaps the streaming message's trace component at stream start, so the old
+	// instance's teardown fires pulse-off ~1ms before the replacement's pulse-on (a sub-frame
+	// flicker). A short debounce on REMOVALS lets the re-on cancel the off, so the node pulses
+	// smoothly. Additions stay immediate.
+	const PULSE_OFF_DEBOUNCE_MS = 120;
+	let pendingOff = new Set<string>();
+	let offTimer: ReturnType<typeof setTimeout> | undefined;
 	let container = $state<HTMLElement | undefined>();
 
 	const scrollNodeIntoView = (id: string | undefined) => {
@@ -146,11 +161,48 @@
 		};
 		window.addEventListener("ap:flash", onFlash);
 
+		// Sustained per-stage pulse. pulse-on adds nodes (and trails them so the highlight
+		// survives the eventual pulse-off); pulse-off removes them — an empty/absent id list
+		// means "clear all", a turn-level reset.
+		const onPulseOn = (e: Event) => {
+			const ids = (e as CustomEvent<{ ids: string[] }>).detail?.ids ?? [];
+			if (!ids.length) return;
+			ids.forEach((id) => pendingOff.delete(id)); // a re-on cancels a queued removal
+			const next = new Set(pulseIds);
+			ids.forEach((id) => next.add(id));
+			pulseIds = next;
+		};
+		const onPulseOff = (e: Event) => {
+			const ids = (e as CustomEvent<{ ids: string[] }>).detail?.ids ?? [];
+			if (!ids.length) {
+				// empty list = turn-level reset: clear immediately, cancel any queued removals.
+				pendingOff.clear();
+				clearTimeout(offTimer);
+				pulseIds = new Set();
+				return;
+			}
+			// Debounce the removal so a near-immediate re-on (trace component swap) cancels it.
+			ids.forEach((id) => pendingOff.add(id));
+			clearTimeout(offTimer);
+			offTimer = setTimeout(() => {
+				if (!pendingOff.size) return;
+				const next = new Set(pulseIds);
+				pendingOff.forEach((id) => next.delete(id));
+				pendingOff.clear();
+				pulseIds = next;
+			}, PULSE_OFF_DEBOUNCE_MS);
+		};
+		window.addEventListener("ap:pulse-on", onPulseOn);
+		window.addEventListener("ap:pulse-off", onPulseOff);
+
 		return () => {
 			cancelled = true;
 			clearReveal();
 			clearTimeout(beatTimer);
+			clearTimeout(offTimer);
 			window.removeEventListener("ap:flash", onFlash);
+			window.removeEventListener("ap:pulse-on", onPulseOn);
+			window.removeEventListener("ap:pulse-off", onPulseOff);
 		};
 	});
 
@@ -171,6 +223,11 @@
 			}
 			if (!wasActive) return;
 			wasActive = false;
+			// Turn finished: drop any sustained pulse so the staged reveal/trail takes over as
+			// the persistent highlight (guards against a missed pulse-off, e.g. a dropped turn).
+			pendingOff.clear();
+			clearTimeout(offTimer);
+			if (pulseIds.size) pulseIds = new Set();
 			const lastAnswer = [...messages].reverse().find((m) => m.from === "assistant");
 			if (!lastAnswer) return;
 			// Persist the answer's real provenance: the model node always, plus the
@@ -246,7 +303,9 @@
 					{#each layer.nodes as node (node.id)}
 						<MapNode
 							{node}
-							pulsed={(active && TURN_PULSE.includes(node.id)) || beatIds.has(node.id)}
+							pulsed={(active && TURN_PULSE.includes(node.id)) ||
+								beatIds.has(node.id) ||
+								pulseIds.has(node.id)}
 							trailed={trailIds.includes(node.id)}
 						/>
 					{/each}

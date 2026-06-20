@@ -10,35 +10,35 @@ import { resolveModelIdentity } from "$lib/identity";
 import { generateFromDefaultEndpoint } from "$lib/server/generateFromDefaultEndpoint";
 import { getReturnFromGenerator } from "$lib/utils/getReturnFromGenerator";
 import { logger } from "$lib/server/logger";
+import { getTuning } from "$lib/server/tuning";
+import { PANELIST_PREPROMPT, AGGREGATOR_PREPROMPT } from "$lib/server/comparePrompts";
 import type { Message } from "$lib/types/Message";
 
-// Opt-in "second opinion" from a more-capable open model on a DIFFERENT provider.
-// The honest spine of the escalation UX: the sovereign Apertus primary answers
-// first; the user may ask a more-capable open-weights model (e.g. GLM-5.2 on the
-// HF router) for an independent take. We surface only REAL signals — the second
-// model's own answer and (client-side) whether it disagrees — never a faked
-// confidence verdict. Provenance is honest: which model, which provider, and that
-// it is open-but-not-sovereign.
+// Collective second opinion (opt-in). The sovereign Apertus primary has ALREADY answered;
+// this fans the same question out to a panel of independent open models IN PARALLEL, then
+// an aggregator writes a VERDICT ON THE PRIMARY ANSWER — agreement headline + where the
+// panel confirms it / challenges it / what they all miss. It deliberately does NOT merge
+// the panel into a new answer: the answer already exists, the fanout VERIFIES it. (This is
+// the OpenRouter-Fusion pipeline truncated before its synthesis step — we keep the honest
+// "analysis" stage and drop the synthesis, because our product is legibility, not a
+// polished consensus.) Cross-model agreement is the only honest per-answer confidence
+// signal, so the verdict reports it; it never asserts ground truth.
 //
-// The result is PERSISTED onto the target message (message.secondOpinion), so the
-// comparison + the routing map event survive reload, mirroring webSearch/moderation.
-//
-// Best-effort and fail-soft: any failure (model not configured, provider error,
-// timeout) returns { available: false } so the UI can fall back to an honest
-// "second opinion unavailable" rather than hang or fabricate.
+// PERSISTED onto the target message (message.opinions[] + message.verdict), so it survives
+// reload. Best-effort and fail-soft: dead panelists are skipped; total failure returns
+// { available: false } so the UI falls back honestly rather than hang or fabricate.
 
-const SECOND_OPINION_PREPROMPT =
-	"You are giving an independent second opinion on a question another assistant " +
-	"already answered. Read the question literally — it may differ from a famous " +
-	"puzzle or the generic version it resembles, and it may have an implicit catch. " +
-	"Reason about what is actually being asked, then give a clear, concise answer.";
+// PANELIST_PREPROMPT + AGGREGATOR_PREPROMPT live in $lib/server/comparePrompts so the
+// /tuning panel can expose them as editable defaults; the handler reads any override via
+// getTuning() and falls back to these constants.
 
-const TIMEOUT_MS = 30_000;
+const PANEL_TIMEOUT_MS = 30_000;
+const AGG_TIMEOUT_MS = 40_000;
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 	let t: ReturnType<typeof setTimeout>;
 	const timeout = new Promise<never>((_, rej) => {
-		t = setTimeout(() => rej(new Error("second-opinion timeout")), ms);
+		t = setTimeout(() => rej(new Error("compare timeout")), ms);
 	});
 	try {
 		return await Promise.race([p, timeout]);
@@ -47,21 +47,107 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 	}
 }
 
-// Thinking models (GLM-5.2) emit a <think>…</think> block before the answer; the
-// reasoning is not the answer, so strip it for display.
+// Thinking models (GLM, Qwen) emit a <think>…</think> block before the answer; strip it.
 function stripThink(t: string): string {
 	return t.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+}
+
+async function runOne(
+	modelId: string,
+	content: string,
+	preprompt: string,
+	maxTokens: number,
+	timeoutMs: number,
+	locals: App.Locals
+): Promise<string | null> {
+	try {
+		const raw = await withTimeout(
+			getReturnFromGenerator(
+				generateFromDefaultEndpoint({
+					messages: [{ from: "user", content }],
+					preprompt,
+					generateSettings: { max_tokens: maxTokens, temperature: 0 },
+					modelId,
+					locals,
+				})
+			),
+			timeoutMs
+		);
+		const out = stripThink(String(raw ?? ""));
+		return out || null;
+	} catch (e) {
+		logger.warn({ err: String(e), model: modelId }, "[compare] panelist failed (skipped)");
+		return null;
+	}
+}
+
+type Verdict = NonNullable<Message["verdict"]>;
+
+function asStringList(v: unknown): string[] {
+	if (!Array.isArray(v)) return [];
+	return v
+		.map((x) => String(x).trim())
+		.filter(Boolean)
+		.slice(0, 8);
+}
+
+// Robustly extract the verdict JSON from the aggregator's output. Falls back to a neutral
+// verdict (never fabricates agreement) when parsing fails.
+function parseVerdict(raw: string | null, n: number): Verdict {
+	const fallback: Verdict = {
+		agreement: "mixed",
+		headline: `Compared this answer against ${n} independent open model${n === 1 ? "" : "s"} — see their takes below.`,
+		consensus: [],
+		contradictions: [],
+		blindSpots: [],
+	};
+	if (!raw) return fallback;
+	const start = raw.indexOf("{");
+	const end = raw.lastIndexOf("}");
+	if (start === -1 || end <= start) return fallback;
+	try {
+		const obj = JSON.parse(raw.slice(start, end + 1));
+		const agreement = obj.agreement === "high" || obj.agreement === "low" ? obj.agreement : "mixed";
+		const headline =
+			typeof obj.headline === "string" && obj.headline.trim()
+				? obj.headline.trim()
+				: fallback.headline;
+		return {
+			agreement,
+			headline,
+			consensus: asStringList(obj.consensus),
+			contradictions: asStringList(obj.contradictions),
+			blindSpots: asStringList(obj.blindSpots),
+		};
+	} catch {
+		return fallback;
+	}
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	requireAuth(locals);
 
-	const modelId = ((Reflect.get(config, "SECOND_OPINION_MODEL") as string | undefined) ?? "").trim();
-	const model = modelId ? models.find((m) => m.id === modelId) : undefined;
-	if (!model) {
-		// Not configured for this deploy — honest "unavailable", not an error.
-		return json({ available: false, reason: "not_configured" }, { headers: { "cache-control": "no-store" } });
+	// The panel = COMPARE_PANEL (comma-separated) when set, else the [SECOND, THIRD] pair.
+	const panelRaw = ((Reflect.get(config, "COMPARE_PANEL") as string | undefined) ?? "").trim();
+	const panelIds = (
+		panelRaw
+			? panelRaw.split(",").map((s) => s.trim())
+			: [
+					((Reflect.get(config, "SECOND_OPINION_MODEL") as string | undefined) ?? "").trim(),
+					((Reflect.get(config, "THIRD_OPINION_MODEL") as string | undefined) ?? "").trim(),
+				]
+	)
+		.filter(Boolean)
+		// Only ids actually registered as endpoints (a bad id is skipped, not fatal).
+		.filter((id) => models.some((m) => m.id === id));
+	if (!panelIds.length) {
+		return json(
+			{ available: false, reason: "not_configured" },
+			{ headers: { "cache-control": "no-store" } }
+		);
 	}
+	const aggId =
+		((Reflect.get(config, "AGGREGATOR_MODEL") as string | undefined) ?? "").trim() || panelIds[0];
 
 	let body: { question?: string; conversationId?: string; messageId?: string };
 	try {
@@ -72,21 +158,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const conversationId = (body.conversationId ?? "").trim();
 	const messageId = (body.messageId ?? "").trim();
 
-	// Prefer the question from the conversation record (the prompt the target message
-	// actually answered) over client-supplied text — the persisted second opinion is
-	// then provably about the real turn. Fall back to the request body.
+	// Prefer the real turn from the conversation record: the question (parent user message)
+	// and the PRIMARY answer (the target assistant message) the panel is verifying.
 	let conversation: Awaited<ReturnType<typeof resolveConversation>> | undefined;
 	let targetMessage: Message | undefined;
+	let primaryAnswer = "";
 	if (conversationId) {
 		try {
 			conversation = await resolveConversation(conversationId, locals);
 			targetMessage = conversation.messages.find((m) => m.id === messageId);
+			primaryAnswer = (targetMessage?.content ?? "").trim();
 			const parent = conversation.messages.find((m) => m.children?.includes(messageId));
 			if (parent?.from === "user" && parent.content?.trim()) {
 				body.question = parent.content.trim();
 			}
 		} catch {
-			// not found / not owned → fall back to body.question, don't persist
 			conversation = undefined;
 		}
 	}
@@ -95,60 +181,73 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!question) throw error(400, "missing question");
 	if (question.length > 4000) throw error(400, "question too long");
 
-	const identity = resolveModelIdentity(modelId);
+	// Live-tunable prompts (admin /tuning panel) with the shared constants as fallback.
+	const tuning = await getTuning();
+	const panelistPrompt = tuning.panelistPrompt || PANELIST_PREPROMPT;
+	const aggregatorPrompt = tuning.aggregatorPrompt || AGGREGATOR_PREPROMPT;
 
 	try {
-		const raw = await withTimeout(
-			getReturnFromGenerator(
-				generateFromDefaultEndpoint({
-					messages: [{ from: "user", content: question }],
-					preprompt: SECOND_OPINION_PREPROMPT,
-					generateSettings: { max_tokens: 2048, temperature: 0 },
-					modelId,
-					locals,
-				})
-			),
-			TIMEOUT_MS
+		// Fan out to the whole panel in PARALLEL. Latency ≈ the slowest model, not the sum.
+		const settled = await Promise.all(
+			panelIds.map(async (id) => {
+				const answer = await runOne(id, question, panelistPrompt, 2048, PANEL_TIMEOUT_MS, locals);
+				if (!answer) return null;
+				const identity = resolveModelIdentity(id);
+				const model = models.find((m) => m.id === id);
+				return {
+					model: id,
+					modelShort: model?.displayName || identity.short,
+					openness: identity.openness,
+					sovereign: false, // panel rides the non-sovereign compare endpoint; say so
+					answer,
+				};
+			})
 		);
-		const answer = stripThink(String(raw ?? ""));
-		if (!answer) {
+		const opinions = settled.filter((o): o is NonNullable<typeof o> => o !== null);
+		if (!opinions.length) {
 			return json(
 				{ available: false, reason: "empty" },
 				{ headers: { "cache-control": "no-store" } }
 			);
 		}
 
-		const secondOpinion = {
-			model: modelId,
-			// Prefer the configured display name (SECOND_OPINION_DISPLAY_NAME) when set,
-			// else the honest generic identity ("GLM 5.2 FP8").
-			modelShort: model.displayName || identity.short,
-			openness: identity.openness, // "open weights" — honest; not "fully open" unless it is
-			// Served on a non-sovereign provider (HF router); the sovereign primary is
-			// Apertus on CSCS. Say so plainly.
-			sovereign: false,
-			answer,
-		};
+		// Aggregate into a verdict ON the primary answer — analyse, do not synthesise.
+		const panelBlock = opinions
+			.map((o, i) => `${i + 1}. [${o.modelShort}]: ${o.answer}`)
+			.join("\n\n");
+		const aggInput =
+			`QUESTION:\n${question}\n\n` +
+			(primaryAnswer
+				? `ANSWER GIVEN (by the primary model, the one being audited):\n${primaryAnswer}\n\n`
+				: `(No primary answer available — report where the PANEL agrees and disagrees among itself.)\n\n`) +
+			`PANEL TAKES (${opinions.length} independent open models):\n${panelBlock}`;
+		const aggRaw = await runOne(aggId, aggInput, aggregatorPrompt, 1024, AGG_TIMEOUT_MS, locals);
+		const verdict = parseVerdict(aggRaw, opinions.length);
 
-		// Persist onto the target message so it survives reload (best-effort — a failed
-		// write still returns the answer; it just won't survive a refresh).
+		// Persist opinions[] + verdict onto the target message (best-effort).
 		if (conversation && targetMessage) {
 			try {
 				const updatedMessages = conversation.messages.map((m) =>
-					m.id === messageId ? { ...m, secondOpinion } : m
+					m.id === messageId ? { ...m, opinions, verdict } : m
 				);
 				await collections.conversations.updateOne(
 					{ _id: new ObjectId(conversation._id), ...authCondition(locals) },
 					{ $set: { messages: updatedMessages } }
 				);
 			} catch (e) {
-				logger.error(e, "[second-opinion] persist failed (returning unpersisted)");
+				logger.error(e, "[compare] persist failed (returning unpersisted)");
 			}
 		}
 
-		return json({ available: true, ...secondOpinion }, { headers: { "cache-control": "no-store" } });
+		return json(
+			{ available: true, opinions, verdict },
+			{ headers: { "cache-control": "no-store" } }
+		);
 	} catch (e) {
-		logger.error(e, "[second-opinion] failed");
-		return json({ available: false, reason: "error" }, { headers: { "cache-control": "no-store" } });
+		logger.error(e, "[compare] fanout failed");
+		return json(
+			{ available: false, reason: "error" },
+			{ headers: { "cache-control": "no-store" } }
+		);
 	}
 };
