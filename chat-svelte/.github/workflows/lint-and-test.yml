@@ -26,6 +26,14 @@ jobs:
       - name: "Checking type errors"
         run: |
           npm run check
+      - name: "Checking gap-map catalog is in sync with the site"
+        # Fast fail-before-tests guard: the chat's grounding catalog is a vendored
+        # copy of the site's app/public/data/categories.json. The same assertion runs
+        # inside the test suite (categories-sync.test.ts); this surfaces it by name and
+        # ahead of the slow jobs. No-ops cleanly in a standalone fork (no canonical to
+        # track) — see scripts/sync-categories.mjs.
+        run: |
+          npm run check:categories
 
   test:
     runs-on: ubuntu-latest
