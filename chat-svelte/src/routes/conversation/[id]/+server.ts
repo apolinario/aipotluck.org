@@ -144,7 +144,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 
 	// Attach MCP selection to locals so the text generation pipeline can consume it
 	try {
-		(locals as unknown as Record<string, unknown>).mcp = {
+		locals.mcp = {
 			selectedServerNames: selectedMcpServerNames,
 			selectedServers: (selectedMcpServers ?? []).map((s) => ({
 				name: s.name,
@@ -161,7 +161,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 
 	// Attach user timezone so the tool prompt can include localized time
 	if (timezone) {
-		(locals as unknown as Record<string, unknown>).timezone = timezone;
+		locals.timezone = timezone;
 	}
 
 	const inputFiles = await Promise.all(
