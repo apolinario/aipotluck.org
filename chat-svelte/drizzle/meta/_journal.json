@@ -29,6 +29,13 @@
       "when": 1781942605828,
       "tag": "0003_hash_contribution_ips",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1781942606828,
+      "tag": "0004_hash_message_event_ips",
+      "breakpoints": true
     }
   ]
 }

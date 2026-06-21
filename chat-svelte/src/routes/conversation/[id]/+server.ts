@@ -1,5 +1,6 @@
 import { authCondition } from "$lib/server/auth";
 import { collections } from "$lib/server/database";
+import { hashIp } from "$lib/server/db/ipHash";
 import { config } from "$lib/server/config";
 import { models, validModelIdSchema } from "$lib/server/models";
 import { ERROR_MESSAGES } from "$lib/stores/errors";
@@ -113,7 +114,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		userId,
 		createdAt: new Date(),
 		expiresAt: new Date(Date.now() + 60_000),
-		ip: getClientAddress(),
+		ipHash: hashIp(getClientAddress(), "rate-limit"),
 	});
 
 	if (usageLimits?.messagesPerMinute) {
@@ -136,9 +137,13 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		// single-IP-many-sessions abuse appears, by setting RATE_LIMIT_IP_MULTIPLIER (× messagesPerMinute);
 		// keep it generous (it is a runaway ceiling, never the per-person rate).
 		const ipMultiplier = Number(Reflect.get(config, "RATE_LIMIT_IP_MULTIPLIER")) || 0;
-		if (ipMultiplier > 0) {
+		// Count against the SAME keyed hash we store on insert (domain "rate-limit"). When no pepper is
+		// configured hashIp returns null — we then skip the per-IP ceiling entirely (fail open), rather
+		// than count rows where ip_hash IS NULL, which would conflate every unhashed event into one bucket.
+		const ipHash = hashIp(getClientAddress(), "rate-limit");
+		if (ipMultiplier > 0 && ipHash) {
 			const perIp = await collections.messageEvents.countDocuments({
-				ip: getClientAddress(),
+				ipHash,
 				type: "message",
 				expiresAt: { $gt: new Date() },
 			});
@@ -176,7 +181,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				userId,
 				createdAt: new Date(),
 				expiresAt: new Date(Date.now() + 24 * 60 * 60_000),
-				ip: getClientAddress(),
+				ipHash: hashIp(getClientAddress(), "rate-limit"),
 			});
 		} catch (e) {
 			logger.warn(e, "[rate-limit] global daily event insert failed");

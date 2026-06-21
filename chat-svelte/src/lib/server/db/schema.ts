@@ -108,7 +108,8 @@ export const messageEvents = pgTable(
 	{
 		id: text("id").primaryKey(),
 		userId: text("user_id"),
-		ip: text("ip"),
+		// Keyed HMAC of the client IP (domain "rate-limit"), never the raw IP — see db/ipHash.ts.
+		ipHash: text("ip_hash"),
 		type: text("type"),
 		expiresAt: timestamp("expires_at", { withTimezone: true }),
 		createdAt: timestamp("created_at", { withTimezone: true }),
@@ -116,7 +117,7 @@ export const messageEvents = pgTable(
 	},
 	(t) => [
 		index("message_events_user_idx").on(t.userId, t.type, t.expiresAt),
-		index("message_events_ip_idx").on(t.ip, t.type, t.expiresAt),
+		index("message_events_ip_hash_idx").on(t.ipHash, t.type, t.expiresAt),
 	]
 );
 

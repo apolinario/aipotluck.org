@@ -41,6 +41,17 @@ describe("hashIp", () => {
 		expect(a).not.toBe(b);
 	});
 
+	it("separates domains — same IP+pepper hashes differently per use-site", () => {
+		// Stops a contribution row (identified) being joined to rate-limit rows by equal IP hash.
+		const contrib = hashIp("203.0.113.7", "contribution");
+		const rateLimit = hashIp("203.0.113.7", "rate-limit");
+		expect(contrib).toBeTruthy();
+		expect(rateLimit).toBeTruthy();
+		expect(contrib).not.toBe(rateLimit);
+		// ...but each domain is still internally stable (so COUNT-based caps work).
+		expect(hashIp("203.0.113.7", "rate-limit")).toBe(rateLimit);
+	});
+
 	it("fails toward privacy: no pepper → null (cap disabled, nothing stored)", () => {
 		h.pepper = "";
 		expect(hashIp("203.0.113.7")).toBeNull();

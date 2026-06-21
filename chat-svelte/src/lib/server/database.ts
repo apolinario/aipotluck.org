@@ -56,7 +56,7 @@ export const collections = {
 		table: schema.messageEvents,
 		cols: {
 			userId: text("userId"),
-			ip: text("ip"),
+			ipHash: text("ipHash"),
 			type: text("type"),
 			expiresAt: date("expiresAt"),
 			createdAt: date("createdAt"),
