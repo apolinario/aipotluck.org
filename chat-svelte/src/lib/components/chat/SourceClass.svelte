@@ -52,7 +52,9 @@
 
 <div
 	in:fly={{ y: 6, duration: prefersReducedMotion.current ? 0 : 360 }}
-	class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10.5px] text-[var(--ap-ink-3)]"
+	class="{traced
+		? ''
+		: 'mt-1.5'} flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10.5px] text-[var(--ap-ink-3)]"
 	title={kind === "model"
 		? "No live sources grounded this answer — it’s drawn from the model’s training, which it cannot reliably date and which can be wrong. See Blind spots."
 		: "This answer was grounded in documents you uploaded."}

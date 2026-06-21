@@ -42,7 +42,9 @@
      popping static. Mount-only fade/slide — cosmetic; the content is unchanged. -->
 <div
 	in:fly={{ y: 6, duration: prefersReducedMotion.current ? 0 : 360 }}
-	class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10.5px] text-[var(--ap-ink-3)]"
+	class="{traced
+		? ''
+		: 'mt-1.5'} flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10.5px] text-[var(--ap-ink-3)]"
 	title="{identity.short} · {identity.maker} · {identity.openness}{identity.served
 		? ` · served model: ${identity.served}`
 		: ''} · served via {providerName}; sovereign-compute target: CSCS (Switzerland) & LUMI (Finland)"

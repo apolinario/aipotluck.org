@@ -44,16 +44,23 @@
 	let declined = $derived(Boolean(message.moderation?.flagged));
 	let answered = $derived(Boolean(!loading && message.content));
 	let grounded = $derived(Boolean(message.webSearch?.sources?.length));
+	// A second opinion is OPT-IN — it only counts as a pipeline step once one was actually obtained.
+	// Listing "second opinion" before the user asks for one would imply a check happened that didn't.
+	let verified = $derived(Boolean(message.verdict || message.opinions?.length));
 
 	// Dot color per layer — solid markers on the spine, NOT a wash. Live = a real live
 	// feed (web retrieval, the served model); muted ink = static parametric recall (not a
 	// citation); gap-red = a safety decline; coral = the non-sovereign verification hop.
+	// Dot legend, intentional: teal = a LIVE pipeline stage (web retrieval, the model running);
+	// muted ink = a passive/optional stage (parametric recall, the optional cross-check) — calm, never
+	// an alarm; gap-red is reserved for the ONE real stop (a safety decline). Verify is muted, NOT
+	// coral: a red dot beside "second opinion unavailable" reads as an error when it's just optional.
 	const DOT: Record<StepKind, string> = {
 		retrieve: "var(--ap-live)",
 		recall: "var(--ap-ink-3)",
 		generate: "var(--ap-live)",
 		declined: "var(--ap-gap)",
-		verify: "var(--ap-coral)",
+		verify: "var(--ap-ink-3)",
 	};
 
 	let steps = $derived(
@@ -61,7 +68,7 @@
 			[
 				grounded ? "retrieve" : answered && !declined ? "recall" : null,
 				answered ? (declined ? "declined" : "generate") : null,
-				answered && !declined && question ? "verify" : null,
+				answered && !declined && verified ? "verify" : null,
 			] as (StepKind | null)[]
 		).filter((s): s is StepKind => s !== null)
 	);
@@ -141,7 +148,7 @@
 			>
 				<span>How this answer was made</span>
 				{#if !expanded && summaryParts.length}
-					<span class="font-sans text-[10.5px] tracking-normal text-[var(--ap-ink-3)]/70 normal-case">
+					<span class="font-mono text-[10px] tracking-normal text-[var(--ap-ink-3)]/75 normal-case">
 						· {summaryParts.join(" · ")}
 					</span>
 				{/if}
@@ -164,7 +171,7 @@
 			<!-- The spine: one persistent hairline, anchored to the first node's center so it
 		     doesn't float above the trace. Low-ink; the nodes carry the signal. -->
 			<div
-				class="pointer-events-none absolute top-[8px] bottom-2 left-[5px] w-px"
+				class="pointer-events-none absolute top-[8px] bottom-2 left-[6px] w-px"
 				style="background: color-mix(in oklab, var(--ap-ink-3) 30%, transparent)"
 				aria-hidden="true"
 			></div>
@@ -173,7 +180,7 @@
 				<div class="relative" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
 					<!-- spine node: solid marker, paper ring so it cleanly breaks the line -->
 					<span
-						class="absolute top-[4px] -left-[12.5px] size-[8px] rounded-full ring-2 ring-[var(--ap-paper)]"
+						class="absolute top-[4px] -left-[14px] size-[9px] rounded-full ring-2 ring-[var(--ap-paper)]"
 						style="background: {DOT[step]}"
 						aria-hidden="true"
 					></span>
@@ -211,7 +218,7 @@
 			{#if loading}
 				<div class="relative" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
 					<span
-						class="absolute top-[3px] -left-[13px] size-[9px] rounded-full ring-2 ring-[var(--ap-paper)]"
+						class="absolute top-[4px] -left-[14px] size-[9px] rounded-full ring-2 ring-[var(--ap-paper)]"
 						style="background: var(--ap-live)"
 						class:animate-pulse={!reduce}
 						aria-hidden="true"
@@ -222,6 +229,18 @@
 				</div>
 			{/if}
 		</div>
+			{#if !loading && answered && !declined && question && !verified}
+				<!-- Second opinion is opt-in: render the OFFER as a tail action (no spine dot, not a
+				     step in the summary) so it never reads as a check that already happened. -->
+				<div class="pl-4">
+					<SecondOpinion
+						{question}
+						messageId={message.id}
+						opinions={message.opinions}
+						verdict={message.verdict}
+					/>
+				</div>
+			{/if}
 		{/if}
 	</div>
 {/if}

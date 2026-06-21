@@ -183,7 +183,8 @@
 	</div>
 {:else if unavailable}
 	<div class="mt-1.5 text-xs text-[var(--ap-ink-3)] italic">
-		Collective second opinion unavailable right now — the answer above stands on its own.
+		Collective second opinion unavailable right now — this answer hasn't been cross-checked by other
+		models.
 	</div>
 {:else if question}
 	<button
