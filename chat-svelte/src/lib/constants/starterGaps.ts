@@ -28,7 +28,7 @@ export interface StarterGap {
 // misrepresent the gap. That entry waits on a real data node in static/data/stack-map.json
 // (a Carl/Josh/Laura content call), not a forced mis-aim.
 const GAPS: Record<string, StarterGap> = {
-	// Open-web-search prompt → search runs on Wikipedia + Marginalia, NOT a full open web
+	// Open-web-search prompt → search runs on Wikipedia + Marginalia + OpenAlex, NOT a full open web
 	// index. The `websearch` node's own copy literally names this — "A Google-scale open web
 	// index is still the honest gap" — so the ask and the node it lands on are the same thing.
 	"I need the current status of the EU AI Act for a policy briefing next week. How do you find that?":

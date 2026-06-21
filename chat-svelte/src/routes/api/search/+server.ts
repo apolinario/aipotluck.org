@@ -5,7 +5,7 @@ import { openSearch } from "$lib/server/search/openSearch";
 // Open-knowledge search endpoint: the client calls this when the user turns on
 // web search (or accepts the "search open sources?" affordance). Returns
 // numbered sources + an evidence block the chat turn is then grounded on.
-// Open sources only (Wikipedia + Marginalia) — see $lib/server/search/openSearch.
+// Open sources only (Wikipedia + Marginalia + OpenAlex) — see $lib/server/search/openSearch.
 export const GET: RequestHandler = async ({ locals, url }) => {
 	requireAuth(locals);
 

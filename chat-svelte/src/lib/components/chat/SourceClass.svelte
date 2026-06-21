@@ -7,7 +7,7 @@
 	// orthogonal to ProvenanceBadge (which names what MODEL ran). Every answer belongs to
 	// exactly one source class; only one indicator shows per answer:
 	//
-	//   web   → grounded in open web search (Wikipedia/Marginalia). Rendered RICHLY by
+	//   web   → grounded in open web search (Wikipedia/Marginalia/OpenAlex). Rendered RICHLY by
 	//           SourceStrip (numbered, citable, "as of DATE"), so this component does NOT
 	//           cover it — SourceStrip IS the web class's expression.
 	//   model → no live lookup happened; the answer comes from the model's own parametric

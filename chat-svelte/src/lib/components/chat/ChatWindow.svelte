@@ -176,7 +176,7 @@
 	// a manual composer toggle: the system decides when a turn needs current
 	// open-web grounding. The deciding "layer" is the deterministic recency
 	// heuristic (isRecencyQuery) — NOT mid-stream model tool-calling, which is unreliable here.
-	// When the heuristic fires, the turn is grounded on Wikipedia + Marginalia: we
+	// When the heuristic fires, the turn is grounded on Wikipedia + Marginalia + OpenAlex: we
 	// fetch /api/search here, flash the Web-search node on the map, then hand the
 	// result to the send flow as searchContext. The manual globe toggle is hidden
 	// (showWebSearch={false} below); webSearchEnabled is retained dormant so the

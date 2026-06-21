@@ -172,7 +172,7 @@ type ExtraConfigKeys =
 	| "MARGINALIA_API_KEY"
 	| "MARGINALIA_FILTER";
 // Removed 2026-06-19 (config audit — nothing read them): EXA_API_KEY (Exa search rejected in favor of
-// all-open Wikipedia/Marginalia), and MCP_SERVERS / MCP_FORWARD_HF_USER_TOKEN / MCP_TOOL_TIMEOUT_MS
+// all-open Wikipedia/Marginalia/OpenAlex), and MCP_SERVERS / MCP_FORWARD_HF_USER_TOKEN / MCP_TOOL_TIMEOUT_MS
 // (upstream chat-ui MCP config; our MCP restoration uses SPACE_MCP_URL via Reflect.get instead).
 
 type ConfigProxy = ConfigManager & { [K in ConfigKey | ExtraConfigKeys]: string };

@@ -25,7 +25,7 @@ export const WEB_SEARCH_TOOL = {
 	function: {
 		name: "web_search",
 		description:
-			"Search open knowledge bases (Wikipedia + Marginalia) for current or external information beyond your training data. Use only when the answer needs recent facts, live data, or anything you cannot reliably know. Returns numbered sources to cite.",
+			"Search open knowledge bases (Wikipedia + Marginalia + OpenAlex) for current or external information beyond your training data. Use only when the answer needs recent facts, live data, or anything you cannot reliably know. Returns numbered sources to cite.",
 		parameters: {
 			type: "object",
 			properties: {

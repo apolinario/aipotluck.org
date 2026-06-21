@@ -30,7 +30,7 @@
 		// tools removed
 		modelIsMultimodal?: boolean;
 		// Open-web search composer toggle (the P0 differentiator). When the toggle
-		// is shown, the user can ground a turn on Wikipedia + Marginalia. Currently
+		// is shown, the user can ground a turn on Wikipedia + Marginalia + OpenAlex. Currently
 		// hidden (showWebSearch={false}): search is auto-triggered by the recency
 		// heuristic in ChatWindow, not a manual control (Julie, 2026-06-18). The
 		// "Searching…" spinner banner still renders during an auto-search.
