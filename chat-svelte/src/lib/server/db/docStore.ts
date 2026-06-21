@@ -1,7 +1,9 @@
 /**
- * Mongo-shaped collection adapter over a Drizzle/Postgres document store.
+ * Document-store collection adapter — a MongoDB-shaped API backed by Drizzle/Postgres (NOT MongoDB).
  *
- * The B1-lite migration swaps the storage engine MongoDB → Postgres without rewriting the ~100
+ * There is no Mongo here: this presents the *shape* of the Mongo collection API so the inherited
+ * chat-ui call sites keep working, while every read/write actually hits Postgres. The B1-lite
+ * migration swapped the storage engine MongoDB → Postgres without rewriting the ~100
  * `collections.X.<method>(...)` call sites or the `_id: ObjectId` document shape the app is built on.
  * Each collection is a table of `id` + indexed projection columns + a `doc` JSONB column
  * (see schema.ts). This adapter presents the small, uniform subset of the Mongo collection API the
@@ -148,7 +150,7 @@ function isOperatorObject(v: unknown): v is Record<string, unknown> {
 	);
 }
 
-export function mongoCollection<T = Doc>(spec: CollectionSpec): AdaptedCollection<T> {
+export function docCollection<T = Doc>(spec: CollectionSpec): AdaptedCollection<T> {
 	const { table, idProp, idField, emitObjectId, cols } = spec;
 
 	function resolveCol(field: string): PgColumn | undefined {
@@ -202,7 +204,7 @@ export function mongoCollection<T = Doc>(spec: CollectionSpec): AdaptedCollectio
 							conds.push(opv ? isNotNull(column) : isNull(column));
 							break;
 						default:
-							throw new Error(`mongoAdapter: unsupported filter operator ${op} on ${key}`);
+							throw new Error(`docStore: unsupported filter operator ${op} on ${key}`);
 					}
 				}
 			} else {
@@ -442,4 +444,4 @@ export function mongoCollection<T = Doc>(spec: CollectionSpec): AdaptedCollectio
 	} as unknown as AdaptedCollection<T>;
 }
 
-export type MongoCollection = ReturnType<typeof mongoCollection>;
+export type DocCollection = ReturnType<typeof docCollection>;

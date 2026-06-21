@@ -1,6 +1,6 @@
 /**
  * Verification harness for the B1-lite persistence seam — exercises the Mongo-shaped adapter
- * (db/mongoAdapter.ts) over the document-store tables exactly as the runtime call sites do, against a
+ * (db/docStore.ts) over the document-store tables exactly as the runtime call sites do, against a
  * throwaway Postgres (Docker). No cloud, no HF calls.
  *
  *   DATABASE_URL=postgres://... npx -y tsx scripts/verify-drizzle-slice.ts

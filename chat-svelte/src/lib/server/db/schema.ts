@@ -3,11 +3,11 @@
  *
  * Strategy: a document store. Each former Mongo collection is a table of `id` (24-hex, ObjectId-width)
  * + the small set of columns it is actually *filtered/sorted* by (for indexes) + a `doc` JSONB column
- * holding the full document. The Mongo-shaped adapter (mongoAdapter.ts) reads/writes `doc` and keeps
+ * holding the full document. The doc-store adapter (docStore.ts) reads/writes `doc` and keeps
  * the projection columns in sync. This lets the entire app — routes, tree utilities, components, and
  * the `_id: ObjectId` types — keep operating unchanged while the storage engine becomes Postgres.
  *
- * Dates and ObjectIds inside `doc` are persisted via an extended-JSON encoding (see mongoAdapter.ts)
+ * Dates and ObjectIds inside `doc` are persisted via an extended-JSON encoding (see docStore.ts)
  * so they round-trip faithfully anywhere in the document, including nested fields like
  * session.oauth.token.expiresAt.
  *

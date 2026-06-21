@@ -1,14 +1,14 @@
 /**
  * Database seam — Postgres/Neon via Drizzle, presented through the Mongo-shaped `collections` API the
  * app is built on (B1-lite migration off MongoDB). Each collection is backed by a document-store table
- * (schema.ts) through the adapter in db/mongoAdapter.ts.
+ * (schema.ts) through the adapter in db/docStore.ts.
  *
  * Serverless posture: `collections` is constructed SYNCHRONOUSLY at import with zero I/O — postgres.js
  * (db/client.ts) connects lazily on the first query. This removes the eager connect-at-import IIFE and
  * the embedded MongoMemoryServer that the upstream MongoDB implementation used, both of which were
  * serverless-hostile. Schema/indexes are applied at deploy time via drizzle-kit, not here.
  */
-import { mongoCollection, type CollectionSpec } from "./db/mongoAdapter";
+import { docCollection, type CollectionSpec } from "./db/docStore";
 import * as schema from "./db/schema";
 import type { Conversation } from "$lib/types/Conversation";
 import type { User } from "$lib/types/User";
@@ -26,7 +26,7 @@ const date = (prop: string) => ({ prop, kind: "date" as const });
 const base = { idProp: "id", idField: "_id", emitObjectId: true } satisfies Partial<CollectionSpec>;
 
 export const collections = {
-	conversations: mongoCollection<Conversation>({
+	conversations: docCollection<Conversation>({
 		...base,
 		table: schema.conversations,
 		cols: {
@@ -36,22 +36,22 @@ export const collections = {
 			updatedAt: date("updatedAt"),
 		},
 	}),
-	users: mongoCollection<User>({
+	users: docCollection<User>({
 		...base,
 		table: schema.users,
 		cols: { hfUserId: text("hfUserId"), username: text("username"), createdAt: date("createdAt") },
 	}),
-	sessions: mongoCollection<Session>({
+	sessions: docCollection<Session>({
 		...base,
 		table: schema.sessions,
 		cols: { sessionId: text("sessionId"), userId: text("userId"), expiresAt: date("expiresAt") },
 	}),
-	settings: mongoCollection<Settings>({
+	settings: docCollection<Settings>({
 		...base,
 		table: schema.settings,
 		cols: { userId: text("userId"), sessionId: text("sessionId") },
 	}),
-	messageEvents: mongoCollection<MessageEvent>({
+	messageEvents: docCollection<MessageEvent>({
 		...base,
 		table: schema.messageEvents,
 		cols: {
@@ -62,7 +62,7 @@ export const collections = {
 			createdAt: date("createdAt"),
 		},
 	}),
-	abortedGenerations: mongoCollection<AbortedGeneration>({
+	abortedGenerations: docCollection<AbortedGeneration>({
 		...base,
 		table: schema.abortedGenerations,
 		cols: {
@@ -71,17 +71,17 @@ export const collections = {
 			createdAt: date("createdAt"),
 		},
 	}),
-	semaphores: mongoCollection<Semaphore>({
+	semaphores: docCollection<Semaphore>({
 		...base,
 		table: schema.semaphores,
 		cols: { key: text("key"), updatedAt: date("updatedAt"), deleteAt: date("deleteAt") },
 	}),
-	tokenCaches: mongoCollection<TokenCache>({
+	tokenCaches: docCollection<TokenCache>({
 		...base,
 		table: schema.tokenCaches,
 		cols: { tokenHash: text("tokenHash"), userId: text("userId"), createdAt: date("createdAt") },
 	}),
-	config: mongoCollection<ConfigKey>({
+	config: docCollection<ConfigKey>({
 		table: schema.configKv,
 		idProp: "key",
 		idField: "key",
