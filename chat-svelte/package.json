@@ -18,6 +18,7 @@
 		"db:drift": "drizzle-kit generate && git diff --exit-code -- drizzle/",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
+		"db:verify": "vite-node --options.transformMode.ssr='/.*/' scripts/verify-db-schema.ts",
 		"db:push": "drizzle-kit push",
 		"sync:categories": "node scripts/sync-categories.mjs",
 		"check:categories": "node scripts/sync-categories.mjs --check",

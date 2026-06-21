@@ -91,5 +91,7 @@ jobs:
       - run: npm ci
       - name: Apply migrations (replays the journal 0000..N — also validates the chain)
         run: npm run db:migrate
+      - name: Verify live DB matches the schema (catches journal-vs-reality column drift)
+        run: npm run db:verify
       - name: Hermetic test suite (CI_HERMETIC excludes 3 DB/auth-coupled specs)
         run: npm run test:ci
