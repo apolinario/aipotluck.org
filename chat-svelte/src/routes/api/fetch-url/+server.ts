@@ -1,8 +1,8 @@
 import { error } from "@sveltejs/kit";
 import { logger } from "$lib/server/logger.js";
 import { isValidUrl, ssrfSafeFetch } from "$lib/server/urlSafety";
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "$lib/constants/fileSize";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const FETCH_TIMEOUT = 30000; // 30 seconds
 const MAX_REDIRECTS = 5;
 const SECURITY_HEADERS: HeadersInit = {
@@ -85,8 +85,8 @@ export async function GET({ url }) {
 
 	// Check content length if available
 	const contentLength = response.headers.get("content-length");
-	if (contentLength && parseInt(contentLength) > MAX_FILE_SIZE) {
-		throw error(413, "File too large (max 10MB)");
+	if (contentLength && parseInt(contentLength) > MAX_FILE_SIZE_BYTES) {
+		throw error(413, `File too large (max ${MAX_FILE_SIZE_LABEL})`);
 	}
 
 	// Stream the response back
@@ -106,8 +106,8 @@ export async function GET({ url }) {
 	// Get the body as array buffer to check size
 	const arrayBuffer = await response.arrayBuffer();
 
-	if (arrayBuffer.byteLength > MAX_FILE_SIZE) {
-		throw error(413, "File too large (max 10MB)");
+	if (arrayBuffer.byteLength > MAX_FILE_SIZE_BYTES) {
+		throw error(413, `File too large (max ${MAX_FILE_SIZE_LABEL})`);
 	}
 
 	return new Response(arrayBuffer, { headers });

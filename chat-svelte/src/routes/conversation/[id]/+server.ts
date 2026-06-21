@@ -5,6 +5,7 @@ import { models, validModelIdSchema } from "$lib/server/models";
 import { error } from "@sveltejs/kit";
 import { ObjectId } from "bson";
 import { z } from "zod";
+import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "$lib/constants/fileSize";
 import { enforceRequestRateLimits } from "$lib/server/chat/rateLimit";
 import { chatRequestSchema } from "$lib/server/chat/requestSchema";
 import { appendTurnMessages } from "$lib/server/chat/messageTree";
@@ -202,10 +203,9 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				return new File([blob], file.name, { type: file.mime });
 			}) ?? [];
 
-	// check sizes
-	// todo: make configurable
-	if (b64Files.some((file) => file.size > 10 * 1024 * 1024)) {
-		error(413, "File too large, should be <10MB");
+	// check sizes — cap + label come from the shared constant (see $lib/constants/fileSize)
+	if (b64Files.some((file) => file.size > MAX_FILE_SIZE_BYTES)) {
+		error(413, `File too large, should be <${MAX_FILE_SIZE_LABEL}`);
 	}
 
 	const uploadedFiles = await Promise.all(b64Files.map((file) => uploadFile(file, conv))).then(

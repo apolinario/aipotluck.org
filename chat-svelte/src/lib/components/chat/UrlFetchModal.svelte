@@ -3,6 +3,7 @@
 	import { base } from "$app/paths";
 	import { tick } from "svelte";
 	import { pickSafeMime } from "$lib/utils/mime";
+	import { MAX_FILE_SIZE_LABEL } from "$lib/constants/fileSize";
 
 	interface Props {
 		open?: boolean;
@@ -171,7 +172,9 @@
 				{#if errorMsg}
 					<p class="-mt-1 text-sm text-red-600 dark:text-red-400">{errorMsg}</p>
 				{/if}
-				<p class="-mt-2 text-xs text-gray-500 dark:text-gray-400">Only HTTPS. Max 10MB.</p>
+				<p class="-mt-2 text-xs text-gray-500 dark:text-gray-400">
+					Only HTTPS. Max {MAX_FILE_SIZE_LABEL}.
+				</p>
 
 				<div class="flex items-center justify-end gap-2">
 					<button

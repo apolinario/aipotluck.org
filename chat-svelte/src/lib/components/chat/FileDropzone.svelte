@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { requireAuthUser } from "$lib/utils/auth";
+	import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "$lib/constants/fileSize";
 	import CarbonImage from "~icons/carbon/image";
 
 	interface Props {
@@ -50,9 +51,9 @@
 							return;
 						}
 
-						// if file is bigger than 10MB abort
-						if (file.size > 10 * 1024 * 1024) {
-							setErrorMsg("Some file is too big. (10MB max)");
+						// if file is bigger than the shared cap, abort
+						if (file.size > MAX_FILE_SIZE_BYTES) {
+							setErrorMsg(`Some file is too big. (${MAX_FILE_SIZE_LABEL} max)`);
 							files = [];
 							return;
 						}

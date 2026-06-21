@@ -1,6 +1,6 @@
 /**
  * File store — the Postgres `files` table replacing GridFS (B1-lite migration). Attachments are small
- * (≤10 MB, enforced upstream) so a bytea payload row is sufficient and keeps everything on Neon with no
+ * (size-capped upstream — see $lib/constants/fileSize) so a bytea payload row is sufficient and keeps everything on Neon with no
  * extra credentials. (Vercel Blob is a viable later optimization for larger payloads.) Written fresh.
  */
 import { and, eq } from "drizzle-orm";
