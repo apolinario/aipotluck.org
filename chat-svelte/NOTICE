@@ -1,0 +1,16 @@
+AI Potluck Chat
+Copyright 2025- Current AI / Public AI
+
+This product is a derivative work of Hugging Face chat-ui
+(https://github.com/huggingface/chat-ui), licensed under the Apache License,
+Version 2.0. Copyright 2018- The Hugging Face team. All rights reserved.
+
+The original chat-ui codebase provided the SvelteKit chat foundation. This
+fork has been substantially modified — persistence was moved from MongoDB to
+Postgres (Drizzle/Neon), and a provenance/honesty layer, open web-search
+grounding, a multi-model "second opinion" panel, and other changes were added,
+while several upstream subsystems were removed. We are grateful to the Hugging
+Face team for releasing chat-ui openly under Apache-2.0.
+
+Apertus is an open-weights model developed by the Swiss AI Initiative
+(SwissAI). This project serves it; it did not create it.

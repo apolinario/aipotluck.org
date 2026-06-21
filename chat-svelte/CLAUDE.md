@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Chat UI is a SvelteKit application that provides a chat interface for LLMs. It powers HuggingChat (hf.co/chat). The app speaks exclusively to OpenAI-compatible APIs via `OPENAI_BASE_URL`.
+AI Potluck Chat — the SvelteKit chat behind [aipotluck.org](https://aipotluck.org). It began as a fork of [Hugging Face chat-ui](https://github.com/huggingface/chat-ui) (Apache-2.0, the codebase that powers HuggingChat) and has been heavily reshaped: persistence moved to Postgres, plus a provenance/honesty layer, open web-search grounding, and a multi-model second-opinion panel. It serves [Apertus](https://huggingface.co/swiss-ai) (SwissAI, open weights) via an OpenAI-compatible endpoint (`OPENAI_BASE_URL`). See `README.md` for the fork story and `NOTICE` for attribution.
 
 ## Commands
 
@@ -39,7 +39,7 @@ Tests are split into three workspaces (configured in vite.config.ts):
 ### Stack
 
 - **SvelteKit 2** with Svelte 5 (uses runes: `$state`, `$effect`, `$bindable`)
-- **MongoDB** for persistence (auto-fallback to in-memory with MongoMemoryServer when `MONGODB_URL` not set)
+- **Postgres** for persistence via **Drizzle ORM** (Neon in production); migrations in `drizzle/`, schema via `drizzle-kit`. A doc-store adapter preserves the original collection-shaped call sites over Postgres tables.
 - **TailwindCSS** for styling
 
 ### Key Directories
@@ -53,7 +53,7 @@ src/
 │   │   ├── textGeneration/  # LLM streaming pipeline
 │   │   ├── mcp/          # Model Context Protocol integration
 │   │   ├── router/       # Smart model routing (Omni)
-│   │   ├── database.ts   # MongoDB collections
+│   │   ├── database.ts   # collections seam (doc-store adapter over Postgres/Drizzle)
 │   │   ├── models.ts     # Model registry from OPENAI_BASE_URL/models
 │   │   └── auth.ts       # OpenID Connect authentication
 │   ├── types/            # TypeScript interfaces (Conversation, Message, User, Model, etc.)
@@ -73,7 +73,7 @@ src/
 2. Server validates user, fetches conversation history
 3. Builds message tree structure (see `src/lib/utils/tree/`)
 4. Calls LLM endpoint via OpenAI client
-5. Streams response back, stores in MongoDB
+5. Streams response back, persists to Postgres (Drizzle) through the collections seam
 
 ### Model Context Protocol (MCP)
 
@@ -87,25 +87,28 @@ Smart routing via Arch-Router model. Configured with:
 - `LLM_ROUTER_ARCH_BASE_URL`: Router endpoint
 - Shortcuts: multimodal routes bypass router if `LLM_ROUTER_ENABLE_MULTIMODAL=true`
 
-### Database Collections
+### Database Collections (logical, over Postgres)
 
-- `conversations` - Chat sessions with nested messages
+- `conversations` - Chat sessions with the message tree
 - `users` - User accounts (OIDC-backed)
 - `sessions` - Session data
-- `sharedConversations` - Public share links
 - `settings` - User preferences
+
+Community sharing (`sharedConversations`) and the analytics/reporting stack were removed in the fork.
 
 ## Environment Setup
 
-Copy `.env` to `.env.local` and configure:
+Create `.env.local` (gitignored — never commit secrets). Minimum to boot:
 
 ```env
 OPENAI_BASE_URL=https://router.huggingface.co/v1
 OPENAI_API_KEY=hf_***
-# MONGODB_URL is optional; omit for in-memory DB persisted to ./db
+MODEL_ALLOWLIST=swiss-ai/Apertus-70B-Instruct-2509
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
+APP_BASE=
 ```
 
-See `.env` for full list of variables including router config, MCP servers, auth, and feature flags.
+Run `npm run db:migrate` once to apply the Drizzle journal. `.env.ci` lists every config key the code reads (empty values — a typecheck scaffold, not a runtime template).
 
 ## Code Conventions
 

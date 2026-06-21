@@ -1,188 +1,88 @@
-# Chat UI
+# AI Potluck Chat
 
-![Chat UI repository thumbnail](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/chat-ui/chat-ui-2026.png)
+The chat application behind [aipotluck.org](https://aipotluck.org) — Public AI's demonstrator for a
+sovereign, fully-open assistant. It runs on [Apertus](https://huggingface.co/swiss-ai), the open-weights
+model from the Swiss AI Initiative (SwissAI), served through an OpenAI-compatible inference provider, with
+a live "Under the hood" provenance map that shows exactly what stack is answering each message.
 
-A chat interface for LLMs. It is a SvelteKit app and it powers the [HuggingChat app on hf.co/chat](https://huggingface.co/chat).
+## Built on Hugging Face chat-ui
 
-0. [Quickstart](#quickstart)
-1. [Database Options](#database-options)
-2. [Launch](#launch)
-3. [Optional Docker Image](#optional-docker-image)
-4. [Extra parameters](#extra-parameters)
-5. [Building](#building)
+This started as a fork of [`huggingface/chat-ui`](https://github.com/huggingface/chat-ui) (Apache-2.0),
+the SvelteKit codebase that powers HuggingChat. We're grateful to have had such a solid, well-built
+starting point — it saved us months. We then reshaped it heavily for what we needed, so it has diverged
+quite a bit from upstream:
 
-> [!NOTE]
-> Chat UI only supports OpenAI-compatible APIs via `OPENAI_BASE_URL` and the `/models` endpoint. Provider-specific integrations (legacy `MODELS` env var, GGUF discovery, embeddings, web-search helpers, etc.) are removed, but any service that speaks the OpenAI protocol (llama.cpp server, Ollama, OpenRouter, etc.) will work by default.
+- **Persistence moved from MongoDB to Postgres** (Drizzle ORM, Neon) so the app runs clean on Vercel
+  serverless. The Mongo-specific patterns (GridFS, startup migrations under a lock, embedded-array
+  message storage) were replaced.
+- **A provenance and honesty layer** was added on top: every answer derives its model identity and
+  serving facts from config (never hardcoded), so the UI can't claim a model or a datacenter that isn't
+  actually running. The model is told to be honest about what it is and where it runs.
+- **Web search grounding** against open sources (Wikipedia, Marginalia) rather than the upstream
+  local-embedding search, with a logprob-margin gate deciding when to search.
+- **A "second opinion" panel** that fans a question out to independent open models and reports where they
+  agree or disagree with the primary answer — verification, not synthesis.
+- **Subsystems we didn't need were removed** (assistants, community sharing, the analytics/reporting
+  stack) to shrink the surface.
 
-> [!NOTE]
-> The old version is still available on the [legacy branch](https://github.com/huggingface/chat-ui/tree/legacy)
+The upstream `LICENSE` (Apache-2.0) and `NOTICE` are carried unchanged — this code genuinely is, at its
+root, chat-ui, and we want the attribution to say so.
 
 ## Quickstart
 
-Chat UI speaks to OpenAI-compatible APIs only. The fastest way to get running is with the Hugging Face Inference Providers router plus your personal Hugging Face access token.
+You need an OpenAI-compatible model endpoint and a Postgres database. The fastest path uses the Hugging
+Face Inference Providers router for the model and a free [Neon](https://neon.tech) branch for Postgres.
 
-**Step 1 – Create `.env.local`:**
+**1. Create `.env.local`** (this file is gitignored — never commit real secrets):
 
 ```env
+# Model: any OpenAI-compatible endpoint. HF router shown; a CSCS-direct base also works.
 OPENAI_BASE_URL=https://router.huggingface.co/v1
 OPENAI_API_KEY=hf_************************
+# Which served checkpoint(s) the app is allowed to use (comma-separated id list).
+MODEL_ALLOWLIST=swiss-ai/Apertus-70B-Instruct-2509
+
+# Postgres (Neon or any Postgres 14+). Used by Drizzle for all persistence.
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
+
+# Base path the app is served under, e.g. "" for root or "/chat" behind a proxy.
+APP_BASE=
 ```
 
-`OPENAI_API_KEY` can come from any OpenAI-compatible endpoint you plan to call. Pick the combo that matches your setup and drop the values into `.env.local`:
+`.env.ci` lists every config key the code reads (empty values — it's a typecheck scaffold for
+`npm run check`, not a runtime template). Use it as a reference for the optional variables.
 
-| Provider                                      | Example `OPENAI_BASE_URL`          | Example key env                                                         |
-| --------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------- |
-| Hugging Face Inference Providers router       | `https://router.huggingface.co/v1` | `OPENAI_API_KEY=hf_xxx` (or `HF_TOKEN` legacy alias)                    |
-| llama.cpp server (`llama.cpp --server --api`) | `http://127.0.0.1:8080/v1`         | `OPENAI_API_KEY=sk-local-demo` (any string works; llama.cpp ignores it) |
-| Ollama (with OpenAI-compatible bridge)        | `http://127.0.0.1:11434/v1`        | `OPENAI_API_KEY=ollama`                                                 |
-| OpenRouter                                    | `https://openrouter.ai/api/v1`     | `OPENAI_API_KEY=sk-or-v1-...`                                           |
-| Poe                                           | `https://api.poe.com/v1`           | `OPENAI_API_KEY=pk_...`                                                 |
-
-Check the root [`.env` template](./.env) for the full list of optional variables you can override.
-
-**Step 2 – Install and launch the dev server:**
+**2. Install, migrate the database, and run:**
 
 ```bash
-git clone https://github.com/huggingface/chat-ui
-cd chat-ui
 npm install
+npm run db:migrate   # apply the Drizzle migration journal to your Postgres
 npm run dev -- --open
 ```
 
-You now have Chat UI running locally. Open the browser and start chatting.
+The dev server listens on `http://localhost:5173`. Open it and start chatting.
 
-## Database Options
-
-Chat history, users, settings, files, and stats all live in MongoDB. You can point Chat UI at any MongoDB 6/7 deployment.
-
-> [!TIP]
-> For quick local development, you can skip this section. When `MONGODB_URL` is not set, Chat UI falls back to an embedded MongoDB that persists to `./db`.
-
-### MongoDB Atlas (managed)
-
-1. Create a free cluster at [mongodb.com](https://www.mongodb.com/pricing).
-2. Add your IP (or `0.0.0.0/0` for development) to the network access list.
-3. Create a database user and copy the connection string.
-4. Paste that string into `MONGODB_URL` in `.env.local`. Keep the default `MONGODB_DB_NAME=chat-ui` or change it per environment.
-
-Atlas keeps MongoDB off your laptop, which is ideal for teams or cloud deployments.
-
-### Local MongoDB (container)
-
-If you prefer to run MongoDB in a container:
+## Commands
 
 ```bash
-docker run -d -p 27017:27017 --name mongo-chatui mongo:latest
+npm run dev          # dev server (localhost:5173)
+npm run build        # production build
+npm run preview      # preview the production build
+npm run check        # svelte-check typecheck
+npm run lint         # Prettier + ESLint
+npm run format       # auto-format
+npm run test         # full Vitest suite (needs a model endpoint for some specs)
+npm run test:ci      # hermetic specs only (CI_HERMETIC=true) — no secrets or network
+npm run db:migrate   # apply Drizzle migrations
+npm run db:drift     # fail if the schema and migration snapshots have drifted
 ```
 
-Then set `MONGODB_URL=mongodb://localhost:27017` in `.env.local`.
+## Deployment
 
-## Launch
+The app targets Vercel serverless on Neon Postgres. `npm run vercel-build` runs the Drizzle migration
+then the Vite build. See `vite.config.ts` for the adapter wiring and the workspace test projects.
 
-After configuring your environment variables, start Chat UI with:
+## License
 
-```bash
-npm install
-npm run dev
-```
-
-The dev server listens on `http://localhost:5173` by default. Use `npm run build` / `npm run preview` for production builds.
-
-## Optional Docker Image
-
-The `chat-ui-db` image bundles MongoDB inside the container:
-
-```bash
-docker run \
-  -p 3000:3000 \
-  -e OPENAI_BASE_URL=https://router.huggingface.co/v1 \
-  -e OPENAI_API_KEY=hf_*** \
-  -v chat-ui-data:/data \
-  ghcr.io/huggingface/chat-ui-db:latest
-```
-
-All environment variables accepted in `.env.local` can be provided as `-e` flags.
-
-## Extra parameters
-
-### Theming
-
-You can use a few environment variables to customize the look and feel of chat-ui. These are by default:
-
-```env
-PUBLIC_APP_NAME=ChatUI
-PUBLIC_APP_ASSETS=chatui
-PUBLIC_APP_DESCRIPTION="Making the community's best AI chat models available to everyone."
-PUBLIC_APP_DATA_SHARING=
-```
-
-- `PUBLIC_APP_NAME` The name used as a title throughout the app.
-- `PUBLIC_APP_ASSETS` Is used to find logos & favicons in `static/$PUBLIC_APP_ASSETS`, current options are `chatui` and `huggingchat`.
-- `PUBLIC_APP_DATA_SHARING` Can be set to 1 to add a toggle in the user settings that lets your users opt-in to data sharing with models creator.
-
-### Models
-
-Models are discovered from `${OPENAI_BASE_URL}/models`, and you can optionally override their metadata via the `MODELS` env var (JSON5). Legacy provider‑specific integrations and GGUF discovery are removed. Authorization uses `OPENAI_API_KEY` (preferred). `HF_TOKEN` remains a legacy alias.
-
-### LLM Router (Optional)
-
-Chat UI can perform server-side smart routing using a local heuristic — no separate router service or selection model is called. The UI exposes a virtual model alias called "Omni" (configurable) that, when selected, chooses the best route/model for each message: image inputs go to a `multimodal` route, MCP-tool-enabled requests go to an `agentic` route, and everything else goes to a `default` route.
-
-- Provide a routes policy JSON via `LLM_ROUTER_ROUTES_PATH`. No sample file ships with this branch, so you must point the variable to a JSON array you create yourself (for example, commit one in your project like `config/routes.chat.json`). Each route entry needs `name`, `description`, `primary_model`, and optional `fallback_models`. The router recognizes the route names `default`, `multimodal`, and `agentic`.
-- The default route name is configurable via `LLM_ROUTER_DEFAULT_ROUTE` (default: `default`). If the selected route's models all fail, calls fall back to `LLM_ROUTER_FALLBACK_MODEL`.
-- Omni alias configuration: `PUBLIC_LLM_ROUTER_ALIAS_ID` (default `omni`), `PUBLIC_LLM_ROUTER_DISPLAY_NAME` (default `Omni`), and optional `PUBLIC_LLM_ROUTER_LOGO_URL`.
-
-When you select Omni in the UI, Chat UI will:
-
-- Pick a route locally based on the request signals (image attached, MCP server enabled, or default).
-- Emit RouterMetadata immediately (route and actual model used) so the UI can display it.
-- Stream from the selected model via your configured `OPENAI_BASE_URL`. On errors, it tries route fallbacks in order, then `LLM_ROUTER_FALLBACK_MODEL`.
-
-Tool and multimodal shortcuts:
-
-- Multimodal: If `LLM_ROUTER_ENABLE_MULTIMODAL=true` and the user sends an image, the router bypasses the policy file and uses the model specified in `LLM_ROUTER_MULTIMODAL_MODEL`. Route name: `multimodal`.
-- Tools: If `LLM_ROUTER_ENABLE_TOOLS=true` and the user has at least one MCP server enabled, the router bypasses the policy file and uses `LLM_ROUTER_TOOLS_MODEL`. If that model is missing or misconfigured, it falls back to the heuristic route. Route name: `agentic`.
-
-### MCP Tools (Optional)
-
-Chat UI can call tools exposed by Model Context Protocol (MCP) servers and feed results back to the model using OpenAI function calling. You can preconfigure trusted servers via env, let users add their own, and optionally have the Omni router auto‑select a tools‑capable model.
-
-Configure servers (base list for all users):
-
-```env
-# JSON array of servers: name, url, optional headers
-MCP_SERVERS=[
-  {"name": "Web Search (Exa)", "url": "https://mcp.exa.ai/mcp"},
-  {"name": "Hugging Face MCP Login", "url": "https://hf.co/mcp?login"}
-]
-
-# Forward the signed-in user's Hugging Face token to the official HF MCP login endpoint
-# when no Authorization header is set on that server entry.
-MCP_FORWARD_HF_USER_TOKEN=true
-```
-
-Enable router tool path (Omni):
-
-- Set `LLM_ROUTER_ENABLE_TOOLS=true` and choose a tools‑capable target with `LLM_ROUTER_TOOLS_MODEL=<model id or name>`.
-- The target must support OpenAI tools/function calling. Chat UI surfaces a “tools” badge on models that advertise this; you can also force‑enable it per‑model in settings (see below).
-
-Use tools in the UI:
-
-- Open “MCP Servers” from the top‑right menu or from the `+` menu in the chat input to add servers, toggle them on, and run Health Check. The server card lists available tools.
-- When a model calls a tool, the message shows a compact “tool” block with parameters, a progress bar while running, and the result (or error). Results are also provided back to the model for follow‑up.
-
-Per‑model overrides:
-
-- In Settings → Model, you can toggle “Tool calling (functions)” and “Multimodal input” per model. These overrides apply even if the provider metadata doesn’t advertise the capability.
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Apache-2.0, inherited from upstream Hugging Face chat-ui. See [`LICENSE`](./LICENSE) and
+[`NOTICE`](./NOTICE).
