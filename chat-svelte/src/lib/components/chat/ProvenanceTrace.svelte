@@ -11,6 +11,7 @@
 	import { blindSpotsOpen } from "$lib/stores/blindSpots";
 	import { computePulseNodes } from "../stack/reveal";
 	import { resolveServing } from "$lib/servingProvenance";
+	import { resolveModelIdentity } from "$lib/identity";
 
 	// The inline provenance TRACE — the stack diagram, inlined into the conversation.
 	//
@@ -65,6 +66,31 @@
 		).filter((s): s is StepKind => s !== null)
 	);
 
+	// The answer is primary: the trace defaults to ONE compact summary line so it never pushes the
+	// answer off-screen (user constraint). It auto-expands WHILE streaming — users wait longer when
+	// they watch the pipeline draw (Perplexity finding) — then tucks back to the summary on
+	// completion; tapping the head re-expands the full spine. One responsive form, no platform fork.
+	let userExpanded = $state(false);
+	let expanded = $derived(loading || userExpanded);
+
+	let modelShort = $derived(resolveModelIdentity(message.routerMetadata?.model || modelId).short);
+	// Terse receipt chips for the collapsed line — a glanceable summary, not the full cells.
+	let summaryParts = $derived(
+		steps
+			.map((s) => {
+				if (s === "retrieve") {
+					const n = message.webSearch?.sources?.length ?? 0;
+					return `${n} source${n === 1 ? "" : "s"}`;
+				}
+				if (s === "recall") return "from training";
+				if (s === "generate") return modelShort;
+				if (s === "declined") return "declined";
+				if (s === "verify") return "second opinion";
+				return "";
+			})
+			.filter(Boolean)
+	);
+
 	// Mirror the live trace onto the right-hand stack map: while THIS turn streams, emit a
 	// SUSTAINED pulse on the map nodes whose layer is genuinely running, and clear it when
 	// the turn ends. Node set comes from the ONE authority (computePulseNodes in reveal.ts),
@@ -104,10 +130,26 @@
 		<div
 			class="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.08em] text-[var(--ap-ink-3)]/80 uppercase"
 		>
-			<span>How this answer was made</span>
+			<!-- The head IS the collapse/expand control AND, when collapsed, the one-line receipt.
+			     ≥44px hit area = thumb-comfortable on mobile (2026 SOTA); whole row tappable. The "?"
+			     stays a SEPARATE button (no nested buttons) so it opens Blind Spots, not the toggle. -->
 			<button
 				type="button"
-				class="flex size-[14px] items-center justify-center rounded-full border border-[var(--ap-ink-3)]/40 text-[9px] leading-none text-[var(--ap-ink-3)] transition-colors hover:border-[var(--ap-coral-text)] hover:text-[var(--ap-coral-text)]"
+				class="flex min-h-[44px] flex-1 items-center gap-1.5 text-left tracking-[0.08em] transition-colors hover:text-[var(--ap-ink-2)]"
+				aria-expanded={expanded}
+				onclick={() => (userExpanded = !userExpanded)}
+			>
+				<span>How this answer was made</span>
+				{#if !expanded && summaryParts.length}
+					<span class="font-sans text-[10.5px] tracking-normal text-[var(--ap-ink-3)]/70 normal-case">
+						· {summaryParts.join(" · ")}
+					</span>
+				{/if}
+				<span class="text-[11px] text-[var(--ap-ink-3)]" aria-hidden="true">{expanded ? "▾" : "▸"}</span>
+			</button>
+			<button
+				type="button"
+				class="flex size-[14px] shrink-0 items-center justify-center rounded-full border border-[var(--ap-ink-3)]/40 text-[9px] leading-none text-[var(--ap-ink-3)] transition-colors hover:border-[var(--ap-coral-text)] hover:text-[var(--ap-coral-text)]"
 				title="Why provenance matters — and where this system is systematically weak."
 				aria-label="Why this matters"
 				onclick={() => blindSpotsOpen.set(true)}
@@ -116,8 +158,9 @@
 			</button>
 		</div>
 
-		<!-- pl reserves the spine gutter; the spine line sits behind the nodes. -->
-		<div class="ap-trace relative flex flex-col gap-2 pl-4">
+		{#if expanded}
+			<!-- pl reserves the spine gutter; the spine line sits behind the nodes. -->
+			<div class="ap-trace relative flex flex-col gap-2 pl-4" transition:fly={{ y: -4, duration: reduce ? 0 : 220 }}>
 			<!-- The spine: one persistent hairline, anchored to the first node's center so it
 		     doesn't float above the trace. Low-ink; the nodes carry the signal. -->
 			<div
@@ -179,5 +222,6 @@
 				</div>
 			{/if}
 		</div>
+		{/if}
 	</div>
 {/if}
