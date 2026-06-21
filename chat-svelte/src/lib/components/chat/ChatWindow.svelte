@@ -18,6 +18,7 @@
 	import { artifactPanel } from "$lib/stores/artifactPanel.svelte";
 
 	import CarbonDirectionRight from "~icons/carbon/direction-right-01";
+	import CarbonClose from "~icons/carbon/close";
 	import IconArrowUp from "~icons/lucide/arrow-up";
 
 	import ChatInput from "./ChatInput.svelte";
@@ -25,6 +26,7 @@
 	import ContributeDialog from "./ContributeDialog.svelte";
 	import BlindSpotsModal from "./BlindSpotsModal.svelte";
 	import { blindSpotsOpen } from "$lib/stores/blindSpots";
+	import { stackOpen } from "$lib/stores/stack";
 	import ShareButton from "./ShareButton.svelte";
 	import { downloadConversationMarkdown } from "$lib/utils/exportConversation";
 	import VoiceRecorder from "./VoiceRecorder.svelte";
@@ -56,7 +58,7 @@
 	import { pendingChatInput } from "$lib/stores/pendingChatInput";
 	import LucideSparkles from "~icons/lucide/sparkles";
 
-	import { fly } from "svelte/transition";
+	import { fly, fade } from "svelte/transition";
 	import { cubicInOut } from "svelte/easing";
 
 	import { isVirtualKeyboard } from "$lib/utils/isVirtualKeyboard";
@@ -113,26 +115,11 @@
 		downloadConversationMarkdown({ title, model: modelLabel, messages });
 	};
 
-	// Mobile only (below md): the split-screen collapses to a single column with a
-	// Chat / "Under the hood" tab switcher — on a phone the map is one tap away
-	// rather than hidden. Most users arrive here from a QR code on a phone, so this
-	// is the primary surface, not an afterthought. The dot flags unseen map
-	// activity (a turn streamed, or a "show on map" flash fired) while on the chat
-	// tab. Desktop ignores all of this: both panels render side by side, nav hidden.
-	let mobileTab = $state<"chat" | "map">("chat");
-	let mapHasActivity = $state(false);
-
-	$effect(() => {
-		if (loading && mobileTab === "chat") mapHasActivity = true;
-	});
-
-	onMount(() => {
-		const onFlash = () => {
-			if (mobileTab === "chat") mapHasActivity = true;
-		};
-		window.addEventListener("ap:flash", onFlash);
-		return () => window.removeEventListener("ap:flash", onFlash);
-	});
+	// The live-stack map is HIDDEN BY DEFAULT on both desktop and mobile — the answer is
+	// primary and the inline trace carries the receipt. It's revealed on demand via the
+	// `stackOpen` store (the per-answer trace's "behind the scenes ↗" link, and the welcome
+	// "see how it's built"), presented as one responsive overlay: a right drawer on desktop,
+	// a bottom sheet on mobile. No desktop-split / mobile-tab fork.
 
 	const publicConfig = usePublicConfig();
 
@@ -536,13 +523,12 @@
 
 	function handleWelcomeSeeBuilt() {
 		dismissWelcome();
-		if (browser && window.matchMedia("(max-width: 767px)").matches) {
-			mobileTab = "map";
-			mapHasActivity = false;
-		} else if (browser) {
-			// Defer past the dismiss re-render, or it would wipe the flash class. Light the
-			// model node, plus the sovereign-compute node ONLY if we genuinely serve on it —
-			// the welcome beat must not claim CSCS while HF-served (same gate as reveal.ts).
+		// Reveal the map overlay (same on both platforms now), then light the model node —
+		// plus the sovereign-compute node ONLY if we genuinely serve on it (the welcome beat
+		// must not claim CSCS while HF-served; same gate as reveal.ts). Deferred past the
+		// dismiss re-render so it lands on the mounted, now-open map.
+		stackOpen.set(true);
+		if (browser) {
 			setTimeout(() => {
 				const ids = [...MODEL_NODES, ...(serving.isSovereign ? [COMPUTE_NODE] : [])];
 				window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids } }));
@@ -714,6 +700,9 @@
 </script>
 
 <svelte:window
+	onkeydown={(e) => {
+		if (e.key === "Escape" && $stackOpen) stackOpen.set(false);
+	}}
 	ondragenter={onDragEnter}
 	ondragleave={onDragLeave}
 	ondragover={(e) => {
@@ -738,7 +727,6 @@
 		role="main"
 		aria-label="Chat"
 		class="pointer-events-auto relative z-[-1] min-h-0 min-w-0 flex-1"
-		class:max-md:hidden={mobileTab === "map"}
 	>
 		<!-- One per-page H1 for the screen-reader/document outline (the visible greeting is
 		     decorative display text); visually hidden so the editorial layout is unchanged. -->
@@ -1048,47 +1036,53 @@
 		</div>
 	</div>
 
-	<!-- "Under the hood" live-stack map — the split-screen right pane that mirrors
-	     the chat (pulses the model node while streaming, persists provenance after).
-	     Desktop: always visible. Mobile: full-width, shown when the map tab is active. -->
-	<StackMap active={loading} {messages} mobileActive={mobileTab === "map"} />
-
-	<!-- Mobile-only tab switcher. Lives in the column flow (root is flex-col below
-	     md) so neither panel sits under it; hidden from md up where both show. -->
-	<nav
-		class="pointer-events-auto flex shrink-0 items-stretch border-t border-[var(--ap-rule)] bg-white md:hidden"
+	<!-- "Behind the scenes" live-stack map — hidden by default on both platforms, revealed
+	     on demand from the per-answer trace's "behind the scenes ↗" link (stackOpen store).
+	     ONE responsive overlay: a right-side drawer on desktop, a bottom sheet on mobile.
+	     The map stays MOUNTED while closed (the panel just slides off-screen) so its
+	     ap:flash / ap:pulse-* listeners stay live — a reveal-and-flash lands on a map that's
+	     already listening, and a turn that streams while it's closed still pulses underneath. -->
+	{#if $stackOpen}
+		<!-- Scrim: dims the chat and closes on click/tap. Fades with the panel. -->
+		<button
+			type="button"
+			aria-label="Close behind the scenes"
+			transition:fade={{ duration: 200 }}
+			class="pointer-events-auto fixed inset-0 z-40 bg-[var(--ap-ink)]/25"
+			onclick={() => stackOpen.set(false)}
+		></button>
+	{/if}
+	<!-- Panel. Closed = slid off the bottom (mobile) / right edge (desktop); open = in view.
+	     Transform-only slide keeps the map mounted, so listeners survive the close. -->
+	<div
+		class="fixed inset-x-0 top-14 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl border-t border-[var(--ap-rule)]
+			bg-[var(--ap-paper)] shadow-2xl transition-transform duration-300 ease-out
+			md:inset-y-0 md:top-0 md:right-0 md:left-auto md:w-[min(46%,640px)] md:rounded-none md:border-t-0 md:border-l
+			{$stackOpen
+			? 'pointer-events-auto translate-y-0 md:translate-x-0'
+			: 'pointer-events-none translate-y-full md:translate-x-full md:translate-y-0'}"
+		role="dialog"
+		aria-label="Behind the scenes — the live open-source stack"
+		aria-hidden={!$stackOpen}
 	>
+		<!-- Close affordance: a grab-bar reads as "drag/tap to dismiss" on mobile; the × is the
+		     explicit control on desktop. Both sit above the map's own "Under the hood" header. -->
 		<button
 			type="button"
-			class="flex-1 py-2.5 font-mono text-[11px] tracking-[0.1em] uppercase transition-colors {mobileTab ===
-			'chat'
-				? 'text-[var(--ap-ink)]'
-				: 'text-[var(--ap-ink-3)]'}"
-			onclick={() => (mobileTab = "chat")}
+			aria-label="Close"
+			class="absolute top-2.5 right-2.5 z-10 flex size-7 items-center justify-center rounded-full text-[var(--ap-ink-3)] transition-colors hover:bg-[var(--ap-rule)]/50 hover:text-[var(--ap-ink)]"
+			onclick={() => stackOpen.set(false)}
 		>
-			Chat
+			<CarbonClose class="text-[0.9rem]" />
 		</button>
 		<button
 			type="button"
-			class="relative flex-1 py-2.5 font-mono text-[11px] tracking-[0.1em] uppercase transition-colors {mobileTab ===
-			'map'
-				? 'text-[var(--ap-ink)]'
-				: 'text-[var(--ap-ink-3)]'}"
-			onclick={() => {
-				mobileTab = "map";
-				mapHasActivity = false;
-			}}
-		>
-			Under the hood
-			{#if mapHasActivity && mobileTab !== "map"}
-				<span
-					aria-hidden="true"
-					class="absolute top-2 ml-1.5 size-1.5 rounded-full"
-					style="background:var(--ap-live);"
-				></span>
-			{/if}
-		</button>
-	</nav>
+			aria-label="Close"
+			class="mx-auto mt-2 h-1 w-9 shrink-0 rounded-full bg-[var(--ap-ink-3)]/30 md:hidden"
+			onclick={() => stackOpen.set(false)}
+		></button>
+		<StackMap active={loading} {messages} />
+	</div>
 
 	<ArtifactPanel registry={artifactRegistry} {loading} />
 </div>

@@ -15,12 +15,8 @@
 		// on turn end, persists the answer's provenance highlight.
 		active?: boolean;
 		messages?: Message[];
-		// Below md the map shares the viewport with the chat via the tab switcher
-		// in ChatWindow; this says whether the map tab is the active one. From md
-		// up the map is always visible and this is ignored.
-		mobileActive?: boolean;
 	}
-	let { active = false, messages = [], mobileActive = false }: Props = $props();
+	let { active = false, messages = [] }: Props = $props();
 
 	// Serving provenance (config-derived; see servingProvenance.ts) — drives both
 	// the header copy AND whether the sovereign compute cell lights per answer.
@@ -247,10 +243,11 @@
 	let counts = $derived(data?.coverage);
 </script>
 
+<!-- Fills 100% of whatever wraps it. The reveal chrome (position, size, slide, scrim,
+     close) is owned by the overlay in ChatWindow — this component is just the map, so the
+     same markup serves the desktop drawer and the mobile sheet with no platform fork. -->
 <aside
-	class="pointer-events-auto min-w-0 flex-col overflow-hidden bg-[radial-gradient(120%_90%_at_70%_0%,var(--ap-map-grad-1),var(--ap-map-grad-2))] md:flex md:w-[44%] md:shrink-0 md:border-l md:border-[var(--ap-rule)] xl:w-[46%] {mobileActive
-		? 'flex min-h-0 w-full flex-1'
-		: 'hidden'}"
+	class="pointer-events-auto flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-[radial-gradient(120%_90%_at_70%_0%,var(--ap-map-grad-1),var(--ap-map-grad-2))]"
 >
 	<!-- header -->
 	<div class="shrink-0 px-[22px] pt-[14px] pb-2">

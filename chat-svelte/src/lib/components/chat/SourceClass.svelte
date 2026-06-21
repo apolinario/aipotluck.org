@@ -65,7 +65,9 @@
 	<span class="font-semibold tracking-[0.08em] text-[var(--ap-ink-2)] uppercase">{meta.label}</span>
 	<span class="text-[var(--ap-ink-3)]" aria-hidden="true">·</span>
 	<span>{meta.text}</span>
-	{#if kind === "model"}
+	{#if kind === "model" && !traced}
+		<!-- In the trace, the head "?" already opens Blind spots and the tail carries the single
+		     "behind the scenes ↗"; a per-step link here would just duplicate those. Standalone keeps it. -->
 		<button
 			type="button"
 			class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"

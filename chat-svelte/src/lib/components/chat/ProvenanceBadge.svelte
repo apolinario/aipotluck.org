@@ -53,11 +53,15 @@
 		<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-live)"></span>
 	{/if}
 	<span>{identity.short} · {identity.makerShort} · {providerName}</span>
-	<button
-		type="button"
-		class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
-		onclick={flashModel}
-	>
-		show on map ↗
-	</button>
+	{#if !traced}
+		<!-- In the trace, the single "behind the scenes ↗" tail link reveals the map and lights this
+		     node; a per-step "show on map" would be one of several redundant links. Standalone keeps it. -->
+		<button
+			type="button"
+			class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
+			onclick={flashModel}
+		>
+			show on map ↗
+		</button>
+	{/if}
 </div>

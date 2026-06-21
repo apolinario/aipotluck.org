@@ -9,7 +9,15 @@
 	import SafetyBadge from "./SafetyBadge.svelte";
 	import SecondOpinion from "./SecondOpinion.svelte";
 	import { blindSpotsOpen } from "$lib/stores/blindSpots";
-	import { computePulseNodes } from "../stack/reveal";
+	import { stackOpen } from "$lib/stores/stack";
+	import {
+		computePulseNodes,
+		MODEL_NODES,
+		COMPUTE_NODE,
+		WEBSEARCH_NODE,
+		SAFETY_NODES,
+		ROUTER_NODE,
+	} from "../stack/reveal";
 	import { resolveServing } from "$lib/servingProvenance";
 	import { resolveModelIdentity } from "$lib/identity";
 
@@ -123,6 +131,31 @@
 	});
 	// Belt-and-suspenders: if this trace unmounts mid-stream (turn reconcile / nav), drop its pulse.
 	$effect(() => () => emitPulse(pulsedNodes, false));
+
+	// "Behind the scenes ↗" — the ONE tail link that opens the full live-stack map (hidden by
+	// default). It replaces every per-step "show on map ↗" so the trace carries a single, honest
+	// path into the deeper view. The nodes it lights are exactly the layers THIS answer used
+	// (same honesty gates as the pulse: model always; web-search only when grounded; safety only
+	// on a decline; sovereign compute only when truly served on it; router only once a second
+	// opinion ran) — so revealing the map foregrounds what actually happened, nothing fabricated.
+	let revealNodes = $derived([
+		...MODEL_NODES,
+		...(grounded ? [WEBSEARCH_NODE] : []),
+		...(declined ? SAFETY_NODES : []),
+		...(serving.isSovereign ? [COMPUTE_NODE] : []),
+		...(verified ? [ROUTER_NODE] : []),
+	]);
+	function openBehindScenes() {
+		// Open first, then flash on the next tick so the highlight lands after the panel has begun
+		// sliding in (the map stays mounted while closed, so the listener is always live).
+		stackOpen.set(true);
+		if (typeof window !== "undefined") {
+			setTimeout(
+				() => window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: revealNodes } })),
+				0
+			);
+		}
+	}
 </script>
 
 {#if steps.length || loading}
@@ -159,7 +192,9 @@
 						>trace</span
 					>
 				{/if}
-				<span class="text-[11px] text-[var(--ap-ink-3)]" aria-hidden="true">{expanded ? "▾" : "▸"}</span>
+				<span class="text-[11px] text-[var(--ap-ink-3)]" aria-hidden="true"
+					>{expanded ? "▾" : "▸"}</span
+				>
 			</button>
 			<button
 				type="button"
@@ -204,7 +239,11 @@
 							{:else if step === "recall"}
 								<SourceClass kind="model" traced />
 							{:else if step === "declined" && message.moderation}
-								<SafetyBadge kind={message.moderation.kind} label={message.moderation.label} traced />
+								<SafetyBadge
+									kind={message.moderation.kind}
+									label={message.moderation.label}
+									traced
+								/>
 							{:else if step === "generate"}
 								<ProvenanceBadge
 									modelId={message.routerMetadata?.model || modelId}
@@ -252,6 +291,22 @@
 							verdict={message.verdict}
 						/>
 					</div>
+				</div>
+			{/if}
+			{#if !loading && steps.length}
+				<!-- The ONE path into the deeper view: opens the full live-stack map (hidden by default)
+				     and lights exactly the layers this answer used. Dot-less tail row — it's a way OUT of
+				     the trace, not a step within it. Replaces every per-step "show on map ↗". -->
+				<div class="mt-2 flex gap-2">
+					<span class="size-2 shrink-0" aria-hidden="true"></span>
+					<button
+						type="button"
+						class="min-w-0 flex-1 text-left font-mono text-[10.5px] text-[var(--ap-ink-3)] underline-offset-2 transition-colors hover:text-[var(--ap-coral-text)] hover:underline"
+						onclick={openBehindScenes}
+						title="See this answer on the live open-source stack map — the model, the open sources, the safety check, and where the public stack is still being built."
+					>
+						behind the scenes ↗
+					</button>
 				</div>
 			{/if}
 		{/if}
