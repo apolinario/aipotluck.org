@@ -15,6 +15,7 @@
 	import CarbonDirectionRight from "~icons/carbon/direction-right-01";
 	import CarbonClose from "~icons/carbon/close";
 	import IconArrowUp from "~icons/lucide/arrow-up";
+	import IconPanelRight from "~icons/lucide/panel-right";
 
 	import ChatInput from "./ChatInput.svelte";
 	import WelcomeModal from "$lib/components/WelcomeModal.svelte";
@@ -625,6 +626,25 @@
 		<!-- One per-page H1 for the screen-reader/document outline (the visible greeting is
 		     decorative display text); visually hidden so the editorial layout is unchanged. -->
 		<h1 class="sr-only">AI Potluck — open-source, sovereign AI chat</h1>
+
+		<!-- Persistent map toggle — mirrors the left sidebar's collapse/expand control: subtle,
+		     always available on both platforms. Opens the live-stack map (desktop: a side column
+		     that pushes the chat; mobile: a bottom sheet). The per-answer trace's "behind the
+		     scenes ↗" link still opens the same map (stackOpen), so there are two ways in. -->
+		<button
+			type="button"
+			onclick={() => stackOpen.update((v) => !v)}
+			aria-expanded={$stackOpen}
+			aria-label={$stackOpen ? "Hide the stack map" : "Show what's behind the answer"}
+			title={$stackOpen ? "Hide what's behind the answer" : "Behind the scenes — the live stack"}
+			class="pointer-events-auto absolute top-3 right-3 z-30 flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] backdrop-blur transition-colors
+				{$stackOpen
+				? 'border-[var(--ap-live)]/45 bg-[var(--ap-live)]/10 text-[var(--ap-ink-2)]'
+				: 'border-[var(--ap-rule)] bg-[var(--ap-paper)]/70 text-[var(--ap-ink-3)] hover:border-[var(--ap-ink-3)]/40 hover:text-[var(--ap-ink)]'}"
+		>
+			<IconPanelRight class="size-3.5 shrink-0" />
+			<span class="hidden sm:inline">behind the scenes</span>
+		</button>
 		{#if showWelcome}
 			<WelcomeModal
 				modelId={currentModel.id}
@@ -920,24 +940,30 @@
 	     ap:flash / ap:pulse-* listeners stay live — a reveal-and-flash lands on a map that's
 	     already listening, and a turn that streams while it's closed still pulses underneath. -->
 	{#if $stackOpen}
-		<!-- Scrim: dims the chat and closes on click/tap. Fades with the panel. -->
+		<!-- Scrim: MOBILE only — the bottom sheet overlays the chat, so dim + tap-to-close.
+		     On desktop the map is a side column that sits BESIDE the chat (both visible), so no
+		     scrim there: dimming the chat you're reading alongside the map would defeat the point. -->
 		<button
 			type="button"
 			aria-label="Close behind the scenes"
 			transition:fade={{ duration: 200 }}
-			class="pointer-events-auto fixed inset-0 z-40 bg-[var(--ap-ink)]/25"
+			class="pointer-events-auto fixed inset-0 z-40 bg-[var(--ap-ink)]/25 md:hidden"
 			onclick={() => stackOpen.set(false)}
 		></button>
 	{/if}
-	<!-- Panel. Closed = slid off the bottom (mobile) / right edge (desktop); open = in view.
-	     Transform-only slide keeps the map mounted, so listeners survive the close. -->
+	<!-- Live-stack map. MOBILE: a fixed bottom sheet that slides up over the chat. DESKTOP: an
+	     in-flow flex column (sibling of the chat in the md:flex-row root) whose width animates
+	     0 ↔ ~560px, so opening it PUSHES the chat rather than covering it — both stay visible,
+	     mirroring the left sidebar. Stays MOUNTED while closed (mobile: slid off; desktop: w-0,
+	     overflow-clipped) so its ap:flash / ap:pulse-* listeners survive a close. -->
 	<div
 		class="fixed inset-x-0 top-14 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl border-t border-[var(--ap-rule)]
-			bg-[var(--ap-paper)] shadow-2xl transition-transform duration-300 ease-out
-			md:inset-y-0 md:top-0 md:right-0 md:left-auto md:w-[min(46%,640px)] md:rounded-none md:border-t-0 md:border-l
+			bg-[var(--ap-paper)] shadow-2xl transition-[transform,width] duration-300 ease-out
+			md:relative md:inset-auto md:top-auto md:bottom-auto md:z-auto md:h-full md:shrink-0 md:translate-y-0
+			md:rounded-none md:border-t-0 md:border-l md:shadow-none
 			{$stackOpen
-			? 'pointer-events-auto translate-y-0 md:translate-x-0'
-			: 'pointer-events-none translate-y-full md:translate-x-full md:translate-y-0'}"
+			? 'pointer-events-auto translate-y-0 md:w-[min(40%,560px)] md:translate-x-0'
+			: 'pointer-events-none translate-y-full md:w-0 md:translate-x-0 md:translate-y-0'}"
 		role="dialog"
 		aria-label="Behind the scenes — the live open-source stack"
 		aria-hidden={!$stackOpen}
