@@ -93,5 +93,8 @@ jobs:
         run: npm run db:migrate
       - name: Verify live DB matches the schema (catches journal-vs-reality column drift)
         run: npm run db:verify
-      - name: Hermetic test suite (CI_HERMETIC excludes 3 DB/auth-coupled specs)
-        run: npm run test:ci
+      - name: Hermetic test suite + coverage ratchet (CI_HERMETIC excludes 3 DB/auth-coupled specs)
+        # Coverage gate: server-logic floors in vite.config.ts (test.coverage.thresholds). A change
+        # that drops coverage below the committed floor fails here; raising the floor is a visible PR
+        # diff. Browser/component coverage is out of scope by construction (VITEST_BROWSER unset).
+        run: npm run test:ci:coverage

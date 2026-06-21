@@ -1,5 +1,8 @@
 .vercel
 
+# Coverage reports (regenerable; also gitignored)
+coverage
+
 # Helm chart: templates/*.yaml are Go-templated and prettier's YAML parser
 # can't parse them; the chart is infra-as-code, not app source.
 chart

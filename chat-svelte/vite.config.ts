@@ -32,8 +32,8 @@ function loadTTFAsArrayBuffer() {
 		async transform(_src, id) {
 			if (id.endsWith(".ttf")) {
 				return `export default new Uint8Array([
-			${new Uint8Array(await promises.readFile(id))}
-		  ]).buffer`;
+												${new Uint8Array(await promises.readFile(id))}
+										]).buffer`;
 			}
 		},
 	};
@@ -73,6 +73,40 @@ export default defineConfig({
 		// Serial execution + FK-safe cleanupTestData (deletes reports before conversations) makes them
 		// deterministic. Client/SSR specs are few and fast, so serializing them too costs little.
 		fileParallelism: false,
+		// Coverage RATCHET (only active with `--coverage`, e.g. the CI gate's `test:ci:coverage`). The
+		// scope is server logic — CI runs the node ssr+server workspaces (the flaky browser/Svelte-component
+		// workspace is opt-in via VITEST_BROWSER), so component code is out of frame by construction and
+		// would only drag the denominator. `thresholds.autoUpdate` makes this a true ratchet: when a local
+		// coverage run EXCEEDS a floor, vitest rewrites the floor upward in this file (commit it) — the
+		// numbers only ever go up, and CI fails if a change drops below the committed floor.
+		coverage: {
+			provider: "v8",
+			include: ["src/lib/server/**"],
+			reporter: ["text-summary", "json-summary"],
+			thresholds: {
+				// Static floors, NOT autoUpdate: vitest's autoUpdate reindents this whole file (fighting
+				// prettier/husky) and pins with zero margin on every local coverage run. Instead the floor
+				// is committed and raised by an explicit PR diff when coverage improves — the ratchet stays
+				// visible in review. Global numbers sit a hair under the current hermetic measurement
+				// (stmts/lines 34.62, branches 80.49, fns 65.78) to absorb denominator churn; CI fails on a
+				// real regression in covered code.
+				statements: 34,
+				branches: 79,
+				functions: 64,
+				lines: 34,
+				// High-signal guard on the proven core — the conversation POST handler's extracted units
+				// (rate-limit fail-open, request schema, message-tree, the stream event-reducer). These
+				// carry invariants the manual hardening passes proved; a drop here means a test was deleted
+				// or an invariant left uncovered, not merely new untested code landing elsewhere.
+				// Currently 94.35/86.48/100/94.35 — floors leave a small cushion for one new helper.
+				"src/lib/server/chat/**": {
+					statements: 90,
+					branches: 80,
+					functions: 90,
+					lines: 90,
+				},
+			},
+		},
 		workspace: [
 			...(process.env.VITEST_BROWSER === "true"
 				? [

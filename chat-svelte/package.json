@@ -15,6 +15,7 @@
 		"format": "prettier --write .",
 		"test": "vitest",
 		"test:ci": "CI_HERMETIC=true vitest run",
+		"test:ci:coverage": "CI_HERMETIC=true vitest run --coverage",
 		"test:live": "TEST_LIVE=true vitest run",
 		"db:drift": "drizzle-kit generate && git diff --exit-code -- drizzle/",
 		"db:generate": "drizzle-kit generate",

@@ -32,3 +32,6 @@ models/*
 
 # warm-cache diagnostic spread (regenerable, not served)
 static/data/starterCache.review.json
+
+# Coverage reports (regenerable via `npm run test:ci:coverage`)
+coverage/
