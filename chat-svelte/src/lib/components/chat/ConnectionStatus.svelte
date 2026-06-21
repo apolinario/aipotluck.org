@@ -12,7 +12,9 @@
 
 	const COPY = {
 		offline: {
-			text: "You're offline. Your message will send once you're back.",
+			// Honest: there is no send-queue, so don't promise auto-send ("will send once you're
+			// back" implied a queue we don't have). State the fact and the user's next action.
+			text: "You're offline. Messages won't send until you reconnect.",
 			dot: "var(--ap-coral)",
 			tone: "border-[var(--ap-coral)] text-[var(--ap-coral-text)] bg-[var(--ap-coral)]/8",
 		},

@@ -29,9 +29,10 @@
 	}
 	let { kind, traced = false }: Props = $props();
 
-	// Each class leads with an uppercase LABEL so the source-class indicators read as a
+	// Each class leads with a quiet sentence-case LABEL so the source-class indicators read as a
 	// deliberate matched set with the web case (SourceStrip's "looked it up") — the deck's
 	// two-state badge treatment (p38). The label is the class; the text is the honest detail.
+	// (Sentence case, not all-caps: a per-answer label should not shout.)
 	const META: Record<Props["kind"], { dot: string; label: string; text: string }> = {
 		// Muted ink dot, not the live green — parametric knowledge is static, not a live feed.
 		// Label is "from training" (the class); the detail stays "no live sources" — NOT the
@@ -62,7 +63,7 @@
 	{#if !traced}
 		<span class="size-[6px] shrink-0 rounded-full" style="background: {meta.dot}"></span>
 	{/if}
-	<span class="font-semibold tracking-[0.08em] text-[var(--ap-ink-2)] uppercase">{meta.label}</span>
+	<span class="font-semibold tracking-[0.04em] text-[var(--ap-ink-2)]">{meta.label}</span>
 	<span class="text-[var(--ap-ink-3)]" aria-hidden="true">·</span>
 	<span>{meta.text}</span>
 	{#if kind === "model" && !traced}
