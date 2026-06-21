@@ -1,14 +1,13 @@
 import { authCondition } from "$lib/server/auth";
 import { collections } from "$lib/server/database";
-import { hashIp } from "$lib/server/db/ipHash";
 import { config } from "$lib/server/config";
 import { models, validModelIdSchema } from "$lib/server/models";
-import { ERROR_MESSAGES } from "$lib/stores/errors";
-import type { Message } from "$lib/types/Message";
-import { SEARCH_ENGINES } from "$lib/types/Search";
 import { error } from "@sveltejs/kit";
 import { ObjectId } from "bson";
 import { z } from "zod";
+import { enforceRequestRateLimits } from "$lib/server/chat/rateLimit";
+import { chatRequestSchema } from "$lib/server/chat/requestSchema";
+import { appendTurnMessages } from "$lib/server/chat/messageTree";
 import {
 	MessageUpdateStatus,
 	MessageUpdateType,
@@ -26,10 +25,6 @@ import {
 } from "$lib/server/moderation";
 import { searchProvenance, moderationMarker } from "$lib/messageProvenance";
 import { convertLegacyConversation } from "$lib/utils/tree/convertLegacyConversation";
-import { isMessageId } from "$lib/utils/tree/isMessageId";
-import { buildSubtree } from "$lib/utils/tree/buildSubtree.js";
-import { addChildren } from "$lib/utils/tree/addChildren.js";
-import { addSibling } from "$lib/utils/tree/addSibling.js";
 import { usageLimits } from "$lib/server/usageLimits";
 import { textGeneration } from "$lib/server/textGeneration";
 import type { TextGenerationContext } from "$lib/server/textGeneration/types";
@@ -108,104 +103,9 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		updatedAt: { $lt: new Date(Date.now() - STOP_MARKER_GRACE_MS) },
 	});
 
-	// Register the event for ratelimiting — best-effort. Rate-limit bookkeeping is infrastructure and
-	// must NEVER take down a turn: a DB blip here once 500'd every chat request (the insert threw before
-	// the model ran). On failure we log and continue (fail open); the worst case is one un-recorded event,
-	// a slight under-count that is acceptable for a soft per-minute limit.
-	try {
-		await collections.messageEvents.insertOne({
-			type: "message",
-			userId,
-			createdAt: new Date(),
-			expiresAt: new Date(Date.now() + 60_000),
-			ipHash: hashIp(getClientAddress(), "rate-limit"),
-		});
-	} catch (e) {
-		logger.warn(e, "[rate-limit] failed to record message event — continuing (fail open)");
-	}
-
-	if (usageLimits?.messagesPerMinute) {
-		// Per-SESSION limit (each guest/user has a unique sessionId) — the fair, NAT-SAFE primary
-		// limit: one person can't spam, but classmates sharing a public IP behind a NAT each get their
-		// own budget. (Hard-won lesson: a per-IP limit at the per-person rate once locked out a whole
-		// NAT'd classroom at once — exactly the education audience this alpha targets.)
-		// Fail open on a count error (DB blip) — same posture as the global daily cap below: a limiter
-		// failure must not block a turn. Only an actual over-limit count (not a failed count) 429s.
-		let perSession: number | null = null;
-		try {
-			perSession = await collections.messageEvents.countDocuments({
-				userId,
-				type: "message",
-				expiresAt: { $gt: new Date() },
-			});
-		} catch (e) {
-			logger.warn(e, "[rate-limit] per-session count failed — failing open");
-		}
-		if (perSession !== null && perSession > usageLimits.messagesPerMinute) {
-			error(429, ERROR_MESSAGES.rateLimited);
-		}
-		// Per-IP limiting is OFF by default — a single conference/lecture-hall wifi NAT can put a
-		// thousand phones behind ONE IP, so any per-IP cap risks locking out the whole room (the exact
-		// failure we're avoiding). Per-session above is the NAT-safe limiter; the global daily cap is
-		// the runaway-spend backstop. Enable a LOOSE per-IP anti-abuse ceiling only if a specific
-		// single-IP-many-sessions abuse appears, by setting RATE_LIMIT_IP_MULTIPLIER (× messagesPerMinute);
-		// keep it generous (it is a runaway ceiling, never the per-person rate).
-		const ipMultiplier = Number(Reflect.get(config, "RATE_LIMIT_IP_MULTIPLIER")) || 0;
-		// Count against the SAME keyed hash we store on insert (domain "rate-limit"). When no pepper is
-		// configured hashIp returns null — we then skip the per-IP ceiling entirely (fail open), rather
-		// than count rows where ip_hash IS NULL, which would conflate every unhashed event into one bucket.
-		const ipHash = hashIp(getClientAddress(), "rate-limit");
-		if (ipMultiplier > 0 && ipHash) {
-			let perIp: number | null = null;
-			try {
-				perIp = await collections.messageEvents.countDocuments({
-					ipHash,
-					type: "message",
-					expiresAt: { $gt: new Date() },
-				});
-			} catch (e) {
-				logger.warn(e, "[rate-limit] per-IP count failed — failing open");
-			}
-			if (perIp !== null && perIp > usageLimits.messagesPerMinute * ipMultiplier) {
-				error(429, ERROR_MESSAGES.rateLimited);
-			}
-		}
-	}
-
-	// Service-wide DAILY request cap — a cost/abuse guardrail for the limited CSCS/HF compute budget,
-	// distinct from the per-user/per-IP per-minute limit above. Counts requests in a rolling 24h window
-	// via a dedicated "globalDaily" messageEvent (the table + cleanup already GC by expiresAt). The DB
-	// count is approximate (the best-fit for serverless — no Redis): a brief overshoot under concurrency
-	// or a transient error is acceptable for a soft cap. FAIL-OPEN on a count error so a DB blip can't
-	// take the whole service down; logged when hit / on error. Disabled when the env var is unset/0.
-	const globalDailyCap = Number(config.GLOBAL_DAILY_REQUEST_CAP) || 0;
-	if (globalDailyCap > 0) {
-		let dailyCount: number | null = null;
-		try {
-			dailyCount = await collections.messageEvents.countDocuments({
-				type: "globalDaily",
-				expiresAt: { $gt: new Date() },
-			});
-		} catch (e) {
-			logger.warn(e, "[rate-limit] global daily cap count failed — failing open");
-		}
-		if (dailyCount !== null && dailyCount >= globalDailyCap) {
-			logger.warn({ dailyCount, globalDailyCap }, "[rate-limit] global daily request cap reached");
-			error(429, "The service has reached today's request limit. Please try again later.");
-		}
-		// Record this request in the 24h window (best-effort — a failed insert just under-counts).
-		try {
-			await collections.messageEvents.insertOne({
-				type: "globalDaily",
-				userId,
-				createdAt: new Date(),
-				expiresAt: new Date(Date.now() + 24 * 60 * 60_000),
-				ipHash: hashIp(getClientAddress(), "rate-limit"),
-			});
-		} catch (e) {
-			logger.warn(e, "[rate-limit] global daily event insert failed");
-		}
-	}
+	// Per-turn rate limits (per-session, opt-in per-IP, service-wide daily cap). All fail open on a
+	// DB blip; only an actual over-limit count throws a 429. See $lib/server/chat/rateLimit.
+	await enforceRequestRateLimits({ userId, clientAddress: getClientAddress() });
 
 	if (usageLimits?.messages && conv.messages.length > usageLimits.messages) {
 		error(
@@ -239,70 +139,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		selectedMcpServers,
 		timezone,
 		searchContext,
-	} = z
-		.object({
-			id: z.string().uuid().refine(isMessageId).optional(), // parent message id to append to for a normal message, or the message id for a retry/continue
-			// client-chosen id for this generation run, echoed back by the stop
-			// request so a stop point can be matched to the run it belongs to
-			generationId: z.string().uuid().optional(),
-			inputs: z.optional(
-				z
-					.string()
-					.min(1)
-					.transform((s) => s.replace(/\r\n/g, "\n"))
-			),
-			is_retry: z.optional(z.boolean()),
-			selectedMcpServerNames: z.optional(z.array(z.string())),
-			selectedMcpServers: z
-				.optional(
-					z.array(
-						z.object({
-							name: z.string(),
-							url: z.string(),
-							headers: z
-								.optional(z.array(z.object({ key: z.string(), value: z.string() })))
-								.default([]),
-						})
-					)
-				)
-				.default([]),
-			timezone: z.optional(z.string()),
-			// Open-web search grounding the client attached for this turn (composer
-			// globe toggle). The client runs /api/search and forwards the result so
-			// the citations shown match exactly what grounds the answer. Sizes are
-			// capped: this is the user's own turn (no privilege escalation — they
-			// could type anything as the prompt anyway), but bound the payload.
-			searchContext: z.optional(
-				z.object({
-					query: z.string().max(400),
-					asOf: z.string().max(40),
-					evidence: z.string().max(20_000),
-					sources: z
-						.array(
-							z.object({
-								n: z.number(),
-								title: z.string(),
-								url: z.string(),
-								snippet: z.string(),
-								engine: z.enum(SEARCH_ENGINES),
-								asOf: z.string().optional(),
-							})
-						)
-						.max(20),
-				})
-			),
-			files: z.optional(
-				z.array(
-					z.object({
-						type: z.literal("base64").or(z.literal("hash")),
-						name: z.string(),
-						value: z.string(),
-						mime: z.string(),
-					})
-				)
-			),
-		})
-		.parse(JSON.parse(json));
+	} = chatRequestSchema.parse(JSON.parse(json));
 
 	// Attach MCP selection to locals so the text generation pipeline can consume it
 	try {
@@ -375,87 +212,14 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		(files) => [...files, ...hashFiles]
 	);
 
-	// we will append tokens to the content of this message
-	let messageToWriteToId: Message["id"] | undefined = undefined;
-	// used for building the prompt, subtree of the conversation that goes from the latest message to the root
-	let messagesForPrompt: Message[] = [];
-
-	if (isRetry && messageId) {
-		// two cases, if we're retrying a user message with a newPrompt set,
-		// it means we're editing a user message
-		// if we're retrying on an assistant message, newPrompt cannot be set
-		// it means we're retrying the last assistant message for a new answer
-
-		const messageToRetry = conv.messages.find((message) => message.id === messageId);
-
-		if (!messageToRetry) {
-			error(404, "Message not found");
-		}
-
-		if (messageToRetry.from === "user" && newPrompt) {
-			// add a sibling to this message from the user, with the alternative prompt
-			// add a children to that sibling, where we can write to
-			const newUserMessageId = addSibling(
-				conv,
-				{
-					from: "user",
-					content: newPrompt,
-					files: uploadedFiles,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				},
-				messageId
-			);
-			messageToWriteToId = addChildren(
-				conv,
-				{
-					from: "assistant",
-					content: "",
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				},
-				newUserMessageId
-			);
-			messagesForPrompt = buildSubtree(conv, newUserMessageId);
-		} else if (messageToRetry.from === "assistant") {
-			// we're retrying an assistant message, to generate a new answer
-			// just add a sibling to the assistant answer where we can write to
-			messageToWriteToId = addSibling(
-				conv,
-				{ from: "assistant", content: "", createdAt: new Date(), updatedAt: new Date() },
-				messageId
-			);
-			messagesForPrompt = buildSubtree(conv, messageId);
-			messagesForPrompt.pop(); // don't need the latest assistant message in the prompt since we're retrying it
-		}
-	} else {
-		// just a normal linear conversation, so we add the user message
-		// and the blank assistant message back to back
-		const newUserMessageId = addChildren(
-			conv,
-			{
-				from: "user",
-				content: newPrompt ?? "",
-				files: uploadedFiles,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			},
-			messageId
-		);
-
-		messageToWriteToId = addChildren(
-			conv,
-			{
-				from: "assistant",
-				content: "",
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			},
-			newUserMessageId
-		);
-		// build the prompt from the user message
-		messagesForPrompt = buildSubtree(conv, newUserMessageId);
-	}
+	// Append this turn's message(s) to the conversation tree (normal / retry / edit) and get the
+	// assistant message to stream into plus the prompt subtree. See $lib/server/chat/messageTree.
+	const { messageToWriteToId, messagesForPrompt } = appendTurnMessages(conv, {
+		isRetry,
+		messageId,
+		newPrompt,
+		uploadedFiles,
+	});
 
 	const messageToWriteTo = conv.messages.find((message) => message.id === messageToWriteToId);
 	if (!messageToWriteTo) {
