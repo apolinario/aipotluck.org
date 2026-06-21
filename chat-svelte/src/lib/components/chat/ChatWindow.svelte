@@ -7,7 +7,7 @@
 		usesModelClassifier,
 		SEARCH_TRIGGER_STRATEGY,
 	} from "$lib/search/triggerStrategy";
-	import { onMount, tick } from "svelte";
+	import { tick } from "svelte";
 
 	import ArtifactPanel from "./ArtifactPanel.svelte";
 	import StackMap from "$lib/components/stack/StackMap.svelte";
