@@ -93,10 +93,16 @@ function asStringList(v: unknown): string[] {
 
 // Robustly extract the verdict JSON from the aggregator's output. Falls back to a neutral
 // verdict (never fabricates agreement) when parsing fails.
-function parseVerdict(raw: string | null, n: number): Verdict {
+function parseVerdict(raw: string | null, n: number, hasPrimary: boolean): Verdict {
+	const plural = n === 1 ? "" : "s";
 	const fallback: Verdict = {
 		agreement: "mixed",
-		headline: `Compared this answer against ${n} independent open model${n === 1 ? "" : "s"} — see their takes below.`,
+		// Honest in BOTH cases: only claim "compared this answer" when a primary answer
+		// actually existed to compare against (see the aggInput branch). With no primary,
+		// the panel only weighed in among itself — don't assert a comparison that didn't run.
+		headline: hasPrimary
+			? `Compared this answer against ${n} independent open model${plural} — see their takes below.`
+			: `${n} independent open model${plural} weighed in on this question — see their takes below.`,
 		consensus: [],
 		contradictions: [],
 		blindSpots: [],
@@ -222,7 +228,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				: `(No primary answer available — report where the PANEL agrees and disagrees among itself.)\n\n`) +
 			`PANEL TAKES (${opinions.length} independent open models):\n${panelBlock}`;
 		const aggRaw = await runOne(aggId, aggInput, aggregatorPrompt, 1024, AGG_TIMEOUT_MS, locals);
-		const verdict = parseVerdict(aggRaw, opinions.length);
+		const verdict = parseVerdict(aggRaw, opinions.length, Boolean(primaryAnswer));
 
 		// Persist opinions[] + verdict onto the target message (best-effort).
 		if (conversation && targetMessage) {
