@@ -27,7 +27,9 @@
 	let buttonClass = $derived(
 		[
 			"group relative flex flex-1 basis-[200px] flex-col select-text rounded-[10px] border-[1.5px] px-[15px] py-[10px] text-left transition-[border-color,box-shadow] duration-150",
-			isWanted ? "border-dashed bg-transparent" : "border-[var(--ap-rule)] bg-[var(--ap-paper)]",
+			isWanted
+				? "border-dashed bg-transparent hover:border-[var(--ap-ink-3)]/55"
+				: "border-[var(--ap-rule)] bg-[var(--ap-paper)] shadow-[0_1px_2px_rgba(11,30,45,0.05)] hover:border-[var(--ap-ink-3)]/35 hover:shadow-[0_2px_8px_rgba(11,30,45,0.09)]",
 			pulsed ? "ap-pulse" : trailed ? "ap-trail" : "",
 		].join(" ")
 	);
@@ -51,15 +53,9 @@
 >
 	<div class="flex items-start justify-between gap-2">
 		<div class="min-w-0">
-			<div class="flex items-center gap-2 text-[14px] font-medium text-[var(--ap-ink)]">
-				<span
-					class="size-[9px] shrink-0 rounded-full"
-					style={isWanted
-						? "background:transparent;border:1.5px solid var(--ap-ink-3);"
-						: `background:${color};`}
-				></span>
-				<span class="truncate">{node.nm}</span>
-			</div>
+			<!-- Status is carried by the left rail + the LIVE/BUILDING label; a third dot here
+			     would triple-encode it and indent the name off the org/description left edge. -->
+			<div class="truncate text-[14px] font-medium text-[var(--ap-ink)]">{node.nm}</div>
 			<div class="mt-0.5 truncate text-[12px] text-[var(--ap-ink-3)]">{node.org}</div>
 		</div>
 		<span
@@ -72,11 +68,12 @@
 
 	<div class="mt-1.5 text-[11.5px] leading-snug text-[var(--ap-ink-2)]">{node.d}</div>
 
-	<!-- Subtle "expandable" affordance — strengthens on hover, flips when open. -->
+	<!-- "Expandable" affordance — readable at rest (opacity-25 was effectively invisible, so cards
+	     didn't read as tappable), strengthens on hover, flips when open. -->
 	<ChevronDown
 		aria-hidden="true"
-		class="pointer-events-none absolute right-2 bottom-2 size-3 text-[var(--ap-ink-3)] opacity-25 transition-[transform,opacity] duration-200 group-hover:opacity-70 {open
-			? 'rotate-180 opacity-50'
+		class="pointer-events-none absolute right-2 bottom-2 size-3 text-[var(--ap-ink-3)] opacity-45 transition-[transform,opacity] duration-200 group-hover:opacity-90 {open
+			? 'rotate-180 opacity-80'
 			: ''}"
 	/>
 
