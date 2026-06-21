@@ -28,24 +28,14 @@
 >
 	<span class="size-[6px] shrink-0 rounded-full" style="background: var(--ap-gap)"></span>
 	<span>Touches an open gap: {gap.ask}</span>
-	<!-- Keep the two actions together as one wrap unit so the middot never orphans at a line
-	     break. "see the gap" (not "show on map") disambiguates from the provenance badge's own
-	     "show on map ↗" directly above, which points at the model/compute nodes instead. -->
-	<span class="inline-flex items-center gap-x-2 whitespace-nowrap">
-		<button
-			type="button"
-			class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
-			onclick={flash}
-		>
-			see the gap ↗
-		</button>
-		<span aria-hidden="true">·</span>
-		<button
-			type="button"
-			class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
-			onclick={getInvolved}
-		>
-			get involved →
-		</button>
-	</span>
+	<!-- One CTA per line: "get involved →" already flashes the gap's node (via getInvolved → flash)
+	     AND opens the prefilled contribution form, so it fully subsumes the old separate "see the
+	     gap ↗" link — two links on one line read as redundant. -->
+	<button
+		type="button"
+		class="whitespace-nowrap text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
+		onclick={getInvolved}
+	>
+		get involved →
+	</button>
 </div>

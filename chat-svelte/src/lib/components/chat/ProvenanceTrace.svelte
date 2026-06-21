@@ -140,6 +140,7 @@
 							sources={message.webSearch.sources}
 							asOf={message.webSearch.asOf}
 							query={message.webSearch.query}
+							traced
 						/>
 					{:else if step === "recall"}
 						<SourceClass kind="model" traced />

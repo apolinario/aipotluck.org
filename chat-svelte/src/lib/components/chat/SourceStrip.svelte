@@ -17,8 +17,13 @@
 		sources: SearchSource[];
 		asOf: string;
 		query?: string;
+		// Rendered inside ProvenanceTrace: the spine draws the node + owns the vertical rhythm, so
+		// drop this cell's own card chrome (border/bg/top-margin) and the per-step "show on map" link
+		// (the trace carries ONE consolidated "behind the scenes" link at its tail instead). Keeps
+		// every step on one consistent inline cell system instead of a boxed card amid bare lines.
+		traced?: boolean;
 	}
-	let { sources, asOf, query }: Props = $props();
+	let { sources, asOf, query, traced = false }: Props = $props();
 
 	const ENGINE_META: Record<SearchSource["engine"], { note: string; color: string }> = {
 		Wikipedia: { note: "open public knowledge", color: "var(--ap-live)" },
@@ -49,17 +54,28 @@
 </script>
 
 {#if sources?.length}
+	<!-- Two skins from one markup: standalone = a self-contained rounded card; `traced` = chrome-free
+	     so it sits as one cell on ProvenanceTrace's spine (the spine owns the dot + rhythm). The
+	     expand/collapse + source list are identical either way — honesty copy lives in one place. -->
 	<div
 		in:fly={{ y: 6, duration: prefersReducedMotion.current ? 0 : 360 }}
-		class="mt-1.5 rounded-lg border border-[var(--ap-rule)] bg-[var(--ap-paper)]/40 font-mono text-[10.5px]"
+		class={traced
+			? "font-mono text-[10.5px]"
+			: "mt-1.5 rounded-lg border border-[var(--ap-rule)] bg-[var(--ap-paper)]/40 font-mono text-[10.5px]"}
 	>
-		<div class="flex items-center gap-2 px-2.5 py-1.5">
+		<div class="flex items-center gap-2 {traced ? '' : 'px-2.5 py-1.5'}">
+			<!-- min-h-[44px] traced / min-h-9 standalone: a thumb-comfortable hit area on mobile
+			     (2026 SOTA ≥44px) without forcing a tall row into the boxed-card variant. -->
 			<button
 				type="button"
-				class="flex items-center gap-1.5 text-[var(--ap-ink-2)] transition-colors hover:text-[var(--ap-ink)]"
+				class="flex min-h-[44px] flex-1 items-center gap-1.5 text-left text-[var(--ap-ink-2)] transition-colors hover:text-[var(--ap-ink)]"
+				aria-expanded={open}
 				onclick={() => (open = !open)}
 			>
-				<span class="size-[6px] shrink-0 rounded-full" style="background:var(--ap-live);"></span>
+				{#if !traced}
+					<!-- traced: the spine draws the node, so suppress this leading dot to avoid doubling -->
+					<span class="size-[6px] shrink-0 rounded-full" style="background:var(--ap-live);"></span>
+				{/if}
 				<!-- Leading label mirrors SourceClass's "from training" so the two source-class
 				     states read as a deliberate matched pair (deck p38). Web genuinely ran a lookup,
 				     so "looked it up" is honest here. -->
@@ -72,26 +88,29 @@
 						? ` · as of ${date}`
 						: ""}
 				</span>
-				<span class="text-[var(--ap-ink-3)]">{open ? "▾" : "▸"}</span>
+				<span class="ml-0.5 text-[var(--ap-ink-3)]" aria-hidden="true">{open ? "▾" : "▸"}</span>
 			</button>
-			<button
-				type="button"
-				class="ml-auto text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
-				onclick={flashWebsearch}
-			>
-				show on map ↗
-			</button>
+			{#if !traced}
+				<button
+					type="button"
+					class="ml-auto text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
+					onclick={flashWebsearch}
+				>
+					show on map ↗
+				</button>
+			{/if}
 		</div>
 
 		{#if open}
-			<div class="border-t border-[var(--ap-rule)]">
+			<!-- traced: indent the list under the spine instead of a card divider -->
+			<div class={traced ? "" : "border-t border-[var(--ap-rule)]"}>
 				{#if query}
-					<div class="px-2.5 pt-2 text-[var(--ap-ink-3)]">
+					<div class="pt-1.5 text-[var(--ap-ink-3)] {traced ? '' : 'px-2.5'}">
 						searched open sources for:
 						<span class="text-[var(--ap-ink-2)]">“{query}”</span>
 					</div>
 				{/if}
-				<ol class="flex flex-col gap-1.5 px-2.5 py-2">
+				<ol class="flex flex-col gap-1.5 pt-1.5 pb-0.5 {traced ? '' : 'px-2.5 py-2'}">
 					{#each sources as s (s.n)}
 						{@const meta = ENGINE_META[s.engine]}
 						<li class="flex gap-2 leading-snug">
