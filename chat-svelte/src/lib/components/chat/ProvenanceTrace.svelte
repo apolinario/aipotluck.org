@@ -140,17 +140,24 @@
 			<!-- The head IS the collapse/expand control AND, when collapsed, the one-line receipt.
 			     ≥44px hit area = thumb-comfortable on mobile (2026 SOTA); whole row tappable. The "?"
 			     stays a SEPARATE button (no nested buttons) so it opens Blind Spots, not the toggle. -->
+			<!-- The summary chips ARE the header — "how this answer was made" is implied by them, so we
+			     drop the sentence. The chips persist in both states (collapsed receipt / expanded
+			     accordion title); the spine adds the detail below. aria-label keeps it legible to SR. -->
 			<button
 				type="button"
-				class="flex min-h-[44px] flex-1 items-center gap-1.5 text-left tracking-[0.08em] transition-colors hover:text-[var(--ap-ink-2)]"
+				class="flex min-h-[44px] flex-1 items-center gap-1.5 text-left tracking-normal normal-case transition-colors hover:text-[var(--ap-ink-2)]"
 				aria-expanded={expanded}
+				aria-label="How this answer was made — {expanded ? 'collapse' : 'expand'} the trace"
 				onclick={() => (userExpanded = !userExpanded)}
 			>
-				<span>How this answer was made</span>
-				{#if !expanded && summaryParts.length}
-					<span class="font-mono text-[10px] tracking-normal text-[var(--ap-ink-3)]/75 normal-case">
-						· {summaryParts.join(" · ")}
+				{#if summaryParts.length}
+					<span class="font-mono text-[10px] text-[var(--ap-ink-3)]/90">
+						{summaryParts.join(" · ")}
 					</span>
+				{:else}
+					<span class="font-mono text-[10px] tracking-[0.08em] text-[var(--ap-ink-3)]/80 uppercase"
+						>trace</span
+					>
 				{/if}
 				<span class="text-[11px] text-[var(--ap-ink-3)]" aria-hidden="true">{expanded ? "▾" : "▸"}</span>
 			</button>
@@ -166,79 +173,85 @@
 		</div>
 
 		{#if expanded}
-			<!-- pl reserves the spine gutter; the spine line sits behind the nodes. -->
-			<div class="ap-trace relative flex flex-col gap-2 pl-4" transition:fly={{ y: -4, duration: reduce ? 0 : 220 }}>
-			<!-- The spine: one persistent hairline, anchored to the first node's center so it
-		     doesn't float above the trace. Low-ink; the nodes carry the signal. -->
+			<!-- Spine: each step is a flex row [dot · cell]. The dot is a REAL flex item, mt-aligned to the
+			     cell's first text line so it can never decouple from its label, and every dot is one size.
+			     A single hairline sits behind the dot column. -->
 			<div
-				class="pointer-events-none absolute top-[8px] bottom-2 left-[6px] w-px"
-				style="background: color-mix(in oklab, var(--ap-ink-3) 30%, transparent)"
-				aria-hidden="true"
-			></div>
+				class="ap-trace relative flex flex-col gap-2"
+				transition:fly={{ y: -4, duration: reduce ? 0 : 220 }}
+			>
+				<div
+					class="pointer-events-none absolute top-[7px] bottom-[7px] left-[3.5px] w-px"
+					style="background: color-mix(in oklab, var(--ap-ink-3) 35%, transparent)"
+					aria-hidden="true"
+				></div>
 
-			{#each steps as step (step)}
-				<div class="relative" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
-					<!-- spine node: solid marker, paper ring so it cleanly breaks the line -->
-					<span
-						class="absolute top-[4px] -left-[14px] size-[9px] rounded-full ring-2 ring-[var(--ap-paper)]"
-						style="background: {DOT[step]}"
-						aria-hidden="true"
-					></span>
+				{#each steps as step (step)}
+					<div class="flex gap-2" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
+						<span
+							class="mt-[3.5px] size-2 shrink-0 rounded-full ring-2 ring-[var(--ap-paper)]"
+							style="background: {DOT[step]}"
+							aria-hidden="true"
+						></span>
+						<div class="min-w-0 flex-1">
+							{#if step === "retrieve" && message.webSearch}
+								<SourceStrip
+									sources={message.webSearch.sources}
+									asOf={message.webSearch.asOf}
+									query={message.webSearch.query}
+									traced
+								/>
+							{:else if step === "recall"}
+								<SourceClass kind="model" traced />
+							{:else if step === "declined" && message.moderation}
+								<SafetyBadge kind={message.moderation.kind} label={message.moderation.label} traced />
+							{:else if step === "generate"}
+								<ProvenanceBadge
+									modelId={message.routerMetadata?.model || modelId}
+									provider={message.routerMetadata?.provider}
+									traced
+								/>
+							{:else if step === "verify" && question}
+								<SecondOpinion
+									{question}
+									messageId={message.id}
+									opinions={message.opinions}
+									verdict={message.verdict}
+								/>
+							{/if}
+						</div>
+					</div>
+				{/each}
 
-					{#if step === "retrieve" && message.webSearch}
-						<SourceStrip
-							sources={message.webSearch.sources}
-							asOf={message.webSearch.asOf}
-							query={message.webSearch.query}
-							traced
-						/>
-					{:else if step === "recall"}
-						<SourceClass kind="model" traced />
-					{:else if step === "declined" && message.moderation}
-						<SafetyBadge kind={message.moderation.kind} label={message.moderation.label} traced />
-					{:else if step === "generate"}
-						<ProvenanceBadge
-							modelId={message.routerMetadata?.model || modelId}
-							provider={message.routerMetadata?.provider}
-							traced
-						/>
-					{:else if step === "verify" && question}
+				{#if loading}
+					<div class="flex gap-2" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
+						<span
+							class="mt-[3.5px] size-2 shrink-0 rounded-full ring-2 ring-[var(--ap-paper)]"
+							style="background: var(--ap-live)"
+							class:animate-pulse={!reduce}
+							aria-hidden="true"
+						></span>
+						<span class="font-mono text-[10px] text-[var(--ap-ink-3)]">
+							{grounded ? "Grounding · writing…" : "Writing…"}
+						</span>
+					</div>
+				{/if}
+			</div>
+
+			{#if !loading && answered && !declined && question && !verified}
+				<!-- Second opinion is opt-in: the OFFER is a tail action (dot-less, not a spine step, not in
+				     the summary) so it never reads as a check that already happened. The spacer matches the
+				     dot column so it left-aligns with the steps above. -->
+				<div class="mt-2 flex gap-2">
+					<span class="size-2 shrink-0" aria-hidden="true"></span>
+					<div class="min-w-0 flex-1">
 						<SecondOpinion
 							{question}
 							messageId={message.id}
 							opinions={message.opinions}
 							verdict={message.verdict}
 						/>
-					{/if}
-				</div>
-			{/each}
-
-			<!-- Live tail node: the trace is still drawing. The active layer pulses at the
-		     growing end of the spine, so the user sees WHICH layer is working right now. -->
-			{#if loading}
-				<div class="relative" in:fly={{ y: 6, duration: reduce ? 0 : 320 }}>
-					<span
-						class="absolute top-[4px] -left-[14px] size-[9px] rounded-full ring-2 ring-[var(--ap-paper)]"
-						style="background: var(--ap-live)"
-						class:animate-pulse={!reduce}
-						aria-hidden="true"
-					></span>
-					<span class="font-mono text-[10.5px] text-[var(--ap-ink-3)]">
-						{grounded ? "Grounding · writing…" : "Writing…"}
-					</span>
-				</div>
-			{/if}
-		</div>
-			{#if !loading && answered && !declined && question && !verified}
-				<!-- Second opinion is opt-in: render the OFFER as a tail action (no spine dot, not a
-				     step in the summary) so it never reads as a check that already happened. -->
-				<div class="pl-4">
-					<SecondOpinion
-						{question}
-						messageId={message.id}
-						opinions={message.opinions}
-						verdict={message.verdict}
-					/>
+					</div>
 				</div>
 			{/if}
 		{/if}

@@ -64,11 +64,15 @@
 			: "mt-1.5 rounded-lg border border-[var(--ap-rule)] bg-[var(--ap-paper)]/40 font-mono text-[10.5px]"}
 	>
 		<div class="flex items-center gap-2 {traced ? '' : 'px-2.5 py-1.5'}">
-			<!-- min-h-[44px] traced / min-h-9 standalone: a thumb-comfortable hit area on mobile
-			     (2026 SOTA ≥44px) without forcing a tall row into the boxed-card variant. -->
+			<!-- Standalone gets a ≥44px thumb target; traced does NOT — inside the spine the row must
+			     stay its natural single-line height so its first line aligns with the spine dot (a tall
+			     min-h would vertically-center the text and decouple it from the dot). The collapsed
+			     header is the primary 44px target in the traced case. -->
 			<button
 				type="button"
-				class="flex min-h-[44px] flex-1 items-center gap-1.5 text-left text-[var(--ap-ink-2)] transition-colors hover:text-[var(--ap-ink)]"
+				class="flex {traced
+					? ''
+					: 'min-h-[44px]'} flex-1 items-center gap-1.5 text-left text-[var(--ap-ink-2)] transition-colors hover:text-[var(--ap-ink)]"
 				aria-expanded={open}
 				onclick={() => (open = !open)}
 			>
