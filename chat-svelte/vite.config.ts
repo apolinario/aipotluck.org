@@ -19,7 +19,11 @@ const NON_HERMETIC_SERVER_SPECS = [
 	"src/lib/server/api/__tests__/conversations-id.spec.ts",
 	"src/lib/server/api/__tests__/user.spec.ts",
 ];
-const ciExclude = process.env.CI_HERMETIC === "true" ? NON_HERMETIC_SERVER_SPECS : [];
+// EXCLUDE the live-only specs BY DEFAULT so a cold `npm test` (fresh clone, no .env) is green —
+// they import a route whose module graph reads OPENAI_BASE_URL / hits the DB at import and would
+// throw without env. Opt in with `TEST_LIVE=true` (see `npm run test:live`) for the full pass.
+// (CI uses the hermetic `test:ci`, which also excludes them.)
+const liveOnlyExclude = process.env.TEST_LIVE === "true" ? [] : NON_HERMETIC_SERVER_SPECS;
 
 // used to load fonts server side for thumbnail generation
 function loadTTFAsArrayBuffer() {
@@ -109,7 +113,7 @@ export default defineConfig({
 					exclude: [
 						"src/**/*.svelte.{test,spec}.{js,ts}",
 						"src/**/*.ssr.{test,spec}.{js,ts}",
-						...ciExclude,
+						...liveOnlyExclude,
 					],
 					setupFiles: ["./scripts/setups/vitest-setup-server.ts"],
 					testTimeout: 30000,
