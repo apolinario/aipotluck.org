@@ -38,7 +38,7 @@
 	// config-derived facts — so the map states what's ACTUALLY serving (checkpoint,
 	// routing provider, whether CSCS serves this prototype yet) and can't drift.
 	function applyServingTokens(d: StackMapData, sv: ServingProvenance): StackMapData {
-		// Headline name, version brand + served size ("Apertus 1.5 8B"), derived from
+		// Headline name, version brand + served size ("Apertus 70B"), derived from
 		// the served checkpoint so the map title matches the provenance badge and both
 		// update themselves if the served model flips. See identity.ts.
 		const modelShort = resolveModelIdentity(sv.servedCheckpoint).short;
