@@ -262,10 +262,12 @@
 				Under the hood{active ? " · running" : ""}
 			</span>
 		</div>
-		<h2 class="mt-0.5 font-serif text-[24px] text-[var(--ap-ink)]">What's behind every answer</h2>
-		<!-- Honest serving disclosure, config-derived (servingProvenance.ts): states
-		     the live serving host — HF prototype host vs CSCS sovereign compute. -->
-		<p class="mt-1 text-[11px] leading-snug text-[var(--ap-ink-3)]">
+		<!-- No serif title: the map is a deliberately-summoned overlay (the user clicked
+		     "behind the scenes" to get here), so a big "What's behind every answer" only
+		     restated the "UNDER THE HOOD" eyebrow and cost ~30px the mobile sheet can't spare.
+		     The honest serving disclosure (config-derived; servingProvenance.ts) carries the
+		     header's substance — what's ACTUALLY serving right now. -->
+		<p class="mt-1.5 text-[12.5px] leading-snug text-[var(--ap-ink-2)]">
 			{serving.mapHeaderLine}
 		</p>
 	</div>

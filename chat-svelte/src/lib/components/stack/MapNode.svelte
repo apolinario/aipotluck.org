@@ -78,10 +78,16 @@
 	/>
 
 	{#if open}
-		<div class="mt-2 border-t border-dashed border-[var(--ap-rule)] pt-2">
+		<!-- Detail view: ONE divider splits the prose description from the data readout. Inside,
+		     hierarchy comes from a single uppercase micro-label + ink-2/ink-3 weight and even
+		     spacing — NOT from stacking dashed rules (two rules one line apart read as choppy).
+		     Coral is reserved for the contribute CTA, so reference links are quiet ink-2 and coral
+		     only ever means "there's a gap you can help close". -->
+		<div class="mt-2.5 space-y-2.5 border-t border-dashed border-[var(--ap-rule)] pt-2.5">
 			{#if atlas}
 				<div class="space-y-1">
-					<div class="flex items-center gap-2 font-mono text-[10px] text-[var(--ap-ink-3)]">
+					<!-- Lead signal (is this project alive?) gets ink-2; the rest stays ink-3 secondary. -->
+					<div class="flex items-center gap-2 font-mono text-[10.5px] text-[var(--ap-ink-2)]">
 						<span>
 							★ {fmt(atlas.stars)}{atlas.stars7d ? ` (+${compact.format(atlas.stars7d)}/wk)` : ""}
 						</span>
@@ -100,7 +106,9 @@
 						<span>{atlas.openness}</span>
 						{#if atlas.license}<span> · {atlas.license}</span>{/if}
 					</div>
-					<div class="font-mono text-[10px] text-[var(--ap-ink-3)]">via OSO product-view</div>
+					<div class="font-mono text-[9.5px] text-[var(--ap-ink-3)]/75 italic">
+						via OSO product-view
+					</div>
 				</div>
 			{:else}
 				<div class="font-mono text-[10px] leading-[1.7] text-[var(--ap-ink-3)]">
@@ -111,10 +119,13 @@
 			{/if}
 
 			{#if node.lineage}
-				<div class="mt-2 space-y-1 border-t border-dashed border-[var(--ap-rule)] pt-2">
-					<div class="font-mono text-[10px] text-[var(--ap-ink-2)]">
-						training data — {node.lineage.summary}
+				<!-- No second dashed rule — a single uppercase micro-label (the system's idiom) names
+				     the block and creates the hierarchy the flat mono wall was missing. -->
+				<div class="space-y-1">
+					<div class="font-mono text-[9px] tracking-[0.12em] text-[var(--ap-ink-3)] uppercase">
+						training data
 					</div>
+					<div class="font-mono text-[10.5px] text-[var(--ap-ink-2)]">{node.lineage.summary}</div>
 					{#if node.lineage.facts?.length}
 						<ul class="font-mono text-[10px] leading-[1.7] text-[var(--ap-ink-3)]">
 							{#each node.lineage.facts as f}
@@ -123,10 +134,10 @@
 						</ul>
 					{/if}
 					{#if node.lineage.links?.length}
-						<div class="flex flex-wrap gap-3 font-mono text-[10px]">
+						<div class="flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[10.5px]">
 							{#each node.lineage.links as l}
 								<a
-									class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
+									class="py-0.5 text-[var(--ap-ink-2)] underline-offset-2 hover:underline"
 									href={l.url}
 									onclick={(e) => e.stopPropagation()}
 									rel="noreferrer"
@@ -138,10 +149,12 @@
 				</div>
 			{/if}
 
-			<div class="mt-2 flex gap-3 font-mono text-[10px]">
+			<!-- Actions: the quiet external link (go to the source) + the ONE coral CTA (close the gap).
+			     py-0.5 nudges the inline tap targets up toward thumb-comfortable on the mobile sheet. -->
+			<div class="flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[10.5px]">
 				{#if atlas?.url ?? node.url}
 					<a
-						class="text-[var(--ap-ink-2)] underline-offset-2 hover:underline"
+						class="py-0.5 text-[var(--ap-ink-2)] underline-offset-2 hover:underline"
 						href={atlas?.url ?? node.url}
 						onclick={(e) => e.stopPropagation()}
 						rel="noreferrer"
@@ -154,7 +167,7 @@
 					<span
 						role="button"
 						tabindex="0"
-						class="cursor-pointer font-semibold text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
+						class="cursor-pointer py-0.5 font-semibold text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 						onclick={(e) => {
 							e.stopPropagation();
 							contributeOpen.set({ topic: node.nm });
