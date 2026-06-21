@@ -35,7 +35,15 @@ const SAFE: ModerationResult = { flagged: false, label: null, score: 0 };
 // break the whole chat on an HF blip. The report affordance + prompt refusal remain as backstops.
 export async function moderateMessage(text: string): Promise<ModerationResult> {
 	const token = hfToken();
-	if (!text?.trim() || !token) {
+	if (!text?.trim()) {
+		return SAFE;
+	}
+	if (!token) {
+		// A MISSING token is a config error, not a transient blip — it silently disables
+		// toxicity screening for every message. Make that loud (per-message: in prod the
+		// token is always set so this never fires; in a misconfigured deploy you WANT the
+		// "safety is off" signal). Still fails open so chat keeps working.
+		console.error("[moderation] no HF token — toxicity screening DISABLED, failing open");
 		return SAFE;
 	}
 	try {
