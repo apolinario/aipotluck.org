@@ -256,7 +256,7 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 		// 70B only for the alpha (user decision): the answer-quality layer
 		// (persona/grounding/identity-lock) is tuned for the 70B, it's the default
 		// served + tested model, and the 8B fails the identity-lock / confabulates.
-		// Apertus 1.5 may be added here later if we get access. The first allowlisted
+		// Newer Apertus checkpoints may be added here later. The first allowlisted
 		// model becomes defaultModel (models[0]) below; with one entry the picker
 		// collapses to a single model. Override via MODEL_ALLOWLIST if needed.
 		const allowlistSpec = allowlistRaw || "swiss-ai/Apertus-70B-Instruct-2509";

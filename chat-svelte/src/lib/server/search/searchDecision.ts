@@ -69,7 +69,7 @@ export async function classifySearchNeed(
 
 // ── Model TOOL-CALLING decision (trigger strategy "tool") ───────────────────
 // Instead of a yes/no classifier, advertise the web_search tool and let the model
-// decide AND author the query. The probe (Apertus 1.5 8B sft-dpo-tools, 2026-06-18)
+// decide AND author the query. The probe (an Apertus tool-calling checkpoint, 2026-06-18)
 // confirmed clean OpenAI tool_calls with good discrimination. The chat answer is
 // still produced by the existing grounded-streaming path (we run openSearch with
 // the model's query and inject evidence) — this call only resolves the decision,
@@ -107,7 +107,7 @@ export function parseToolDecision(toolCalls: ToolCallLike[] | null | undefined):
  * open-web search, and let it author the query. Best-effort: fails closed to
  * { shouldSearch: false } on any error or short query, never throws, never blocks
  * the turn. Uses the default (chat) model so the decision matches the answerer's
- * tool-calling capability; requires a tools-capable checkpoint (sft-dpo-tools).
+ * tool-calling capability; requires a tools-capable checkpoint.
  */
 export async function decideSearchViaTool(
 	query: string,

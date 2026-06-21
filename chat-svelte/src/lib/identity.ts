@@ -3,7 +3,7 @@
 // The whole product's credibility rests on honest provenance, so the model
 // name must NEVER be hardcoded in places that can drift. Everything user-facing
 // (system prompt, provenance badge, model identity surfaces) derives from the
-// served model id. Flip the served model — e.g. when Apertus 1.5 8B access
+// served model id. Flip the served model — e.g. when a newer Apertus checkpoint
 // lands — and every surface updates with zero code change and no risk of the UI
 // claiming a model that isn't running.
 //
@@ -13,7 +13,7 @@
 // the badge can never disagree about who made the model.
 
 export type ModelIdentity = {
-	short: string; // display headline — version brand + served size, "Apertus 1.5 8B"
+	short: string; // display headline — version brand + served size, e.g. "Apertus 70B"
 	served?: string; // the actual served checkpoint, e.g. "Apertus-70B-Instruct-2509" — technical detail
 	maker: string; // "the Swiss AI Initiative (SwissAI)"
 	makerShort: string; // "SwissAI"
@@ -39,13 +39,13 @@ function sizeSuffix(served?: string): string {
 	return m ? ` ${m[1]}B` : "";
 }
 
-// Version brand (e.g. "1.5") read from the served checkpoint, NOT hardcoded — so flipping the
-// served model carries the brand with it and no surface can claim a version that isn't running.
-// "Apertus-1.5-8B-…" → " 1.5"; the 2509 release "Apertus-70B-Instruct-2509" has no decimal version
-// in its id → "" (renders the plain "Apertus 70B" brand). This is the drift-proof replacement for the
-// previously hardcoded brand: the alpha runs on the officially-released Apertus-70B-Instruct-2509, and
-// will adopt Apertus 1.5 once SwissAI officially releases it — at which point flipping MODEL_ALLOWLIST
-// to the 1.5 checkpoint restores "Apertus 1.5 8B" with zero code change.
+// Version brand (the decimal in a checkpoint id) read from the served checkpoint, NOT hardcoded — so
+// flipping the served model carries the brand with it and no surface can claim a version that isn't
+// running. A decimal-versioned id like "Apertus-X.Y-8B-…" → " X.Y"; the 2509 release
+// "Apertus-70B-Instruct-2509" has no decimal version in its id → "" (renders the plain "Apertus 70B"
+// brand). This is the drift-proof replacement for a hardcoded brand: the alpha runs on the
+// officially-released Apertus-70B-Instruct-2509, and will adopt a newer Apertus checkpoint once SwissAI
+// releases one — at which point flipping MODEL_ALLOWLIST to it updates the headline with zero code change.
 function versionSuffix(served?: string): string {
 	const m = served?.match(/apertus[-\s]?(\d+\.\d+)/i);
 	return m ? ` ${m[1]}` : "";
@@ -63,10 +63,10 @@ function apertus(served?: string): ModelIdentity {
 }
 
 // Canonical display-name policy (updated 2026-06-19, Justin): the headline shows the version brand
-// AND the served parameter size — "Apertus 1.5 8B" — derived from the served checkpoint. The
-// differentiator here is radical honesty, and an open 8B doing this well is the story, not a
+// AND the served parameter size — e.g. "Apertus 70B" — derived from the served checkpoint. The
+// differentiator here is radical honesty, and an open model doing this well is the story, not a
 // liability; hiding the size would be the kind of obscuring the product rejects. The full served
-// checkpoint (e.g. Apertus-1.5-8B-Instruct-sft-dpo-tools) is still carried in `served` and surfaced
+// checkpoint (e.g. Apertus-70B-Instruct-2509) is still carried in `served` and surfaced
 // to technical users — badge tooltip, the map node's HF link, a persona precision note. (Supersedes
 // the 2026-06-18 "version brand regardless of size" call.)
 export function resolveModelIdentity(rawId?: string): ModelIdentity {

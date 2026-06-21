@@ -3,14 +3,14 @@ import { buildPersonaPrompt, resolveDecoding, GROUNDED_DECODING, RECENCY_CLAUSE 
 
 describe("buildPersonaPrompt", () => {
 	it("default: fills all identity tokens (no {token} placeholder leaks through)", () => {
-		const out = buildPersonaPrompt("swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools");
+		const out = buildPersonaPrompt("swiss-ai/Apertus-70B-Instruct-2509");
 		expect(out).not.toMatch(/\{(model|maker|served|serving|training)\}/);
 		expect(out).toContain("AI Potluck");
 	});
 
 	it("override: replaces the prose but still fills the identity tokens", () => {
 		const out = buildPersonaPrompt(
-			"swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools",
+			"swiss-ai/Apertus-70B-Instruct-2509",
 			"Intro. You run on {model}."
 		);
 		expect(out.startsWith("Intro. You run on ")).toBe(true);

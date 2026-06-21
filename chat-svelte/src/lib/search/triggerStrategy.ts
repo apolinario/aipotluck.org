@@ -30,7 +30,7 @@ export type SearchTriggerStrategy = "heuristic" | "model" | "tool" | "margin";
 // PUBLIC_SEARCH_TRIGGER=margin on the served Apertus-70B-2509 — the proven prod
 // path (logprob-margin classifier, 100% held-out specificity; see
 // decideSearchViaMargin). Earlier (2026-06-18) a probe ran PUBLIC_SEARCH_TRIGGER=
-// tool on an Apertus 1.5 8B sft-dpo-TOOLS checkpoint and confirmed it emits clean
+// tool on an Apertus tool-calling checkpoint and confirmed it emits clean
 // OpenAI tool_calls; that path is retained but NOT the active strategy (the 70B is
 // weak at native tool-calling, which is why margin replaced it). ("model" = the
 // cheaper yes/no classifier path, kept for any non-tools checkpoint; see

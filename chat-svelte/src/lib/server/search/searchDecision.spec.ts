@@ -29,7 +29,7 @@ describe("parseClassifierVerdict", () => {
 
 // The tool-decision parse turns the model's OpenAI tool_calls into {shouldSearch,
 // query}. A web_search call → search (with the model's query when present); no
-// call → no search. Shape mirrors the live probe (Apertus 1.5 8B sft-dpo-tools).
+// call → no search. Shape mirrors the live probe (an Apertus tool-calling checkpoint).
 describe("parseToolDecision", () => {
 	const webSearchCall = (args: string) => [
 		{ id: "x", type: "function", function: { name: "web_search", arguments: args } },

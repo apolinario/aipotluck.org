@@ -11,7 +11,7 @@ describe("isRecencyQuery — the auto-search trigger", () => {
 		expect(isRecencyQuery("what is the latest news on the EU AI Act?")).toBe(true);
 		expect(isRecencyQuery("who is the current president of Switzerland")).toBe(true);
 		expect(isRecencyQuery("what happened this week in open AI")).toBe(true);
-		expect(isRecencyQuery("status of Apertus 1.5 release")).toBe(true);
+		expect(isRecencyQuery("status of the next Apertus release")).toBe(true);
 	});
 
 	it("fires on explicit years (2024+)", () => {

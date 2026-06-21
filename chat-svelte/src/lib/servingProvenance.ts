@@ -18,7 +18,7 @@ export type ServingProvenance = {
 	providerLabel: string;
 	/** True when served DIRECTLY on sovereign public compute (CSCS / LUMI), not a prototype host. */
 	isSovereign: boolean;
-	/** The served checkpoint, e.g. "Apertus-1.5-8B-Instruct-sft-dpo". */
+	/** The served checkpoint, e.g. "Apertus-70B-Instruct-2509". */
 	servedCheckpoint: string;
 	/** HF model page for the served checkpoint (best-effort). */
 	checkpointUrl: string;
@@ -51,10 +51,10 @@ const KNOWN_HOSTS: Record<string, HostFacts> = {
 };
 
 // Served checkpoints whose HF model page is PUBLIC — safe to deep-link from the
-// "Open weights" control on the provenance map. The CSCS-served 1.5 research
-// builds (sft-dpo / sft-dpo-tools) return 401 on huggingface.co (unpublished), so
-// linking them directly would 401 a public visitor and break the open-weights
-// story. For anything not known-public we fall back to the SwissAI org page,
+// "Open weights" control on the provenance map. Some served checkpoints — e.g.
+// in-progress research builds served on CSCS — are unpublished and return 401 on
+// huggingface.co, so linking them directly would 401 a public visitor and break
+// the open-weights story. For anything not known-public we fall back to the SwissAI org page,
 // which is always public and on-brand (the served checkpoint NAME still shows in
 // the map copy, so we stay honest about exactly what's running).
 const PUBLIC_MODEL_PAGES = new Set([

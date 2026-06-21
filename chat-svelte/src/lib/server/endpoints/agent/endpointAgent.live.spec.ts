@@ -4,8 +4,8 @@ import { endpointAgent } from "./endpointAgent";
 // LIVE integration test for Story B's agent endpoint. It drives the REAL endpoint generator against a
 // REAL local agent service (which itself calls real Apertus on Infomaniak), asserting the chunk stream
 // chat-ui's generate.ts consumes: a routerMetadata chunk (provenance), a <think>…</think> progress block,
-// >=1 tool step, and a non-empty final answer. Requires a running agent service:
-//   python agent-service/scripts (boot proxy+app on :8751, hybrid, auth off)  — see /tmp/boot_agent.py
+// >=1 tool step, and a non-empty final answer. Requires a running agent service reachable at
+// AGENT_SERVICE_URL (default http://127.0.0.1:8751) — see the agent-service repo for how to boot it.
 // Skipped automatically if AGENT_SERVICE_URL/the default local service isn't reachable.
 const BASE = process.env.AGENT_SERVICE_URL || "http://127.0.0.1:8751";
 

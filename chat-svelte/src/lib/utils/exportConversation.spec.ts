@@ -11,13 +11,13 @@ describe("conversationToMarkdown", () => {
 	it("renders user + assistant turns with frontmatter and title", () => {
 		const md = conversationToMarkdown({
 			title: "EU AI Act status",
-			model: "Apertus 1.5 8B",
+			model: "Apertus 70B",
 			exportedAt: fixedDate,
 			messages: [msg("user", "What is the EU AI Act?"), msg("assistant", "It is a regulation.")],
 		});
 		expect(md).toContain("---");
 		expect(md).toContain('title: "EU AI Act status"');
-		expect(md).toContain('model: "Apertus 1.5 8B"');
+		expect(md).toContain('model: "Apertus 70B"');
 		expect(md).toContain("exported: 2026-06-20");
 		expect(md).toContain("# EU AI Act status");
 		expect(md).toContain("## You");

@@ -18,10 +18,10 @@ describe("resolveServing", () => {
 	});
 
 	it("labels CSCS direct as sovereign and drops the prototype hedge", () => {
-		const s = resolveServing(CSCS, "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo");
+		const s = resolveServing(CSCS, "swiss-ai/Apertus-8B-Instruct-research");
 		expect(s.providerLabel).toBe("CSCS");
 		expect(s.isSovereign).toBe(true);
-		expect(s.servedCheckpoint).toBe("Apertus-1.5-8B-Instruct-sft-dpo");
+		expect(s.servedCheckpoint).toBe("Apertus-8B-Instruct-research");
 		// Sovereign copy says it runs on CSCS now; no "not yet" / "via HuggingFace".
 		expect(s.heroServingLine).toMatch(/sovereign public compute at CSCS/i);
 		expect(s.heroServingLine).not.toMatch(/HuggingFace/i);
@@ -34,10 +34,10 @@ describe("resolveServing", () => {
 		expect(resolveServing(HF, "swiss-ai/Apertus-70B-Instruct-2509").checkpointUrl).toBe(
 			"https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509"
 		);
-		// Private CSCS 1.5 research build (401 on HF) → fall back to the public org
+		// Private CSCS research build (401 on HF) → fall back to the public org
 		// page, never a dead deep-link. The checkpoint NAME still shows elsewhere.
 		expect(
-			resolveServing(CSCS, "swiss-ai/Apertus-1.5-8B-Instruct-sft-dpo-tools").checkpointUrl
+			resolveServing(CSCS, "swiss-ai/Apertus-8B-Instruct-research").checkpointUrl
 		).toBe("https://huggingface.co/swiss-ai");
 	});
 

@@ -1,7 +1,7 @@
 // Model TOOL-CALLING web search (trigger strategy "tool").
 //
-// WIRED (2026-06-18, Commit A) for the DECISION step: Apertus 1.5 8B sft-dpo-tools
-// emits clean OpenAI tool_calls, so searchDecision.decideSearchViaTool advertises
+// WIRED (2026-06-18, Commit A) for the DECISION step: an Apertus tool-calling
+// checkpoint emits clean OpenAI tool_calls, so searchDecision.decideSearchViaTool advertises
 // WEB_SEARCH_TOOL and lets the model decide + author the query. The chat answer is
 // still produced by the existing grounded-streaming path (run openSearch with the
 // model's query, inject evidence), so the streaming tool-result loop did NOT need
