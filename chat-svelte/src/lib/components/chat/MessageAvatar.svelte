@@ -15,16 +15,20 @@
 ></span>
 
 <style>
+	/* A clear "breathing" pulse — scale + opacity, not opacity alone, so a 14px hollow ring
+	   visibly reads as alive/thinking rather than static. transform-origin is center (block span). */
 	.ap-thinking {
-		animation: ap-thinking 1.4s ease-in-out infinite;
+		animation: ap-thinking 1.25s ease-in-out infinite;
 	}
 	@keyframes ap-thinking {
 		0%,
 		100% {
-			opacity: 0.4;
+			opacity: 0.35;
+			transform: scale(0.7);
 		}
 		50% {
 			opacity: 1;
+			transform: scale(1);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {

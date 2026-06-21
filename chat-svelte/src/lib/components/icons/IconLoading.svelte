@@ -6,17 +6,19 @@
 	let { classNames = "" }: Props = $props();
 </script>
 
-<div class={"inline-flex h-8 flex-none items-center gap-1 " + classNames}>
+<!-- Typing/thinking indicator: on-palette ink dots (was off-theme gray), sized so the pending
+     answer bubble reads as a deliberate "typing…" affordance rather than an empty outline. -->
+<div class={"inline-flex h-8 flex-none items-center gap-1.5 " + classNames}>
 	<div
-		class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+		class="size-1.5 flex-none animate-bounce rounded-full bg-[var(--ap-ink-3)]"
 		style="animation-delay: 0.25s;"
 	></div>
 	<div
-		class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+		class="size-1.5 flex-none animate-bounce rounded-full bg-[var(--ap-ink-3)]"
 		style="animation-delay: 0.5s;"
 	></div>
 	<div
-		class="h-1 w-1 flex-none animate-bounce rounded-full bg-gray-500 dark:bg-gray-400"
+		class="size-1.5 flex-none animate-bounce rounded-full bg-[var(--ap-ink-3)]"
 		style="animation-delay: 0.75s;"
 	></div>
 </div>
