@@ -88,12 +88,12 @@ export default defineConfig({
 				// prettier/husky) and pins with zero margin on every local coverage run. Instead the floor
 				// is committed and raised by an explicit PR diff when coverage improves — the ratchet stays
 				// visible in review. Global numbers sit a hair under the current hermetic measurement
-				// (stmts/lines 34.62, branches 80.49, fns 65.78) to absorb denominator churn; CI fails on a
-				// real regression in covered code.
-				statements: 34,
-				branches: 79,
-				functions: 64,
-				lines: 34,
+				// (stmts/lines 35.88, branches 81.12, fns 67.09) to absorb denominator churn; CI fails on a
+				// real regression in covered code. (Ratcheted up when modelsCatalog.ts extraction landed.)
+				statements: 35,
+				branches: 80,
+				functions: 66,
+				lines: 35,
 				// High-signal guard on the proven core — the conversation POST handler's extracted units
 				// (rate-limit fail-open, request schema, message-tree, the stream event-reducer). These
 				// carry invariants the manual hardening passes proved; a drop here means a test was deleted
