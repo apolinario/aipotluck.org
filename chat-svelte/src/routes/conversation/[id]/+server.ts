@@ -108,26 +108,40 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		updatedAt: { $lt: new Date(Date.now() - STOP_MARKER_GRACE_MS) },
 	});
 
-	// register the event for ratelimiting
-	await collections.messageEvents.insertOne({
-		type: "message",
-		userId,
-		createdAt: new Date(),
-		expiresAt: new Date(Date.now() + 60_000),
-		ipHash: hashIp(getClientAddress(), "rate-limit"),
-	});
+	// Register the event for ratelimiting — best-effort. Rate-limit bookkeeping is infrastructure and
+	// must NEVER take down a turn: a DB blip here once 500'd every chat request (the insert threw before
+	// the model ran). On failure we log and continue (fail open); the worst case is one un-recorded event,
+	// a slight under-count that is acceptable for a soft per-minute limit.
+	try {
+		await collections.messageEvents.insertOne({
+			type: "message",
+			userId,
+			createdAt: new Date(),
+			expiresAt: new Date(Date.now() + 60_000),
+			ipHash: hashIp(getClientAddress(), "rate-limit"),
+		});
+	} catch (e) {
+		logger.warn(e, "[rate-limit] failed to record message event — continuing (fail open)");
+	}
 
 	if (usageLimits?.messagesPerMinute) {
 		// Per-SESSION limit (each guest/user has a unique sessionId) — the fair, NAT-SAFE primary
 		// limit: one person can't spam, but classmates sharing a public IP behind a NAT each get their
 		// own budget. (Hard-won lesson: a per-IP limit at the per-person rate once locked out a whole
 		// NAT'd classroom at once — exactly the education audience this alpha targets.)
-		const perSession = await collections.messageEvents.countDocuments({
-			userId,
-			type: "message",
-			expiresAt: { $gt: new Date() },
-		});
-		if (perSession > usageLimits.messagesPerMinute) {
+		// Fail open on a count error (DB blip) — same posture as the global daily cap below: a limiter
+		// failure must not block a turn. Only an actual over-limit count (not a failed count) 429s.
+		let perSession: number | null = null;
+		try {
+			perSession = await collections.messageEvents.countDocuments({
+				userId,
+				type: "message",
+				expiresAt: { $gt: new Date() },
+			});
+		} catch (e) {
+			logger.warn(e, "[rate-limit] per-session count failed — failing open");
+		}
+		if (perSession !== null && perSession > usageLimits.messagesPerMinute) {
 			error(429, ERROR_MESSAGES.rateLimited);
 		}
 		// Per-IP limiting is OFF by default — a single conference/lecture-hall wifi NAT can put a
@@ -142,12 +156,17 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		// than count rows where ip_hash IS NULL, which would conflate every unhashed event into one bucket.
 		const ipHash = hashIp(getClientAddress(), "rate-limit");
 		if (ipMultiplier > 0 && ipHash) {
-			const perIp = await collections.messageEvents.countDocuments({
-				ipHash,
-				type: "message",
-				expiresAt: { $gt: new Date() },
-			});
-			if (perIp > usageLimits.messagesPerMinute * ipMultiplier) {
+			let perIp: number | null = null;
+			try {
+				perIp = await collections.messageEvents.countDocuments({
+					ipHash,
+					type: "message",
+					expiresAt: { $gt: new Date() },
+				});
+			} catch (e) {
+				logger.warn(e, "[rate-limit] per-IP count failed — failing open");
+			}
+			if (perIp !== null && perIp > usageLimits.messagesPerMinute * ipMultiplier) {
 				error(429, ERROR_MESSAGES.rateLimited);
 			}
 		}
