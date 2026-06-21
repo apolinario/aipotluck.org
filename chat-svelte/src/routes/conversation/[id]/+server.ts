@@ -142,7 +142,11 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		searchContext,
 	} = chatRequestSchema.parse(JSON.parse(json));
 
-	// Attach MCP selection to locals so the text generation pipeline can consume it
+	// Attach MCP selection to locals so the text generation pipeline can consume it.
+	// FORWARD-LOOKING: nothing reads locals.mcp yet — MCP tools are gated off for the alpha.
+	// The read side (thread this into maybeRunMcpTool, see $lib/server/mcp) lands when tools
+	// re-enable, post-alpha alongside the Apertus 1.5 8B release. Kept wired so re-enabling is
+	// a read-side change only.
 	try {
 		locals.mcp = {
 			selectedServerNames: selectedMcpServerNames,
@@ -159,7 +163,8 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		// ignore attachment errors, pipeline will just use env servers
 	}
 
-	// Attach user timezone so the tool prompt can include localized time
+	// Attach user timezone so the tool prompt can include localized time. Same status as
+	// locals.mcp above: forward-looking, consumed when MCP tools re-enable post-alpha.
 	if (timezone) {
 		locals.timezone = timezone;
 	}
