@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { deriveConnectionState } from "./connection";
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { get } from "svelte/store";
+import { deriveConnectionState, createConnectionStore } from "./connection";
 
 const base = { navigatorOnline: true, lastPingAgoMs: 0 as number | null };
 
@@ -46,5 +47,100 @@ describe("deriveConnectionState", () => {
 		expect(
 			deriveConnectionState({ ...base, lastPingAgoMs: 3000 }, { reconnectingAfterMs: 2000 })
 		).toBe("reconnecting");
+	});
+});
+
+// The store is where the false-offline brittleness lives or dies: a captive-portal / wifi
+// re-auth flips navigator.onLine to false for a fraction of a second. The debounce must keep
+// that flicker from ever flashing the alarming "offline" banner, while a real recovery must
+// surface instantly. These exercise that wiring (the reducer above is pure; this is the timers).
+describe("createConnectionStore", () => {
+	let listeners: Record<string, Array<() => void>>;
+	function setupBrowser(onLine = true) {
+		listeners = {};
+		vi.stubGlobal("window", {
+			addEventListener: (ev: string, cb: () => void) => void (listeners[ev] ??= []).push(cb),
+			removeEventListener: (ev: string, cb: () => void) =>
+				void (listeners[ev] = (listeners[ev] ?? []).filter((f) => f !== cb)),
+		});
+		const nav = { onLine };
+		vi.stubGlobal("navigator", nav);
+		return { nav, fire: (ev: string) => (listeners[ev] ?? []).forEach((f) => f()) };
+	}
+	afterEach(() => {
+		vi.useRealTimers();
+		vi.unstubAllGlobals();
+	});
+
+	it("no-ops safely with no browser (SSR): yields online, notePing is harmless", () => {
+		// No window/navigator stubbed → SSR branch.
+		vi.unstubAllGlobals();
+		const { state, notePing } = createConnectionStore();
+		expect(get(state)).toBe("online");
+		expect(() => notePing()).not.toThrow();
+	});
+
+	it("a brief navigator-offline flicker that recovers within the debounce never surfaces 'offline'", () => {
+		vi.useFakeTimers();
+		const { nav, fire } = setupBrowser(true);
+		const { state, notePing } = createConnectionStore({ debounceMs: 1500, tickMs: 2000 });
+		const seen: string[] = [];
+		const unsub = state.subscribe((s) => seen.push(s));
+		notePing();
+
+		nav.onLine = false;
+		fire("offline"); // schedules the degraded state behind the 1.5s debounce
+		vi.advanceTimersByTime(500); // still within the debounce window
+		nav.onLine = true;
+		fire("online"); // recovery cancels the pending degraded surface
+
+		vi.advanceTimersByTime(3000);
+		unsub();
+		expect(seen).not.toContain("offline");
+		expect(get(state)).toBe("online");
+	});
+
+	it("a sustained navigator-offline surfaces 'offline' after the debounce", () => {
+		vi.useFakeTimers();
+		const { nav, fire } = setupBrowser(true);
+		const { state, notePing } = createConnectionStore({ debounceMs: 1500 });
+		state.subscribe(() => {});
+		notePing();
+
+		nav.onLine = false;
+		fire("offline");
+		expect(get(state)).toBe("online"); // not yet — debounced
+		vi.advanceTimersByTime(1500);
+		expect(get(state)).toBe("offline");
+	});
+
+	it("recovery to online applies immediately (no debounce on the way back)", () => {
+		vi.useFakeTimers();
+		const { nav, fire } = setupBrowser(false);
+		const { state } = createConnectionStore({ debounceMs: 1500 });
+		state.subscribe(() => {});
+		vi.advanceTimersByTime(1500);
+		expect(get(state)).toBe("offline");
+
+		nav.onLine = true;
+		fire("online");
+		expect(get(state)).toBe("online"); // immediate, same tick
+	});
+
+	it("heartbeat staleness surfaces 'reconnecting' via the poll tick once past threshold", () => {
+		vi.useFakeTimers();
+		setupBrowser(true);
+		const { state, notePing } = createConnectionStore({
+			debounceMs: 1500,
+			tickMs: 2000,
+			reconnectingAfterMs: 8000,
+		});
+		state.subscribe(() => {});
+		notePing(); // fresh heartbeat at t0
+		vi.advanceTimersByTime(6000);
+		expect(get(state)).toBe("online"); // still fresh enough
+		vi.advanceTimersByTime(4000); // now > 8s stale; a poll tick recomputes
+		vi.advanceTimersByTime(1500); // debounce surfaces it
+		expect(get(state)).toBe("reconnecting");
 	});
 });
