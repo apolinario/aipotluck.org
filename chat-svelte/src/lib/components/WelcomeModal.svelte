@@ -70,8 +70,7 @@
 
 		<p class="text-[14px] leading-relaxed text-[var(--ap-ink)]/85">
 			Our intelligence comes from {modelShort}, the open model from the Swiss National AI
-			Initiative. {serving.welcomeServingLine} ROOST covers safety while OpenMined helps ensure responsible
-			use of data. The Mozilla Data Collective rounds out our stack with locally-sourced data sets.
+			Initiative. {serving.welcomeServingLine} ROOST covers safety.
 		</p>
 
 		<p class="text-[14px] leading-relaxed text-[var(--ap-ink)]/85">
