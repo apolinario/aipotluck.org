@@ -6,8 +6,6 @@
 
 	import ArtifactPanel from "./ArtifactPanel.svelte";
 	import StackMap from "$lib/components/stack/StackMap.svelte";
-	import { MODEL_NODES, COMPUTE_NODE } from "../stack/reveal";
-	import { resolveServing } from "$lib/servingProvenance";
 	import { collectArtifacts } from "$lib/utils/artifacts";
 	import { setArtifactsContext } from "$lib/utils/artifactsContext";
 	import { artifactPanel } from "$lib/stores/artifactPanel.svelte";
@@ -165,10 +163,6 @@
 	// webSearchEnabled is retained dormant so the control can be re-exposed without rewiring.
 	let webSearchEnabled = $state(false);
 	let draftLooksRecent = $derived(isRecencyQueryDenoised(draft));
-
-	// Serving provenance — so map flashes can gate the sovereign-compute node honestly
-	// (never flash CSCS while HF-served), the same gate reveal.ts applies per answer.
-	const serving = $derived(page.data.servingProvenance ?? resolveServing());
 
 	const handleSubmit = async () => {
 		// Guard on the trimmed draft, not just `!draft`: a whitespace-only draft ("   \n") is
@@ -418,17 +412,11 @@
 
 	function handleWelcomeSeeBuilt() {
 		dismissWelcome();
-		// Reveal the map overlay (same on both platforms now), then light the model node —
-		// plus the sovereign-compute node ONLY if we genuinely serve on it (the welcome beat
-		// must not claim CSCS while HF-served; same gate as reveal.ts). Deferred past the
-		// dismiss re-render so it lands on the mounted, now-open map.
+		// Reveal the map at REST — deliberately NO flash. Nothing has run yet, so lighting the
+		// model (Apertus) / compute (CSCS) nodes here would falsely imply they just processed a
+		// query. The nodes show their static status (LIVE/BUILDING/GAP); they light up for real
+		// only when an actual answer uses them (ap:flash from the send path / per-answer trace).
 		stackOpen.set(true);
-		if (browser) {
-			setTimeout(() => {
-				const ids = [...MODEL_NODES, ...(serving.isSovereign ? [COMPUTE_NODE] : [])];
-				window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids } }));
-			}, 0);
-		}
 	}
 
 	// Respect per‑model multimodal toggle from settings (force enable)
@@ -637,7 +625,8 @@
 			aria-expanded={$stackOpen}
 			aria-label={$stackOpen ? "Hide the stack map" : "Show what's behind the answer"}
 			title={$stackOpen ? "Hide what's behind the answer" : "Behind the scenes — the live stack"}
-			class="pointer-events-auto absolute top-3 right-3 z-30 flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] backdrop-blur transition-colors
+			class="pointer-events-auto absolute top-3 right-3 z-30 flex size-11 items-center justify-center rounded-full border text-[11px] backdrop-blur transition-colors
+				sm:h-auto sm:w-auto sm:justify-start sm:gap-1.5 sm:px-2.5 sm:py-1
 				{$stackOpen
 				? 'border-[var(--ap-live)]/45 bg-[var(--ap-live)]/10 text-[var(--ap-ink-2)]'
 				: 'border-[var(--ap-rule)] bg-[var(--ap-paper)]/70 text-[var(--ap-ink-3)] hover:border-[var(--ap-ink-3)]/40 hover:text-[var(--ap-ink)]'}"
