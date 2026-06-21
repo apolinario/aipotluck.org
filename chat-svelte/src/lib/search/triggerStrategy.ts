@@ -26,14 +26,15 @@ export type SearchTriggerStrategy = "heuristic" | "model" | "tool" | "margin";
 // Code default = "heuristic" — the prod-SAFE default. Deployments select the
 // active strategy via the PUBLIC_SEARCH_TRIGGER env var (resolved through
 // resolveTriggerStrategy below), so flipping to model/tool is a config change,
-// never a code edit that could surprise a deploy. Local dogfood (2026-06-18)
-// runs PUBLIC_SEARCH_TRIGGER=tool on the Apertus 1.5 8B sft-dpo-TOOLS checkpoint:
-// the probe confirmed it emits clean OpenAI tool_calls (recency → web_search with
-// its own query; timeless → answers directly), so the model itself decides when
-// to search. The recency heuristic stays as the safety net (OR'd in) that catches
-// any false-negative the tool misses; in the ideal end-state the tool never misses
-// and the net is redundant. ("model" = the cheaper yes/no classifier path, kept
-// for the non-tools checkpoint; see searchDecision.ts.)
+// never a code edit that could surprise a deploy. Current local dogfood runs
+// PUBLIC_SEARCH_TRIGGER=margin on the served Apertus-70B-2509 — the proven prod
+// path (logprob-margin classifier, 100% held-out specificity; see
+// decideSearchViaMargin). Earlier (2026-06-18) a probe ran PUBLIC_SEARCH_TRIGGER=
+// tool on an Apertus 1.5 8B sft-dpo-TOOLS checkpoint and confirmed it emits clean
+// OpenAI tool_calls; that path is retained but NOT the active strategy (the 70B is
+// weak at native tool-calling, which is why margin replaced it). ("model" = the
+// cheaper yes/no classifier path, kept for any non-tools checkpoint; see
+// searchDecision.ts.)
 export const SEARCH_TRIGGER_STRATEGY: SearchTriggerStrategy = "heuristic";
 
 /**
