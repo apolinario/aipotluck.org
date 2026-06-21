@@ -186,7 +186,9 @@ describe("streaming incomplete markdown", () => {
 
 	test("incomplete inline code renders as code", () => {
 		const html = renderBlocksHtml("Run `npm insta", true);
-		expect(html).toContain("<code>npm insta</code>");
+		// translate="no": inline code is opted out of browser auto-translate (DE/FR readers)
+		// so identifiers/commands aren't rewritten into the target language.
+		expect(html).toContain('<code translate="no">npm insta</code>');
 	});
 
 	test("partial trailing HTML tag does not flash as raw text", () => {

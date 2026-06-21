@@ -345,7 +345,13 @@ function sanitizeHtmlForMultimedia(html: string): string {
 function createMarkedInstance(sources: SimpleSource[]): Marked {
 	return new Marked({
 		hooks: {
-			postprocess: (html) => addInlineCitations(html, sources),
+			// Mark inline `code` spans translate="no" so browser auto-translate (DE/FR readers)
+			// doesn't rewrite identifiers/commands/model names into the target language. Fenced
+			// blocks are tokenized out to CodeBlock.svelte (protected there), so the only <code>
+			// left in this prose HTML is inline codespans — a plain replace is safe + signature-
+			// independent (no marked renderer-override needed). Default marked emits bare <code>.
+			postprocess: (html) =>
+				addInlineCitations(html, sources).replaceAll("<code>", '<code translate="no">'),
 		},
 		extensions: [katexBlockExtension, katexInlineExtension],
 		renderer: {

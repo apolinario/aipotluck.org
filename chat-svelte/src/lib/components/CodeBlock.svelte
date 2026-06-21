@@ -67,7 +67,12 @@
 			/>
 		</div>
 	</div>
-	<pre class="scrollbar-custom overflow-auto px-5 font-mono transition-[height]"><code
+	<!-- translate="no": browser auto-translate (Chrome/Firefox) otherwise rewrites code
+	     keywords/identifiers into the target language, producing broken code a user then
+	     copies. Code is language-neutral — opt the whole block out of machine translation. -->
+	<pre
+		translate="no"
+		class="scrollbar-custom overflow-auto px-5 font-mono transition-[height]"><code
 			><!-- eslint-disable svelte/no-at-html-tags -->{@html code}</code
 		></pre>
 
