@@ -69,7 +69,9 @@ describe.sequential("POST /conversation/[id]/report", () => {
 			expect(rows[0].messageId).toBe("msg-1");
 			expect(rows[0].detail).toBe("abusive");
 		} finally {
-			await getDb().delete(schema.reports).where(inArray(schema.reports.conversationId, [convId]));
+			await getDb()
+				.delete(schema.reports)
+				.where(inArray(schema.reports.conversationId, [convId]));
 		}
 	});
 

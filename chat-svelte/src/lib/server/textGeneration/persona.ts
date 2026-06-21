@@ -122,7 +122,10 @@ export function buildPersonaPrompt(
 			.trim();
 	}
 	// {serving} is filled from the serving authority; an override without the token is left as-is.
-	return fillIdentityTokens(template, identity).replaceAll("{serving}", servingClause(opts?.serving));
+	return fillIdentityTokens(template, identity).replaceAll(
+		"{serving}",
+		servingClause(opts?.serving)
+	);
 }
 
 /** Decoding params with an optional tuning override merged over the code defaults. */

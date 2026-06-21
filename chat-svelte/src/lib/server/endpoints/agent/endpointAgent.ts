@@ -79,7 +79,13 @@ export async function endpointAgent(
 					generated_text: opts.generated_text ?? null,
 					details: null,
 					...(opts.router
-						? { routerMetadata: { route: "agent", model: provenanceModel, provider: provenanceProvider } }
+						? {
+								routerMetadata: {
+									route: "agent",
+									model: provenanceModel,
+									provider: provenanceProvider,
+								},
+							}
 						: {}),
 					...(opts.agentStep ? { agentStep: opts.agentStep } : {}),
 				}) as TextGenerationStreamOutputSimplified;

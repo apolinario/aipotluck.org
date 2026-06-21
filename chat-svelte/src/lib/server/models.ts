@@ -150,7 +150,9 @@ const addEndpoint = (m: Awaited<ReturnType<typeof processModel>>) => ({
 			return await endpoints.agent({ ...endpoint, model: m });
 		}
 		// Unreachable per the discriminated union (openai|agent both handled above); runtime-only guard.
-		throw new Error(`Unsupported endpoint type '${(endpoint as { type: string }).type}' in this build`);
+		throw new Error(
+			`Unsupported endpoint type '${(endpoint as { type: string }).type}' in this build`
+		);
 	},
 });
 
@@ -252,7 +254,9 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 		// to an empty string to expose the full catalog.
 		// NOTE: the `config` Proxy returns "" for unset keys (not undefined), so test the trimmed value.
 		// Unset/empty → default to Apertus; "*" or "all" → full catalog; otherwise the given id list.
-		const allowlistRaw = ((Reflect.get(config, "MODEL_ALLOWLIST") as string | undefined) ?? "").trim();
+		const allowlistRaw = (
+			(Reflect.get(config, "MODEL_ALLOWLIST") as string | undefined) ?? ""
+		).trim();
 		// 70B only for the alpha (user decision): the answer-quality layer
 		// (persona/grounding/identity-lock) is tuned for the 70B, it's the default
 		// served + tested model, and the 8B fails the identity-lock / confabulates.
@@ -271,7 +275,9 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 			// Order by the allowlist, not the upstream router catalog order, so the
 			// FIRST allowlisted id deterministically becomes defaultModel (models[0]).
 			const byId = new Map(parsed.data.map((m) => [m.id, m]));
-			const filtered = allowlist.map((id) => byId.get(id)).filter((m): m is typeof parsed.data[number] => Boolean(m));
+			const filtered = allowlist
+				.map((id) => byId.get(id))
+				.filter((m): m is (typeof parsed.data)[number] => Boolean(m));
 			if (filtered.length) {
 				allowedData = filtered;
 				logger.info(
@@ -429,9 +435,13 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 		// Gated by AGENT_SERVICE_URL so it appears ONLY where configured (off by default → safe for the
 		// alpha; setting the env turns it on). The agent endpoint streams the service's /run + SSE into
 		// chat-ui's token stream (plan/steps as a <think> block, verified result as the answer).
-		const agentUrl = ((Reflect.get(config, "AGENT_SERVICE_URL") as string | undefined) ?? "").trim();
+		const agentUrl = (
+			(Reflect.get(config, "AGENT_SERVICE_URL") as string | undefined) ?? ""
+		).trim();
 		if (agentUrl) {
-			const agentToken = ((Reflect.get(config, "AGENT_SERVICE_TOKEN") as string | undefined) ?? "").trim();
+			const agentToken = (
+				(Reflect.get(config, "AGENT_SERVICE_TOKEN") as string | undefined) ?? ""
+			).trim();
 			const agentModelName =
 				((Reflect.get(config, "AGENT_SERVICE_MODEL") as string | undefined) ?? "").trim() ||
 				"swiss-ai/Apertus-70B-Instruct-2509";
@@ -439,8 +449,9 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 				id: "apertus-agent",
 				name: "apertus-agent",
 				displayName:
-					((Reflect.get(config, "AGENT_SERVICE_DISPLAY_NAME") as string | undefined) ?? "").trim() ||
-					"Apertus Agent (beta)",
+					(
+						(Reflect.get(config, "AGENT_SERVICE_DISPLAY_NAME") as string | undefined) ?? ""
+					).trim() || "Apertus Agent (beta)",
 				description:
 					"Runs your task as a multi-step agent on the fully-open Apertus model (hybrid), sandboxed and metered server-side. Shows its plan + steps as it works.",
 				preprompt: "",
@@ -460,7 +471,10 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 				hasInferenceAPI: false,
 			} as ProcessedModel;
 			decorated = [...decorated, agentModel];
-			logger.info({ baseURL: agentUrl }, "[models] Registered Public AI agent model (apertus-agent)");
+			logger.info(
+				{ baseURL: agentUrl },
+				"[models] Registered Public AI agent model (apertus-agent)"
+			);
 		}
 
 		// Compare-model stack (independent open models on a DIFFERENT provider). The
@@ -473,22 +487,37 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 		// hierarchy). Gated on SECOND_OPINION_* so they appear only where configured
 		// (off by default → safe for the alpha); the third is dormant until
 		// THIRD_OPINION_MODEL is set.
-		const soBaseURL = ((Reflect.get(config, "SECOND_OPINION_BASE_URL") as string | undefined) ?? "").trim();
-		const soApiKey = ((Reflect.get(config, "SECOND_OPINION_API_KEY") as string | undefined) ?? "").trim();
+		const soBaseURL = (
+			(Reflect.get(config, "SECOND_OPINION_BASE_URL") as string | undefined) ?? ""
+		).trim();
+		const soApiKey = (
+			(Reflect.get(config, "SECOND_OPINION_API_KEY") as string | undefined) ?? ""
+		).trim();
 		// The panel = COMPARE_PANEL (comma-separated, for the collective fanout) when set,
 		// else the sequential [SECOND, THIRD] pair. Plus the AGGREGATOR_MODEL (the verdict
 		// writer) if it isn't already a panelist. All ride the same compare endpoint.
-		const secondId = ((Reflect.get(config, "SECOND_OPINION_MODEL") as string | undefined) ?? "").trim();
-		const thirdId = ((Reflect.get(config, "THIRD_OPINION_MODEL") as string | undefined) ?? "").trim();
+		const secondId = (
+			(Reflect.get(config, "SECOND_OPINION_MODEL") as string | undefined) ?? ""
+		).trim();
+		const thirdId = (
+			(Reflect.get(config, "THIRD_OPINION_MODEL") as string | undefined) ?? ""
+		).trim();
 		const panelRaw = ((Reflect.get(config, "COMPARE_PANEL") as string | undefined) ?? "").trim();
 		const aggId = ((Reflect.get(config, "AGGREGATOR_MODEL") as string | undefined) ?? "").trim();
 		const panelIds = panelRaw
-			? panelRaw.split(",").map((s) => s.trim()).filter(Boolean)
+			? panelRaw
+					.split(",")
+					.map((s) => s.trim())
+					.filter(Boolean)
 			: [secondId, thirdId].filter(Boolean);
 		// Display-name hints for the two named singles; panel ids derive a name from the id.
 		const nameHints: Record<string, string> = {};
-		const secondName = ((Reflect.get(config, "SECOND_OPINION_DISPLAY_NAME") as string | undefined) ?? "").trim();
-		const thirdName = ((Reflect.get(config, "THIRD_OPINION_DISPLAY_NAME") as string | undefined) ?? "").trim();
+		const secondName = (
+			(Reflect.get(config, "SECOND_OPINION_DISPLAY_NAME") as string | undefined) ?? ""
+		).trim();
+		const thirdName = (
+			(Reflect.get(config, "THIRD_OPINION_DISPLAY_NAME") as string | undefined) ?? ""
+		).trim();
 		if (secondId && secondName) nameHints[secondId] = secondName;
 		if (thirdId && thirdName) nameHints[thirdId] = thirdName;
 		const compareIds = [...new Set([...panelIds, ...(aggId ? [aggId] : [])])];

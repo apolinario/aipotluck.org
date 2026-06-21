@@ -342,7 +342,10 @@ export function isServingQuery(text: string): boolean {
 // providerLabel/isSovereign), never hardcoded, so the in-prompt serving claim can't contradict the
 // provenance badge when the host flips (HF prototype → CSCS sovereign). Provider-agnostic when
 // serving facts are absent. Same fact the badge + persona derive — calque dual-path fix C.
-export function buildServingNote(serving?: { providerLabel: string; isSovereign: boolean }): string {
+export function buildServingNote(serving?: {
+	providerLabel: string;
+	isSovereign: boolean;
+}): string {
 	if (serving?.isSovereign) {
 		return `If this is about where THIS system runs or what compute serves it: be honest and precise. This prototype runs directly on sovereign public compute (${serving.providerLabel}); CSCS (Switzerland) and LUMI (Finland) are the sovereign production target and where Apertus was trained. Say plainly that it runs on sovereign public compute now, and do not overclaim beyond what the provenance badge shows.`;
 	}

@@ -81,9 +81,9 @@
 		<h2 class="text-lg font-medium">Data</h2>
 		<p class="text-[var(--ap-ink-2)]">
 			Conversations are stored to operate the service, and guest conversations are automatically
-			deleted after {RETENTION_DAYS} days. Do not enter sensitive personal information. See the <a
-				class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
-				href="/privacy">Privacy</a
+			deleted after {RETENTION_DAYS} days. Do not enter sensitive personal information. See the
+			<a class="text-[var(--ap-coral-text)] underline-offset-2 hover:underline" href="/privacy"
+				>Privacy</a
 			> page for details.
 		</p>
 	</section>

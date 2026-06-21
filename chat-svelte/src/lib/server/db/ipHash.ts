@@ -35,7 +35,9 @@ export function hashIp(
 ): string | null {
 	const raw = (ip ?? "").trim();
 	if (!raw) return null;
-	const pepper = ((Reflect.get(config, "CONTRIBUTION_IP_PEPPER") as string | undefined) ?? "").trim();
+	const pepper = (
+		(Reflect.get(config, "CONTRIBUTION_IP_PEPPER") as string | undefined) ?? ""
+	).trim();
 	if (!pepper) {
 		if (!warnedNoPepper) {
 			console.warn(

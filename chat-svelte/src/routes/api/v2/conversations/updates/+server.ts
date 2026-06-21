@@ -65,7 +65,9 @@ export const GET: RequestHandler = async ({ locals, url, request }) => {
 			// Emit `id:` = the event's updatedAt so the browser's built-in reconnect echoes it back as the
 			// `Last-Event-ID` header and we resume from there (see cursor resolution above).
 			const encode = (data: ConvUpdate) =>
-				new TextEncoder().encode(`id: ${data.updatedAt}\nevent: update\ndata: ${JSON.stringify(data)}\n\n`);
+				new TextEncoder().encode(
+					`id: ${data.updatedAt}\nevent: update\ndata: ${JSON.stringify(data)}\n\n`
+				);
 
 			const sendHeartbeat = () => controller.enqueue(new TextEncoder().encode(": heartbeat\n\n"));
 

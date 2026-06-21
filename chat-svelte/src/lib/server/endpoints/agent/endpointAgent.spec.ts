@@ -15,7 +15,8 @@ function sseStream(frames: string[]): ReadableStream<Uint8Array> {
 	});
 }
 
-const frame = (event: string, data: unknown) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+const frame = (event: string, data: unknown) =>
+	`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -33,7 +34,12 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 		const fetchMock = vi.fn(async (url: string | URL, init?: RequestInit) => {
 			const u = String(url);
 			if (u.endsWith("/run")) {
-				return { ok: true, status: 200, json: async () => ({ id: "t1" }), text: async () => "" } as Response;
+				return {
+					ok: true,
+					status: 200,
+					json: async () => ({ id: "t1" }),
+					text: async () => "",
+				} as Response;
 			}
 			if (u.includes("/run/t1/events")) {
 				return { ok: true, status: 200, body: sseStream(frames) } as unknown as Response;
@@ -62,10 +68,11 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 
 		// submit: POST /run with the prompt + synthesize:true + bearer auth
 		const submitCall = fetchMock.mock.calls.find(([u]) => String(u).endsWith("/run"));
-		expect(submitCall).toBeDefined();
-		const body = JSON.parse((submitCall![1] as RequestInit).body as string);
+		if (!submitCall) throw new Error("expected a POST /run call");
+		const submitInit = submitCall[1] as RequestInit;
+		const body = JSON.parse(submitInit.body as string);
 		expect(body).toMatchObject({ prompt: "how many files?", synthesize: true });
-		expect((submitCall![1] as RequestInit).headers).toMatchObject({ authorization: "Bearer tok" });
+		expect(submitInit.headers).toMatchObject({ authorization: "Bearer tok" });
 
 		const text = chunks.map((c) => c.token.text).join("");
 		const finalChunk = chunks.find((c) => c.generated_text);
@@ -82,7 +89,7 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 		// per-step live-stack beat: one agentStep chunk per tool_call, carrying the step index, tool name,
 		// and the plan's total step count (→ generate.ts forwards as MessageUpdateType.AgentStep → the
 		// client beats the Hermes node on the map). Two tool_calls in the canned SSE → two agentStep chunks.
-		const steps = chunks.filter((c) => c.agentStep).map((c) => c.agentStep!);
+		const steps = chunks.flatMap((c) => (c.agentStep ? [c.agentStep] : []));
 		expect(steps).toHaveLength(2);
 		expect(steps[0]).toMatchObject({ index: 0, tool: "tool", total: 2 });
 		expect(steps[1]).toMatchObject({ index: 1, tool: "write", total: 2 });
@@ -96,7 +103,12 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 		const fetchMock = vi.fn(async (url: string | URL) => {
 			const u = String(url);
 			if (u.endsWith("/run"))
-				return { ok: true, status: 200, json: async () => ({ id: "t1" }), text: async () => "" } as Response;
+				return {
+					ok: true,
+					status: 200,
+					json: async () => ({ id: "t1" }),
+					text: async () => "",
+				} as Response;
 			if (u.includes("/run/t1/events"))
 				return { ok: true, status: 200, body: sseStream(frames) } as unknown as Response;
 			throw new Error(`unexpected url ${u}`);
@@ -128,12 +140,15 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 	});
 
 	it("surfaces a submit failure as an answer instead of throwing", async () => {
-		const fetchMock = vi.fn(async () => ({
-			ok: false,
-			status: 503,
-			json: async () => ({}),
-			text: async () => "upstream down",
-		}) as Response);
+		const fetchMock = vi.fn(
+			async () =>
+				({
+					ok: false,
+					status: 503,
+					json: async () => ({}),
+					text: async () => "upstream down",
+				}) as Response
+		);
 		vi.stubGlobal("fetch", fetchMock);
 
 		const factory = await endpointAgent({ type: "agent", baseURL: "http://agent.test", model: {} });

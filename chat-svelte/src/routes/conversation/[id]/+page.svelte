@@ -617,7 +617,9 @@
 					// the provenance badge (which centers on the Apertus node). The step text itself streams
 					// in the <think> block; this is the ambient map animation.
 					if (browser) {
-						window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: ["apertus", "hermes"] } }));
+						window.dispatchEvent(
+							new CustomEvent("ap:flash", { detail: { ids: ["apertus", "hermes"] } })
+						);
 					}
 				} else if (update.type === MessageUpdateType.Safety) {
 					// A safety decline is a real terminal response (just not a token), so stand
@@ -723,10 +725,7 @@
 					// the user can resend to get a real, persisted turn.
 					await convsStore.refresh();
 				} else {
-					await Promise.all([
-						safeInvalidate(UrlDependency.Conversation),
-						convsStore.refresh(),
-					]);
+					await Promise.all([safeInvalidate(UrlDependency.Conversation), convsStore.refresh()]);
 				}
 			}
 		}
@@ -1009,4 +1008,3 @@
 	models={data.models}
 	currentModel={findCurrentModel(data.models, data.oldModels, data.model)}
 />
-

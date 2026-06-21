@@ -36,9 +36,9 @@ describe("resolveServing", () => {
 		);
 		// Private CSCS research build (401 on HF) → fall back to the public org
 		// page, never a dead deep-link. The checkpoint NAME still shows elsewhere.
-		expect(
-			resolveServing(CSCS, "swiss-ai/Apertus-8B-Instruct-research").checkpointUrl
-		).toBe("https://huggingface.co/swiss-ai");
+		expect(resolveServing(CSCS, "swiss-ai/Apertus-8B-Instruct-research").checkpointUrl).toBe(
+			"https://huggingface.co/swiss-ai"
+		);
 	});
 
 	it("fails honest on an unknown host: no invented provider, treated as non-sovereign", () => {
