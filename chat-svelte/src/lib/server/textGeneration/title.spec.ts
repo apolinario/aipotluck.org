@@ -5,7 +5,17 @@
  * skips declined turns (the assistant reply carries moderation.flagged) and only titles from a turn
  * that produced a real answer.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// Hermetic gate: stub $lib/server/models so importing ./title (→ generateFromDefaultEndpoint
+// → models) doesn't trigger models.ts's import-time buildModels() live fetch. firstAnsweredUserMessage
+// is pure; models/taskModel are only used on the live generation path.
+vi.mock("$lib/server/models", () => ({
+	models: [],
+	defaultModel: { id: "test-model", name: "test-model" },
+	taskModel: { id: "test-model", name: "test-model" },
+}));
+
 import { firstAnsweredUserMessage } from "./title";
 import type { Message } from "$lib/types/Message";
 

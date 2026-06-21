@@ -7,8 +7,8 @@
 # future commit cannot silently undo them.
 #
 # Tiers:
-#   - checks  : typecheck + drizzle-drift (blocking) + lint (non-blocking, clearing debt)
-#   - test    : the 506 hermetic vitest specs against a real Postgres service (blocking)
+#   - checks  : typecheck + drizzle-drift + lint (all blocking)
+#   - test    : the hermetic vitest specs against a real Postgres service (blocking)
 # The live Playwright golden-path probes (need a running Apertus model) live in the
 # separate, secrets-gated chat-svelte-live-probes.yml — they are NOT part of this gate.
 #
@@ -56,10 +56,9 @@ jobs:
         run: npm run check
       - name: Schema/migration drift (drizzle-kit generate must yield no changes)
         run: npm run db:drift
-      - name: Lint (prettier + eslint) — non-blocking until debt is cleared
-        # Pre-existing formatting + a few no-non-null-assertion errors predate this gate.
-        # Reported on every run; flip to blocking (drop continue-on-error) once cleared.
-        continue-on-error: true
+      - name: Lint (prettier + eslint)
+        # Blocking as of Pass 11: the prettier debt was formatted and the
+        # no-non-null-assertion errors cleared, so a clean tree is now enforced.
         run: npm run lint
 
   test:
@@ -92,5 +91,5 @@ jobs:
       - run: npm ci
       - name: Apply migrations (replays the journal 0000..N — also validates the chain)
         run: npm run db:migrate
-      - name: Hermetic test suite (506 specs; CI_HERMETIC excludes the model-coupled 7)
+      - name: Hermetic test suite (CI_HERMETIC excludes 3 DB/auth-coupled specs)
         run: npm run test:ci

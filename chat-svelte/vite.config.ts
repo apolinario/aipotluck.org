@@ -7,16 +7,14 @@ import { config } from "dotenv";
 
 config({ path: "./.env.local" });
 
-// Specs that transitively import a route/model module: `buildModels()` network-fetches
-// OPENAI_BASE_URL/models at import time, so they are NOT hermetic (need a live model
-// registry + secret). The hermetic CI gate (CI_HERMETIC=true) excludes them; they still
-// run in a full local/live test pass. Make them hermetic (mock buildModels) to re-include.
-// Tracked in aipotluck-internal-notes/chat-hardening.md (Pass 10).
+// Specs still excluded from the hermetic CI gate (CI_HERMETIC=true): these import a route
+// module whose graph touches the DB/session layer at import, so a `vi.mock` of one module
+// isn't enough to make them hermetic — they need a live DB + auth context. They still run in
+// a full local/live test pass. (The four model-coupled specs — mcp/router, search/searchDecision,
+// textGeneration/{title,worldModel} — were rejoined to the gate by stubbing $lib/server/models,
+// which neutralizes models.ts's import-time buildModels() fetch. Pass 11.)
+// Tracked in aipotluck-internal-notes/chat-hardening.md.
 const NON_HERMETIC_SERVER_SPECS = [
-	"src/lib/server/mcp/router.spec.ts",
-	"src/lib/server/search/searchDecision.spec.ts",
-	"src/lib/server/textGeneration/title.spec.ts",
-	"src/lib/server/textGeneration/worldModel.spec.ts",
 	"src/routes/login/callback/updateUser.spec.ts",
 	"src/lib/server/api/__tests__/conversations-id.spec.ts",
 	"src/lib/server/api/__tests__/user.spec.ts",

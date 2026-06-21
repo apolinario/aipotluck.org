@@ -1,4 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+// Hermetic gate: stub $lib/server/models so importing ./worldModel (→ generateFromDefaultEndpoint
+// → models) doesn't trigger models.ts's import-time buildModels() live fetch. The functions under
+// test are pure; models/taskModel are only used on the live generation path.
+vi.mock("$lib/server/models", () => ({
+	models: [],
+	defaultModel: { id: "test-model", name: "test-model" },
+	taskModel: { id: "test-model", name: "test-model" },
+}));
+
 import {
 	WORLD_MODEL_PREPASS,
 	occludeDistance,

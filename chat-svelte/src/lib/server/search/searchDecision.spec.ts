@@ -1,4 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+// Hermetic gate: stub $lib/server/models so importing ./searchDecision doesn't trigger
+// models.ts's import-time buildModels() live fetch (needs OPENAI_BASE_URL + network). The
+// parse functions under test are pure; defaultModel is only read on the live decision paths.
+vi.mock("$lib/server/models", () => ({
+	models: [],
+	defaultModel: { id: "test-model", name: "test-model" },
+	taskModel: { id: "test-model", name: "test-model" },
+}));
+
 import { parseClassifierVerdict, parseToolDecision } from "./searchDecision";
 
 // The verdict parse is the load-bearing bit of the model classifier: it must
