@@ -36,12 +36,10 @@
 		// "Searching…" spinner banner still renders during an auto-search.
 		showWebSearch?: boolean;
 		webSearchEnabled?: boolean;
+		// Drives the "Searching…" label inside the dormant manual web-search button
+		// (showWebSearch). Auto-search no longer runs in the composer — the decision moved
+		// to the send path (conversation/[id] writeMessage), under the answer's loading spinner.
 		webSearching?: boolean;
-		// True while the model classifier is deciding whether this turn needs a
-		// web search (the "model"/"tool" trigger strategies — see triggerStrategy).
-		// Shows a brief "thinking" affordance so the send doesn't feel like a stall
-		// during that pre-answer round-trip. Dormant under the heuristic default.
-		deciding?: boolean;
 		// Heuristic hint that the draft wants current info — nudges the globe so the
 		// user notices the option. Never auto-enables; the user always decides.
 		webSearchAffordance?: boolean;
@@ -66,7 +64,6 @@
 		showWebSearch = false,
 		webSearchEnabled = $bindable(false),
 		webSearching = false,
-		deciding = false,
 		webSearchAffordance = false,
 		modelLabel = "",
 		children,
@@ -295,33 +292,6 @@
 					Answer from training
 				</button>
 			</div>
-		</div>
-	{:else if deciding}
-		<div
-			class="mx-2 mt-2 flex items-center gap-2 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)]/60 px-3 py-2 font-mono text-[11px] text-[var(--ap-ink-2)]"
-		>
-			<LucideSparkles
-				class="size-3.5 shrink-0 animate-pulse text-[var(--ap-coral-text)] motion-reduce:animate-none"
-			/>
-			<span>Checking whether this needs current info</span>
-			<span class="flex items-end gap-0.5" aria-hidden="true">
-				<span
-					class="size-1 animate-bounce rounded-full bg-[var(--ap-coral-text)] [animation-delay:-0.3s] motion-reduce:animate-none"
-				></span>
-				<span
-					class="size-1 animate-bounce rounded-full bg-[var(--ap-coral-text)] [animation-delay:-0.15s] motion-reduce:animate-none"
-				></span>
-				<span
-					class="size-1 animate-bounce rounded-full bg-[var(--ap-coral-text)] motion-reduce:animate-none"
-				></span>
-			</span>
-		</div>
-	{:else if webSearching}
-		<div
-			class="mx-2 mt-2 flex items-center gap-2 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)]/60 px-3 py-2 font-mono text-[11px] text-[var(--ap-ink-2)]"
-		>
-			<IconGlobe class="size-3.5 shrink-0 animate-pulse text-[var(--ap-coral-text)]" />
-			<span>Searching open sources — Wikipedia, Marginalia, OpenAlex…</span>
 		</div>
 	{/if}
 	<textarea

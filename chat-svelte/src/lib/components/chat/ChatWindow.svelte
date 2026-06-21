@@ -2,16 +2,11 @@
 	import type { Message, MessageFile } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
 	import { isRecencyQueryDenoised } from "$lib/search/recency";
-	import {
-		shouldRunSearch,
-		usesModelClassifier,
-		SEARCH_TRIGGER_STRATEGY,
-	} from "$lib/search/triggerStrategy";
 	import { tick } from "svelte";
 
 	import ArtifactPanel from "./ArtifactPanel.svelte";
 	import StackMap from "$lib/components/stack/StackMap.svelte";
-	import { MODEL_NODES, COMPUTE_NODE, WEBSEARCH_NODE } from "../stack/reveal";
+	import { MODEL_NODES, COMPUTE_NODE } from "../stack/reveal";
 	import { resolveServing } from "$lib/servingProvenance";
 	import { collectArtifacts } from "$lib/utils/artifacts";
 	import { setArtifactsContext } from "$lib/utils/artifactsContext";
@@ -160,134 +155,33 @@
 	let isTouchDevice = $derived(browser && navigator.maxTouchPoints > 0);
 
 	// Open-web search (P0 differentiator). Per Julie (2026-06-18) this is no longer
-	// a manual composer toggle: the system decides when a turn needs current
-	// open-web grounding. The deciding "layer" is the deterministic recency
-	// heuristic (isRecencyQuery) — NOT mid-stream model tool-calling, which is unreliable here.
-	// When the heuristic fires, the turn is grounded on Wikipedia + Marginalia + OpenAlex: we
-	// fetch /api/search here, flash the Web-search node on the map, then hand the
-	// result to the send flow as searchContext. The manual globe toggle is hidden
-	// (showWebSearch={false} below); webSearchEnabled is retained dormant so the
-	// control can be re-exposed without rewiring if the product direction changes.
+	// a manual composer toggle: the system decides when a turn needs current open-web
+	// grounding. The decision AND the search now run on the SEND path, AFTER the user's
+	// message is on screen (conversation/[id] writeMessage → resolveSearchContext in
+	// $lib/search/resolveSearch) — so the message renders instantly instead of waiting
+	// on the classify+search round-trip, which previously left a multi-second gap where
+	// nothing appeared. The manual globe toggle is hidden (showWebSearch={false} below);
+	// webSearchEnabled is retained dormant so the control can be re-exposed without rewiring.
 	let webSearchEnabled = $state(false);
-	let webSearching = $state(false);
-	// True only while the model classifier is deciding (the "model"/"tool"
-	// strategies). Drives the brief "thinking" affordance so the pre-answer
-	// classifier round-trip doesn't read as a stall. Dormant under "heuristic".
-	let deciding = $state(false);
 	let draftLooksRecent = $derived(isRecencyQueryDenoised(draft));
 
-	// Active trigger strategy, resolved from PUBLIC_SEARCH_TRIGGER server-side and
-	// shipped via layout data (falls back to the safe code default). "tool" = the
-	// model decides via tool-calling; "model" = yes/no classifier; "heuristic" =
-	// regex only.
-	const searchStrategy = $derived(page.data.searchTriggerStrategy ?? SEARCH_TRIGGER_STRATEGY);
 	// Serving provenance — so map flashes can gate the sovereign-compute node honestly
 	// (never flash CSCS while HF-served), the same gate reveal.ts applies per answer.
 	const serving = $derived(page.data.servingProvenance ?? resolveServing());
 
-	async function runOpenSearch(query: string): Promise<SearchContext | undefined> {
-		try {
-			// Mirror the chat event on the live-stack map the instant search starts.
-			window.dispatchEvent(new CustomEvent("ap:flash", { detail: { ids: [WEBSEARCH_NODE] } }));
-			const res = await fetch(`${base}/api/search?q=${encodeURIComponent(query)}`);
-			if (!res.ok) return undefined;
-			const result = (await res.json()) as SearchContext;
-			return result?.sources?.length ? result : undefined;
-		} catch {
-			// Search is best-effort: a failure degrades to an ungrounded answer
-			// rather than blocking the turn.
-			return undefined;
-		}
-	}
-
-	// Model-driven search decision: when the strategy enables it, ask the server
-	// whether this turn needs open-web grounding. Under "tool" the model decides
-	// via real tool-calling AND authors the search query; under "model" it's a
-	// yes/no classifier (no query). Best-effort — a failure means "don't search".
-	async function modelDecide(
-		query: string
-	): Promise<{ shouldSearch?: boolean; query?: string; ok?: boolean }> {
-		// Timeout matters: "margin" is the default strategy, so this fetch is on EVERY turn's
-		// critical path. A slow/hung classify endpoint (e.g. conference wifi → CSCS) must not hang
-		// the turn on the "deciding" spinner — abort after ~4.5s and return ok:false so decideSearch
-		// falls back to the recency heuristic. (A plain fetch error already returns ok:false; this
-		// also covers the no-response hang, which is the real conf-wifi failure mode.)
-		const ctrl = new AbortController();
-		const timer = setTimeout(() => ctrl.abort(), 4500);
-		try {
-			const res = await fetch(`${base}/api/search/classify?q=${encodeURIComponent(query)}`, {
-				signal: ctrl.signal,
-			});
-			if (!res.ok) return { shouldSearch: false, ok: false };
-			return (await res.json()) as { shouldSearch?: boolean; query?: string; ok?: boolean };
-		} catch {
-			return { shouldSearch: false, ok: false };
-		} finally {
-			clearTimeout(timer);
-		}
-	}
-
-	// Resolve whether a turn searches AND which query to run. The model is the
-	// primary decider (strategy "tool"/"model"); the recency heuristic is OR'd in
-	// as a safety net catching the model's false-negatives. The query is the
-	// model's own when it tool-called, else the raw user text. Shared by the
-	// composer send flow and the starter-prompt path so both honor the strategy.
-	async function decideSearch(text: string): Promise<{ search: boolean; query: string }> {
-		// De-noised: the recency signal minus obvious coding/technical how-tos (where
-		// "current/status/latest" are false triggers). Lifts specificity without losing
-		// real recency — in "model"/"tool" strategies the classifier still catches any
-		// genuinely-current technical query the de-noise suppresses. See evals/search-decision.
-		const heuristicHit = isRecencyQueryDenoised(text);
-		let modelHit = false;
-		let modelQuery: string | undefined;
-		let marginOk = true;
-		if (usesModelClassifier(searchStrategy)) {
-			// Surface the "thinking" affordance during the decision round-trip.
-			deciding = true;
-			try {
-				const r = await modelDecide(text);
-				modelHit = !!r.shouldSearch;
-				modelQuery = r.query;
-				// "margin" strategy: ok=false (call failed / no logprobs) → shouldRunSearch falls
-				// back to the recency heuristic. Other strategies don't send `ok` (defaults true).
-				marginOk = r.ok ?? true;
-			} finally {
-				deciding = false;
-			}
-		}
-		const search = shouldRunSearch({
-			heuristicHit,
-			classifierHit: modelHit,
-			marginOk,
-			strategy: searchStrategy,
-		});
-		return { search, query: modelHit && modelQuery ? modelQuery : text };
-	}
-
 	const handleSubmit = async () => {
 		// Guard on the trimmed draft, not just `!draft`: a whitespace-only draft ("   \n") is
 		// truthy, so a bare `!draft` let the send button submit blank turns (Enter already trims).
-		if (requireAuthUser() || loading || !draft.trim() || webSearching) return;
+		if (requireAuthUser() || loading || !draft.trim()) return;
 		tap();
 		const text = draft;
 		draft = "";
-
-		// The system decides whether this turn needs open-web grounding (heuristic
-		// fast-path, else the model classifier — see decideSearch). No manual
-		// opt-in. The classifier round-trip stays quiet; the "Searching…" spinner
-		// only shows once we commit to actually searching.
-		let searchContext: SearchContext | undefined;
-		const { search, query } = await decideSearch(text);
-		if (search) {
-			webSearching = true;
-			try {
-				searchContext = await runOpenSearch(query);
-			} finally {
-				webSearching = false;
-			}
-		}
-
-		onmessage?.(text, { searchContext });
+		// Hand off immediately: the parent renders the user's message + a pending answer at
+		// once, then resolves open-web grounding with a calm status ON that answer (no
+		// composer-blocking spinner, no dead gap before anything shows). Grounding is resolved
+		// parent-side because it must survive the home→/conversation/[id] navigation, whose
+		// history state is JSON-only (a Promise can't cross it).
+		onmessage?.(text);
 	};
 
 	let lastTarget: EventTarget | null = null;
@@ -809,22 +703,7 @@
 						readOnly={isReadOnly}
 					/>
 				{:else}
-					<ChatIntroduction
-						{currentModel}
-						onmessage={async (content) => {
-							// Same decision as the composer: a starter that needs current info
-							// (the EU AI Act one via the heuristic, or any starter the model
-							// classifier flags) routes through open-web search — one tap demos
-							// search + the map flash — while timeless starters just send.
-							const { search, query } = await decideSearch(content);
-							if (search) {
-								const searchContext = await runOpenSearch(query);
-								onmessage?.(content, { searchContext });
-							} else {
-								onmessage?.(content);
-							}
-						}}
-					/>
+					<ChatIntroduction {currentModel} onmessage={(content) => onmessage?.(content)} />
 				{/if}
 			</div>
 
@@ -954,8 +833,6 @@
 									showWebSearch={false}
 									{modelLabel}
 									bind:webSearchEnabled
-									{webSearching}
-									{deciding}
 									webSearchAffordance={draftLooksRecent && !webSearchEnabled}
 									bind:focused
 								/>

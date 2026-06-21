@@ -13,6 +13,9 @@
 	import type { Message } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
 	import { searchProvenance, moderationMarker } from "$lib/messageProvenance";
+	import { resolveSearchContext } from "$lib/search/resolveSearch";
+	import { SEARCH_TRIGGER_STRATEGY } from "$lib/search/triggerStrategy";
+	import { WEBSEARCH_NODE } from "$lib/components/stack/reveal";
 	import { MessageUpdateStatus, MessageUpdateType } from "$lib/types/MessageUpdate";
 	import { useConversationsStore } from "$lib/stores/conversations.svelte";
 	import file2base64 from "$lib/utils/file2base64";
@@ -42,6 +45,10 @@
 	import { useAPIClient, handleResponse } from "$lib/APIClient";
 
 	let { data } = $props();
+
+	// Active search-trigger strategy (server-resolved, shipped via layout data; safe code
+	// default as fallback). Drives the send-path grounding decision in writeMessage.
+	const searchStrategy = $derived(page.data.searchTriggerStrategy ?? SEARCH_TRIGGER_STRATEGY);
 
 	// Obtain the conversations store during component init (context must be read
 	// synchronously, not inside async callbacks or event handlers).
@@ -301,6 +308,31 @@
 			const messageToWriteTo = messages.find((message) => message.id === messageToWriteToId);
 			if (!messageToWriteTo) {
 				throw new Error("Message to write to not found");
+			}
+
+			// Resolve open-web grounding HERE — the user message + this pending answer are already
+			// on screen (added just above), so the classify+search round-trip runs under the
+			// answer's normal loading spinner instead of the multi-second gap before anything
+			// appeared when this ran in the composer pre-send. Skipped on retries (the turn already
+			// carries its context) and when a caller supplied searchContext. Best-effort +
+			// abortable: a Stop or failure simply yields an ungrounded answer.
+			if (searchContext === undefined && !isRetry && prompt) {
+				searchContext = await resolveSearchContext(prompt, {
+					strategy: searchStrategy,
+					base,
+					signal: messageUpdatesAbortController.signal,
+					onPhase: (phase) => {
+						// Mirror the lookup on the live-stack map the instant search starts. The
+						// pending answer already shows a neutral loading spinner throughout (the same
+						// one every pre-token answer shows), so the search phase reads as ordinary
+						// work-in-progress, not the old error-colored composer banner.
+						if (phase === "searching") {
+							window.dispatchEvent(
+								new CustomEvent("ap:flash", { detail: { ids: [WEBSEARCH_NODE] } })
+							);
+						}
+					},
+				});
 			}
 
 			// Mirror the server's webSearch stamp on the client message so the
