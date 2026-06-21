@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Message } from "$lib/types/Message";
 	import { tick } from "svelte";
+	import { detectCrisisSignal } from "$lib/crisis";
+	import CrisisResources from "./CrisisResources.svelte";
 
 	import CopyToClipBoardBtn from "../CopyToClipBoardBtn.svelte";
 	import IconLoading from "../icons/IconLoading.svelte";
@@ -72,6 +74,13 @@
 		onretry,
 		onshowAlternateMsg,
 	}: Props = $props();
+
+	// Additive crisis-resource card: if the prompt this answer responds to trips an unambiguous
+	// self-harm signal, lead the reply with real help (src/lib/crisis.ts — client-side, stores nothing,
+	// never blocks the model). Gated to assistant turns so it sits with the supportive response.
+	const showCrisisResources = $derived(
+		message.from === "assistant" && detectCrisisSignal(question)
+	);
 
 	// Honest-degradation surface: when a generation ended without a clean finish (user stop, or a
 	// stream that died after partial tokens), say so over the preserved partial content rather than
@@ -410,6 +419,10 @@
 		<div
 			class="relative flex min-w-[60px] flex-col gap-2 rounded-2xl border border-[var(--ap-rule)] bg-linear-to-br from-gray-50 px-5 py-3.5 wrap-break-word text-[var(--ap-ink-2)]/80 prose-pre:my-2"
 		>
+			{#if showCrisisResources}
+				<!-- Leads the reply: real help is the first thing a person in distress sees. -->
+				<CrisisResources />
+			{/if}
 			{#if message.files?.length}
 				<div class="flex h-fit flex-wrap gap-x-5 gap-y-2">
 					{#each message.files as file (file.value)}

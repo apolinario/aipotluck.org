@@ -39,10 +39,15 @@
 
 	// Headline tone tracks the real cross-model agreement — the only honest per-answer
 	// confidence signal. high = panel confirms the answer; low = panel disputes it.
+	// Labels deliberately AVOID a verdict tone. "panel agrees" read as "confirmed true", but correlated
+	// open models that share training lineage agreeing is a weak, non-independent signal (2026: a 9-model
+	// cross-family panel ≈ ~2 effective independent votes; unanimous panels still wrong ~9% of the time).
+	// So high agreement is "broadly aligned" (not "agrees"), and divergence — the more informative case —
+	// keeps a plain, non-alarm label.
 	const TONE: Record<Verdict["agreement"], { dot: string; text: string; label: string }> = {
-		high: { dot: "var(--ap-live)", text: "var(--ap-live-text)", label: "panel agrees" },
-		mixed: { dot: "var(--ap-building)", text: "var(--ap-building-text)", label: "mixed" },
-		low: { dot: "var(--ap-gap)", text: "var(--ap-gap-text)", label: "panel disputes" },
+		high: { dot: "var(--ap-live)", text: "var(--ap-live-text)", label: "broadly aligned" },
+		mixed: { dot: "var(--ap-building)", text: "var(--ap-building-text)", label: "mixed views" },
+		low: { dot: "var(--ap-gap)", text: "var(--ap-gap-text)", label: "they disagree" },
 	};
 
 	function flashRoute() {
@@ -97,6 +102,16 @@
 						.label}
 				</div>
 				<div class="mt-0.5 text-sm text-[var(--ap-ink)]">{panelVerdict.headline}</div>
+				<!-- The caveat gets PARITY with the agreement headline (it used to hide in tiny italic at
+				     the bottom): correlated models agreeing isn't independent verification. Salience must
+				     match the claim, or the UI launders correlation into confidence. -->
+				<div class="mt-1 text-[0.72rem] leading-snug text-[var(--ap-ink-3)]">
+					{panelVerdict.agreement === "high"
+						? "These open models share training lineage, so agreement is a signal — not proof. Read the takes before you rely on it."
+						: panelVerdict.agreement === "low"
+							? "They diverge — treat that as a reason to dig, not a verdict either way."
+							: "Mixed signal — worth reading the takes and deciding for yourself."}
+				</div>
 			</div>
 		</div>
 
