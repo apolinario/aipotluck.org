@@ -36,6 +36,8 @@
 	let showTakes = $state(false);
 
 	let done = $derived(takes.length > 0 && !!panelVerdict);
+	// "1 open model" not "1 open models" — singular when exactly one panelist responded.
+	let s = $derived(takes.length === 1 ? "" : "s");
 
 	// Headline tone tracks the real cross-model agreement — the only honest per-answer
 	// confidence signal. high = panel confirms the answer; low = panel disputes it.
@@ -95,10 +97,10 @@
 			></span>
 			<div class="min-w-0">
 				<div
-					class="font-mono text-[0.7rem] tracking-[0.08em] uppercase"
+					class="font-mono text-[0.7rem] tracking-[0.08em]"
 					style="color: {TONE[panelVerdict.agreement].text}"
 				>
-					Collective second opinion · {takes.length} open models · {TONE[panelVerdict.agreement]
+					Collective second opinion · {takes.length} open model{s} · {TONE[panelVerdict.agreement]
 						.label}
 				</div>
 				<div class="mt-0.5 text-sm text-[var(--ap-ink)]">{panelVerdict.headline}</div>
@@ -120,9 +122,7 @@
 			<div class="pt-2/70 mt-2 flex flex-col gap-2 border-t border-[var(--ap-rule)]/70">
 				{#if panelVerdict.consensus.length}
 					<div>
-						<div
-							class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-live-text)] uppercase"
-						>
+						<div class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-live-text)]">
 							They agree on
 						</div>
 						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-[var(--ap-ink-2)]">
@@ -132,9 +132,7 @@
 				{/if}
 				{#if panelVerdict.contradictions.length}
 					<div>
-						<div
-							class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-gap-text)] uppercase"
-						>
+						<div class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-gap-text)]">
 							Where they split
 						</div>
 						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-[var(--ap-ink-2)]">
@@ -144,9 +142,7 @@
 				{/if}
 				{#if panelVerdict.blindSpots.length}
 					<div>
-						<div
-							class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-building-text)] uppercase"
-						>
+						<div class="font-mono text-[0.65rem] tracking-[0.08em] text-[var(--ap-building-text)]">
 							Blind spots
 						</div>
 						<ul class="mt-0.5 ml-3 list-disc text-[13px] text-[var(--ap-ink-2)]">
@@ -163,7 +159,7 @@
 			class="mt-2 text-[0.7rem] text-[var(--ap-coral-text)] underline-offset-2 hover:underline"
 			onclick={() => (showTakes = !showTakes)}
 		>
-			{showTakes ? "Hide" : "Show"} the {takes.length} individual takes ↓
+			{showTakes ? "Hide" : "Show"} the {takes.length} individual take{s} ↓
 		</button>
 		{#if showTakes}
 			<div class="pt-2/70 mt-1.5 flex flex-col gap-2 border-t border-[var(--ap-rule)]/70">
@@ -186,7 +182,7 @@
 		{/if}
 
 		<div class="mt-2 text-[0.65rem] text-[var(--ap-ink-3)] italic">
-			Automated summary over {takes.length} independent open models — a cross-check on the answer above,
+			Automated summary over {takes.length} independent open model{s} — a cross-check on the answer above,
 			not a source of truth. Convergence is more trustworthy; divergence is worth scrutiny. The models
 			are not fully independent (some share lineage), so agreement is evidence, not proof.
 		</div>
