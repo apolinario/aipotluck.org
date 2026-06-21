@@ -55,7 +55,7 @@
 		<div class="flex items-center gap-2">
 			<span class="size-2 rounded-full" style="background:var(--ap-live);"></span>
 			<span class="font-mono text-[10px] tracking-[0.12em] text-[var(--ap-ink-3)] uppercase">
-				A Current AI · Alpha
+				Current AI · Alpha
 			</span>
 		</div>
 
