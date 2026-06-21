@@ -98,10 +98,10 @@
 				{
 					"id": "websearch",
 					"nm": "Web search",
-					"org": "Wikipedia · Marginalia",
+					"org": "Wikipedia · Marginalia · OpenAlex",
 					"st": "live",
-					"d": "Open-knowledge search over Wikipedia (open public knowledge) + Marginalia (open independent index), grounding answers with cited sources. A Google-scale open web index is still the honest gap.",
-					"prov": "open knowledge + open independent index"
+					"d": "Open-knowledge search over Wikipedia (open public knowledge), Marginalia (open independent index), and OpenAlex (open scholarly index), grounding answers with cited sources. A Google-scale open web index is still the honest gap.",
+					"prov": "open knowledge + independent index + scholarly index"
 				},
 				{
 					"id": "upload",

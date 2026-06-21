@@ -8,8 +8,9 @@
 	// Provenance for a search-grounded answer: the numbered open sources the model
 	// was told to cite. Collapsible to stay out of the way; every [n] in the answer
 	// resolves to a row here. "show on map" flashes the Web-search node so the chat
-	// event mirrors in the live stack. Wikipedia is labeled authoritative-current;
-	// Marginalia is labeled broader-open-web (varies) — the honesty the thesis needs.
+	// event mirrors in the live stack. Wikipedia is labeled open-public-knowledge,
+	// Marginalia broader-open-web (varies), OpenAlex open-scholarly-index — the honesty
+	// the thesis needs (see ENGINE_META below; keep in sync with SEARCH_ENGINES).
 	// Ported from the Next chat/ app (components/chat/source-strip.tsx).
 
 	interface Props {

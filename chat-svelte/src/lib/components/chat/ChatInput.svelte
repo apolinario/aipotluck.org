@@ -321,7 +321,7 @@
 			class="mx-2 mt-2 flex items-center gap-2 rounded-xl border border-[var(--ap-rule)] bg-[var(--ap-paper-2)]/60 px-3 py-2 font-mono text-[11px] text-[var(--ap-ink-2)]"
 		>
 			<IconGlobe class="size-3.5 shrink-0 animate-pulse text-[var(--ap-coral-text)]" />
-			<span>Searching open sources — Wikipedia + Marginalia…</span>
+			<span>Searching open sources — Wikipedia, Marginalia, OpenAlex…</span>
 		</div>
 	{/if}
 	<textarea
@@ -452,7 +452,7 @@
 					disabled={loading}
 					aria-pressed={webSearchEnabled}
 					aria-label="Search open sources for current info"
-					title="Ground the answer on open sources (Wikipedia + Marginalia)"
+					title="Ground the answer on open sources (Wikipedia, Marginalia, OpenAlex)"
 					class="flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors sm:h-7 {webSearchEnabled
 						? 'border-[var(--ap-coral)]/40 bg-[var(--ap-coral)]/10 text-[var(--ap-coral-text)]'
 						: webSearchAffordance
