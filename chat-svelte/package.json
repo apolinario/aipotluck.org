@@ -14,6 +14,8 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test": "vitest",
+		"test:ci": "CI_HERMETIC=true vitest run",
+		"db:drift": "drizzle-kit generate && git diff --exit-code -- drizzle/",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",

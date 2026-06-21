@@ -7,6 +7,22 @@ import { config } from "dotenv";
 
 config({ path: "./.env.local" });
 
+// Specs that transitively import a route/model module: `buildModels()` network-fetches
+// OPENAI_BASE_URL/models at import time, so they are NOT hermetic (need a live model
+// registry + secret). The hermetic CI gate (CI_HERMETIC=true) excludes them; they still
+// run in a full local/live test pass. Make them hermetic (mock buildModels) to re-include.
+// Tracked in aipotluck-internal-notes/chat-hardening.md (Pass 10).
+const NON_HERMETIC_SERVER_SPECS = [
+	"src/lib/server/mcp/router.spec.ts",
+	"src/lib/server/search/searchDecision.spec.ts",
+	"src/lib/server/textGeneration/title.spec.ts",
+	"src/lib/server/textGeneration/worldModel.spec.ts",
+	"src/routes/login/callback/updateUser.spec.ts",
+	"src/lib/server/api/__tests__/conversations-id.spec.ts",
+	"src/lib/server/api/__tests__/user.spec.ts",
+];
+const ciExclude = process.env.CI_HERMETIC === "true" ? NON_HERMETIC_SERVER_SPECS : [];
+
 // used to load fonts server side for thumbnail generation
 function loadTTFAsArrayBuffer() {
 	return {
@@ -85,7 +101,11 @@ export default defineConfig({
 					name: "server",
 					environment: "node",
 					include: ["src/**/*.{test,spec}.{js,ts}"],
-					exclude: ["src/**/*.svelte.{test,spec}.{js,ts}", "src/**/*.ssr.{test,spec}.{js,ts}"],
+					exclude: [
+						"src/**/*.svelte.{test,spec}.{js,ts}",
+						"src/**/*.ssr.{test,spec}.{js,ts}",
+						...ciExclude,
+					],
 					setupFiles: ["./scripts/setups/vitest-setup-server.ts"],
 					testTimeout: 30000,
 					hookTimeout: 30000,

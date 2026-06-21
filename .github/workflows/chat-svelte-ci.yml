@@ -1,0 +1,96 @@
+# Chat-svelte CI — the hermetic regression gate.
+#
+# This is the durable safety net for the chat-hardening campaign: it locks in the
+# unit-level invariants the manual passes proved (honesty provenance, moderation
+# fail-open/closed posture, IP hashing, marked notranslate, second-opinion fail-soft,
+# report/contribute persistence, message-tree logic, schema/migration integrity) so a
+# future commit cannot silently undo them.
+#
+# Tiers:
+#   - checks  : typecheck + drizzle-drift (blocking) + lint (non-blocking, clearing debt)
+#   - test    : the 506 hermetic vitest specs against a real Postgres service (blocking)
+# The live Playwright golden-path probes (need a running Apertus model) live in the
+# separate, secrets-gated chat-svelte-live-probes.yml — they are NOT part of this gate.
+#
+# Activation: only runs if this repo is on GitHub with Actions enabled. Mark `checks`
+# and `test` as required status checks in branch protection once green on a PR.
+
+name: chat-svelte CI
+
+on:
+  push:
+    branches: [chat-work, chat-ui-migration, main]
+    paths:
+      - "chat-svelte/**"
+      - ".github/workflows/chat-svelte-ci.yml"
+  pull_request:
+    paths:
+      - "chat-svelte/**"
+      - ".github/workflows/chat-svelte-ci.yml"
+
+# Cancel superseded runs on the same ref to save minutes.
+concurrency:
+  group: chat-svelte-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: chat-svelte
+
+env:
+  HUSKY: 0 # don't install git hooks in CI (npm ci runs the `prepare` script)
+
+jobs:
+  checks:
+    name: typecheck + drift + lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: chat-svelte/package-lock.json
+      - run: npm ci
+      - name: Typecheck (svelte-check)
+        run: npm run check
+      - name: Schema/migration drift (drizzle-kit generate must yield no changes)
+        run: npm run db:drift
+      - name: Lint (prettier + eslint) — non-blocking until debt is cleared
+        # Pre-existing formatting + a few no-non-null-assertion errors predate this gate.
+        # Reported on every run; flip to blocking (drop continue-on-error) once cleared.
+        continue-on-error: true
+        run: npm run lint
+
+  test:
+    name: vitest (hermetic, Postgres-backed)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: chat_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # Both drizzle.config.ts and the runtime client read process.env.DATABASE_URL.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/chat_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: chat-svelte/package-lock.json
+      - run: npm ci
+      - name: Apply migrations (replays the journal 0000..N — also validates the chain)
+        run: npm run db:migrate
+      - name: Hermetic test suite (506 specs; CI_HERMETIC excludes the model-coupled 7)
+        run: npm run test:ci

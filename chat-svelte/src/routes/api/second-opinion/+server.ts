@@ -36,14 +36,14 @@ const PANEL_TIMEOUT_MS = 30_000;
 const AGG_TIMEOUT_MS = 40_000;
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
-	let t: ReturnType<typeof setTimeout>;
+	let t: ReturnType<typeof setTimeout> | undefined;
 	const timeout = new Promise<never>((_, rej) => {
 		t = setTimeout(() => rej(new Error("compare timeout")), ms);
 	});
 	try {
 		return await Promise.race([p, timeout]);
 	} finally {
-		clearTimeout(t!);
+		clearTimeout(t);
 	}
 }
 

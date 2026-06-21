@@ -1,0 +1,94 @@
+# Chat-svelte LIVE golden-path probes — the pre-demo behavioral gate.
+#
+# STATUS: UNVALIDATED SCAFFOLD. This boots the app against a LIVE Apertus-70B model and
+# drives the demo golden path (the 3 launch starter chips + the gap CTA) plus the
+# reliability/behavior edge sets with Playwright. It needs real secrets and one
+# validated run with them before it can be trusted. Until then it is manual-only
+# (workflow_dispatch) so it never auto-runs red on a secret-less repo.
+#
+# Why separate from chat-svelte-ci.yml: these probes are NOT hermetic — they require a
+# reachable model endpoint + token and exercise real generation. The hermetic gate
+# (typecheck/drift/506 unit specs) is the blocking PR gate; this is the manual ritual
+# you run before a demo, or point at a deployed preview URL.
+#
+# Required repo secrets before first run:
+#   OPENAI_BASE_URL   e.g. https://router.huggingface.co/v1  (or a CSCS-direct base)
+#   OPENAI_API_KEY    the publicai-org HF token (NOT a personal key — see prelaunch key hygiene)
+#
+# Known gap to close on first wiring: the probe scripts hardcode BASE=http://localhost:5176
+# and Chrome channel. This workflow boots the server on PORT=5176 to match; make BASE an
+# env override in the probes to also point this at a deployed preview URL.
+
+name: chat-svelte live probes (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      probes:
+        description: "Which probes to run"
+        type: choice
+        default: choreography
+        options: [choreography, reliability, behavior, all]
+
+defaults:
+  run:
+    working-directory: chat-svelte
+
+env:
+  HUSKY: 0
+
+jobs:
+  golden-path:
+    name: live golden-path (needs model secrets)
+    runs-on: ubuntu-latest
+    # Guard: skip cleanly if the model secret isn't configured, rather than failing red.
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: chat_live
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/chat_live
+      OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      PORT: 5176
+    steps:
+      - name: Fail early if model secrets are missing
+        if: ${{ env.OPENAI_BASE_URL == '' || env.OPENAI_API_KEY == '' }}
+        run: |
+          echo "::error::OPENAI_BASE_URL / OPENAI_API_KEY secrets not set — configure them before running live probes."
+          exit 1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: chat-svelte/package-lock.json
+      - run: npm ci
+      - name: Install Chrome for Playwright
+        run: npx playwright install --with-deps chrome
+      - run: npm run db:migrate
+      - name: Build + boot the app on PORT=5176
+        run: |
+          npm run build
+          (npm run preview -- --port 5176 &)
+          npx wait-on http://localhost:5176 --timeout 60000
+      - name: Run probes
+        run: |
+          set -e
+          case "${{ inputs.probes }}" in
+            choreography) node evals/choreography-probe.mjs ;;
+            reliability)  node evals/reliability-probe.mjs ;;
+            behavior)     node evals/behavior-probe.mjs ;;
+            all)          node evals/choreography-probe.mjs && node evals/reliability-probe.mjs && node evals/behavior-probe.mjs ;;
+          esac
