@@ -54,6 +54,13 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ["uuid", "sharp", "clsx"],
 	},
+	// ES-module workers: the markdown worker now dynamic-imports KaTeX/highlight.js on demand
+	// (to keep them off the eager bundle), and code-splitting inside a worker requires the "es"
+	// format — the default "iife" can't do dynamic import. Module workers are supported by all
+	// modern evergreen browsers (the alpha's target).
+	worker: {
+		format: "es",
+	},
 	test: {
 		// Run test FILES sequentially (root-level — the per-project knob doesn't reliably apply under
 		// `workspace`). The DB-integration specs share ONE database: in parallel, report.spec inserts a

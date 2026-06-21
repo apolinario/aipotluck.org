@@ -2,7 +2,8 @@
 	import type { Message, MessageFile } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
 	import { isRecencyQueryDenoised } from "$lib/search/recency";
-	import { tick } from "svelte";
+	import { prefetchMarkdownAssets } from "$lib/utils/marked";
+	import { onMount, tick } from "svelte";
 
 	import ArtifactPanel from "./ArtifactPanel.svelte";
 	import StackMap from "$lib/components/stack/StackMap.svelte";
@@ -163,6 +164,19 @@
 	// webSearchEnabled is retained dormant so the control can be re-exposed without rewiring.
 	let webSearchEnabled = $state(false);
 	let draftLooksRecent = $derived(isRecencyQueryDenoised(draft));
+
+	// Warm KaTeX + highlight.js during idle. They're dynamically imported (kept OUT of the eager
+	// bundle so first hydration is fast — see $lib/utils/marked), but prefetching them in the
+	// background here means they're ready before the first answer with math/code arrives, so the
+	// readable plain/raw fallback is almost never seen. requestIdleCallback yields to the browser;
+	// Safari < 17 lacks it, so fall back to a timeout.
+	onMount(() => {
+		const schedule =
+			typeof window !== "undefined" && "requestIdleCallback" in window
+				? (cb: () => void) => window.requestIdleCallback(cb)
+				: (cb: () => void) => setTimeout(cb, 1500);
+		schedule(() => prefetchMarkdownAssets());
+	});
 
 	const handleSubmit = async () => {
 		// Guard on the trimmed draft, not just `!draft`: a whitespace-only draft ("   \n") is

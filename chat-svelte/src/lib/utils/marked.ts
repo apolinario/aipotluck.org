@@ -1,5 +1,3 @@
-import katex from "katex";
-import "katex/dist/contrib/mhchem.mjs";
 import { Marked } from "marked";
 import type { Tokens, TokenizerExtension, RendererExtension } from "marked";
 import { parseDocument } from "htmlparser2";
@@ -8,54 +6,104 @@ type SimpleSource = {
 	title?: string;
 	link: string;
 };
-import hljs from "highlight.js/lib/core";
-import type { LanguageFn } from "highlight.js";
-import javascript from "highlight.js/lib/languages/javascript";
-import typescript from "highlight.js/lib/languages/typescript";
-import json from "highlight.js/lib/languages/json";
-import bash from "highlight.js/lib/languages/bash";
-import shell from "highlight.js/lib/languages/shell";
-import python from "highlight.js/lib/languages/python";
-import go from "highlight.js/lib/languages/go";
-import rust from "highlight.js/lib/languages/rust";
-import java from "highlight.js/lib/languages/java";
-import csharp from "highlight.js/lib/languages/csharp";
-import cpp from "highlight.js/lib/languages/cpp";
-import cLang from "highlight.js/lib/languages/c";
-import xml from "highlight.js/lib/languages/xml";
-import css from "highlight.js/lib/languages/css";
-import scss from "highlight.js/lib/languages/scss";
-import markdownLang from "highlight.js/lib/languages/markdown";
-import yaml from "highlight.js/lib/languages/yaml";
-import sql from "highlight.js/lib/languages/sql";
-import plaintext from "highlight.js/lib/languages/plaintext";
 import { parseIncompleteMarkdown } from "./parseIncompleteMarkdown";
 import { parseMarkdownIntoBlocks } from "./parseBlocks";
 
-const bundledLanguages: [string, LanguageFn][] = [
-	["javascript", javascript],
-	["typescript", typescript],
-	["json", json],
-	["bash", bash],
-	["shell", shell],
-	["python", python],
-	["go", go],
-	["rust", rust],
-	["java", java],
-	["csharp", csharp],
-	["cpp", cpp],
-	["c", cLang],
-	["xml", xml],
-	["html", xml],
-	["css", css],
-	["scss", scss],
-	["markdown", markdownLang],
-	["yaml", yaml],
-	["sql", sql],
-	["plaintext", plaintext],
-];
+// ── Lazy heavy renderers ──────────────────────────────────────────────────────────────────────
+// KaTeX (~80KB gz) and highlight.js (+languages) are the bulk of the markdown bundle, but the
+// landing renders no math/code — so they are DYNAMICALLY imported, never static. That keeps them
+// out of the eager client chunk (much faster first hydration, esp. on mobile). They load on first
+// actual need (a math token / a code block) or via prefetchMarkdownAssets() during idle. Until a
+// lib is present the sync path renders a READABLE fallback (plain code / raw math) and the async
+// worker render upgrades it once loaded — content is NEVER blocked on the download.
 
-bundledLanguages.forEach(([name, language]) => hljs.registerLanguage(name, language));
+type KatexRender = (tex: string, opts: { throwOnError: boolean; displayMode: boolean }) => string;
+let katexRender: KatexRender | null = null;
+let katexPromise: Promise<void> | null = null;
+/** Load KaTeX (idempotent). Triggered only when a math token is actually present. */
+export function ensureKatex(): Promise<void> {
+	if (katexRender) return Promise.resolve();
+	if (!katexPromise) {
+		katexPromise = import("katex")
+			.then(async (m) => {
+				// mhchem is a side-effect-only extension (chemistry macros) with no type declaration.
+				// @ts-expect-error - no types; imported for its side effect on the katex singleton
+				await import("katex/dist/contrib/mhchem.mjs");
+				katexRender = (tex, opts) => m.default.renderToString(tex, opts);
+			})
+			.catch(() => {
+				katexPromise = null; // transient failure — allow a later retry
+			});
+	}
+	return katexPromise;
+}
+
+type HljsLike = {
+	getLanguage: (n: string) => unknown;
+	highlight: (
+		code: string,
+		opts: { language: string; ignoreIllegals: boolean }
+	) => { value: string };
+	highlightAuto: (code: string) => { value: string };
+};
+let hljs: HljsLike | null = null;
+let hljsPromise: Promise<void> | null = null;
+/** Load highlight.js core + a trimmed common-language set (idempotent). The long tail
+ *  (java/c#/c/c++/scss/…) falls back to highlightAuto, which still works — just smaller. */
+export function ensureHljs(): Promise<void> {
+	if (hljs) return Promise.resolve();
+	if (!hljsPromise) {
+		hljsPromise = (async () => {
+			const [core, ...langs] = await Promise.all([
+				import("highlight.js/lib/core"),
+				import("highlight.js/lib/languages/javascript"),
+				import("highlight.js/lib/languages/typescript"),
+				import("highlight.js/lib/languages/python"),
+				import("highlight.js/lib/languages/json"),
+				import("highlight.js/lib/languages/bash"),
+				import("highlight.js/lib/languages/shell"),
+				import("highlight.js/lib/languages/go"),
+				import("highlight.js/lib/languages/rust"),
+				import("highlight.js/lib/languages/sql"),
+				import("highlight.js/lib/languages/yaml"),
+				import("highlight.js/lib/languages/xml"),
+				import("highlight.js/lib/languages/css"),
+				import("highlight.js/lib/languages/markdown"),
+				import("highlight.js/lib/languages/plaintext"),
+			]);
+			const names = [
+				"javascript",
+				"typescript",
+				"python",
+				"json",
+				"bash",
+				"shell",
+				"go",
+				"rust",
+				"sql",
+				"yaml",
+				"xml",
+				"css",
+				"markdown",
+				"plaintext",
+			];
+			const h = core.default;
+			names.forEach((n, i) => h.registerLanguage(n, langs[i].default));
+			h.registerLanguage("html", langs[names.indexOf("xml")].default); // html ↦ xml grammar
+			hljs = h as unknown as HljsLike;
+		})().catch(() => {
+			hljsPromise = null;
+		});
+	}
+	return hljsPromise;
+}
+
+/** Warm both heavy renderers during idle so they're ready before the first answer needs them —
+ *  the eager bundle stays light (fast hydration) while the libs prefetch in the background. */
+export function prefetchMarkdownAssets(): void {
+	void ensureKatex();
+	void ensureHljs();
+}
 
 // Media URL detection
 const VIDEO_EXTENSIONS = /\.(mp4|webm|ogg|mov|m4v)([?#]|$)/i;
@@ -152,10 +200,12 @@ export const katexBlockExtension: TokenizerExtension & RendererExtension = {
 
 	renderer(token) {
 		if (token.type === "katexBlock") {
-			return katex.renderToString(token.text, {
-				throwOnError: false,
-				displayMode: token.displayMode,
-			});
+			if (katexRender) {
+				return katexRender(token.text, { throwOnError: false, displayMode: token.displayMode });
+			}
+			void ensureKatex();
+			// Readable, muted fallback until KaTeX loads (the async/worker render upgrades it).
+			return `<div data-katex-pending style="opacity:.55;font-family:ui-monospace,monospace">${escapeHTML(token.text)}</div>`;
 		}
 		return undefined;
 	},
@@ -202,10 +252,11 @@ const katexInlineExtension: TokenizerExtension & RendererExtension = {
 
 	renderer(token) {
 		if (token.type === "katexInline") {
-			return katex.renderToString(token.text, {
-				throwOnError: false,
-				displayMode: token.displayMode,
-			});
+			if (katexRender) {
+				return katexRender(token.text, { throwOnError: false, displayMode: token.displayMode });
+			}
+			void ensureKatex();
+			return `<code data-katex-pending style="opacity:.55">${escapeHTML(token.text)}</code>`;
 		}
 		return undefined;
 	},
@@ -263,6 +314,11 @@ function sanitizeHref(href?: string | null): string | undefined {
 }
 
 export function highlightCode(text: string, lang?: string): string {
+	if (!hljs) {
+		void ensureHljs();
+		// Plain (but fully readable) code until highlight.js loads; the worker render adds colors.
+		return escapeHTML(text);
+	}
 	if (lang && hljs.getLanguage(lang)) {
 		try {
 			return hljs.highlight(text, { language: lang, ignoreIllegals: true }).value;
@@ -429,6 +485,14 @@ function cacheKey(index: number, blockContent: string, sources: SimpleSource[]) 
 }
 
 export async function processTokens(content: string, sources: SimpleSource[]): Promise<Token[]> {
+	// Full-fidelity render (the worker / no-worker async path). Load only what THIS content needs,
+	// then render — so a plain-text answer never pulls KaTeX/highlight.js, and KaTeX loads only when
+	// a math delimiter is actually present (lazy KaTeX). The sync path already painted a readable
+	// fallback; awaiting here is what upgrades it.
+	const needsMath = /\$|\\\(/.test(content);
+	const needsCode = content.includes("```") || content.includes("~~~") || content.includes("`");
+	await Promise.all([needsMath ? ensureKatex() : undefined, needsCode ? ensureHljs() : undefined]);
+
 	const marked = createMarkedInstance(sources);
 	const tokens = marked.lexer(content);
 

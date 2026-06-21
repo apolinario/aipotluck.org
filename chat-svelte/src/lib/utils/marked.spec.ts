@@ -269,3 +269,39 @@ describe("processBlocksSync streaming behavior", () => {
 		expect(partialIds.slice(0, -1)).toEqual(fullIds.slice(0, partialIds.length - 1));
 	});
 });
+
+// ── Lazy heavy-render path ──────────────────────────────────────────────────────────────────
+// processBlocks (async) is what the worker uses. It dynamically loads highlight.js / KaTeX only
+// when the content needs them, then renders full-fidelity — the upgrade over the readable
+// sync fallback. These assert the lazy load actually wires up correctly.
+import { processBlocks, highlightCode, ensureHljs, ensureKatex } from "./marked";
+
+describe("lazy full-render (processBlocks async)", () => {
+	test("sync code render is plain+readable BEFORE highlight.js loads", () => {
+		// Fresh module state isn't guaranteed across the suite, but the contract holds either way:
+		// the output must contain the literal code text (readable), highlighted or not.
+		const tokens = processTokensSync("```js\nconst x = 1;\n```", []);
+		const code = tokens.find((t) => t.type === "code");
+		expect(code && code.type === "code" && code.code).toContain("const x = 1;");
+	});
+
+	test("async render highlights code (loads highlight.js on demand)", async () => {
+		await ensureHljs();
+		expect(highlightCode("const x = 1;", "javascript")).toContain("hljs-");
+		const blocks = await processBlocks("```js\nconst x = 1;\n```", []);
+		const code = blocks.flatMap((b) => b.tokens).find((t) => t.type === "code");
+		expect(code && code.type === "code" && code.code).toContain("hljs-");
+	});
+
+	test("async render produces KaTeX HTML for math (loads katex on demand)", async () => {
+		await ensureKatex();
+		const blocks = await processBlocks("energy $E=mc^2$ today", []);
+		const htmls = await Promise.all(
+			blocks
+				.flatMap((b) => b.tokens)
+				.filter((t) => t.type === "text")
+				.map((t) => (t.type === "text" ? t.html : ""))
+		);
+		expect(htmls.join(" ")).toContain('class="katex"');
+	});
+});
