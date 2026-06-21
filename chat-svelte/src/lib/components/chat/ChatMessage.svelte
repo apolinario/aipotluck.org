@@ -583,19 +583,23 @@
 		onclick={() => (isTapped = !isTapped)}
 		onkeydown={() => (isTapped = !isTapped)}
 	>
-		<div class="flex w-full flex-col gap-2">
+		<!-- Sent messages are RIGHT-aligned in a filled bubble; the assistant's reply is the
+		     left-aligned outlined card. Filled-right (sent) vs outlined-left (received) is the
+		     spatial grammar every first-in-class chat uses — and fixes the old inversion where the
+		     user's plain text started further LEFT than the reply. Edit mode stays full-width. -->
+		<div class="flex w-full flex-col items-end gap-2">
 			{#if message.files?.length}
-				<div class="flex w-fit gap-4 px-5">
+				<div class="flex w-fit gap-4">
 					{#each message.files as file}
 						<UploadedFile {file} canClose={false} />
 					{/each}
 				</div>
 			{/if}
 
-			<div class="flex w-full flex-row flex-nowrap">
+			<div class="flex w-full flex-row flex-nowrap justify-end">
 				{#if !editMode}
 					<p
-						class="disabled w-full appearance-none bg-inherit px-5 py-3.5 text-wrap wrap-break-word whitespace-break-spaces text-[var(--ap-ink-3)]"
+						class="w-fit max-w-[85%] rounded-2xl bg-[var(--ap-paper-2)] px-4 py-2.5 text-wrap wrap-break-word whitespace-break-spaces text-[var(--ap-ink-2)] sm:max-w-[80%]"
 					>
 						{message.content.trim()}
 					</p>
@@ -642,7 +646,7 @@
 					</form>
 				{/if}
 			</div>
-			<div class="absolute -bottom-4 ml-3.5 flex w-full items-center gap-1.5">
+			<div class="absolute -bottom-4 flex w-full items-center justify-end gap-1.5 pr-1">
 				{#if alternatives.length > 1 && editMsdgId === null}
 					<Alternatives
 						{message}

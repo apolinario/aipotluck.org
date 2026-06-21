@@ -226,8 +226,13 @@ function escapeHTML(content: string) {
 }
 
 function addInlineCitations(md: string, webSearchSources: SimpleSource[] = []): string {
+	// Baseline bracketed reference markers — e.g. [1] or [1][2] — NOT a raised <sup>. A superscript
+	// floats orphaned when the answer is a summary rather than inline-cited prose (and Apertus tends
+	// to cite sparsely, so a lone raised digit reads as a typo). Bracketed baseline links also match
+	// the SourceStrip's own "[n]" notation, so the inline marker and the source list read as one
+	// system. Brand coral (themeable var), not the old off-palette generic blue.
 	const linkStyle =
-		"color: rgb(59, 130, 246); text-decoration: none; hover:text-decoration: underline;";
+		"color: var(--ap-coral-text); text-decoration: none; font-size: 0.82em; vertical-align: baseline; letter-spacing: 0.02em;";
 	return md.replace(/\[(\d+)\]/g, (match: string) => {
 		const indices: number[] = (match.match(/\d+/g) || []).map(Number);
 		const links: string = indices
@@ -235,13 +240,15 @@ function addInlineCitations(md: string, webSearchSources: SimpleSource[] = []): 
 				if (index === 0) return false;
 				const source = webSearchSources[index - 1];
 				if (source) {
-					return `<a href="${escapeHTML(source.link)}" target="_blank" rel="noreferrer" style="${linkStyle}">${index}</a>`;
+					return `<a href="${escapeHTML(source.link)}" target="_blank" rel="noreferrer" style="${linkStyle}">[${index}]</a>`;
 				}
 				return "";
 			})
 			.filter(Boolean)
-			.join(", ");
-		return links ? ` <sup>${links}</sup>` : match;
+			.join("");
+		// Hair space keeps the marker from kerning into the preceding word; nowrap keeps it on the
+		// same line as that word so a citation never wraps to a line on its own.
+		return links ? `<span style="white-space:nowrap;">&#8202;${links}</span>` : match;
 	});
 }
 
