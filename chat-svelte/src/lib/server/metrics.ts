@@ -6,7 +6,7 @@ import { onExit } from "./exitHandler";
 
 type ModelLabel = "model";
 
-interface Metrics {
+export interface Metrics {
 	model: {
 		conversationsTotal: Counter<ModelLabel>;
 		messagesTotal: Counter<ModelLabel>;

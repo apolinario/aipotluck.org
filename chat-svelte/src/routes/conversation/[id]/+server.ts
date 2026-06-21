@@ -9,10 +9,10 @@ import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "$lib/constants/fileSiz
 import { enforceRequestRateLimits } from "$lib/server/chat/rateLimit";
 import { chatRequestSchema } from "$lib/server/chat/requestSchema";
 import { appendTurnMessages } from "$lib/server/chat/messageTree";
+import { applyMessageUpdate, createStreamState } from "$lib/server/chat/streamUpdate";
 import {
 	MessageUpdateStatus,
 	MessageUpdateType,
-	MessageReasoningUpdateType,
 	type MessageUpdate,
 	type MessageStreamUpdate,
 } from "$lib/types/MessageUpdate";
@@ -270,8 +270,6 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	let doneStreaming = false;
 	let clientDetached = false;
 
-	let lastTokenTimestamp: undefined | Date = undefined;
-	let firstTokenObserved = false;
 	const metricsEnabled = MetricsServer.isEnabled();
 	const metrics = metricsEnabled ? MetricsServer.getMetrics() : undefined;
 	const metricsModelId = model.id ?? model.name ?? conv.model;
@@ -349,167 +347,50 @@ export async function POST({ request, locals, params, getClientAddress }) {
 					});
 			}, 300);
 
-			let finalAnswerReceived = false;
+			const state = createStreamState();
 			let abortedByUser = false;
-			let finishedStatusSent = false;
+			let hasError = false;
 
 			messageToWriteTo.updates ??= [];
+			const initialMessageContent = messageToWriteTo.content;
+			const metricsCtx =
+				metricsEnabled && metrics
+					? { model: metrics.model, labels: metricsLabels, promptedAt }
+					: undefined;
+
+			// Capture the non-null narrowing here, at the start() body level where it still holds. The
+			// nested update() closure below loses it (a known TS limitation across nested functions —
+			// the original code used an in-function throw guard for the same reason).
+			const message = messageToWriteTo;
+			const conversation = conv;
+			const activeModel = model;
+
+			// Thin wrapper around the event reducer: fold the event into the assistant message (see
+			// $lib/server/chat/streamUpdate — that's where the per-type dispatch and metrics live), then
+			// do the client-facing stream plumbing the reducer is deliberately kept out of: enqueue,
+			// detach detection, and detached-persist. A null result means "drop this event entirely".
 			async function update(event: MessageUpdate) {
-				if (!messageToWriteTo || !conv) {
-					throw Error("No message or conversation to write events to");
-				}
+				const outgoing = await applyMessageUpdate(event, {
+					message,
+					initialMessageContent,
+					model: activeModel,
+					state,
+					metrics: metricsCtx,
+					saveTitle: async (sanitizedTitle) => {
+						conversation.title = sanitizedTitle;
+						await collections.conversations.updateOne(
+							{ _id: convId },
+							{ $set: { title: conversation.title, updatedAt: new Date() } }
+						);
+					},
+				});
 
-				if (
-					event.type === MessageUpdateType.Status &&
-					event.status === MessageUpdateStatus.Finished
-				) {
-					finishedStatusSent = true;
-				}
+				if (outgoing === null) return;
 
-				// Add token to content or skip if empty
-				if (event.type === MessageUpdateType.Stream) {
-					if (event.token === "") return;
-					messageToWriteTo.content += event.token;
-
-					if (metricsEnabled && metrics) {
-						const now = Date.now();
-						metrics.model.tokenCountTotal.inc(metricsLabels);
-
-						if (!firstTokenObserved) {
-							metrics.model.timeToFirstToken.observe(metricsLabels, now - promptedAt.getTime());
-							firstTokenObserved = true;
-						}
-
-						const previousTimestamp = lastTokenTimestamp
-							? lastTokenTimestamp.getTime()
-							: promptedAt.getTime();
-						metrics.model.timePerOutputToken.observe(metricsLabels, now - previousTimestamp);
-					}
-
-					lastTokenTimestamp = new Date();
-				}
-
-				// Append reasoning stream tokens to message.reasoning (server-side)
-				else if (
-					event.type === MessageUpdateType.Reasoning &&
-					event.subtype === MessageReasoningUpdateType.Stream &&
-					"token" in event
-				) {
-					messageToWriteTo.reasoning ??= "";
-					messageToWriteTo.reasoning += event.token;
-				}
-
-				// Set the title
-				else if (event.type === MessageUpdateType.Title) {
-					// Always strip <think> markers from titles when saving
-					const sanitizedTitle = event.title.replace(/<\/?think>/gi, "").trim();
-					conv.title = sanitizedTitle;
-					await collections.conversations.updateOne(
-						{ _id: convId },
-						{ $set: { title: conv?.title, updatedAt: new Date() } }
-					);
-				}
-
-				// Set the final text and the interrupted flag
-				else if (event.type === MessageUpdateType.FinalAnswer) {
-					messageToWriteTo.interrupted = event.interrupted;
-					// Default behavior: replace the streamed text with the provider's final text.
-					// However, when tools (MCP/function calls) were used, providers often stream
-					// some content (e.g., a story) before triggering tools, then return a
-					// different follow‑up message afterwards (e.g., an image caption). Our
-					// previous logic overwrote the pre‑tool content. Preserve it by merging in
-					// the pre‑tool stream when tool updates occurred and the final text does
-					// not already include the streamed prefix.
-					// Tools/MCP removed (B1-lite strip) — no tool updates are ever produced.
-					const hadTools = false;
-
-					if (hadTools) {
-						const existing = messageToWriteTo.content.slice(initialMessageContent.length);
-						if (existing && existing.length > 0) {
-							// A. If we already streamed the same final text, keep as-is.
-							if (event.text && existing.endsWith(event.text)) {
-								messageToWriteTo.content = initialMessageContent + existing;
-							}
-							// B. If the final text already includes the streamed prefix, use it verbatim.
-							else if (event.text && event.text.startsWith(existing)) {
-								messageToWriteTo.content = initialMessageContent + event.text;
-							}
-							// C. Otherwise, merge with a paragraph break for readability.
-							else {
-								const needsGap = !/\n\n$/.test(existing) && !/^\n/.test(event.text ?? "");
-								messageToWriteTo.content =
-									initialMessageContent + existing + (needsGap ? "\n\n" : "") + (event.text ?? "");
-							}
-						} else {
-							messageToWriteTo.content = initialMessageContent + (event.text ?? "");
-						}
-					} else {
-						messageToWriteTo.content = initialMessageContent + event.text;
-					}
-					finalAnswerReceived = true;
-
-					if (metricsEnabled && metrics) {
-						metrics.model.latency.observe(metricsLabels, Date.now() - promptedAt.getTime());
-					}
-				}
-
-				// Add file
-				else if (event.type === MessageUpdateType.File) {
-					messageToWriteTo.files = [
-						...(messageToWriteTo.files ?? []),
-						{ type: "hash", name: event.name, value: event.sha, mime: event.mime },
-					];
-				}
-
-				// Store router metadata (for router models) or provider info (for all models)
-				else if (event.type === MessageUpdateType.RouterMetadata) {
-					// Merge metadata updates to preserve existing fields (router may send route/model first, then provider comes later)
-					if (model?.isRouter) {
-						messageToWriteTo.routerMetadata = {
-							route: event.route || messageToWriteTo.routerMetadata?.route || "",
-							model: event.model || messageToWriteTo.routerMetadata?.model || "",
-							provider: event.provider || messageToWriteTo.routerMetadata?.provider,
-						};
-					}
-					// Store provider-only metadata for non-router models if available
-					else if (event.provider) {
-						messageToWriteTo.routerMetadata = {
-							route: messageToWriteTo.routerMetadata?.route || "",
-							model: messageToWriteTo.routerMetadata?.model || "",
-							provider: event.provider,
-						};
-					}
-				}
-
-				// Append updates for audit/replay (streams too, to preserve ordering). AgentStep is a
-				// transient live-stack animation beat (the step history persists in the <think> block and
-				// the verified answer), so it streams to the client but is NOT written to the audit log.
-				if (
-					!(
-						event.type === MessageUpdateType.Status &&
-						event.status === MessageUpdateStatus.KeepAlive
-					) &&
-					event.type !== MessageUpdateType.AgentStep
-				) {
-					messageToWriteTo?.updates?.push(
-						event.type === MessageUpdateType.Stream ? { ...event } : event
-					);
-				}
-
-				// Avoid remote keylogging attack executed by watching packet lengths
-				// by padding the text with null chars to a fixed length
-				// https://cdn.arstechnica.net/wp-content/uploads/2024/03/LLM-Side-Channel.pdf
-				if (event.type === MessageUpdateType.Stream) {
-					event = { ...event, token: event.token.padEnd(16, "\0") };
-				}
-
-				messageToWriteTo.updatedAt = new Date();
-
-				const enqueueUpdate = async () => {
-					if (clientDetached) return;
+				if (!clientDetached) {
 					try {
-						controller.enqueue(JSON.stringify(event) + "\n");
-						if (event.type === MessageUpdateType.FinalAnswer) {
+						controller.enqueue(JSON.stringify(outgoing) + "\n");
+						if (outgoing.type === MessageUpdateType.FinalAnswer) {
 							controller.enqueue(" ".repeat(4096));
 						}
 					} catch (err) {
@@ -519,17 +400,12 @@ export async function POST({ request, locals, params, getClientAddress }) {
 							"Client detached during message streaming"
 						);
 					}
-				};
-
-				await enqueueUpdate();
+				}
 
 				if (clientDetached) {
 					await persistConversation();
 				}
 			}
-
-			let hasError = false;
-			const initialMessageContent = messageToWriteTo.content;
 
 			// Emit the streamed-so-far text as an interrupted final answer. The
 			// stopping client freezes its UI at the Stop click and reports its
@@ -641,7 +517,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 					if (ctrl.signal.aborted) {
 						abortedByUser = true;
 					}
-					if (abortedByUser && !finalAnswerReceived) {
+					if (abortedByUser && !state.finalAnswerReceived) {
 						await emitInterruptedFinalAnswer();
 					}
 				} // end else: message was not declined by the safety pre-screen
@@ -657,7 +533,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				if (isAbortError || ctrl.signal.aborted) {
 					abortedByUser = true;
 					logger.info({ conversationId: conversationKey }, "Generation aborted by user");
-					if (!finalAnswerReceived) {
+					if (!state.finalAnswerReceived) {
 						await emitInterruptedFinalAnswer();
 					}
 				} else {
@@ -698,7 +574,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				}
 			}
 
-			if (!hasError && !finishedStatusSent) {
+			if (!hasError && !state.finishedStatusSent) {
 				await update({
 					type: MessageUpdateType.Status,
 					status: MessageUpdateStatus.Finished,
