@@ -143,7 +143,11 @@ export async function endpointAgent(
 			const ctrl = new AbortController();
 			const onAbort = () => ctrl.abort();
 			abortSignal?.addEventListener("abort", onAbort);
-			const timeout = setTimeout(() => ctrl.abort(), streamTimeoutMs);
+			let timedOut = false;
+			const timeout = setTimeout(() => {
+				timedOut = true;
+				ctrl.abort();
+			}, streamTimeoutMs);
 			try {
 				const res = await fetch(`${base}/run/${taskId}/events`, { headers, signal: ctrl.signal });
 				if (!res.ok || !res.body) {
@@ -212,6 +216,18 @@ export async function endpointAgent(
 						}
 					}
 				}
+			} catch (err) {
+				// The event stream dropped AFTER it opened (network reset, our timeout, or a user stop).
+				// Close the think block and answer honestly instead of throwing out of the generator
+				// (which would surface as a generic stream error and lose the agent context).
+				yield* closeThink();
+				const aborted = (err as Error)?.name === "AbortError";
+				answer = timedOut
+					? "The agent timed out before finishing the task. Please try again."
+					: aborted
+						? "The agent run was stopped before it finished."
+						: "The agent stream dropped before the task finished. Please try again.";
+				yield* push(answer);
 			} finally {
 				clearTimeout(timeout);
 				abortSignal?.removeEventListener("abort", onAbort);

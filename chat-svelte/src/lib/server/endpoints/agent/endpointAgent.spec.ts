@@ -162,4 +162,45 @@ describe("endpointAgent (unit, mocked agent service)", () => {
 		expect(finalChunk?.generated_text).toContain("503");
 		expect(chunks.map((c) => c.token.text).join("")).toContain("503");
 	});
+
+	it("answers honestly when the event stream drops MID-read (no throw, think closed)", async () => {
+		// Stream opens fine, emits a plan frame, then the connection resets mid-flight. The endpoint
+		// must close the <think> block and emit an honest drop message — not throw out of the generator
+		// (which would surface as a generic stream error and lose the agent context). Demo-day insurance:
+		// an agent service that dies after the stream opens degrades gracefully.
+		const enc = new TextEncoder();
+		const droppingStream = new ReadableStream<Uint8Array>({
+			start(controller) {
+				controller.enqueue(enc.encode(frame("plan", { attempt: 1, steps: ["write"] })));
+				controller.error(new Error("ECONNRESET"));
+			},
+		});
+		const fetchMock = vi.fn(async (url: string | URL) => {
+			const u = String(url);
+			if (u.endsWith("/run"))
+				return {
+					ok: true,
+					status: 200,
+					json: async () => ({ id: "t1" }),
+					text: async () => "",
+				} as Response;
+			if (u.includes("/run/t1/events"))
+				return { ok: true, status: 200, body: droppingStream } as unknown as Response;
+			throw new Error(`unexpected url ${u}`);
+		});
+		vi.stubGlobal("fetch", fetchMock);
+
+		const factory = await endpointAgent({ type: "agent", baseURL: "http://agent.test", model: {} });
+		const stream = await factory({ messages: [{ from: "user", content: "go" }] } as Parameters<
+			typeof factory
+		>[0]);
+		const chunks: { token: { text: string }; generated_text: string | null }[] = [];
+		for await (const c of stream) chunks.push(c as (typeof chunks)[number]);
+
+		const text = chunks.map((c) => c.token.text).join("");
+		expect(text).toContain("</think>"); // think block closed despite the drop
+		expect(text).toContain("dropped before the task finished"); // honest message
+		const finalChunk = chunks.find((c) => c.generated_text);
+		expect(finalChunk?.generated_text).toContain("dropped before the task finished");
+	});
 });

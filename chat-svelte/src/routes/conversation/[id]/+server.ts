@@ -513,10 +513,21 @@ export async function POST({ request, locals, params, getClientAddress }) {
 			return { ...msg, updates: filteredUpdates };
 		});
 
-		await collections.conversations.updateOne(
-			{ _id: convId },
-			{ $set: { messages: messagesForSave, title: conv.title, updatedAt: new Date() } }
-		);
+		// Best-effort: a transient DB failure at persist time must NOT throw out of the stream's
+		// start()/finally (which would error the stream AFTER a good answer already reached the client,
+		// and lose the turn on reload). Log and move on — the answer stays visible in-session; the
+		// generation idempotency record (finishGeneration below) is the durable retry seam.
+		try {
+			await collections.conversations.updateOne(
+				{ _id: convId },
+				{ $set: { messages: messagesForSave, title: conv.title, updatedAt: new Date() } }
+			);
+		} catch (err) {
+			logger.error(
+				err,
+				"[persist] failed to save conversation (answer shown in-session, not persisted)"
+			);
+		}
 	};
 
 	const abortRegistry = AbortRegistry.getInstance();
