@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import type { Message } from "$lib/types/Message";
 import { MessageUpdateStatus, MessageUpdateType } from "$lib/types/MessageUpdate";
 import {
+	deriveMessageStatus,
 	GENERATION_STALE_MS,
 	isAssistantGenerationTerminal,
 	isConversationGenerationActive,
@@ -76,6 +77,79 @@ describe("generationState", () => {
 
 		expect(isAssistantGenerationTerminal(message)).toBe(true);
 		expect(isConversationGenerationActive([message])).toBe(false);
+	});
+});
+
+describe("deriveMessageStatus", () => {
+	test("running while no terminal update has arrived", () => {
+		expect(
+			deriveMessageStatus(
+				assistantMessage({ updates: [{ type: MessageUpdateType.Stream, token: "Hel" }] })
+			)
+		).toBe("running");
+	});
+
+	test("complete on a clean final answer", () => {
+		expect(
+			deriveMessageStatus(
+				assistantMessage({
+					updates: [{ type: MessageUpdateType.FinalAnswer, text: "Done", interrupted: false }],
+				})
+			)
+		).toBe("complete");
+	});
+
+	test("error wins on an error status", () => {
+		expect(
+			deriveMessageStatus(
+				assistantMessage({
+					updates: [
+						{ type: MessageUpdateType.Status, status: MessageUpdateStatus.Error, message: "boom" },
+					],
+				})
+			)
+		).toBe("error");
+	});
+
+	test("incomplete on the persisted interrupted flag (with partial content preserved)", () => {
+		expect(
+			deriveMessageStatus(
+				assistantMessage({
+					interrupted: true,
+					content: "partial answer the user already saw",
+					updates: [{ type: MessageUpdateType.Stream, token: "partial" }],
+				})
+			)
+		).toBe("incomplete");
+	});
+
+	test("incomplete on a final-answer flagged interrupted", () => {
+		expect(
+			deriveMessageStatus(
+				assistantMessage({
+					updates: [{ type: MessageUpdateType.FinalAnswer, text: "cut off", interrupted: true }],
+				})
+			)
+		).toBe("incomplete");
+	});
+
+	test("error takes precedence over interrupted when both are present", () => {
+		expect(
+			deriveMessageStatus(
+				assistantMessage({
+					interrupted: true,
+					updates: [
+						{ type: MessageUpdateType.Status, status: MessageUpdateStatus.Error, message: "boom" },
+					],
+				})
+			)
+		).toBe("error");
+	});
+
+	test("non-assistant messages are always complete", () => {
+		expect(deriveMessageStatus({ from: "user", id: "u1" as Message["id"], content: "hi" })).toBe(
+			"complete"
+		);
 	});
 });
 

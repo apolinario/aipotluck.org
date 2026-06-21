@@ -29,6 +29,7 @@
 	import { splitArtifactSegments, stripArtifacts } from "$lib/utils/artifacts";
 	import type { ArtifactOperation } from "$lib/utils/artifacts";
 	import { showsLiveProvenanceTrace, showsCacheNotice } from "$lib/messageProvenance";
+	import { deriveMessageStatus } from "$lib/utils/generationState";
 
 	interface Props {
 		message: Message;
@@ -71,6 +72,13 @@
 		onretry,
 		onshowAlternateMsg,
 	}: Props = $props();
+
+	// Honest-degradation surface: when a generation ended without a clean finish (user stop, or a
+	// stream that died after partial tokens), say so over the preserved partial content rather than
+	// letting it look complete. `error` is surfaced elsewhere; this is the `incomplete` state.
+	const showsInterruptedNotice = $derived(
+		!loading && deriveMessageStatus(message) === "incomplete"
+	);
 
 	let contentEl: HTMLElement | undefined = $state();
 	let isCopied = $state(false);
@@ -467,6 +475,24 @@
 					{/each}
 				{/if}
 			</div>
+
+			<!-- Honest "incomplete" notice: the generation was interrupted (user stop, or a stream that
+			     died after partial tokens), so the answer above may be cut off. role="alert"/aria-live so
+			     screen readers announce it; offers a retry that reuses the regenerate path. -->
+			{#if showsInterruptedNotice}
+				<div
+					role="alert"
+					aria-live="polite"
+					data-exclude-from-copy
+					class="mt-2 text-sm text-gray-400 dark:text-gray-500"
+				>
+					Response was interrupted and may be incomplete.{#if onretry}<button
+							type="button"
+							class="ml-1 underline underline-offset-2 hover:text-gray-600 dark:hover:text-gray-300"
+							onclick={() => onretry?.({ id: message.id })}>Retry</button
+						>{/if}
+				</div>
+			{/if}
 
 			<!-- Conference-wifi honesty chip: this turn was served from a pre-vetted starter
 			     because the live request never reached the server, so the provenance trace below
