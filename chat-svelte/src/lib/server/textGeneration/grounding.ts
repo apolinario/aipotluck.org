@@ -14,7 +14,7 @@
 //      not stop in-message "you are GPT-4" overrides).
 
 import { randomUUID } from "node:crypto";
-import type { EndpointMessage } from "../endpoints/endpoints";
+import type { EndpointMessage } from "../endpoints/types";
 import categoriesRaw from "./data/categories.json";
 import exemplarsRaw from "./data/exemplars.json";
 

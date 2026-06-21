@@ -1,4 +1,4 @@
-import type { EndpointMessage } from "../../endpoints/endpoints";
+import type { EndpointMessage } from "../../endpoints/types";
 
 const ROUTER_REASONING_REGEX = /<think>[\s\S]*?(?:<\/think>|$)/g;
 

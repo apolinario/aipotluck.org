@@ -1,41 +1,10 @@
-import type { Conversation } from "$lib/types/Conversation";
-import type { Message } from "$lib/types/Message";
-import type {
-	TextGenerationStreamOutput,
-	TextGenerationStreamToken,
-	InferenceProvider,
-} from "@huggingface/inference";
 import { z } from "zod";
 import { endpointOAIParametersSchema, endpointOai } from "./openai/endpointOai";
 import { endpointAgentParametersSchema, endpointAgent } from "./agent/endpointAgent";
-import type { Model } from "$lib/types/Model";
-import type { ObjectId } from "bson";
 
-export type EndpointMessage = Omit<Message, "id">;
-
-// parameters passed when generating text
-export interface EndpointParameters {
-	messages: EndpointMessage[];
-	preprompt?: Conversation["preprompt"];
-	generateSettings?: Partial<Model["parameters"]>;
-	isMultimodal?: boolean;
-	conversationId?: ObjectId;
-	locals: App.Locals | undefined;
-	abortSignal?: AbortSignal;
-	/** Inference provider preference: "auto", "fastest", "cheapest", or a specific provider name */
-	provider?: string;
-	/** Optional thinking-effort, forwarded as OpenAI `reasoning_effort` when set */
-	reasoningEffort?: "low" | "medium" | "high";
-}
-
-export type TextGenerationStreamOutputSimplified = TextGenerationStreamOutput & {
-	token: TextGenerationStreamToken;
-	routerMetadata?: { route?: string; model?: string; provider?: InferenceProvider };
-};
-// type signature for the endpoint
-export type Endpoint = (
-	params: EndpointParameters
-) => Promise<AsyncGenerator<TextGenerationStreamOutputSimplified, void, void>>;
+// The endpoint type surface (Endpoint, EndpointParameters, EndpointMessage,
+// TextGenerationStreamOutputSimplified) lives in ./types — a leaf module the endpoint
+// implementations can import without cycling back through this registry.
 
 // list of all endpoint generators
 export const endpoints = {

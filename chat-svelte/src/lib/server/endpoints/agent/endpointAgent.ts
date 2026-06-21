@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Endpoint, TextGenerationStreamOutputSimplified } from "../endpoints";
+import type { Endpoint, TextGenerationStreamOutputSimplified } from "../types";
 
 /**
  * Agent endpoint — Story B (agent answers inside Gap Chat).

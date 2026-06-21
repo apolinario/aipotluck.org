@@ -3,7 +3,7 @@ import type {
 	EndpointParameters,
 	EndpointMessage,
 	TextGenerationStreamOutputSimplified,
-} from "../endpoints/endpoints";
+} from "../endpoints/types";
 import endpoints from "../endpoints/endpoints";
 import type { ProcessedModel } from "../models";
 import { config } from "$lib/server/config";

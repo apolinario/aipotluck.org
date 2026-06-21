@@ -1,4 +1,4 @@
-import type { EndpointParameters } from "./server/endpoints/endpoints";
+import type { EndpointParameters } from "./server/endpoints/types";
 import type { BackendModel } from "./server/models";
 
 type buildPromptOptions = Pick<EndpointParameters, "messages" | "preprompt"> & {

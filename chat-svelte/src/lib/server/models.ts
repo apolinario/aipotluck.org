@@ -3,7 +3,8 @@ import { config } from "$lib/server/config";
 import { MULTIMODAL_ENABLED } from "$lib/server/textOnly";
 import type { ChatTemplateInput } from "$lib/types/Template";
 import { z } from "zod";
-import endpoints, { endpointSchema, type Endpoint } from "./endpoints/endpoints";
+import endpoints, { endpointSchema } from "./endpoints/endpoints";
+import type { Endpoint } from "./endpoints/types";
 
 import JSON5 from "json5";
 import { logger } from "$lib/server/logger";

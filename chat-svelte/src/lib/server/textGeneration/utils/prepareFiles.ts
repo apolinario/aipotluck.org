@@ -1,5 +1,5 @@
 import type { MessageFile } from "$lib/types/Message";
-import type { EndpointMessage } from "$lib/server/endpoints/endpoints";
+import type { EndpointMessage } from "$lib/server/endpoints/types";
 import type { OpenAI } from "openai";
 import { TEXT_MIME_ALLOWLIST } from "$lib/constants/mime";
 import type { makeImageProcessor } from "$lib/server/endpoints/images";

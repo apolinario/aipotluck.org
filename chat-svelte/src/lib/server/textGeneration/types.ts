@@ -1,5 +1,5 @@
 import type { ProcessedModel } from "../models";
-import type { Endpoint } from "../endpoints/endpoints";
+import type { Endpoint } from "../endpoints/types";
 import type { Conversation } from "$lib/types/Conversation";
 import type { Message } from "$lib/types/Message";
 

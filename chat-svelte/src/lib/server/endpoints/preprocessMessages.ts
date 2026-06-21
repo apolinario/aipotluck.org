@@ -1,5 +1,5 @@
 import type { Message } from "$lib/types/Message";
-import type { EndpointMessage } from "./endpoints";
+import type { EndpointMessage } from "./types";
 import { downloadFile } from "../files/downloadFile";
 import type { ObjectId } from "bson";
 

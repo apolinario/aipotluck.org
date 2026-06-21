@@ -1,6 +1,6 @@
 import { taskModel, models } from "$lib/server/models";
 import { MessageUpdateType, type MessageUpdate } from "$lib/types/MessageUpdate";
-import type { EndpointMessage } from "./endpoints/endpoints";
+import type { EndpointMessage } from "./endpoints/types";
 
 export async function* generateFromDefaultEndpoint({
 	messages,

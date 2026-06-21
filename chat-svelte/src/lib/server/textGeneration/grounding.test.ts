@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { EndpointMessage } from "../endpoints/endpoints";
+import type { EndpointMessage } from "../endpoints/types";
 import {
 	CATS,
 	type Category,

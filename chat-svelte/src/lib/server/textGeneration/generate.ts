@@ -6,7 +6,7 @@ import {
 } from "$lib/types/MessageUpdate";
 import { AbortedGenerations } from "../abortedGenerations";
 import type { TextGenerationContext } from "./types";
-import type { EndpointMessage } from "../endpoints/endpoints";
+import type { EndpointMessage } from "../endpoints/types";
 import { generateFromDefaultEndpoint } from "../generateFromDefaultEndpoint";
 import { generateSummaryOfReasoning } from "./reasoning";
 import { GROUNDED_DECODING, resolveDecoding } from "./persona";
