@@ -10,6 +10,7 @@ import JSON5 from "json5";
 import { logger } from "$lib/server/logger";
 import { makeRouterEndpoint } from "$lib/server/router/endpoint";
 import { sanitizeJSONEnv } from "$lib/server/envParse";
+import { applyOverrides, selectAllowedModels, toModelConfigs } from "$lib/server/modelsCatalog";
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
@@ -67,7 +68,7 @@ const modelConfig = z.object({
 	systemRoleSupported: z.boolean().default(true),
 });
 
-type ModelConfig = z.infer<typeof modelConfig>;
+export type ModelConfig = z.infer<typeof modelConfig>;
 
 const overrideEntrySchema = modelConfig
 	.partial()
@@ -79,7 +80,7 @@ const overrideEntrySchema = modelConfig
 		message: "Model override entry must provide an id or name",
 	});
 
-type ModelOverride = z.infer<typeof overrideEntrySchema>;
+export type ModelOverride = z.infer<typeof overrideEntrySchema>;
 
 const openaiBaseUrl = config.OPENAI_BASE_URL
 	? config.OPENAI_BASE_URL.replace(/\/$/, "")
@@ -109,6 +110,8 @@ const listSchema = z
 		),
 	})
 	.passthrough();
+
+export type CatalogEntry = z.infer<typeof listSchema>["data"][number];
 
 function getChatPromptRender(_m: ModelConfig): (inputs: ChatTemplateInput) => string {
 	// Minimal template to support legacy "completions" flow if ever used.
@@ -211,6 +214,255 @@ const resolveTaskModel = (modelList: ProcessedModel[]) => {
 	return modelList[0];
 };
 
+// Resolve the curated allowlist policy string. The `config` Proxy returns "" for unset keys (not
+// undefined), so test the trimmed value. Unset/empty → default to Apertus 70B; "*"/"all" → full
+// catalog; otherwise the comma-separated id list (see selectAllowedModels). 70B only for the alpha
+// (user decision): the answer-quality layer (persona/grounding/identity-lock) is tuned for the 70B,
+// it's the default served + tested model, and the 8B fails the identity-lock / confabulates. Newer
+// Apertus checkpoints may be added here later. The first allowlisted model becomes defaultModel
+// (models[0]); with one entry the picker collapses to a single model.
+const resolveAllowlistSpec = (): string => {
+	const allowlistRaw = (
+		(Reflect.get(config, "MODEL_ALLOWLIST") as string | undefined) ?? ""
+	).trim();
+	return allowlistRaw || "swiss-ai/Apertus-70B-Instruct-2509";
+};
+
+// Fetch + validate the upstream OpenAI-compatible /models catalog.
+const fetchModelCatalog = async (baseURL: string): Promise<CatalogEntry[]> => {
+	logger.info({ baseURL }, "[models] Using OpenAI-compatible base URL");
+
+	// Canonical auth token is OPENAI_API_KEY; keep HF_TOKEN as legacy alias
+	const authToken = config.OPENAI_API_KEY || config.HF_TOKEN;
+
+	// Use auth token from the start if available to avoid rate limiting issues
+	// Some APIs rate-limit unauthenticated requests more aggressively
+	const response = await fetch(`${baseURL}/models`, {
+		headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
+	});
+	logger.info({ status: response.status }, "[models] First fetch status");
+	if (!response.ok && response.status === 401 && !authToken) {
+		// If we get 401 and didn't have a token, there's nothing we can do
+		throw new Error(
+			`Failed to fetch ${baseURL}/models: ${response.status} ${response.statusText} (no auth token available)`
+		);
+	}
+	if (!response.ok) {
+		throw new Error(`Failed to fetch ${baseURL}/models: ${response.status} ${response.statusText}`);
+	}
+	const json = await response.json();
+	logger.info({ keys: Object.keys(json || {}) }, "[models] Response keys");
+
+	const parsed = listSchema.parse(json);
+	logger.info({ count: parsed.data.length }, "[models] Parsed models count");
+	return parsed.data;
+};
+
+// Process + endpoint-decorate the shaped configs into ProcessedModels (router flag added later).
+const processConfigs = async (modelsRaw: ModelConfig[]): Promise<ProcessedModel[]> => {
+	const builtModels = await Promise.all(
+		modelsRaw.map((e) =>
+			processModel(e)
+				.then(addEndpoint)
+				.then(async (m) => ({
+					...m,
+					hasInferenceAPI: inferenceApiIds.includes(m.id ?? m.name),
+					// router decoration added later
+					isRouter: false as boolean,
+				}))
+		)
+	);
+	return builtModels as ProcessedModel[];
+};
+
+// Prepend the LLM-router alias (Omni) when LLM_ROUTER_ROUTES_PATH is configured.
+const maybeAddRouterAlias = async (
+	decorated: ProcessedModel[],
+	baseURL: string
+): Promise<ProcessedModel[]> => {
+	const routerRoutesPath = (config.LLM_ROUTER_ROUTES_PATH || "").trim();
+	if (!routerRoutesPath) {
+		return decorated;
+	}
+
+	const routerLabel = (config.PUBLIC_LLM_ROUTER_DISPLAY_NAME || "Omni").trim() || "Omni";
+	const routerLogo = (config.PUBLIC_LLM_ROUTER_LOGO_URL || "").trim();
+	const routerAliasId = (config.PUBLIC_LLM_ROUTER_ALIAS_ID || "omni").trim() || "omni";
+	const routerMultimodalEnabled =
+		(config.LLM_ROUTER_ENABLE_MULTIMODAL || "").toLowerCase() === "true";
+	const routerToolsEnabled = (config.LLM_ROUTER_ENABLE_TOOLS || "").toLowerCase() === "true";
+
+	// Build a minimal model config for the alias
+	const aliasRaw = {
+		id: routerAliasId,
+		name: routerAliasId,
+		displayName: routerLabel,
+		description: "Automatically routes your messages to the best model for your request.",
+		logoUrl: routerLogo || undefined,
+		preprompt: "",
+		endpoints: [
+			{
+				type: "openai" as const,
+				baseURL,
+			},
+		],
+		// Keep the alias visible
+		unlisted: false,
+	} as ModelConfig;
+
+	if (MULTIMODAL_ENABLED && routerMultimodalEnabled) {
+		aliasRaw.multimodal = true;
+		aliasRaw.multimodalAcceptedMimetypes = ["image/*"];
+	}
+
+	if (routerToolsEnabled) {
+		aliasRaw.supportsTools = true;
+	}
+
+	// Apply MODELS overrides to the router alias too, so flags like
+	// supportsArtifacts can be set on it like on any other model
+	const aliasOverride = getModelOverrides().find(
+		(o) => o.id?.trim() === routerAliasId || o.name?.trim() === routerAliasId
+	);
+	if (aliasOverride) {
+		const { id, name, ...rest } = aliasOverride;
+		void id;
+		void name;
+		Object.assign(aliasRaw, rest);
+	}
+
+	const aliasBase = await processModel(aliasRaw);
+	// Create a self-referential ProcessedModel for the router endpoint
+	const aliasModel: ProcessedModel = {
+		...aliasBase,
+		isRouter: true,
+		hasInferenceAPI: false,
+		// getEndpoint uses the router wrapper regardless of the endpoints array
+		getEndpoint: async (): Promise<Endpoint> => makeRouterEndpoint(aliasModel),
+	} as ProcessedModel;
+
+	// Put alias first
+	return [aliasModel, ...decorated];
+};
+
+// Append the Public AI agent model (Story B) when AGENT_SERVICE_URL is configured. Gated so it
+// appears ONLY where configured (off by default → safe for the alpha). The agent endpoint streams
+// the service's /run + SSE into chat-ui's token stream (plan/steps as a <think> block, verified
+// result as the answer).
+const maybeAddAgentModel = async (decorated: ProcessedModel[]): Promise<ProcessedModel[]> => {
+	const agentUrl = ((Reflect.get(config, "AGENT_SERVICE_URL") as string | undefined) ?? "").trim();
+	if (!agentUrl) {
+		return decorated;
+	}
+
+	const agentToken = (
+		(Reflect.get(config, "AGENT_SERVICE_TOKEN") as string | undefined) ?? ""
+	).trim();
+	const agentModelName =
+		((Reflect.get(config, "AGENT_SERVICE_MODEL") as string | undefined) ?? "").trim() ||
+		"swiss-ai/Apertus-70B-Instruct-2509";
+	const agentRaw = {
+		id: "apertus-agent",
+		name: "apertus-agent",
+		displayName:
+			((Reflect.get(config, "AGENT_SERVICE_DISPLAY_NAME") as string | undefined) ?? "").trim() ||
+			"Apertus Agent (beta)",
+		description:
+			"Runs your task as a multi-step agent on the fully-open Apertus model (hybrid), sandboxed and metered server-side. Shows its plan + steps as it works.",
+		preprompt: "",
+		endpoints: [
+			{
+				type: "agent" as const,
+				baseURL: agentUrl,
+				apiKey: agentToken,
+				provenanceModel: agentModelName,
+			},
+		],
+		unlisted: false,
+	} as ModelConfig;
+	const agentModel = {
+		...addEndpoint(await processModel(agentRaw)),
+		isRouter: false as boolean,
+		hasInferenceAPI: false,
+	} as ProcessedModel;
+	logger.info({ baseURL: agentUrl }, "[models] Registered Public AI agent model (apertus-agent)");
+	return [...decorated, agentModel];
+};
+
+// Append the opt-in compare/second-opinion panel when SECOND_OPINION_* is configured. Independent
+// open models on a DIFFERENT provider: the sovereign Apertus primary stays on its own base (CSCS);
+// these register the ordered "compare with another model" stack — a SECOND opinion (e.g. GLM-5.2)
+// and an optional THIRD (e.g. Mistral Large 3) — each as an unlisted per-model endpoint with honest
+// provenance, all riding the SAME compare endpoint (same baseURL + key, different model id). Neutral
+// triangulation, not "a more capable model" (we don't assert a hierarchy). Off by default → safe for
+// the alpha; the third is dormant until THIRD_OPINION_MODEL is set.
+const maybeAddCompareModels = async (decorated: ProcessedModel[]): Promise<ProcessedModel[]> => {
+	const soBaseURL = (
+		(Reflect.get(config, "SECOND_OPINION_BASE_URL") as string | undefined) ?? ""
+	).trim();
+	const soApiKey = (
+		(Reflect.get(config, "SECOND_OPINION_API_KEY") as string | undefined) ?? ""
+	).trim();
+	// The panel = COMPARE_PANEL (comma-separated, for the collective fanout) when set, else the
+	// sequential [SECOND, THIRD] pair. Plus the AGGREGATOR_MODEL (the verdict writer) if it isn't
+	// already a panelist. All ride the same compare endpoint.
+	const secondId = (
+		(Reflect.get(config, "SECOND_OPINION_MODEL") as string | undefined) ?? ""
+	).trim();
+	const thirdId = ((Reflect.get(config, "THIRD_OPINION_MODEL") as string | undefined) ?? "").trim();
+	const panelRaw = ((Reflect.get(config, "COMPARE_PANEL") as string | undefined) ?? "").trim();
+	const aggId = ((Reflect.get(config, "AGGREGATOR_MODEL") as string | undefined) ?? "").trim();
+	const panelIds = panelRaw
+		? panelRaw
+				.split(",")
+				.map((s) => s.trim())
+				.filter(Boolean)
+		: [secondId, thirdId].filter(Boolean);
+	// Display-name hints for the two named singles; panel ids derive a name from the id.
+	const nameHints: Record<string, string> = {};
+	const secondName = (
+		(Reflect.get(config, "SECOND_OPINION_DISPLAY_NAME") as string | undefined) ?? ""
+	).trim();
+	const thirdName = (
+		(Reflect.get(config, "THIRD_OPINION_DISPLAY_NAME") as string | undefined) ?? ""
+	).trim();
+	if (secondId && secondName) nameHints[secondId] = secondName;
+	if (thirdId && thirdName) nameHints[thirdId] = thirdName;
+	const compareIds = [...new Set([...panelIds, ...(aggId ? [aggId] : [])])];
+	if (!(soBaseURL && soApiKey && compareIds.length)) {
+		return decorated;
+	}
+
+	let result = decorated;
+	for (const id of compareIds) {
+		const raw = {
+			id,
+			name: id,
+			displayName: nameHints[id] || id.split("/").pop() || id,
+			description:
+				"An independent open-weights model, offered as an opt-in cross-check (compare with another model / collective second opinion). Open weights, served on a non-sovereign provider — labeled as such.",
+			preprompt: "",
+			endpoints: [
+				{
+					type: "openai" as const,
+					baseURL: soBaseURL.replace(/\/$/, ""),
+					apiKey: soApiKey,
+				},
+			],
+			// compare/panel target, not a primary choice
+			unlisted: true,
+		} as ModelConfig;
+		const model = {
+			...addEndpoint(await processModel(raw)),
+			isRouter: false as boolean,
+			hasInferenceAPI: false,
+		} as ProcessedModel;
+		result = [...result, model];
+		logger.info({ baseURL: soBaseURL, model: id }, "[models] Registered compare model");
+	}
+	return result;
+};
+
 const buildModels = async (): Promise<ProcessedModel[]> => {
 	if (!openaiBaseUrl) {
 		logger.error(
@@ -218,339 +470,23 @@ const buildModels = async (): Promise<ProcessedModel[]> => {
 		);
 		throw new Error("OPENAI_BASE_URL not set");
 	}
+	const baseURL = openaiBaseUrl;
 
 	try {
-		const baseURL = openaiBaseUrl;
-		logger.info({ baseURL }, "[models] Using OpenAI-compatible base URL");
+		const catalog = await fetchModelCatalog(baseURL);
 
-		// Canonical auth token is OPENAI_API_KEY; keep HF_TOKEN as legacy alias
-		const authToken = config.OPENAI_API_KEY || config.HF_TOKEN;
-
-		// Use auth token from the start if available to avoid rate limiting issues
-		// Some APIs rate-limit unauthenticated requests more aggressively
-		const response = await fetch(`${baseURL}/models`, {
-			headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
-		});
-		logger.info({ status: response.status }, "[models] First fetch status");
-		if (!response.ok && response.status === 401 && !authToken) {
-			// If we get 401 and didn't have a token, there's nothing we can do
-			throw new Error(
-				`Failed to fetch ${baseURL}/models: ${response.status} ${response.statusText} (no auth token available)`
-			);
-		}
-		if (!response.ok) {
-			throw new Error(
-				`Failed to fetch ${baseURL}/models: ${response.status} ${response.statusText}`
-			);
-		}
-		const json = await response.json();
-		logger.info({ keys: Object.keys(json || {}) }, "[models] Response keys");
-
-		const parsed = listSchema.parse(json);
-		logger.info({ count: parsed.data.length }, "[models] Parsed models count");
-
-		// Constrain the upstream router's full catalog to a curated allowlist. The Public AI
-		// demonstrator serves Apertus; defaulting here keeps the model picker focused instead of
-		// exposing all ~120 router models. Override with MODEL_ALLOWLIST (comma-separated ids); set it
-		// to an empty string to expose the full catalog.
-		// NOTE: the `config` Proxy returns "" for unset keys (not undefined), so test the trimmed value.
-		// Unset/empty → default to Apertus; "*" or "all" → full catalog; otherwise the given id list.
-		const allowlistRaw = (
-			(Reflect.get(config, "MODEL_ALLOWLIST") as string | undefined) ?? ""
-		).trim();
-		// 70B only for the alpha (user decision): the answer-quality layer
-		// (persona/grounding/identity-lock) is tuned for the 70B, it's the default
-		// served + tested model, and the 8B fails the identity-lock / confabulates.
-		// Newer Apertus checkpoints may be added here later. The first allowlisted
-		// model becomes defaultModel (models[0]) below; with one entry the picker
-		// collapses to a single model. Override via MODEL_ALLOWLIST if needed.
-		const allowlistSpec = allowlistRaw || "swiss-ai/Apertus-70B-Instruct-2509";
-		const exposeAll = ["*", "all"].includes(allowlistSpec.toLowerCase());
-		const allowlist = allowlistSpec
-			.split(",")
-			.map((s) => s.trim())
-			.filter(Boolean);
-		const allowSet = new Set(allowlist);
-		let allowedData = parsed.data;
-		if (!exposeAll && allowSet.size) {
-			// Order by the allowlist, not the upstream router catalog order, so the
-			// FIRST allowlisted id deterministically becomes defaultModel (models[0]).
-			const byId = new Map(parsed.data.map((m) => [m.id, m]));
-			const filtered = allowlist
-				.map((id) => byId.get(id))
-				.filter((m): m is (typeof parsed.data)[number] => Boolean(m));
-			if (filtered.length) {
-				allowedData = filtered;
-				logger.info(
-					{ kept: filtered.length, of: parsed.data.length },
-					"[models] Constrained to model allowlist"
-				);
-			} else {
-				logger.warn({ allowlist }, "[models] Allowlist matched nothing; using full catalog");
-			}
-		}
-
-		let modelsRaw = allowedData.map((m) => {
-			let logoUrl: string | undefined = undefined;
-			if (isHFRouter && m.id.includes("/")) {
-				const org = m.id.split("/")[0];
-				logoUrl = `https://huggingface.co/api/avatars/${encodeURIComponent(org)}`;
-			}
-
-			const inputModalities = (m.architecture?.input_modalities ?? []).map((modality) =>
-				modality.toLowerCase()
-			);
-			const supportsImageInput =
-				inputModalities.includes("image") || inputModalities.includes("vision");
-
-			// If any provider supports tools, consider the model as supporting tools
-			const supportsTools = Boolean((m.providers ?? []).some((p) => p?.supports_tools === true));
-			return {
-				id: m.id,
-				name: m.id,
-				displayName: m.id,
-				description: m.description,
-				logoUrl,
-				providers: m.providers,
-				// TEXT-ONLY ALPHA: force non-multimodal regardless of what the served model advertises,
-				// so the client never shows the image-attach affordance and no image is sent. Gated —
-				// flip MULTIMODAL_ENABLED post-July. See $lib/server/textOnly.
-				multimodal: MULTIMODAL_ENABLED && supportsImageInput,
-				multimodalAcceptedMimetypes:
-					MULTIMODAL_ENABLED && supportsImageInput ? ["image/*"] : undefined,
-				supportsTools,
-				endpoints: [
-					{
-						type: "openai" as const,
-						baseURL,
-						// apiKey will be taken from OPENAI_API_KEY or HF_TOKEN automatically
-					},
-				],
-			} as ModelConfig;
-		}) as ModelConfig[];
-
-		const overrides = getModelOverrides();
-
-		if (overrides.length) {
-			const overrideMap = new Map<string, ModelOverride>();
-			for (const override of overrides) {
-				for (const key of [override.id, override.name]) {
-					const trimmed = key?.trim();
-					if (trimmed) overrideMap.set(trimmed, override);
-				}
-			}
-
-			modelsRaw = modelsRaw.map((model) => {
-				const override = overrideMap.get(model.id ?? "") ?? overrideMap.get(model.name ?? "");
-				if (!override) return model;
-
-				const { id, name, ...rest } = override;
-				void id;
-				void name;
-
-				return {
-					...model,
-					...rest,
-				};
-			});
-		}
-
-		const builtModels = await Promise.all(
-			modelsRaw.map((e) =>
-				processModel(e)
-					.then(addEndpoint)
-					.then(async (m) => ({
-						...m,
-						hasInferenceAPI: inferenceApiIds.includes(m.id ?? m.name),
-						// router decoration added later
-						isRouter: false as boolean,
-					}))
-			)
+		// Constrain the upstream router's full catalog to a curated allowlist, shape the survivors into
+		// model configs, then layer MODELS overrides on top (see $lib/server/modelsCatalog).
+		const allowed = selectAllowedModels(catalog, resolveAllowlistSpec());
+		const configs = applyOverrides(
+			toModelConfigs(allowed, { baseURL, isHFRouter, multimodalEnabled: MULTIMODAL_ENABLED }),
+			getModelOverrides()
 		);
 
-		const routerRoutesPath = (config.LLM_ROUTER_ROUTES_PATH || "").trim();
-		const routerLabel = (config.PUBLIC_LLM_ROUTER_DISPLAY_NAME || "Omni").trim() || "Omni";
-		const routerLogo = (config.PUBLIC_LLM_ROUTER_LOGO_URL || "").trim();
-		const routerAliasId = (config.PUBLIC_LLM_ROUTER_ALIAS_ID || "omni").trim() || "omni";
-		const routerMultimodalEnabled =
-			(config.LLM_ROUTER_ENABLE_MULTIMODAL || "").toLowerCase() === "true";
-		const routerToolsEnabled = (config.LLM_ROUTER_ENABLE_TOOLS || "").toLowerCase() === "true";
-
-		let decorated = builtModels as ProcessedModel[];
-
-		if (routerRoutesPath) {
-			// Build a minimal model config for the alias
-			const aliasRaw = {
-				id: routerAliasId,
-				name: routerAliasId,
-				displayName: routerLabel,
-				description: "Automatically routes your messages to the best model for your request.",
-				logoUrl: routerLogo || undefined,
-				preprompt: "",
-				endpoints: [
-					{
-						type: "openai" as const,
-						baseURL: openaiBaseUrl,
-					},
-				],
-				// Keep the alias visible
-				unlisted: false,
-			} as ModelConfig;
-
-			if (MULTIMODAL_ENABLED && routerMultimodalEnabled) {
-				aliasRaw.multimodal = true;
-				aliasRaw.multimodalAcceptedMimetypes = ["image/*"];
-			}
-
-			if (routerToolsEnabled) {
-				aliasRaw.supportsTools = true;
-			}
-
-			// Apply MODELS overrides to the router alias too, so flags like
-			// supportsArtifacts can be set on it like on any other model
-			const aliasOverride = getModelOverrides().find(
-				(o) => o.id?.trim() === routerAliasId || o.name?.trim() === routerAliasId
-			);
-			if (aliasOverride) {
-				const { id, name, ...rest } = aliasOverride;
-				void id;
-				void name;
-				Object.assign(aliasRaw, rest);
-			}
-
-			const aliasBase = await processModel(aliasRaw);
-			// Create a self-referential ProcessedModel for the router endpoint
-			const aliasModel: ProcessedModel = {
-				...aliasBase,
-				isRouter: true,
-				hasInferenceAPI: false,
-				// getEndpoint uses the router wrapper regardless of the endpoints array
-				getEndpoint: async (): Promise<Endpoint> => makeRouterEndpoint(aliasModel),
-			} as ProcessedModel;
-
-			// Put alias first
-			decorated = [aliasModel, ...decorated];
-		}
-
-		// Public AI agent (Story B): expose the hybrid Apertus agent service as a model in the picker.
-		// Gated by AGENT_SERVICE_URL so it appears ONLY where configured (off by default → safe for the
-		// alpha; setting the env turns it on). The agent endpoint streams the service's /run + SSE into
-		// chat-ui's token stream (plan/steps as a <think> block, verified result as the answer).
-		const agentUrl = (
-			(Reflect.get(config, "AGENT_SERVICE_URL") as string | undefined) ?? ""
-		).trim();
-		if (agentUrl) {
-			const agentToken = (
-				(Reflect.get(config, "AGENT_SERVICE_TOKEN") as string | undefined) ?? ""
-			).trim();
-			const agentModelName =
-				((Reflect.get(config, "AGENT_SERVICE_MODEL") as string | undefined) ?? "").trim() ||
-				"swiss-ai/Apertus-70B-Instruct-2509";
-			const agentRaw = {
-				id: "apertus-agent",
-				name: "apertus-agent",
-				displayName:
-					(
-						(Reflect.get(config, "AGENT_SERVICE_DISPLAY_NAME") as string | undefined) ?? ""
-					).trim() || "Apertus Agent (beta)",
-				description:
-					"Runs your task as a multi-step agent on the fully-open Apertus model (hybrid), sandboxed and metered server-side. Shows its plan + steps as it works.",
-				preprompt: "",
-				endpoints: [
-					{
-						type: "agent" as const,
-						baseURL: agentUrl,
-						apiKey: agentToken,
-						provenanceModel: agentModelName,
-					},
-				],
-				unlisted: false,
-			} as ModelConfig;
-			const agentModel = {
-				...addEndpoint(await processModel(agentRaw)),
-				isRouter: false as boolean,
-				hasInferenceAPI: false,
-			} as ProcessedModel;
-			decorated = [...decorated, agentModel];
-			logger.info(
-				{ baseURL: agentUrl },
-				"[models] Registered Public AI agent model (apertus-agent)"
-			);
-		}
-
-		// Compare-model stack (independent open models on a DIFFERENT provider). The
-		// sovereign Apertus primary stays on its own base (CSCS); these register the
-		// ordered "compare with another model" stack — a SECOND opinion (e.g. GLM-5.2)
-		// and an optional THIRD (e.g. Mistral Large 3, the European Apache-2.0 model) —
-		// each as an unlisted per-model endpoint with honest provenance. Both ride the
-		// SAME compare endpoint (e.g. the HF router): same baseURL + key, different model
-		// id. Neutral triangulation, not "a more capable model" (we don't assert a
-		// hierarchy). Gated on SECOND_OPINION_* so they appear only where configured
-		// (off by default → safe for the alpha); the third is dormant until
-		// THIRD_OPINION_MODEL is set.
-		const soBaseURL = (
-			(Reflect.get(config, "SECOND_OPINION_BASE_URL") as string | undefined) ?? ""
-		).trim();
-		const soApiKey = (
-			(Reflect.get(config, "SECOND_OPINION_API_KEY") as string | undefined) ?? ""
-		).trim();
-		// The panel = COMPARE_PANEL (comma-separated, for the collective fanout) when set,
-		// else the sequential [SECOND, THIRD] pair. Plus the AGGREGATOR_MODEL (the verdict
-		// writer) if it isn't already a panelist. All ride the same compare endpoint.
-		const secondId = (
-			(Reflect.get(config, "SECOND_OPINION_MODEL") as string | undefined) ?? ""
-		).trim();
-		const thirdId = (
-			(Reflect.get(config, "THIRD_OPINION_MODEL") as string | undefined) ?? ""
-		).trim();
-		const panelRaw = ((Reflect.get(config, "COMPARE_PANEL") as string | undefined) ?? "").trim();
-		const aggId = ((Reflect.get(config, "AGGREGATOR_MODEL") as string | undefined) ?? "").trim();
-		const panelIds = panelRaw
-			? panelRaw
-					.split(",")
-					.map((s) => s.trim())
-					.filter(Boolean)
-			: [secondId, thirdId].filter(Boolean);
-		// Display-name hints for the two named singles; panel ids derive a name from the id.
-		const nameHints: Record<string, string> = {};
-		const secondName = (
-			(Reflect.get(config, "SECOND_OPINION_DISPLAY_NAME") as string | undefined) ?? ""
-		).trim();
-		const thirdName = (
-			(Reflect.get(config, "THIRD_OPINION_DISPLAY_NAME") as string | undefined) ?? ""
-		).trim();
-		if (secondId && secondName) nameHints[secondId] = secondName;
-		if (thirdId && thirdName) nameHints[thirdId] = thirdName;
-		const compareIds = [...new Set([...panelIds, ...(aggId ? [aggId] : [])])];
-		if (soBaseURL && soApiKey && compareIds.length) {
-			for (const id of compareIds) {
-				const raw = {
-					id,
-					name: id,
-					displayName: nameHints[id] || id.split("/").pop() || id,
-					description:
-						"An independent open-weights model, offered as an opt-in cross-check (compare with another model / collective second opinion). Open weights, served on a non-sovereign provider — labeled as such.",
-					preprompt: "",
-					endpoints: [
-						{
-							type: "openai" as const,
-							baseURL: soBaseURL.replace(/\/$/, ""),
-							apiKey: soApiKey,
-						},
-					],
-					// compare/panel target, not a primary choice
-					unlisted: true,
-				} as ModelConfig;
-				const model = {
-					...addEndpoint(await processModel(raw)),
-					isRouter: false as boolean,
-					hasInferenceAPI: false,
-				} as ProcessedModel;
-				decorated = [...decorated, model];
-				logger.info({ baseURL: soBaseURL, model: id }, "[models] Registered compare model");
-			}
-		}
-
+		let decorated = await processConfigs(configs);
+		decorated = await maybeAddRouterAlias(decorated, baseURL);
+		decorated = await maybeAddAgentModel(decorated);
+		decorated = await maybeAddCompareModels(decorated);
 		return decorated;
 	} catch (e) {
 		logger.error(e, "Failed to load models from OpenAI base URL");
