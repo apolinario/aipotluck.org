@@ -50,6 +50,12 @@
 			consent.
 		</p>
 		<p>
+			If you choose to leave your details through “Get involved” — an email, and optionally your name
+			and organisation — we store them only to follow up with you about the project, and we do not
+			sell them. We don't keep the raw IP address of those submissions: it is hashed with a secret
+			key and used only to limit abuse, never to identify you.
+		</p>
+		<p>
 			This is an open alpha run by Current AI, a nonprofit coalition — not a company — and a fuller
 			privacy statement will follow at public launch.
 		</p>

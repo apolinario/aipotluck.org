@@ -9,6 +9,7 @@
 import { and, count, eq, gte } from "drizzle-orm";
 import { getDb } from "./client";
 import { newId } from "./ids";
+import { hashIp } from "./ipHash";
 import { contributions, type ContributionRow } from "./schema";
 
 export interface SaveContributionInput {
@@ -19,6 +20,7 @@ export interface SaveContributionInput {
 	contributionType?: "compute" | "data" | "code" | "funding" | "other" | null;
 	detail?: string | null;
 	userId?: string | null;
+	// Raw client IP at the boundary; hashed (HMAC, see ipHash.ts) before it ever touches the DB.
 	ip?: string | null;
 }
 
@@ -35,7 +37,8 @@ export async function saveContribution(input: SaveContributionInput): Promise<Co
 			contributionType: input.contributionType ?? null,
 			detail: input.detail ?? null,
 			userId: input.userId ?? null,
-			ip: input.ip ?? null,
+			// Store only the keyed hash — never the raw IP (see ipHash.ts). null when no pepper.
+			ipHash: hashIp(input.ip),
 		})
 		.returning();
 	return row;
@@ -43,13 +46,16 @@ export async function saveContribution(input: SaveContributionInput): Promise<Co
 
 /**
  * DB-backed per-IP daily cap primitive (mirrors the messageEvents countDocuments pattern).
- * Returns how many contributions the given IP has submitted since `since`.
+ * Counts by the SAME keyed hash used on write, so the raw IP never has to be stored to match.
+ * Returns 0 when the IP can't be hashed (no pepper / empty) — i.e. the cap fails OPEN, by design.
  */
 export async function countContributionsByIpSince(ip: string, since: Date): Promise<number> {
+	const h = hashIp(ip);
+	if (!h) return 0;
 	const db = getDb();
 	const [row] = await db
 		.select({ value: count() })
 		.from(contributions)
-		.where(and(eq(contributions.ip, ip), gte(contributions.createdAt, since)));
+		.where(and(eq(contributions.ipHash, h), gte(contributions.createdAt, since)));
 	return row?.value ?? 0;
 }

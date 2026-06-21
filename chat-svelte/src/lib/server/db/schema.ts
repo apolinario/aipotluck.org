@@ -224,10 +224,12 @@ export const contributions = pgTable(
 		}),
 		detail: text("detail"),
 		userId: text("user_id"),
-		ip: text("ip"),
+		// Keyed HMAC of the client IP, never the raw IP (see db/ipHash.ts) — privacy-first per-IP
+		// daily-cap key. Honest column name so nothing downstream mistakes it for a raw address.
+		ipHash: text("ip_hash"),
 		createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 	},
-	(t) => [index("contributions_ip_created_idx").on(t.ip, t.createdAt)]
+	(t) => [index("contributions_ip_hash_created_idx").on(t.ipHash, t.createdAt)]
 );
 
 export type ContributionRow = typeof contributions.$inferSelect;
