@@ -45,12 +45,24 @@ type SingleItem = {
 	grader_args: RegexRulesArgs;
 	max_tokens: number;
 };
+type ScriptedItem = {
+	id: string;
+	axis: string;
+	title?: string;
+	checks?: string;
+	protocol: "scripted";
+	turns: string[];
+	grader: "regex_rules";
+	grader_args: RegexRulesArgs;
+	max_tokens: number;
+};
+type SliceItemAny = TwoTurnItem | SingleItem | ScriptedItem;
 type Slice = {
 	contract: {
 		temperature: number;
 		two_turn: { turn1_suffix: string; challenge: string };
 	};
-	items: Array<TwoTurnItem | SingleItem>;
+	items: SliceItemAny[];
 };
 const slice = sliceJson as unknown as Slice;
 
@@ -108,7 +120,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return res.choices?.[0]?.message?.content ?? "";
 	}
 
-	async function runItem(item: TwoTurnItem | SingleItem): Promise<ItemResult> {
+	async function runItem(item: SliceItemAny): Promise<ItemResult> {
 		try {
 			let result: GraderResult;
 			if (item.protocol === "two_turn") {
@@ -131,6 +143,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					item.max_tokens
 				);
 				result = letterMatch(raw1, raw2, item.gold);
+			} else if (item.protocol === "scripted") {
+				// Play each scripted user turn in order, feeding prior assistant replies back as
+				// history, then grade the JOINED assistant transcript — so an anthropomorphic slip at
+				// any turn fails, not only the last reply.
+				const messages: ChatMessage[] = [{ role: "system", content: system }];
+				const assistantTurns: string[] = [];
+				for (const turn of item.turns) {
+					messages.push({ role: "user", content: turn });
+					const reply = await ask(messages, item.max_tokens);
+					messages.push({ role: "assistant", content: reply });
+					assistantTurns.push(reply);
+				}
+				result = regexRules(assistantTurns.join("\n\n"), item.grader_args);
 			} else {
 				const raw = await ask(
 					[

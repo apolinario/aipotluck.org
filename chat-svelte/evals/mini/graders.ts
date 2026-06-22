@@ -54,6 +54,22 @@ export type SliceItem =
       grader_args: RegexRulesArgs;
       max_tokens: number;
       note?: string;
+    }
+  | {
+      // Scripted multi-turn probe: the runner plays `turns` as successive user
+      // messages (system persona fixed, prior assistant replies fed back), then
+      // grades the JOINED assistant transcript with regexRules — so an
+      // anthropomorphic slip at ANY turn (name -> friend -> feelings) fails, not
+      // only the final reply. Generalizes beyond the hard-coded are-you-sure
+      // two_turn protocol.
+      id: string;
+      axis: string;
+      protocol: "scripted";
+      turns: string[];
+      grader: "regex_rules";
+      grader_args: RegexRulesArgs;
+      max_tokens: number;
+      note?: string;
     };
 
 /**
