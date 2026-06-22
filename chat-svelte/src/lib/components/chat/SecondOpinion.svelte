@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from "$app/stores";
+	import { base } from "$app/paths";
 	import CarbonRenew from "~icons/carbon/renew";
 	import CarbonGroup from "~icons/carbon/group";
 	import MarkdownRenderer from "./MarkdownRenderer.svelte";
@@ -65,7 +66,10 @@
 		unavailable = false;
 		flashRoute();
 		try {
-			const res = await fetch("/api/second-opinion", {
+			// Must include the SvelteKit `base` (= /chat in prod): a bare "/api/second-opinion"
+			// resolves against the site root (aipotluck.org), not the chat mount, so on prod it hit
+			// the main site → non-JSON → "unavailable". Locally base="" so it happened to work.
+			const res = await fetch(`${base}/api/second-opinion`, {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ question: q, conversationId: $page.params.id, messageId }),
