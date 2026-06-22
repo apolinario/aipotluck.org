@@ -27,12 +27,15 @@ export interface StarterGap {
 // "community self-configuration of a deployment", an unrelated topic. Pointing there would
 // misrepresent the gap. That entry waits on a real data node in static/data/stack-map.json
 // (a Carl/Josh/Laura content call), not a forced mis-aim.
-// INTENTIONALLY EMPTY (2026-06-22): the one entry was keyed to the retired EU-AI-Act starter
-// (see suggestions.ts). The MECHANISM stays — when a new curated prompt deliberately surfaces a
-// known gap, add it here keyed by the EXACT prompt text, e.g.:
-//   "<the exact new prompt text>": { node: "<id in static/data/stack-map.json>", ask: "<the open contribution>" },
-// Honour the CURATION RULE above: only add an entry when the node's meaning ACTUALLY matches the ask.
-const GAPS: Record<string, StarterGap> = {};
+// Keyed by the EXACT starter-prompt text (see suggestions.ts). Honour the CURATION RULE above: only
+// an entry whose node ACTUALLY matches the ask. The funder prompt searches the open web, which is the
+// exact gap the `websearch` node names ("a Google-scale open web index is still the honest gap") — so
+// it earns a CTA. The builder prompt ("where is the open stack thin?") spans several layers with no
+// single matching node, so it deliberately gets NO entry rather than a forced mis-aim.
+const GAPS: Record<string, StarterGap> = {
+	"What's happened with open-source AI funding or policy in the last month? I'm prepping a board decision and need current sources I can check.":
+		{ node: "websearch", ask: "a Google-scale open web search index" },
+};
 
 /** Collapse whitespace + case so a chip click and a pasted/typed copy of the same prompt
  *  both match. Pure. */

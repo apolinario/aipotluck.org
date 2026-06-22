@@ -1,29 +1,35 @@
 import { describe, it, expect } from "vitest";
 import { gapForPrompt, normalizeStarter } from "./starterGaps";
 
-// The curated GAPS registry is intentionally EMPTY right now (the entry was keyed to the retired
-// EU-AI-Act starter; see suggestions.ts / starterGaps.ts). These tests pin the MECHANISM so the
-// gap-CTA feature stays correct and a future entry can be added safely:
-//   - no entry → no CTA for ANY prompt (the honesty default — never infer a gap),
-//   - normalization still collapses whitespace/case for when an entry returns.
+const FUNDER =
+	"What's happened with open-source AI funding or policy in the last month? I'm prepping a board decision and need current sources I can check.";
+const BUILDER =
+	"I'm building a chatbot on open components. What open-source options exist for the model, vector store, and moderation layer — and where is the open stack still thin?";
+
 describe("starterGaps", () => {
-	it("surfaces no gap while the registry is empty — never infers one", () => {
-		expect(
-			gapForPrompt(
-				"I need the current status of the EU AI Act for a policy briefing next week. How do you find that?"
-			)
-		).toBeUndefined();
-		expect(gapForPrompt("What open-source vector databases exist?")).toBeUndefined();
+	it("maps the funder prompt to the websearch gap (node meaning matches the ask)", () => {
+		expect(gapForPrompt(FUNDER)).toEqual({
+			node: "websearch",
+			ask: "a Google-scale open web search index",
+		});
 	});
 
-	it("returns undefined for empty / nullish input", () => {
+	it("matches despite whitespace / case differences (chip vs paste)", () => {
+		expect(gapForPrompt(`  ${FUNDER.toUpperCase()}  `)?.node).toBe("websearch");
+	});
+
+	it("surfaces NO gap for the builder prompt — it spans layers with no single matching node", () => {
+		expect(gapForPrompt(BUILDER)).toBeUndefined();
+	});
+
+	it("returns undefined for uncurated / empty / nullish input (never infers a gap)", () => {
+		expect(gapForPrompt("What model are you running on right now?")).toBeUndefined();
 		expect(gapForPrompt("")).toBeUndefined();
 		expect(gapForPrompt(undefined)).toBeUndefined();
 		expect(gapForPrompt(null)).toBeUndefined();
 	});
 
-	it("normalizeStarter collapses whitespace and lowercases (so chip vs paste match)", () => {
+	it("normalizeStarter collapses whitespace and lowercases", () => {
 		expect(normalizeStarter("  Foo   Bar\n")).toBe("foo bar");
-		expect(normalizeStarter("EU  AI  ACT")).toBe("eu ai act");
 	});
 });
