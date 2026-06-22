@@ -157,12 +157,16 @@
 		stripArtifacts(message.content.replace(THINK_BLOCK_REGEX, "")).trim()
 	);
 
-	// Feed the answer's open-web sources to the markdown renderer so inline [n] citation
-	// markers become links to their source (addInlineCitations in utils/marked). Mapped from
-	// SearchSource {n,title,url} to the renderer's {title,link} shape, in citation-number order.
-	let citationSources = $derived(
-		message.webSearch?.sources?.map((s) => ({ title: s.title, link: s.url })) ?? []
-	);
+	// Feed open-web + RAG sources to the markdown renderer so inline [n] citation markers
+	// become links (addInlineCitations in utils/marked). Web sources occupy [1..N]; RAG
+	// sources follow in the array so [N+1..] resolve when both layers ran the same turn.
+	let citationSources = $derived.by(() => {
+		const web =
+			message.webSearch?.sources?.map((s) => ({ title: s.title, link: s.url })) ?? [];
+		const rag =
+			message.rag?.sources?.map((s) => ({ title: s.title, link: s.url ?? "" })) ?? [];
+		return [...web, ...rag];
+	});
 
 	type Block =
 		| { type: "text"; content: string }

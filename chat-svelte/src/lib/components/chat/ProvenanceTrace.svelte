@@ -4,6 +4,8 @@
 	import { page } from "$app/state";
 	import type { Message } from "$lib/types/Message";
 	import SourceStrip from "./SourceStrip.svelte";
+	import RagSourceStrip from "./RagSourceStrip.svelte";
+	import VaultSynthesisNote from "./VaultSynthesisNote.svelte";
 	import SourceClass from "./SourceClass.svelte";
 	import ProvenanceBadge from "./ProvenanceBadge.svelte";
 	import SafetyBadge from "./SafetyBadge.svelte";
@@ -42,7 +44,11 @@
 	type StepKind = "retrieve" | "recall" | "generate" | "declined" | "verify";
 	let declined = $derived(Boolean(message.moderation?.flagged));
 	let answered = $derived(Boolean(!loading && message.content));
-	let grounded = $derived(Boolean(message.webSearch?.sources?.length));
+	let webGrounded = $derived(Boolean(message.webSearch?.sources?.length));
+	let ragGrounded = $derived(
+		Boolean(message.rag?.sources?.length) || Boolean(message.rag?.vaultSynthesis?.trim())
+	);
+	let grounded = $derived(webGrounded || ragGrounded);
 
 	// Dot color per layer — solid markers on the spine, NOT a wash. Live = a real live
 	// feed (web retrieval, the served model); muted ink = static parametric recall (not a
@@ -80,7 +86,11 @@
 	};
 	$effect(() => {
 		const next = loading
-			? computePulseNodes({ grounded, servedOnSovereignCompute: serving.isSovereign })
+			? computePulseNodes({
+					webGrounded,
+					rag: message.rag,
+					servedOnSovereignCompute: serving.isSovereign,
+				})
 			: [];
 		const off = pulsedNodes.filter((n) => !next.includes(n));
 		const on = next.filter((n) => !pulsedNodes.includes(n));
@@ -135,12 +145,24 @@
 						aria-hidden="true"
 					></span>
 
-					{#if step === "retrieve" && message.webSearch}
-						<SourceStrip
-							sources={message.webSearch.sources}
-							asOf={message.webSearch.asOf}
-							query={message.webSearch.query}
-						/>
+					{#if step === "retrieve"}
+						{#if message.webSearch}
+							<SourceStrip
+								sources={message.webSearch.sources}
+								asOf={message.webSearch.asOf}
+								query={message.webSearch.query}
+							/>
+						{/if}
+						{#if message.rag?.sources?.length}
+							<RagSourceStrip
+								sources={message.rag.sources}
+								asOf={message.rag.asOf}
+								query={message.rag.query}
+							/>
+						{/if}
+						{#if message.rag?.vaultSynthesis}
+							<VaultSynthesisNote synthesis={message.rag.vaultSynthesis} />
+						{/if}
 					{:else if step === "recall"}
 						<SourceClass kind="model" traced />
 					{:else if step === "declined" && message.moderation}

@@ -12,7 +12,7 @@
 	import { findCurrentModel } from "$lib/utils/models";
 	import type { Message } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
-	import { searchProvenance, moderationMarker } from "$lib/messageProvenance";
+	import { searchProvenance, moderationMarker, ragProvenance } from "$lib/messageProvenance";
 	import { MessageUpdateStatus, MessageUpdateType } from "$lib/types/MessageUpdate";
 	import { useConversationsStore } from "$lib/stores/conversations.svelte";
 	import file2base64 from "$lib/utils/file2base64";
@@ -632,6 +632,11 @@
 						score: update.score,
 						kind: update.kind,
 					});
+				} else if (update.type === MessageUpdateType.Rag) {
+					// RAG retrieval ran server-side before generation. Stamp provenance so the
+					// trace + map highlight appear during streaming. Shape owned by ragProvenance.
+					const ragStamp = ragProvenance(update);
+					if (ragStamp) messageToWriteTo.rag = ragStamp;
 				}
 			}
 

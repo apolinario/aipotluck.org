@@ -1,4 +1,5 @@
 import type { InferenceProvider } from "@huggingface/inference";
+import type { RagSource } from "./Rag";
 
 export type MessageUpdate =
 	| MessageStatusUpdate
@@ -9,7 +10,8 @@ export type MessageUpdate =
 	| MessageReasoningUpdate
 	| MessageRouterMetadataUpdate
 	| MessageAgentStepUpdate
-	| MessageSafetyUpdate;
+	| MessageSafetyUpdate
+	| MessageRagUpdate;
 
 export enum MessageUpdateType {
 	Status = "status",
@@ -21,6 +23,7 @@ export enum MessageUpdateType {
 	RouterMetadata = "routerMetadata",
 	AgentStep = "agentStep",
 	Safety = "safety",
+	Rag = "rag",
 }
 
 // Status
@@ -106,4 +109,15 @@ export interface MessageSafetyUpdate {
 	kind: ModerationKind;
 	label: string | null;
 	score: number;
+}
+
+// Emitted when the auto-router retrieved RAG context for this turn (catalog, federated
+// EPFL, and/or vault synthesis). Carries the provenance the client stamps onto
+// message.rag so the trace + map highlight appear during streaming, not only after reload.
+export interface MessageRagUpdate {
+	type: MessageUpdateType.Rag;
+	query: string;
+	sources: RagSource[];
+	asOf: string;
+	vaultSynthesis?: string;
 }
