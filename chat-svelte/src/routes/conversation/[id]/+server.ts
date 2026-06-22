@@ -9,6 +9,7 @@ import { enforceRequestRateLimits } from "$lib/server/chat/rateLimit";
 import { loadAuthorizedConversation } from "$lib/server/chat/loadConversation";
 import { parseChatRequest } from "$lib/server/chat/parseRequest";
 import { detectNameAdoption } from "$lib/server/nameGuard";
+import { detectRecencyHedge } from "$lib/server/hedgeGuard";
 import { appendTurnMessages } from "$lib/server/chat/messageTree";
 import { applyMessageUpdate, createStreamState } from "$lib/server/chat/streamUpdate";
 import {
@@ -498,6 +499,25 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				if (nameCheck.adopted) {
 					messageToWriteTo.nameNotice = { name: nameCheck.name };
 					await update({ type: MessageUpdateType.NameNotice, name: nameCheck.name });
+				}
+			}
+
+			// Recency-hedge guard (post-generation, GROUNDED turns only). The persona drops its recency
+			// clause when grounded, but the model can still volunteer "my knowledge may be out of date" /
+			// "I can't access real-time info" — FALSE on a turn that just retrieved fresh sources, and the
+			// honest currency signal already lives in the provenance chip ("looked it up · as of <date>").
+			// Prompt rules don't reliably stop it (sycophancy A/B: counter-instructions wash out), so strip
+			// it at runtime: persist the cleaned answer and let the post-stream invalidate re-render it
+			// honestly. Best-effort + conservative (hedgeGuard bails to the original if a safe strip isn't
+			// possible). See $lib/server/hedgeGuard.
+			if (!hasError && !abortedByUser) {
+				const grounded = !!(messageToWriteTo.webSearch || messageToWriteTo.rag);
+				if (grounded) {
+					const streamed = messageToWriteTo.content.slice(initialMessageContent.length);
+					const { hedged, cleaned } = detectRecencyHedge(streamed);
+					if (hedged && cleaned !== streamed) {
+						messageToWriteTo.content = initialMessageContent + cleaned;
+					}
 				}
 			}
 
