@@ -85,6 +85,16 @@ describe("inline web-search citations", () => {
 		expect(html).toContain("[1]");
 	});
 
+	test("renders a non-link marker (never a dead href) for a source with no url", () => {
+		// RAG / local-knowledge sources often have no public URL — the marker must NOT be a dead
+		// <a href="">[n]</a> that looks clickable but goes nowhere.
+		const html = renderHtmlWithSources("From the catalog [1].", [{ title: "Catalog entry", link: "" }]);
+		expect(html).not.toContain('href=""');
+		expect(html).not.toContain("<a ");
+		expect(html).toContain("[1]");
+		expect(html).toContain("<span"); // static marker
+	});
+
 	test("escapes special characters in the source URL", () => {
 		const html = renderHtmlWithSources("Ref [1].", [
 			{ title: "Q", link: "https://x.example/?a=1&b=2" },

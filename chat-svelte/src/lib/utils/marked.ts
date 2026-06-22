@@ -290,14 +290,24 @@ function addInlineCitations(md: string, webSearchSources: SimpleSource[] = []): 
 	// system. Brand coral (themeable var), not the old off-palette generic blue.
 	const linkStyle =
 		"color: var(--ap-coral-text); text-decoration: none; font-size: 0.82em; vertical-align: baseline; letter-spacing: 0.02em;";
+	// Non-link marker for a source that has NO url (e.g. local-knowledge / RAG catalog entries): muted
+	// ink, not coral, so it doesn't read as clickable. A url-less source used to render as
+	// `<a href="">[n]</a>` — a link that LOOKS clickable but goes nowhere (or reloads the page); a
+	// static marker is the honest rendering when there's nowhere to navigate.
+	const markerStyle =
+		"color: var(--ap-ink-3); font-size: 0.82em; vertical-align: baseline; letter-spacing: 0.02em;";
 	return md.replace(/\[(\d+)\]/g, (match: string) => {
 		const indices: number[] = (match.match(/\d+/g) || []).map(Number);
 		const links: string = indices
 			.map((index: number) => {
 				if (index === 0) return false;
 				const source = webSearchSources[index - 1];
-				if (source) {
+				if (source?.link) {
 					return `<a href="${escapeHTML(source.link)}" target="_blank" rel="noreferrer" style="${linkStyle}">[${index}]</a>`;
+				}
+				if (source) {
+					// Source exists but carries no url → static marker, never a dead link.
+					return `<span style="${markerStyle}">[${index}]</span>`;
 				}
 				return "";
 			})
