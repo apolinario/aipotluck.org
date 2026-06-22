@@ -64,6 +64,60 @@ describe("conversationToMarkdown", () => {
 		expect(md).toContain("- [1] EU AI Act (2026-06-19) — https://example.org/act");
 	});
 
+	it("includes RAG sources with offset numbering when web search also ran", () => {
+		const md = conversationToMarkdown({
+			messages: [
+				msg("assistant", "See [1] and [3].", {
+					webSearch: {
+						query: "q",
+						asOf: "2026-06-20T00:00:00.000Z",
+						sources: [
+							{
+								n: 1,
+								title: "Web hit",
+								url: "https://example.org/web",
+								snippet: "…",
+								engine: "Wikipedia",
+							},
+						],
+					},
+					rag: {
+						query: "cloud compute",
+						asOf: "2026-06-20T00:00:00.000Z",
+						sources: [
+							{
+								n: 1,
+								title: "Cloud Compute",
+								url: "https://github.com/org/repo",
+								snippet: "GPU.",
+								engine: "Potluck",
+							},
+						],
+					},
+				}),
+			],
+		});
+		expect(md).toContain("- [1] Web hit — https://example.org/web");
+		expect(md).toContain("- [2] Cloud Compute (2026-06-20) — https://github.com/org/repo");
+	});
+
+	it("includes vault synthesis as a separate attributed block", () => {
+		const md = conversationToMarkdown({
+			messages: [
+				msg("assistant", "Chaplin lived in Vevey.", {
+					rag: {
+						query: "personality in Vaud",
+						asOf: "2026-06-20T00:00:00.000Z",
+						sources: [],
+						vaultSynthesis: "Charlie Chaplin lived in Vevey.",
+					},
+				}),
+			],
+		});
+		expect(md).toContain("**Federated synthesis (local-culture vault)**");
+		expect(md).toContain("Charlie Chaplin lived in Vevey.");
+	});
+
 	it("skips empty turns and collapses excess blank lines", () => {
 		const md = conversationToMarkdown({
 			title: "t",

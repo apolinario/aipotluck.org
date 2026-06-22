@@ -23,7 +23,13 @@ import {
 	MODERATION_DECLINE,
 	CHILD_SAFETY_DECLINE,
 } from "$lib/server/moderation";
-import { searchProvenance, moderationMarker } from "$lib/messageProvenance";
+import { searchProvenance, moderationMarker, ragProvenance } from "$lib/messageProvenance";
+import { maybeRagGrounding } from "$lib/server/rag";
+import { convertLegacyConversation } from "$lib/utils/tree/convertLegacyConversation";
+import { isMessageId } from "$lib/utils/tree/isMessageId";
+import { buildSubtree } from "$lib/utils/tree/buildSubtree.js";
+import { addChildren } from "$lib/utils/tree/addChildren.js";
+import { addSibling } from "$lib/utils/tree/addSibling.js";
 import { usageLimits } from "$lib/server/usageLimits";
 import { textGeneration } from "$lib/server/textGeneration";
 import type { TextGenerationContext } from "$lib/server/textGeneration/types";
@@ -361,6 +367,24 @@ export async function POST({ request, locals, params, getClientAddress }) {
 					// Add billing organization to locals for the endpoint to use
 					locals.billingOrganization = userSettings?.billingOrganization;
 
+					// RAG stores (catalog + federated SyftHub) — server-side auto-router. Stamp
+					// provenance on the message and stream it to the client before generation so
+					// the trace + map highlight appear during streaming, not only after reload.
+					const userTextToRag =
+						[...messagesForPrompt].reverse().find((m) => m.from === "user")?.content ?? "";
+					const ragContext = userTextToRag ? await maybeRagGrounding(userTextToRag, locals) : null;
+					const ragStamp = ragProvenance(ragContext);
+					if (ragStamp) {
+						messageToWriteTo.rag = ragStamp;
+						await update({
+							type: MessageUpdateType.Rag,
+							query: ragStamp.query,
+							sources: ragStamp.sources,
+							asOf: ragStamp.asOf,
+							vaultSynthesis: ragStamp.vaultSynthesis,
+						});
+					}
+
 					const ctx: TextGenerationContext = {
 						model,
 						endpoint: await model.getEndpoint(),
@@ -394,6 +418,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 						searchContext: searchContext?.sources.length
 							? { evidence: searchContext.evidence, asOf: searchContext.asOf }
 							: undefined,
+						ragContext,
 						locals,
 						abortController: ctrl,
 					};

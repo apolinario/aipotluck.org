@@ -2,6 +2,7 @@ import type { InferenceProvider } from "@huggingface/inference";
 import type { MessageUpdate, ModerationKind } from "./MessageUpdate";
 import type { Timestamps } from "./Timestamps";
 import type { SearchSource } from "./Search";
+import type { RagSource } from "./Rag";
 import type { v4 } from "uuid";
 
 export type Message = Partial<Timestamps> & {
@@ -43,6 +44,17 @@ export type Message = Partial<Timestamps> & {
 		query: string;
 		sources: SearchSource[];
 		asOf: string;
+	};
+
+	// RAG-store provenance: catalog + federated retrieval for this turn. Persisted via
+	// JSONB so the provenance trace + map highlight survive reload. `evidence` (the raw
+	// grounding block) is server-only and deliberately NOT stored here. Vault synthesis
+	// is stored separately — it is attributed federated knowledge, not a citable doc.
+	rag?: {
+		query: string;
+		sources: RagSource[];
+		asOf: string;
+		vaultSynthesis?: string;
 	};
 
 	// Safety provenance: set when the proactive pre-screen (toxic-bert / child-safety)

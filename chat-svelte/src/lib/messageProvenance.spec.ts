@@ -1,11 +1,13 @@
 import { describe, it, expect } from "vitest";
 import {
 	searchProvenance,
+	ragProvenance,
 	moderationMarker,
 	showsLiveProvenanceTrace,
 	showsCacheNotice,
 } from "./messageProvenance";
 import type { SearchContext } from "$lib/types/Search";
+import type { RagContext } from "$lib/types/Rag";
 import type { Message } from "$lib/types/Message";
 
 // These helpers are the SINGLE authority for the provenance markers that the server
@@ -53,6 +55,66 @@ describe("searchProvenance", () => {
 		expect(searchProvenance(null)).toBeUndefined();
 		expect(
 			searchProvenance({ query: "q", sources: [], asOf: "2026-06-19T00:00:00.000Z", evidence: "" })
+		).toBeUndefined();
+	});
+});
+
+describe("ragProvenance", () => {
+	const ragSources: RagContext["sources"] = [
+		{ n: 1, title: "Cloud Compute", snippet: "GPU.", engine: "Potluck" },
+	];
+
+	it("stamps query/sources/asOf when catalog retrieval grounded the turn", () => {
+		const ctx: RagContext = {
+			query: "cloud compute oss",
+			sources: ragSources,
+			asOf: "2026-06-19T00:00:00.000Z",
+			evidence: "[1] Cloud Compute (Potluck)",
+		};
+		expect(ragProvenance(ctx)).toEqual({
+			query: "cloud compute oss",
+			sources: ragSources,
+			asOf: "2026-06-19T00:00:00.000Z",
+			vaultSynthesis: undefined,
+		});
+	});
+
+	it("stamps vault synthesis without numbered sources", () => {
+		const ctx: RagContext = {
+			query: "personality in Vaud",
+			sources: [],
+			asOf: "2026-06-19T00:00:00.000Z",
+			evidence: "",
+			vaultSynthesis: "Charlie Chaplin lived in Vevey.",
+		};
+		expect(ragProvenance(ctx)).toEqual({
+			query: "personality in Vaud",
+			sources: [],
+			asOf: "2026-06-19T00:00:00.000Z",
+			vaultSynthesis: "Charlie Chaplin lived in Vevey.",
+		});
+	});
+
+	it("drops evidence — it feeds the model, is never persisted", () => {
+		const ctx: RagContext = {
+			query: "q",
+			sources: ragSources,
+			asOf: "2026-06-19T00:00:00.000Z",
+			evidence: "SECRET grounding block",
+		};
+		expect(ragProvenance(ctx)).not.toHaveProperty("evidence");
+	});
+
+	it("returns undefined when nothing grounded the turn", () => {
+		expect(ragProvenance(undefined)).toBeUndefined();
+		expect(ragProvenance(null)).toBeUndefined();
+		expect(
+			ragProvenance({
+				query: "q",
+				sources: [],
+				asOf: "2026-06-19T00:00:00.000Z",
+				evidence: "",
+			})
 		).toBeUndefined();
 	});
 });

@@ -104,6 +104,22 @@
 					"prov": "open knowledge + independent index + scholarly index"
 				},
 				{
+					"id": "potluck-rag",
+					"nm": "Catalog RAG",
+					"org": "AI Potluck · OSAI gap-map",
+					"st": "live",
+					"d": "Vector retrieval over the AI Potluck ecosystem catalog — gap-map categories, exemplar repos, and stack narrative. Grounds answers with real project names from the map.",
+					"prov": "committed catalog index · HF embeddings"
+				},
+				{
+					"id": "syft-epfl",
+					"nm": "EPFL News",
+					"org": "EPFL · OpenMined SyftHub",
+					"st": "live",
+					"d": "Federated semantic retrieval over the EPFL news publisher endpoint on SyftHub. Paid per-query; returns cited news snippets.",
+					"prov": "federated publisher · SyftHub"
+				},
+				{
 					"id": "upload",
 					"nm": "File upload",
 					"org": "Docling · pgvector",
@@ -174,17 +190,18 @@
 				{
 					"id": "localculture",
 					"nm": "local-culture",
-					"org": "open invitation",
-					"st": "gap",
-					"d": "Community self-configuration of a live deployment. Not built yet — an open gap, not a promise. This is where a contribution would land."
+					"org": "OpenMined SyftHub",
+					"st": "live",
+					"d": "Federated local-culture vault: a privacy-preserving agent synthesizes answers from private canton data without exposing raw documents. Demo endpoint on SyftHub.",
+					"prov": "federated synthesis · SyftHub"
 				}
 			]
 		}
 	],
 	"coverage": {
-		"live": 5,
+		"live": 7,
 		"building": 4,
-		"gap": 1,
+		"gap": 0,
 		"wanted": 4
 	}
 }

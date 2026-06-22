@@ -18,6 +18,12 @@ const NON_HERMETIC_SERVER_SPECS = [
 	"src/routes/login/callback/updateUser.spec.ts",
 	"src/lib/server/api/__tests__/conversations-id.spec.ts",
 	"src/lib/server/api/__tests__/user.spec.ts",
+	// RAG unit tests (routing heuristics, classifier parsing, merge logic) are LOGICALLY hermetic but
+	// import-poisoned: rag/router.ts → generateFromDefaultEndpoint → models.ts runs buildModels() at
+	// import, which throws without OPENAI_BASE_URL. Same class as the specs above. To restore default
+	// coverage, decouple the import so the pure router logic loads without the model graph.
+	"src/lib/server/rag/router.spec.ts",
+	"src/lib/server/rag/merge.spec.ts",
 ];
 // EXCLUDE the live-only specs BY DEFAULT so a cold `npm test` (fresh clone, no .env) is green —
 // they import a route whose module graph reads OPENAI_BASE_URL / hits the DB at import and would

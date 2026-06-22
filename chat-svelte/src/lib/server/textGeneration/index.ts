@@ -18,6 +18,7 @@ import {
 import { generate } from "./generate";
 import { getTuning } from "../tuning";
 import { maybeRunMcpTool, injectMcpResult } from "../mcp";
+import { injectRagGrounding } from "./ragGrounding";
 import { mergeAsyncGenerators } from "$lib/utils/mergeAsyncGenerators";
 import type { TextGenerationContext } from "./types";
 
@@ -91,10 +92,19 @@ async function* textGenerationWithoutTitle(
 		}
 	}
 
+	// The last user turn drives the server-side grounding pre-passes (RAG, MCP, world-model). Computed
+	// AFTER the REDERIVE recompute, so a content-free challenge re-grounds the re-asked question.
+	const lastUserText = messages
+		.filter((m) => m.from === "user")
+		.map((m) => m.content ?? "")
+		.at(-1);
+
 	// TEMP (pre-launch tuning panel): one cached read of the operator overrides for this
 	// turn — persona / grounding / decoding. Empty (→ code defaults) unless an editor has
 	// set them via /tuning. See $lib/server/tuning.
 	const tuning = await getTuning();
+
+	const rag = ctx.ragContext ?? null;
 
 	// The honest Calm-AI persona is the FOUNDATION of every system prompt — identity
 	// derived from the served model id, closed-as-open guardrail, recency hedging,
@@ -103,7 +113,7 @@ async function* textGenerationWithoutTitle(
 	// A turn grounded on a fresh open-web search must NOT carry the persona's recency hedge — it
 	// contradicts the grounding ("the sources ARE current") and the 8B follows the hedge, disclaiming
 	// real-time access while the retrieved sources go unused. Drop the hedge when grounded.
-	const grounded = !!ctx.searchContext?.evidence;
+	const grounded = !!(ctx.searchContext?.evidence || rag?.evidence || rag?.vaultSynthesis);
 	// Serving facts from the ONE authority (resolveServing) so the system prompt's serving claim
 	// can't drift from the provenance badge when the host flips (HF prototype → CSCS sovereign).
 	const serving = resolveServing(config.OPENAI_BASE_URL, ctx.model.id ?? ctx.model.name);
@@ -131,14 +141,16 @@ async function* textGenerationWithoutTitle(
 		);
 	}
 
+	// RAG grounding from the auto-router (computed above) goes in the same high-salience slot
+	// as search grounding: numbered catalog/EPFL sources to cite + the vault synthesis to attribute.
+	if (rag) {
+		preprompt = injectRagGrounding(preprompt, rag);
+	}
+
 	// MCP tool (an open HF Space) — INERT unless SPACE_MCP_URL is configured. A bare-prompt
 	// router decides + extracts (the persona suppresses in-context tool-choice by design); the
 	// result is injected as grounding for the passive persona to answer from. Fail-open:
 	// maybeRunMcpTool never throws, so a Space being down never blocks the answer.
-	const lastUserText = messages
-		.filter((m) => m.from === "user")
-		.map((m) => m.content ?? "")
-		.at(-1);
 	if (lastUserText) {
 		const mcp = await maybeRunMcpTool(lastUserText);
 		if (mcp) preprompt = injectMcpResult(preprompt, mcp);

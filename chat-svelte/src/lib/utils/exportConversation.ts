@@ -47,18 +47,29 @@ export function conversationToMarkdown(conv: ExportableConversation): string {
 		// Only the turns the guest sees. System/persona is never exported.
 		if (m.from !== "user" && m.from !== "assistant") continue;
 		const content = m.content?.trim() ?? "";
-		const sources = m.webSearch?.sources ?? [];
-		if (!content && sources.length === 0) continue;
+		const webSources = m.webSearch?.sources ?? [];
+		const ragSources = m.rag?.sources ?? [];
+		const vaultSynthesis = m.rag?.vaultSynthesis?.trim();
+		if (!content && webSources.length === 0 && ragSources.length === 0 && !vaultSynthesis) continue;
 
 		body.push(m.from === "user" ? "## You" : "## Assistant", "");
 		if (content) body.push(content, "");
-		if (sources.length) {
+		if (webSources.length || ragSources.length) {
 			body.push("**Sources**");
-			for (const s of sources) {
+			for (const s of webSources) {
 				const when = s.asOf ? ` (${s.asOf.slice(0, 10)})` : "";
 				body.push(`- [${s.n}] ${s.title}${when} — ${s.url}`);
 			}
+			const ragOffset = webSources.length;
+			for (const s of ragSources) {
+				const when = m.rag?.asOf ? ` (${m.rag.asOf.slice(0, 10)})` : "";
+				const link = s.url ? ` — ${s.url}` : "";
+				body.push(`- [${s.n + ragOffset}] ${s.title}${when}${link}`);
+			}
 			body.push("");
+		}
+		if (vaultSynthesis) {
+			body.push("**Federated synthesis (local-culture vault)**", "", vaultSynthesis, "");
 		}
 	}
 

@@ -1,5 +1,7 @@
 import type { Message } from "$lib/types/Message";
 import type { SearchContext } from "$lib/types/Search";
+import type { RagContext } from "$lib/types/Rag";
+import type { MessageRagUpdate } from "$lib/types/MessageUpdate";
 import type { ModerationKind } from "$lib/types/MessageUpdate";
 
 // SINGLE source of truth for the provenance markers stamped onto an assistant
@@ -31,6 +33,25 @@ export function searchProvenance(
 		query: searchContext.query,
 		sources: searchContext.sources,
 		asOf: searchContext.asOf,
+	};
+}
+
+// RAG-store provenance: catalog + federated sources the answer was told to cite, plus
+// optional vault synthesis (attributed separately). `evidence` is deliberately dropped.
+// Returns undefined when nothing grounded the turn. The honest invariant: rag is present
+// IFF sources.length > 0 OR vaultSynthesis is non-empty.
+export function ragProvenance(
+	rag: RagContext | MessageRagUpdate | null | undefined
+): NonNullable<Message["rag"]> | undefined {
+	if (!rag) return undefined;
+	const hasSources = (rag.sources?.length ?? 0) > 0;
+	const hasVault = Boolean(rag.vaultSynthesis?.trim());
+	if (!hasSources && !hasVault) return undefined;
+	return {
+		query: rag.query,
+		sources: rag.sources ?? [],
+		asOf: rag.asOf,
+		vaultSynthesis: rag.vaultSynthesis,
 	};
 }
 

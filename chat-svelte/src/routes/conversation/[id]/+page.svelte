@@ -12,7 +12,7 @@
 	import { findCurrentModel } from "$lib/utils/models";
 	import type { Message } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
-	import { searchProvenance, moderationMarker } from "$lib/messageProvenance";
+	import { searchProvenance, moderationMarker, ragProvenance } from "$lib/messageProvenance";
 	import { resolveSearchContext } from "$lib/search/resolveSearch";
 	import { SEARCH_TRIGGER_STRATEGY } from "$lib/search/triggerStrategy";
 	import { WEBSEARCH_NODE } from "$lib/components/stack/reveal";
@@ -670,6 +670,11 @@
 					// Post-generation name-adoption guard tripped: stamp the marker so an honest
 					// "this system has no name" chip renders beside the answer (and persists on reload).
 					messageToWriteTo.nameNotice = { name: update.name };
+				} else if (update.type === MessageUpdateType.Rag) {
+					// RAG retrieval ran server-side before generation. Stamp provenance so the
+					// trace + map highlight appear during streaming. Shape owned by ragProvenance.
+					const ragStamp = ragProvenance(update);
+					if (ragStamp) messageToWriteTo.rag = ragStamp;
 				}
 			}
 
