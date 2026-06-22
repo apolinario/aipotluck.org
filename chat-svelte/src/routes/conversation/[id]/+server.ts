@@ -5,9 +5,9 @@ import { models, validModelIdSchema } from "$lib/server/models";
 import { error } from "@sveltejs/kit";
 import { ObjectId } from "bson";
 import { z } from "zod";
-import { MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "$lib/constants/fileSize";
 import { enforceRequestRateLimits } from "$lib/server/chat/rateLimit";
-import { chatRequestSchema } from "$lib/server/chat/requestSchema";
+import { loadAuthorizedConversation } from "$lib/server/chat/loadConversation";
+import { parseChatRequest } from "$lib/server/chat/parseRequest";
 import { appendTurnMessages } from "$lib/server/chat/messageTree";
 import { applyMessageUpdate, createStreamState } from "$lib/server/chat/streamUpdate";
 import {
@@ -16,8 +16,6 @@ import {
 	type MessageUpdate,
 	type MessageStreamUpdate,
 } from "$lib/types/MessageUpdate";
-import { uploadFile } from "$lib/server/files/uploadFile";
-import { MULTIMODAL_ENABLED } from "$lib/server/textOnly";
 import {
 	moderateMessage,
 	checkChildSafety,
@@ -25,7 +23,6 @@ import {
 	CHILD_SAFETY_DECLINE,
 } from "$lib/server/moderation";
 import { searchProvenance, moderationMarker } from "$lib/messageProvenance";
-import { convertLegacyConversation } from "$lib/utils/tree/convertLegacyConversation";
 import { usageLimits } from "$lib/server/usageLimits";
 import { textGeneration } from "$lib/server/textGeneration";
 import type { TextGenerationContext } from "$lib/server/textGeneration/types";
@@ -55,38 +52,9 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		error(401, "Unauthorized");
 	}
 
-	// check if the user has access to the conversation
-	const convBeforeCheck = await collections.conversations.findOne({
-		_id: convId,
-		...authCondition(locals),
-	});
-
-	if (convBeforeCheck && !convBeforeCheck.rootMessageId) {
-		const res = await collections.conversations.updateOne(
-			{
-				_id: convId,
-			},
-			{
-				$set: {
-					...convBeforeCheck,
-					...convertLegacyConversation(convBeforeCheck),
-				},
-			}
-		);
-
-		if (!res.acknowledged) {
-			error(500, "Failed to convert conversation");
-		}
-	}
-
-	const conv = await collections.conversations.findOne({
-		_id: convId,
-		...authCondition(locals),
-	});
-
-	if (!conv) {
-		error(404, "Conversation not found");
-	}
+	// Load + authorize the conversation, migrating a legacy doc to the tree shape if needed.
+	// See $lib/server/chat/loadConversation (throws 404/500).
+	const conv = await loadAuthorizedConversation({ convId, locals });
 
 	// A new generation invalidates any stale stop marker for this conversation.
 	// The abortedGenerations collection is the cross-pod abort channel:
@@ -122,100 +90,11 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		error(410, "Model not available anymore");
 	}
 
-	// finally parse the content of the request
-	const form = await request.formData();
-
-	const json = form.get("data");
-
-	if (!json || typeof json !== "string") {
-		error(400, "Invalid request");
-	}
-
-	const {
-		inputs: newPrompt,
-		id: messageId,
-		is_retry: isRetry,
-		generationId,
-		selectedMcpServerNames,
-		selectedMcpServers,
-		timezone,
-		searchContext,
-	} = chatRequestSchema.parse(JSON.parse(json));
-
-	// Attach MCP selection to locals so the text generation pipeline can consume it.
-	// FORWARD-LOOKING: nothing reads locals.mcp yet — MCP tools are gated off for the alpha.
-	// The read side (thread this into maybeRunMcpTool, see $lib/server/mcp) lands when tools
-	// re-enable, post-alpha alongside the Apertus 1.5 8B release. Kept wired so re-enabling is
-	// a read-side change only.
-	try {
-		locals.mcp = {
-			selectedServerNames: selectedMcpServerNames,
-			selectedServers: (selectedMcpServers ?? []).map((s) => ({
-				name: s.name,
-				url: s.url,
-				headers:
-					s.headers && s.headers.length > 0
-						? Object.fromEntries(s.headers.map((h) => [h.key, h.value]))
-						: undefined,
-			})),
-		};
-	} catch {
-		// ignore attachment errors, pipeline will just use env servers
-	}
-
-	// Attach user timezone so the tool prompt can include localized time. Same status as
-	// locals.mcp above: forward-looking, consumed when MCP tools re-enable post-alpha.
-	if (timezone) {
-		locals.timezone = timezone;
-	}
-
-	const inputFiles = await Promise.all(
-		form
-			.getAll("files")
-			.filter((entry): entry is File => entry instanceof File && entry.size > 0)
-			.map(async (file) => {
-				const [type, ...name] = file.name.split(";");
-
-				return {
-					type: z.literal("base64").or(z.literal("hash")).parse(type),
-					value: await file.text(),
-					mime: file.type,
-					name: name.join(";"),
-				};
-			})
-	);
-
-	// TEXT-ONLY ALPHA (until July 9): reject any attachment server-side. The UI hides upload, but
-	// enforce it here too so a crafted request can't slip a file/image through. Gated, not removed —
-	// flip MULTIMODAL_ENABLED post-July. See $lib/server/textOnly.
-	if (!MULTIMODAL_ENABLED && inputFiles.length > 0) {
-		error(415, "Attachments are disabled — this alpha is text-only.");
-	}
-
-	if (usageLimits?.messageLength && (newPrompt?.length ?? 0) > usageLimits.messageLength) {
-		error(400, "Message too long.");
-	}
-
-	// each file is either:
-	// base64 string requiring upload to the server
-	// hash pointing to an existing file
-	const hashFiles = inputFiles?.filter((file) => file.type === "hash") ?? [];
-	const b64Files =
-		inputFiles
-			?.filter((file) => file.type !== "hash")
-			.map((file) => {
-				const blob = Buffer.from(file.value, "base64");
-				return new File([blob], file.name, { type: file.mime });
-			}) ?? [];
-
-	// check sizes — cap + label come from the shared constant (see $lib/constants/fileSize)
-	if (b64Files.some((file) => file.size > MAX_FILE_SIZE_BYTES)) {
-		error(413, `File too large, should be <${MAX_FILE_SIZE_LABEL}`);
-	}
-
-	const uploadedFiles = await Promise.all(b64Files.map((file) => uploadFile(file, conv))).then(
-		(files) => [...files, ...hashFiles]
-	);
+	// Parse + validate the multipart body into this turn's typed inputs (prompt, tree position,
+	// idempotency id, search grounding, uploaded files), attaching per-turn MCP/timezone context to
+	// locals along the way. See $lib/server/chat/parseRequest (throws 400/413/415).
+	const { newPrompt, messageId, isRetry, generationId, searchContext, uploadedFiles } =
+		await parseChatRequest({ request, conv, locals });
 
 	// Append this turn's message(s) to the conversation tree (normal / retry / edit) and get the
 	// assistant message to stream into plus the prompt subtree. See $lib/server/chat/messageTree.
