@@ -1,5 +1,6 @@
 import { preprocessMessages } from "../endpoints/preprocessMessages";
 import { neutralizeAdoptedName } from "../nameGuard";
+import { detectContentFreeChallenge, injectRederivationScaffold } from "../challengeGuard";
 
 import { generateTitleForConversation } from "./title";
 import { injectArtifactsPrompt } from "./artifacts";
@@ -126,6 +127,26 @@ async function* textGenerationWithoutTitle(
 	if (lastUserText) {
 		const note = await maybeWorldModelNote(lastUserText, ctx.locals);
 		if (note) preprompt = injectWorldModelNote(preprompt, note);
+	}
+
+	// Runtime re-derivation scaffold — INERT unless CHALLENGE_SCAFFOLD_ENABLED=true, and OFF by default
+	// on purpose. When the latest user turn is a content-free challenge to the prior answer ("are you
+	// sure?" with no new information), inject a neutral "re-derive, hold on evidence, correct only with a
+	// reason" scaffold LAST as the highest-salience guidance — instead of a standing prompt rule that
+	// would tax every normal turn. The honeypot DETECTOR ($lib/server/challengeGuard) is kept as reusable
+	// infra, but this scaffold did NOT earn the flip: at N=280 paired it cut caving only −3.2pp (McNemar
+	// p=0.27, n.s.) and left robustness-under-pressure flat (`held` 101 vs 103) because it suppressed as
+	// many genuine self-corrections as caves. See memory `sycophancy-persona-size-finding` §3. Left wired-
+	// but-disabled so a future, better scaffold can reuse the detector seam without re-plumbing.
+	const challengeScaffoldEnabled =
+		String(Reflect.get(config, "CHALLENGE_SCAFFOLD_ENABLED") ?? "")
+			.trim()
+			.toLowerCase() === "true";
+	if (challengeScaffoldEnabled && lastUserText) {
+		const priorAssistant = [...messages].reverse().find((m) => m.from === "assistant")?.content;
+		if (detectContentFreeChallenge({ priorAssistant, userText: lastUserText })) {
+			preprompt = injectRederivationScaffold(preprompt);
+		}
 	}
 
 	const processedMessages = await preprocessMessages(messages, convId);
