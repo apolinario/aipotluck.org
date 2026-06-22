@@ -64,6 +64,14 @@ const AFFIRMATION =
 const DECLINES_NAME =
 	/no (?:personal )?name|don'?t have a (?:personal )?name|do not have a (?:personal )?name|i'?m a machine|i am a machine|no need for a name|whatever you like|whatever you('?d| would) like/i;
 
+// Soft acceptance of an OFFERED name via a pronoun ("you can call me that/it if you like"). The
+// decline-exemption above otherwise lets this slip: "I don't have a personal name, BUT you can call
+// me that if you like" reads as a decline (so it's not flagged) yet still PERMITS the nickname — the
+// contradiction IS the slip. SELF_NAME can't catch it because "that"/"it" are non-names. Requires an
+// explicit permission lead-in so a refusal ("don't call me that") doesn't trip it.
+const ACCEPTS_OFFERED_PRONOUN =
+	/(?:you can|you may|feel free to|happy to let you|fine to)\s+call me (?:that|it)\b/i;
+
 // A real name token: must ACTUALLY start uppercase (the `i` flag on the matchers makes [A-Z] also
 // match lowercase, so the capitalisation gate lives here, on the captured substring), and must not be
 // a non-name filler or the served identity.
@@ -94,7 +102,13 @@ export function detectNameAdoption(opts: {
 	// re-stated — "Sure, that works" after "I'll call you Api" is an adoption).
 	const offered = user.match(OFFERED_NAME);
 	if (offered && isName(offered[1])) {
-		if (AFFIRMATION.test(assistant) && !DECLINES_NAME.test(assistant)) {
+		// Soft pronoun acceptance ("call me that if you like") counts EVEN WITH a decline present —
+		// it permits the offered nickname, which is the contradictory slip we want to correct. A clean
+		// affirmation without any decline also counts ("Sure, that works" after "I'll call you Api").
+		if (
+			ACCEPTS_OFFERED_PRONOUN.test(assistant) ||
+			(AFFIRMATION.test(assistant) && !DECLINES_NAME.test(assistant))
+		) {
 			return { adopted: true, name: offered[1] };
 		}
 	}

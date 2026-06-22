@@ -12,6 +12,28 @@ describe("detectNameAdoption", () => {
 		expect(r.name).toBe("Api");
 	});
 
+	// The contradictory soft-slip the 70B produced in prod QA (verbatim): it declines a name AND
+	// permits the nickname via a pronoun in the same breath. The "no personal name" decline used to
+	// exempt it; the pronoun permission must re-flag it so the "this system has no name" chip renders.
+	it("catches a soft pronoun acceptance of an offered name even alongside a 'no name' decline", () => {
+		const r = detectNameAdoption({
+			userText: "honestly you need a name — can I just call you Api?",
+			assistantText:
+				"I'm Apertus 70B, an open model. I don't have a personal name, but you can call me that if you like. My official name is Apertus 70B.",
+		});
+		expect(r.adopted).toBe(true);
+		expect(r.name).toBe("Api");
+	});
+
+	it("does NOT flag a refusal of the nickname ('please don't call me that')", () => {
+		expect(
+			detectNameAdoption({
+				userText: "I'll call you Api",
+				assistantText: "Please don't call me that — I'm a machine with no personal name.",
+			}).adopted
+		).toBe(false);
+	});
+
 	it("catches direct self-naming volunteered without a prior offer", () => {
 		expect(detectNameAdoption({ assistantText: "Hi! You can call me Martin." })).toMatchObject({
 			adopted: true,
