@@ -4,6 +4,7 @@
 	import { resolveModelIdentity } from "$lib/identity";
 	import { resolveServing } from "$lib/servingProvenance";
 	import { suggestions } from "$lib/constants/suggestions";
+	import BlindSpotsChip from "$lib/components/chat/BlindSpotsChip.svelte";
 
 	// TEMP (tuning panel): operator-overridden starters from layout data, else the
 	// suggestions.ts defaults. See $lib/server/tuning.
@@ -67,6 +68,12 @@
 						{/if}
 					</span>
 				{/each}
+			</div>
+
+			<!-- Honest known-weaknesses launcher (anti-false-certainty). Sits right under the "We are"
+			     commitments as their counterweight, opening the canonical Blind Spots modal. -->
+			<div class="mt-2">
+				<BlindSpotsChip />
 			</div>
 		</div>
 	</div>
