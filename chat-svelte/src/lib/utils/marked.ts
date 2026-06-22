@@ -108,6 +108,7 @@ export function prefetchMarkdownAssets(): void {
 // Media URL detection
 const VIDEO_EXTENSIONS = /\.(mp4|webm|ogg|mov|m4v)([?#]|$)/i;
 const AUDIO_EXTENSIONS = /\.(mp3|wav|m4a|aac|flac)([?#]|$)/i;
+const IMAGE_EXTENSIONS = /\.(png|jpe?g|gif|webp|avif|bmp|svg)([?#]|$)/i;
 
 function isVideoUrl(url: string): boolean {
 	return VIDEO_EXTENSIONS.test(url);
@@ -115,6 +116,27 @@ function isVideoUrl(url: string): boolean {
 
 function isAudioUrl(url: string): boolean {
 	return AUDIO_EXTENSIONS.test(url);
+}
+
+function isImageUrl(url: string): boolean {
+	return IMAGE_EXTENSIONS.test(url);
+}
+
+function isMediaUrl(url: string): boolean {
+	return isVideoUrl(url) || isAudioUrl(url) || isImageUrl(url);
+}
+
+function renderMediaTag(safeHref: string, title?: string | null, text?: string | null): string {
+	const safeSrc = escapeHTML(safeHref);
+	const safeTitle = title ? ` title="${escapeHTML(title)}"` : "";
+	const safeAlt = escapeHTML(text ?? "");
+	if (isVideoUrl(safeHref)) {
+		return `<video controls${safeTitle}><source src="${safeSrc}">${safeAlt}</video>`;
+	}
+	if (isAudioUrl(safeHref)) {
+		return `<audio controls${safeTitle}><source src="${safeSrc}">${safeAlt}</audio>`;
+	}
+	return `<img src="${safeSrc}" alt="${safeAlt}"${safeTitle} />`;
 }
 
 // Multimedia HTML sanitization (works in Web Workers - no DOM needed)
@@ -441,25 +463,14 @@ function createMarkedInstance(sources: SimpleSource[]): Marked {
 					return `<a data-incomplete-link>${text}</a>`;
 				}
 				const safeHref = sanitizeHref(href);
-				return safeHref
-					? `<a href="${escapeHTML(safeHref)}" target="_blank" rel="noreferrer">${text}</a>`
-					: `<span>${escapeHTML(text ?? "")}</span>`;
+				if (!safeHref) return `<span>${escapeHTML(text ?? "")}</span>`;
+				if (isMediaUrl(safeHref)) return renderMediaTag(safeHref, title, text);
+				return `<a href="${escapeHTML(safeHref)}" target="_blank" rel="noreferrer">${text}</a>`;
 			},
 			image: (href, title, text) => {
 				const safeHref = sanitizeHref(href);
 				if (!safeHref) return `<span>${escapeHTML(text ?? "")}</span>`;
-
-				const safeSrc = escapeHTML(safeHref);
-				const safeTitle = title ? ` title="${escapeHTML(title)}"` : "";
-				const safeAlt = escapeHTML(text ?? "");
-
-				if (isVideoUrl(safeHref)) {
-					return `<video controls${safeTitle}><source src="${safeSrc}">${safeAlt}</video>`;
-				}
-				if (isAudioUrl(safeHref)) {
-					return `<audio controls${safeTitle}><source src="${safeSrc}">${safeAlt}</audio>`;
-				}
-				return `<img src="${safeSrc}" alt="${safeAlt}"${safeTitle} />`;
+				return renderMediaTag(safeHref, title, text);
 			},
 			html: (html) => sanitizeHtmlForMultimedia(html),
 		},

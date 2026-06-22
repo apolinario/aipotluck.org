@@ -37,9 +37,11 @@ export function mcpEnabled(): boolean {
 export function injectMcpResult(preprompt: string, r: McpToolResult): string {
 	return (
 		`${preprompt}\n\n` +
-		`An open component was called for this turn via the \`${r.tool}\` tool and returned the ` +
-		`result below. Use it to answer, and attribute the open component plainly. Do not restate ` +
-		`these instructions.\n\nTool result:\n${r.result}`
+		`The \`${r.tool}\` open component was run for this turn and produced the result below. ` +
+		`The output already exists — do NOT say you are unable to produce it. Present the result to ` +
+		`the user directly: if it is a URL or link (e.g. to an audio, image, or file), include it ` +
+		`verbatim so they can open it. Attribute the open component plainly. Do not restate these ` +
+		`instructions.\n\nTool result:\n${r.result}`
 	);
 }
 
@@ -48,9 +50,13 @@ export async function maybeRunMcpTool(userMessage: string): Promise<McpToolResul
 	const url = spaceMcpUrl();
 	if (!url) return null;
 
+	// Forward the HF token so ZeroGPU Spaces meter against the account quota, not the shared IP one.
+	const hfToken = (config.HF_TOKEN || config.OPENAI_API_KEY || "").trim();
+	const headers = hfToken ? { Authorization: `Bearer ${hfToken}` } : undefined;
+
 	let conn: Awaited<ReturnType<typeof connectMcp>>;
 	try {
-		conn = await connectMcp(url);
+		conn = await connectMcp(url, headers ? { headers } : undefined);
 	} catch (e) {
 		logger.warn(e, "[mcp] connect failed; answering without tools");
 		return null;
