@@ -100,8 +100,15 @@
 		steps
 			.map((s) => {
 				if (s === "retrieve") {
-					const n = message.webSearch?.sources?.length ?? 0;
-					return `${n} source${n === 1 ? "" : "s"}`;
+					// Name the SOURCE of the grounding explicitly — a bare "6 sources" left readers unsure
+					// whether the answer searched the web or came from the model's training (stakeholder
+					// feedback). Lead with the action so the collapsed chip is self-explaining.
+					const webN = message.webSearch?.sources?.length ?? 0;
+					if (webN) return `searched the web · ${webN} source${webN === 1 ? "" : "s"}`;
+					const ragN = message.rag?.sources?.length ?? 0;
+					if (ragN) return `from the catalog · ${ragN} source${ragN === 1 ? "" : "s"}`;
+					if (message.rag?.vaultSynthesis) return "from a federated source";
+					return "looked it up";
 				}
 				if (s === "recall") return "from training";
 				if (s === "generate") return modelShort;
@@ -168,7 +175,11 @@
 	}
 </script>
 
-{#if steps.length || loading}
+<!-- Don't render the trace in the pre-token empty state: while loading with NO content yet, the
+     chip has nothing to trace and its "writing…" footer duplicated the composer's loading dots
+     (stakeholder feedback). Show it once tokens stream (message.content), or once the answer is
+     done (steps present) — including declined/grounded turns, which carry content or steps. -->
+{#if message.content || (!loading && steps.length)}
 	<div class="mt-2 flex flex-col gap-1">
 		<!-- Trace head: names the surface (echoes the map's "UNDER THE HOOD") and carries the
 		     one teaching entry every answer needs. The per-step "blind spots ↗" only appears on
