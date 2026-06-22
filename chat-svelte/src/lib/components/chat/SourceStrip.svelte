@@ -117,6 +117,20 @@
 						{@const meta = ENGINE_META[s.engine]}
 						<li class="flex gap-2 leading-snug">
 							<span class="shrink-0 text-[var(--ap-ink-3)]">[{s.n}]</span>
+							{#if s.imageUrl}
+								<!-- Optional Wikimedia thumbnail. loading=lazy + no-referrer = it only fetches when
+								     the (user-expanded) strip scrolls into view and leaks no page URL to Wikimedia.
+								     Decorative (alt="") — the titled link is the content; hide on load error so a
+								     broken image never shows. -->
+								<img
+									src={s.imageUrl}
+									alt=""
+									loading="lazy"
+									referrerpolicy="no-referrer"
+									onerror={(e) => ((e.currentTarget as HTMLImageElement).style.display = "none")}
+									class="mt-0.5 size-9 shrink-0 rounded border border-[var(--ap-rule)]/60 object-cover"
+								/>
+							{/if}
 							<span class="min-w-0">
 								<a
 									class="break-words text-[var(--ap-ink)] underline-offset-2 hover:underline"

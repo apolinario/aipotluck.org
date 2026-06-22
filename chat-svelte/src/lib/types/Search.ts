@@ -18,6 +18,7 @@ export type SearchSource = {
 	engine: SearchEngine;
 	asOf?: string; // ISO date for time-sensitive sources (Wikipedia last-edit, OpenAlex publication)
 	lang?: string; // BCP-47-ish source language for non-English sources (e.g. "fr")
+	imageUrl?: string; // optional thumbnail (Wikimedia-hosted) shown in the citation strip; UI-only
 };
 
 export type OpenSearchResult = {

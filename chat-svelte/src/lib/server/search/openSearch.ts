@@ -46,7 +46,12 @@ async function searchWikipedia(
 		generator: "search",
 		gsrsearch: query,
 		gsrlimit: String(limit),
-		prop: "extracts|info",
+		// pageimages → a small thumbnail per page, so the citation strip can show an image where the
+		// page has one (the open web returning images, per the spec). UI-only (never injected into the
+		// model turn — the model shouldn't reason about images it can't see).
+		prop: "extracts|info|pageimages",
+		piprop: "thumbnail",
+		pithumbsize: "160",
 		exintro: "1",
 		explaintext: "1",
 		exchars: "500",
@@ -58,7 +63,14 @@ async function searchWikipedia(
 		query?: {
 			pages?: Record<
 				string,
-				{ title: string; extract?: string; fullurl?: string; touched?: string; index?: number }
+				{
+					title: string;
+					extract?: string;
+					fullurl?: string;
+					touched?: string;
+					index?: number;
+					thumbnail?: { source?: string };
+				}
 			>;
 		};
 	};
@@ -72,6 +84,8 @@ async function searchWikipedia(
 			snippet: (p.extract ?? "").replace(/\s+/g, " ").trim().slice(0, 480),
 			engine: "Wikipedia" as const,
 			asOf: p.touched, // last-edited timestamp — the honest "as of" for the claim
+			// Only Wikimedia-hosted thumbnails (upload.wikimedia.org) — a known, privacy-respecting host.
+			...(p.thumbnail?.source ? { imageUrl: p.thumbnail.source } : {}),
 			...(lang !== "en" ? { lang } : {}),
 		}));
 }

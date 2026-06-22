@@ -54,6 +54,8 @@ export const chatRequestSchema = z.object({
 						snippet: z.string(),
 						engine: z.enum(SEARCH_ENGINES),
 						asOf: z.string().optional(),
+						lang: z.string().optional(),
+						imageUrl: z.string().optional(),
 					})
 				)
 				.max(20),
