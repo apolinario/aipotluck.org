@@ -446,18 +446,22 @@
 			     per-turn margin gate auto-decides; OFF → never search, answer from training only. Shared
 			     client preference ($lib/stores/webSearch), read by the send path to gate the search
 			     decision. Distinct from the dormant force-search control above (that's per-turn opt-IN). -->
+			<!-- a11y: no aria-label — the visible text ("Web search" / "Web search off") IS the accessible
+			     name (satisfies WCAG 2.5.3 Label-in-Name), and aria-pressed carries on/off state to screen
+			     readers + voice control. Filled = ON, outline = OFF so the default-ON pill reads as an
+			     active toggle, not an action button. The title is a desktop-only enhancement; the label
+			     stands on its own where hover isn't available (touch). -->
 			<button
 				type="button"
 				onclick={() => webSearchAllowed.update((v) => !v)}
 				disabled={loading}
 				aria-pressed={$webSearchAllowed}
-				aria-label="Web search {$webSearchAllowed ? 'on, tap to turn off' : 'off, tap to turn on'}"
 				title={$webSearchAllowed
 					? "Web search is ON — I search open sources (Wikipedia · Marginalia · OpenAlex) when a question needs current info. Tap to answer from training only."
 					: "Web search is OFF — I answer from training only, so recent facts may be out of date. Tap to allow searching open sources."}
-				class="flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors sm:h-7 {$webSearchAllowed
-					? 'border-[var(--ap-rule)] text-[var(--ap-ink-2)] hover:bg-[var(--ap-ink)]/5 hover:text-[var(--ap-ink)]'
-					: 'border-[var(--ap-rule)]/50 text-[var(--ap-ink-3)]/55'}"
+				class="flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ap-coral)]/50 focus-visible:outline-none sm:h-7 {$webSearchAllowed
+					? 'border-[var(--ap-rule)] bg-[var(--ap-ink)]/[0.04] text-[var(--ap-ink-2)] hover:bg-[var(--ap-ink)]/[0.07] hover:text-[var(--ap-ink)]'
+					: 'border-[var(--ap-rule)]/60 text-[var(--ap-ink-3)] hover:bg-[var(--ap-ink)]/5 hover:text-[var(--ap-ink-2)]'}"
 			>
 				<IconGlobe class="size-3.5 {$webSearchAllowed ? '' : 'opacity-50'}" />
 				<span>{$webSearchAllowed ? "Web search" : "Web search off"}</span>
