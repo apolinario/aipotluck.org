@@ -8,13 +8,14 @@
 	import { UrlDependency } from "$lib/types/UrlDependency";
 	import { safeInvalidate } from "$lib/utils/safeInvalidate";
 	import { base } from "$app/paths";
-	import { ERROR_MESSAGES, error } from "$lib/stores/errors";
+	import { ERROR_MESSAGES, error, isRateLimitMessage } from "$lib/stores/errors";
 	import { findCurrentModel } from "$lib/utils/models";
 	import type { Message } from "$lib/types/Message";
 	import type { SearchContext } from "$lib/types/Search";
 	import { searchProvenance, moderationMarker, ragProvenance } from "$lib/messageProvenance";
 	import { resolveSearchContext } from "$lib/search/resolveSearch";
 	import { webSearchAllowed } from "$lib/stores/webSearch";
+	import { pendingChatInput } from "$lib/stores/pendingChatInput";
 	import { get } from "svelte/store";
 	import { SEARCH_TRIGGER_STRATEGY } from "$lib/search/triggerStrategy";
 	import { WEBSEARCH_NODE } from "$lib/components/stack/reveal";
@@ -471,6 +472,13 @@
 				// A user abort rejects the fetch; that is not an error worth a toast
 				if (!$isAborted && !(err instanceof DOMException && err.name === "AbortError")) {
 					error.set(err.message);
+					// A rate-limit / cap 429 fails the turn before streaming and the optimistic message
+					// is rolled back on resync — so without this the user's typed text is silently eaten.
+					// Restore it to the composer (reactive via the pendingChatInput $effect) so a hard cap
+					// never loses what they wrote; they can resend once the window clears.
+					if (isRateLimitMessage(err.message)) {
+						pendingChatInput.set(prompt);
+					}
 				}
 			});
 			if (messageUpdatesIterator === undefined) {

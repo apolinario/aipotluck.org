@@ -7,7 +7,7 @@
 	import { page } from "$app/state";
 	import { SHARE_TAGLINE, SHARE_TEXT, SHARE_IMAGE } from "$lib/constants/share";
 
-	import { error } from "$lib/stores/errors";
+	import { error, isRateLimitMessage } from "$lib/stores/errors";
 	import { createSettingsStore } from "$lib/stores/settings";
 	import { setHapticsEnabled } from "$lib/utils/haptics";
 
@@ -58,10 +58,17 @@
 
 		currentError = $error;
 
-		errorToastTimeout = setTimeout(() => {
-			$error = undefined;
-			currentError = undefined;
-		}, 5000);
+		// A rate-limit / cap stop is a STATE the user needs to read and act on (wait, or start a new
+		// chat), not a transient blip — keep it up far longer than an ordinary error so a 5-second
+		// flash can't be missed. (The Toast has no dismiss control, so we still auto-clear eventually.)
+		const isLimit = isRateLimitMessage($error);
+		errorToastTimeout = setTimeout(
+			() => {
+				$error = undefined;
+				currentError = undefined;
+			},
+			isLimit ? 20000 : 5000
+		);
 	}
 
 	async function deleteConversation(id: string) {
