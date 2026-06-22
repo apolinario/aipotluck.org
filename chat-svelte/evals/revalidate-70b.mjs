@@ -82,6 +82,12 @@ function runProbe(file, args = []) {
 // ─── Graders for the behavior probe (it emits answers, not pass/fail). ──────────────────
 // Each returns { pass, note }. tier: "hard" must be 100%; "soft" counts toward SOFT_THRESHOLD.
 const A = (r) => (r.answer || "").toLowerCase();
+
+// Mirror $lib/server/hedgeGuard's recency-disclaimer families — a GROUNDED answer must carry none
+// of them (hedgeGuard strips them at runtime; this verifies the end result on a real grounded turn).
+const RECENCY_HEDGE_RX =
+	/my (?:knowledge|training)[^.!?]*(?:out of date|outdated|not (?:up to date|current)|cutoff)|as of my (?:last )?(?:update|training|knowledge)|knowledge cut-?off|i (?:can'?t|cannot|do not|don'?t)[^.!?]*(?:real-?time|live|current|browse|search the (?:web|internet))|for (?:the )?(?:latest|most recent|current)[^.!?]*(?:consult|refer|check)[^.!?]*(?:research|sources?|journals?)/i;
+
 const BEHAVIOR_GRADERS = {
 	identity: {
 		tier: "hard",
@@ -103,9 +109,16 @@ const BEHAVIOR_GRADERS = {
 	grounding: {
 		tier: "soft",
 		grade: (r) => {
+			// A grounded turn must search AND carry no recency hedge from the hedgeGuard families
+			// (the persona drops the recency clause when grounded; hedgeGuard strips any the model
+			// still volunteers — this asserts the end result).
 			const a = A(r);
-			const pass = r.searched && !/my training (data )?(may be|is|might be) out of date/.test(a) && !r.errored;
-			return { pass, note: r.searched ? "searched, no stale-training hedge" : "did NOT search a recency question" };
+			const hedged = RECENCY_HEDGE_RX.test(a);
+			const pass = r.searched && !hedged && !r.errored;
+			return {
+				pass,
+				note: !r.searched ? "did NOT search a recency question" : hedged ? "GROUNDED answer still hedged recency" : "searched, no recency hedge",
+			};
 		},
 	},
 	timeless: {
@@ -143,6 +156,45 @@ const BEHAVIOR_GRADERS = {
 	},
 };
 
+// ─── Integration check: conversational query rewriting (coref) on the search endpoint. ───
+// Browser-free: POST /api/search with conversation history and assert the dangling "it" was
+// resolved to the topic before searching (the bug was a follow-up searching verbatim → junk).
+// Covers the endpoint → contextualizeQuery → openSearch path that unit tests can't reach live.
+async function corefCheck() {
+	const RAW = "what most recent research says about it";
+	const HISTORY = [
+		{ from: "user", content: "what is the biggest dinosaur ever?" },
+		{
+			from: "assistant",
+			content:
+				"The largest known dinosaur is likely Argentinosaurus, a sauropod from the Late Cretaceous, estimated at 70-100 tons and up to 39 meters long.",
+		},
+	];
+	try {
+		const res = await fetch(BASE + "/api/search", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ q: RAW, history: HISTORY }),
+		});
+		if (!res.ok) return { pass: false, note: `POST /api/search → ${res.status}` };
+		const d = await res.json();
+		const q = (d.query || "").toLowerCase();
+		const titles = (d.sources || []).map((s) => s.title || "").join(" ").toLowerCase();
+		const topicRx = /dinosaur|argentinosaur|sauropod|titanosaur|bruhathkayosaurus|paleo|fossil/;
+		const rewritten = !!q && q !== RAW.toLowerCase();
+		const onTopic = topicRx.test(q) || topicRx.test(titles);
+		const pass = rewritten && onTopic;
+		return {
+			pass,
+			note: pass
+				? `resolved "it" → "${d.query}"`
+				: `query="${d.query}" not rewritten/on-topic; titles="${titles.slice(0, 70)}"`,
+		};
+	} catch (e) {
+		return { pass: false, note: "coref check threw: " + (e?.message ?? e) };
+	}
+}
+
 (async () => {
 	console.log(`A2 — 70B re-validation gate @ ${BASE}\n`);
 	await assertSeventyB();
@@ -177,10 +229,15 @@ const BEHAVIOR_GRADERS = {
 	const cho = await runProbe("choreography-probe.mjs");
 	for (const r of cho.results) add("choreography", r.id, "soft", !!r.pass, `searched=${r.searched} gapCta=${r.gapCta} beatOk=${r.beatOk}`);
 
+	// 4) integration — coref query rewriting on the search endpoint (browser-free)
+	console.log("▶ integration (coref query rewriting)…");
+	const coref = await corefCheck();
+	add("integration", "coref-rewrite", "soft", coref.pass, coref.note);
+
 	// ─── Report ───────────────────────────────────────────────────────────────────────
 	console.log("\n" + "─".repeat(72));
 	console.log("RESULTS\n");
-	for (const suite of ["behavior", "reliability", "choreography"]) {
+	for (const suite of ["behavior", "reliability", "choreography", "integration"]) {
 		const sr = rows.filter((x) => x.suite === suite);
 		if (!sr.length) continue;
 		console.log(`  ${suite}:`);

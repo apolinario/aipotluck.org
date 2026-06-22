@@ -1,6 +1,10 @@
 .DS_Store
 node_modules
 /build
+# Eval probe ARTIFACTS (regenerated each run) — screenshots + captured transcripts. The probe
+# SCRIPTS in evals/*.mjs are intentionally tracked; only their output is ignored.
+evals/ux/
+evals/transcripts/
 /.svelte-kit
 /package
 .env
