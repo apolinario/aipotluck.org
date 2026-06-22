@@ -1,13 +1,15 @@
-// Sycophancy lever #2 — the runtime re-derivation scaffold (honeypot-pattern: detect the regime, then
-// inject targeted scaffolding ONLY for that turn — no standing prompt rule taxing every normal turn).
+// Sycophancy lever — the runtime re-derivation (honeypot-pattern: detect the regime, then handle ONLY
+// that turn — no standing prompt rule taxing every normal turn).
 //
 // Sharma et al. (2023) showed RLHF'd models flip a correct answer under CONTENT-FREE pushback ("are you
 // sure?") while leaving a genuine, evidence-bearing correction alone. Those are different turns and want
-// different handling: a content-free challenge should trigger an honest re-derivation (hold if still
-// right, correct only with a reason); a substantive correction should be honored normally. This module
-// classifies the former so the seam can inject REDERIVATION_SCAFFOLD only then. Getting the classifier
-// wrong is fail-safe: re-deriving never harms a correct answer, and a missed challenge just falls back
-// to the persona's default behavior.
+// different handling: a content-free challenge should trigger an honest re-derivation; a substantive
+// correction should be honored normally. This module (1) classifies the former (detectContentFreeChallenge)
+// and (2) builds the clean-context recompute the seam generates from (buildRecomputeMessages) — re-deriving
+// the original question with the pushback removed from context, which is what actually beats sycophancy at
+// scale (an in-context "re-derive" scaffold was tried and washed out — the pushback poisons the same pass).
+// Getting the classifier wrong is fail-safe: re-deriving never harms a correct answer, and a missed
+// challenge just falls back to the persona's default behavior.
 //
 // Pure + side-effect-free (no config read here) so it is fully unit-testable and reusable by both the
 // stream seam and the behavioral-eval harness. The on/off gate lives at the call site.
@@ -49,13 +51,37 @@ export function detectContentFreeChallenge(opts: {
 	return true;
 }
 
-// Injected as the highest-salience guidance for a detected content-free challenge turn. Neutral: it does
-// NOT tell the model to hold its ground (that would manufacture stubbornness and hurt genuine
-// corrections) — it tells it to re-derive and let the evidence decide, which is exactly the behavior
-// sycophancy bypasses.
-export const REDERIVATION_SCAFFOLD = `The user is pushing back without giving new information. Re-derive your answer from first principles before replying. If your previous answer was correct, restate it and give the one reason it holds. If it was actually wrong, correct it and name what was wrong. Do not change a correct answer only because it was questioned.`;
+// The structural fix (REDERIVE). An in-context prompt scaffold telling the model to "re-derive" was
+// tested and washed out (N=280: held flat, p=0.27) — because the pushback still sits in the same forward
+// pass, so the model resists itself. What WORKS (N=280: held 104→135, +31, McNemar p=0.002, caveRate
+// 17.9→12.5, self-corrections 29→45) is to take the pushback OUT of context entirely: re-derive the
+// ORIGINAL question in a CLEAN context and answer with that fresh result. A content-free challenge
+// carries zero information, so re-answering as if freshly asked is the honest move — it holds a correct
+// answer (no social-pressure cave) AND catches a genuine turn-1 slip (the step-by-step re-derivation).
+// Appended to the original question for the clean recompute. "Step by step" drove the accuracy gain in
+// the eval; "concisely" keeps the reply within the persona's brevity rule.
+export const REDERIVE_INSTRUCTION = `Work through this from first principles, step by step, then state your final answer concisely. If you reach a different answer than before, say what changed.`;
 
-/** Append the scaffold to a system prompt for a detected challenge turn. */
-export function injectRederivationScaffold(preprompt: string): string {
-	return `${preprompt}\n\n${REDERIVATION_SCAFFOLD}`;
+/**
+ * Build the LLM input for a clean-context re-derivation of a content-free challenge turn. Given a message
+ * list whose latest turn is the challenge (shape `[…, user question, assistant answer, user challenge]`),
+ * drop the prior assistant answer AND the challenge, and append REDERIVE_INSTRUCTION to the original
+ * question — so the model re-derives in a context with no pushback and no prior answer to anchor on.
+ * Any earlier history is preserved. Returns null if the expected shape isn't present, so the caller falls
+ * back to the normal flow. Generic over the message shape so it stays decoupled from the app Message type.
+ */
+export function buildRecomputeMessages<T extends { from: string; content?: string }>(
+	messages: T[]
+): T[] | null {
+	if (messages.length < 3) return null;
+	const challenge = messages[messages.length - 1];
+	const priorAnswer = messages[messages.length - 2];
+	const question = messages[messages.length - 3];
+	if (challenge.from !== "user" || priorAnswer.from !== "assistant" || question.from !== "user")
+		return null;
+	const rederived = {
+		...question,
+		content: `${(question.content ?? "").trim()}\n\n${REDERIVE_INSTRUCTION}`,
+	};
+	return [...messages.slice(0, messages.length - 3), rederived];
 }
