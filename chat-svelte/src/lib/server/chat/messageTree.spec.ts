@@ -92,4 +92,32 @@ describe("appendTurnMessages", () => {
 			})
 		).toThrow();
 	});
+
+	// Regression: a normal (non-retry) turn whose parent ref is stale — a resend after an interrupted
+	// generation left the client pointing at a message the server never persisted — used to build a
+	// dangling node and 500 with "Ancestor not found" downstream in buildSubtree. It must now re-point
+	// to the current leaf and land the turn.
+	it("re-points to the current leaf when a normal turn's parent reference is stale (no throw)", () => {
+		const { conv } = seededConv();
+		const before = conv.messages.length;
+		const leafBefore = conv.messages[conv.messages.length - 1].id;
+
+		const { messageToWriteToId, messagesForPrompt } = appendTurnMessages(conv, {
+			messageId: "ghost-id-not-in-tree", // stale: not in conv.messages
+			newPrompt: "still want an answer",
+			uploadedFiles: [],
+		});
+
+		expect(messageToWriteToId).toBeDefined();
+		expect(conv.messages.length).toBe(before + 2); // user + blank assistant appended, not orphaned
+		// the new user message attached under the real leaf, and the prompt subtree built cleanly
+		const newUser = messagesForPrompt.at(-1);
+		expect(newUser?.from).toBe("user");
+		expect(newUser?.content).toBe("still want an answer");
+		expect(newUser?.ancestors).toContain(leafBefore);
+		// no dangling ancestor id survives in the built subtree
+		const ids = new Set(conv.messages.map((m) => m.id));
+		for (const m of messagesForPrompt)
+			for (const a of m.ancestors ?? []) expect(ids.has(a)).toBe(true);
+	});
 });

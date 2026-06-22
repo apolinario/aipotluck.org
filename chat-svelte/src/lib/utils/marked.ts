@@ -221,8 +221,14 @@ const katexInlineExtension: TokenizerExtension & RendererExtension = {
 	},
 
 	tokenizer(src: string): katexInlineToken | undefined {
-		// 1) $...$
-		const rule1 = /^\$([^$]+?)\$/;
+		// 1) $...$ — currency-safe inline math. A naive /^\$([^$]+?)\$/ swallows ordinary prose with
+		// dollar AMOUNTS: "it costs $1 more, and together they cost $1.10" parses as math and renders
+		// garbled (italicised, spaces stripped). Guard like GitHub's math extension: the opening $ must
+		// NOT be followed by a space or digit (so "$1" reads as currency, not a math start), the content
+		// is single-line and $-free, the closing $ must not be preceded by a space, and must not be
+		// followed by a digit. Real inline math ("$x$", "$E=mc^2$") still matches; "\(...\)" is the
+		// space/digit-proof alternative below.
+		const rule1 = /^\$(?![\s\d])([^$\n]+?)(?<!\s)\$(?!\d)/;
 		const match1 = rule1.exec(src);
 		if (match1) {
 			const token: katexInlineToken = {

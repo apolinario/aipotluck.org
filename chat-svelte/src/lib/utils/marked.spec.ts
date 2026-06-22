@@ -304,4 +304,18 @@ describe("lazy full-render (processBlocks async)", () => {
 		);
 		expect(htmls.join(" ")).toContain('class="katex"');
 	});
+
+	// Regression: dollar AMOUNTS in prose ("$1 more, together $1.10") were parsed as $...$ inline math
+	// and rendered garbled (italicised, spaces stripped → "1morethanthe..."). The currency-safe rule
+	// must leave them as literal text. A math token renders the <code data-katex-pending> sync fallback,
+	// so its absence proves the amounts weren't treated as math.
+	test("dollar amounts are NOT parsed as inline math (currency-safe)", () => {
+		const html = renderHtml("the ball is $0.05, the bat $1.05, together $1.10");
+		expect(html).toContain("$0.05");
+		expect(html).toContain("$1.10");
+		expect(html).not.toContain("data-katex-pending");
+	});
+
+	// (Real inline math still works is covered by the "$E=mc^2$" async test above — the currency-safe
+	// regex matches that expression unchanged; it only rejects $-amounts.)
 });

@@ -4,6 +4,7 @@ import type { Message } from "$lib/types/Message";
 import { buildSubtree } from "$lib/utils/tree/buildSubtree.js";
 import { addChildren } from "$lib/utils/tree/addChildren.js";
 import { addSibling } from "$lib/utils/tree/addSibling.js";
+import { logger } from "$lib/server/logger";
 
 /**
  * Append this turn's message(s) to the conversation tree and return the assistant message we'll
@@ -83,6 +84,21 @@ export function appendTurnMessages(
 			messagesForPrompt.pop(); // don't need the latest assistant message in the prompt since we're retrying it
 		}
 	} else {
+		// Stale-client guard (primary defense for the "Ancestor not found" 500): the client points at
+		// the parent it thinks is the conversation leaf, but a resend after an interrupted/aborted
+		// generation can leave it referencing a message the server never persisted. addChildren would
+		// then build a node whose ancestor doesn't exist, and buildSubtree later 500s. If the parent
+		// can't be resolved, re-point to the conversation's actual current leaf so the turn still lands.
+		let parentId = messageId;
+		if (parentId && conv.messages.length > 0 && !conv.messages.some((m) => m.id === parentId)) {
+			const leaf = conv.messages[conv.messages.length - 1]?.id;
+			logger.warn(
+				{ staleParent: parentId, repointedTo: leaf },
+				"appendTurnMessages: stale parent reference, re-pointing to current leaf"
+			);
+			parentId = leaf;
+		}
+
 		// just a normal linear conversation, so we add the user message
 		// and the blank assistant message back to back
 		const newUserMessageId = addChildren(
@@ -94,7 +110,7 @@ export function appendTurnMessages(
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			},
-			messageId
+			parentId
 		);
 
 		messageToWriteToId = addChildren(

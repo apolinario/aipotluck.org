@@ -12,13 +12,15 @@ export function buildSubtree<T>(conv: Tree<T>, id: TreeId): TreeNode<T>[] {
 		const message = conv.messages.find((m) => m.id === id);
 		if (!message) throw new Error("Message not found");
 
-		return [
-			...(message.ancestors?.map((ancestorId) => {
-				const ancestor = conv.messages.find((m) => m.id === ancestorId);
-				if (!ancestor) throw new Error("Ancestor not found");
-				return ancestor;
-			}) ?? []),
-			message,
-		];
+		// Degrade gracefully on a missing ancestor instead of throwing. A stale/desynced tree — e.g. a
+		// resend after an interrupted generation left a dangling parent reference — used to throw
+		// "Ancestor not found" here, surfacing to the user as a 500 "an error occurred" toast. Dropping
+		// an unresolvable ancestor yields a slightly shorter prompt subtree, which is strictly better
+		// than failing the turn. The append path (appendTurnMessages) also guards the stale parent so
+		// this stays a backstop, not the primary defense.
+		const ancestors = (message.ancestors ?? [])
+			.map((ancestorId) => conv.messages.find((m) => m.id === ancestorId))
+			.filter((a): a is TreeNode<T> => a !== undefined);
+		return [...ancestors, message];
 	}
 }

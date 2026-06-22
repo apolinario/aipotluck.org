@@ -62,16 +62,20 @@ describe("buildSubtree", () => {
 		expect(() => buildSubtree(conv, id)).toThrow("Message not found");
 	});
 
-	it("should throw an error if the ancestor is not found", async () => {
+	it("degrades gracefully (drops the ancestor) when an ancestor id is missing", async () => {
 		const convId = await insertLinearBranchConversation();
 		const conv = await collections.conversations.findOne({ _id: new ObjectId(convId) });
 		if (!conv) throw new Error("Conversation not found");
 
 		const id = "1-1-1-1-2";
 
+		// A dangling ancestor ref (from a stale/desynced tree). This used to throw "Ancestor not found"
+		// → a 500 "an error occurred" on a resend after an interrupted generation. Now the unresolvable
+		// ancestor is dropped and the message itself is still returned, so the turn builds.
 		conv.messages[1].ancestors = ["not-a-real-id-test"];
 
-		expect(() => buildSubtree(conv, id)).toThrow("Ancestor not found");
+		const subtree = buildSubtree(conv, id);
+		expect(subtree).toEqual([conv.messages[1]]);
 	});
 
 	it("should work on empty conversations", () => {
