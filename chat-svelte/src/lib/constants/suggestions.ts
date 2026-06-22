@@ -1,11 +1,10 @@
-// The documented launch starter prompts (Alpha launch content §1.3) — each is
-// chosen to demonstrate one facet of the thesis: provenance, honest limits, and
-// open-web search. They replace the upstream ai-chatbot defaults.
-export const suggestions = [
-	// → provenance / governance framing
-	"I work in humanitarian policy in Geneva. Can this help me understand AI governance frameworks affecting public institutions?",
-	// → honest limits
-	"A farmer in Rwanda is asking about drought-resistant crops for this season. What can you actually help with, and where are your limits?",
-	// → open-web search (trips the recency detector → search affordance)
-	"I need the current status of the EU AI Act for a policy briefing next week. How do you find that?",
-];
+// Launch starter prompts (Alpha launch content §1.3). Each is meant to demonstrate one facet
+// of the thesis — provenance, honest limits, open-web search, RAG grounding, the gap CTA.
+//
+// INTENTIONALLY EMPTY (2026-06-22): the original Geneva/Rwanda/EU-AI-Act starters were retired
+// pending a new builder/funder/sharer/partner set aligned with Stephanie. The FEATURE is intact —
+// ChatIntroduction renders whatever is here (or a tuning-panel override via page.data.starters),
+// and an empty list simply shows no chips. Re-populate this array to bring the chips back; if a new
+// prompt deliberately surfaces a known stack gap, add a matching entry to starterGaps.ts so its
+// "touches a gap → get involved" CTA fires.
+export const suggestions: string[] = [];

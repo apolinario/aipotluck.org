@@ -78,6 +78,7 @@
 		</div>
 	</div>
 
+	{#if starters.length}
 	<div
 		class="no-scrollbar flex w-full gap-2.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible"
 	>
@@ -91,4 +92,5 @@
 			</button>
 		{/each}
 	</div>
+	{/if}
 </div>

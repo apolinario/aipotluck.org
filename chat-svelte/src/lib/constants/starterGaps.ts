@@ -27,13 +27,12 @@ export interface StarterGap {
 // "community self-configuration of a deployment", an unrelated topic. Pointing there would
 // misrepresent the gap. That entry waits on a real data node in static/data/stack-map.json
 // (a Carl/Josh/Laura content call), not a forced mis-aim.
-const GAPS: Record<string, StarterGap> = {
-	// Open-web-search prompt → search runs on Wikipedia + Marginalia + OpenAlex, NOT a full open web
-	// index. The `websearch` node's own copy literally names this — "A Google-scale open web
-	// index is still the honest gap" — so the ask and the node it lands on are the same thing.
-	"I need the current status of the EU AI Act for a policy briefing next week. How do you find that?":
-		{ node: "websearch", ask: "a Google-scale open web search index" },
-};
+// INTENTIONALLY EMPTY (2026-06-22): the one entry was keyed to the retired EU-AI-Act starter
+// (see suggestions.ts). The MECHANISM stays — when a new curated prompt deliberately surfaces a
+// known gap, add it here keyed by the EXACT prompt text, e.g.:
+//   "<the exact new prompt text>": { node: "<id in static/data/stack-map.json>", ask: "<the open contribution>" },
+// Honour the CURATION RULE above: only add an entry when the node's meaning ACTUALLY matches the ask.
+const GAPS: Record<string, StarterGap> = {};
 
 /** Collapse whitespace + case so a chip click and a pasted/typed copy of the same prompt
  *  both match. Pure. */
