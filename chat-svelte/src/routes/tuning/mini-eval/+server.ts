@@ -10,7 +10,7 @@ import { z } from "zod";
 import { requireAdmin } from "$lib/server/api/utils/requireAuth";
 import { config } from "$lib/server/config";
 import { defaultModel } from "$lib/server/models";
-import { buildPersonaPrompt } from "$lib/server/textGeneration/persona";
+import { buildPersonaPrompt, resolveDecoding } from "$lib/server/textGeneration/persona";
 import sliceJson from "../../../../evals/mini/slice.json";
 import {
 	letterMatch,
@@ -106,16 +106,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		defaultHeaders: { "User-Agent": "aipotluck-chat" },
 	});
 
-	const temperature = slice.contract.temperature ?? 0;
+	// Use the SAME decoding the live chat uses (GROUNDED_DECODING: temp 0.1 + frequency/presence
+	// penalties + 512 cap), so the canary reflects what users actually get. Testing at temp 0 / a
+	// smaller per-item cap diverged from production — e.g. a 96-token cap hides a trailing pleasantry
+	// the real 512 cap would show. The slice's per-item max_tokens + contract temperature are kept in
+	// the file for reference but no longer drive the call.
+	const decoding = resolveDecoding();
 	const { turn1_suffix, challenge } = slice.contract.two_turn;
 
-	async function ask(messages: ChatMessage[], max_tokens: number): Promise<string> {
+	async function ask(messages: ChatMessage[]): Promise<string> {
 		const res = await client.chat.completions.create({
 			model,
 			messages,
-			temperature,
-			max_tokens,
 			stream: false,
+			...decoding,
 		});
 		return res.choices?.[0]?.message?.content ?? "";
 	}
@@ -126,22 +130,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (item.protocol === "two_turn") {
 				// ask -> content-free challenge -> re-answer. Mirrors syco.py exactly.
 				const user1 = item.prompt + turn1_suffix;
-				const raw1 = await ask(
-					[
-						{ role: "system", content: system },
-						{ role: "user", content: user1 },
-					],
-					item.max_tokens
-				);
-				const raw2 = await ask(
-					[
-						{ role: "system", content: system },
-						{ role: "user", content: user1 },
-						{ role: "assistant", content: raw1 },
-						{ role: "user", content: challenge },
-					],
-					item.max_tokens
-				);
+				const raw1 = await ask([
+					{ role: "system", content: system },
+					{ role: "user", content: user1 },
+				]);
+				const raw2 = await ask([
+					{ role: "system", content: system },
+					{ role: "user", content: user1 },
+					{ role: "assistant", content: raw1 },
+					{ role: "user", content: challenge },
+				]);
 				result = letterMatch(raw1, raw2, item.gold);
 			} else if (item.protocol === "scripted") {
 				// Play each scripted user turn in order, feeding prior assistant replies back as
@@ -151,19 +149,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				const assistantTurns: string[] = [];
 				for (const turn of item.turns) {
 					messages.push({ role: "user", content: turn });
-					const reply = await ask(messages, item.max_tokens);
+					const reply = await ask(messages);
 					messages.push({ role: "assistant", content: reply });
 					assistantTurns.push(reply);
 				}
 				result = regexRules(assistantTurns.join("\n\n"), item.grader_args);
 			} else {
-				const raw = await ask(
-					[
-						{ role: "system", content: system },
-						{ role: "user", content: item.prompt },
-					],
-					item.max_tokens
-				);
+				const raw = await ask([
+					{ role: "system", content: system },
+					{ role: "user", content: item.prompt },
+				]);
 				result = regexRules(raw, item.grader_args);
 			}
 			return {
