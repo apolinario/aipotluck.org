@@ -57,6 +57,15 @@ export type Message = Partial<Timestamps> & {
 		kind: ModerationKind;
 	};
 
+	// Name-adoption correction: set when the post-generation guard ($lib/server/nameGuard) detected
+	// the model adopted a personal name for itself this turn. Its presence renders an honest "this
+	// system has no name" chip beside the answer, and the strip neutralizes the name in later context
+	// so it can't compound into a named companion over a session. Persisted via JSONB so the
+	// correction survives reload, mirroring moderation/webSearch above.
+	nameNotice?: {
+		name?: string;
+	};
+
 	// Independent cross-checks the user opted into, in the order they were requested
 	// (second opinion, then third, …). Each is ANOTHER open model's take on the same
 	// question — neutral triangulation so the user can compare, never a synthesized

@@ -8,6 +8,7 @@ import { z } from "zod";
 import { enforceRequestRateLimits } from "$lib/server/chat/rateLimit";
 import { loadAuthorizedConversation } from "$lib/server/chat/loadConversation";
 import { parseChatRequest } from "$lib/server/chat/parseRequest";
+import { detectNameAdoption } from "$lib/server/nameGuard";
 import { appendTurnMessages } from "$lib/server/chat/messageTree";
 import { applyMessageUpdate, createStreamState } from "$lib/server/chat/streamUpdate";
 import {
@@ -455,6 +456,23 @@ export async function POST({ request, locals, params, getClientAddress }) {
 						status: MessageUpdateStatus.Error,
 						message: "No output was generated. Something went wrong.",
 					});
+				}
+			}
+
+			// Name-adoption guard (post-generation). Prompt rules don't reliably stop the model adopting
+			// a personal name for itself, so enforce it at runtime: if this turn's answer adopted one,
+			// stamp the marker (an honest "no name" chip renders, and later turns strip the name from
+			// context so it can't compound). See $lib/server/nameGuard.
+			if (!hasError && !abortedByUser) {
+				const lastUserText =
+					[...messagesForPrompt].reverse().find((m) => m.from === "user")?.content ?? "";
+				const nameCheck = detectNameAdoption({
+					userText: lastUserText,
+					assistantText: messageToWriteTo.content.slice(initialMessageContent.length),
+				});
+				if (nameCheck.adopted) {
+					messageToWriteTo.nameNotice = { name: nameCheck.name };
+					await update({ type: MessageUpdateType.NameNotice, name: nameCheck.name });
 				}
 			}
 

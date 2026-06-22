@@ -666,6 +666,10 @@
 						score: update.score,
 						kind: update.kind,
 					});
+				} else if (update.type === MessageUpdateType.NameNotice) {
+					// Post-generation name-adoption guard tripped: stamp the marker so an honest
+					// "this system has no name" chip renders beside the answer (and persists on reload).
+					messageToWriteTo.nameNotice = { name: update.name };
 				}
 			}
 

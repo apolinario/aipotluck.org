@@ -24,6 +24,7 @@
 	import { MessageUpdateType } from "$lib/types/MessageUpdate";
 	import ImageLightbox from "./ImageLightbox.svelte";
 	import ProvenanceTrace from "./ProvenanceTrace.svelte";
+	import NameNotice from "./NameNotice.svelte";
 	import CacheNotice from "./CacheNotice.svelte";
 	import GapInvite from "./GapInvite.svelte";
 	import type { StarterGap } from "$lib/constants/starterGaps";
@@ -525,6 +526,13 @@
 			     props to restore the flat badge stack. -->
 			{#if showsLiveProvenanceTrace(message)}
 				<ProvenanceTrace {message} {modelId} {loading} {question} />
+			{/if}
+
+			<!-- Honest name-adoption correction: the post-generation guard caught the model taking on a
+			     personal name this turn (prompt rules don't reliably stop it). The chip states plainly the
+			     system has no name; the server also strips the name from later context. -->
+			{#if message.nameNotice && !loading}
+				<NameNotice name={message.nameNotice.name} />
 			{/if}
 
 			<!-- Honest "touches an open gap → get involved" CTA. Only when this turn's prompt

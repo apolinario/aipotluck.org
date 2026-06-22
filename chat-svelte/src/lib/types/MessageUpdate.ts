@@ -9,7 +9,8 @@ export type MessageUpdate =
 	| MessageReasoningUpdate
 	| MessageRouterMetadataUpdate
 	| MessageAgentStepUpdate
-	| MessageSafetyUpdate;
+	| MessageSafetyUpdate
+	| MessageNameNoticeUpdate;
 
 export enum MessageUpdateType {
 	Status = "status",
@@ -21,6 +22,7 @@ export enum MessageUpdateType {
 	RouterMetadata = "routerMetadata",
 	AgentStep = "agentStep",
 	Safety = "safety",
+	NameNotice = "nameNotice",
 }
 
 // Status
@@ -106,4 +108,14 @@ export interface MessageSafetyUpdate {
 	kind: ModerationKind;
 	label: string | null;
 	score: number;
+}
+
+// Name-adoption correction. Emitted AFTER generation when the runtime guard ($lib/server/nameGuard)
+// detects the model adopted a personal name for itself this turn (prompt rules don't reliably stop
+// it). Carries the marker the client stamps onto message.nameNotice so an honest "this system has no
+// name" chip renders beside the answer, and so the strip can neutralize the name in later context.
+export interface MessageNameNoticeUpdate {
+	type: MessageUpdateType.NameNotice;
+	/** the adopted nickname, when identifiable (for the chip copy) */
+	name?: string;
 }

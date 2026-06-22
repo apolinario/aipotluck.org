@@ -1,4 +1,5 @@
 import { preprocessMessages } from "../endpoints/preprocessMessages";
+import { neutralizeAdoptedName } from "../nameGuard";
 
 import { generateTitleForConversation } from "./title";
 import { injectArtifactsPrompt } from "./artifacts";
@@ -50,8 +51,18 @@ async function* textGenerationWithoutTitle(
 		status: MessageUpdateStatus.Started,
 	};
 
-	const { conv, messages } = ctx;
+	const { conv } = ctx;
 	const convId = conv._id;
+
+	// Name-adoption hygiene (the "reset" half of the name guard): if a PRIOR assistant turn adopted a
+	// personal name (the post-generation guard stamped message.nameNotice), neutralize that name in
+	// the copy sent to the model so it can't compound into an established identity over the session.
+	// Copies only — stored/displayed history is untouched. See $lib/server/nameGuard.
+	const messages = ctx.messages.map((m) =>
+		m.from === "assistant" && m.nameNotice?.name
+			? { ...m, content: neutralizeAdoptedName(m.content, m.nameNotice.name) }
+			: m
+	);
 
 	// TEMP (pre-launch tuning panel): one cached read of the operator overrides for this
 	// turn — persona / grounding / decoding. Empty (→ code defaults) unless an editor has

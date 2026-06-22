@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { detectNameAdoption } from "./nameGuard";
+import { detectNameAdoption, neutralizeAdoptedName } from "./nameGuard";
 
 describe("detectNameAdoption", () => {
 	// The real Apertus-70B slip the guard exists to catch (captured verbatim, temp 0).
@@ -75,5 +75,23 @@ describe("detectNameAdoption", () => {
 		expect(detectNameAdoption({ assistantText: "Plain answer with no naming." }).adopted).toBe(
 			false
 		);
+	});
+});
+
+describe("neutralizeAdoptedName", () => {
+	it("strips the adopted name from prior-turn context (whole-word, case-sensitive)", () => {
+		expect(neutralizeAdoptedName("Sure, you can call me Api if you prefer.", "Api")).toBe(
+			"Sure, you can call me this system if you prefer."
+		);
+		// case-sensitive to the captured form: "Api" is reset, the homograph "api"/"API" is left alone
+		expect(
+			neutralizeAdoptedName("As Api, I help. The api call and the API both stay.", "Api")
+		).toBe("As this system, I help. The api call and the API both stay.");
+	});
+
+	it("does not touch substrings or unrelated text, and no-ops without a name", () => {
+		expect(neutralizeAdoptedName("The API returns JSON.", "Api")).toBe("The API returns JSON.");
+		expect(neutralizeAdoptedName("Apiary keeper.", "Api")).toBe("Apiary keeper.");
+		expect(neutralizeAdoptedName("no name to strip here", undefined)).toBe("no name to strip here");
 	});
 });

@@ -101,3 +101,18 @@ export function detectNameAdoption(opts: {
 
 	return { adopted: false };
 }
+
+/**
+ * Neutralize an adopted name in text fed BACK to the model as prior-turn context, so a past slip
+ * ("you can call me Api") can't establish the name as the model's identity over the rest of a
+ * session. Whole-word, CASE-SENSITIVE to the captured form: matching the exact case the detector
+ * captured ("Api") avoids mangling a homograph the model legitimately uses later ("API"). Operates on
+ * a copy (the stored/displayed history is never changed). This is the deterministic "reset" — context
+ * hygiene, not an injected reminder (a reminder is just another prompt rule, which is the thing that
+ * doesn't hold over long contexts).
+ */
+export function neutralizeAdoptedName(content: string, name: string | undefined): string {
+	if (!name) return content;
+	const esc = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	return content.replace(new RegExp(`\\b${esc}\\b`, "g"), "this system");
+}
