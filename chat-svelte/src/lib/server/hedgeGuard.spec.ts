@@ -50,6 +50,13 @@ describe("detectRecencyHedge", () => {
 		expect(cleaned).toBe(text);
 	});
 
+	it("does NOT strip a cited-source pointer (citation, not an advice-hedge)", () => {
+		const text = "The law is now in force. For the latest figures, see [2].";
+		const { hedged, cleaned } = detectRecencyHedge(text);
+		expect(hedged).toBe(false);
+		expect(cleaned).toBe(text);
+	});
+
 	it("handles empty input", () => {
 		expect(detectRecencyHedge("")).toEqual({ hedged: false, cleaned: "" });
 	});

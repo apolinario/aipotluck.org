@@ -319,9 +319,11 @@
 			if (searchContext === undefined && !isRetry && prompt) {
 				// Recent prior turns for coreference rewriting: a follow-up like "what's the latest on
 				// it?" gets the "it" resolved server-side before searching, so the open web returns
-				// on-topic sources. Non-empty user/assistant turns, dropping the just-sent prompt (the
-				// last entry), most-recent last; the server caps + truncates further.
-				const priorTurns = messages
+				// on-topic sources. Use messagesPath (the LINEAR active thread) not messages (the full
+				// tree of all branches) so an edited/regenerated conversation feeds the right context.
+				// Non-empty user/assistant turns, dropping the just-sent prompt (the last entry),
+				// most-recent last; the server caps + truncates further.
+				const priorTurns = messagesPath
 					.filter(
 						(m) =>
 							(m.from === "user" || m.from === "assistant") && (m.content ?? "").trim().length > 0

@@ -43,6 +43,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	if (!rawQ) {
 		throw error(400, "missing query");
 	}
+	if (rawQ.length > 400) {
+		// Reject before the rewrite model call, not just at search time.
+		throw error(400, "query too long");
+	}
 	const history: RewriteTurn[] = Array.isArray(body.history)
 		? body.history
 				.filter(

@@ -39,9 +39,11 @@ const HEDGE_PATTERNS: RegExp[] = [
 	/\bI\s+(?:can(?:'?t|not)|do(?:\s+not|n'?t)|am\s+(?:un)?able|am\s+not\s+able)\b[^.!?]*\b(?:real[- ]time|live|current|up[- ]to[- ]date|latest|recent|internet|web|online|browse|search)\b/i,
 	// "I don't have real-time / live / up-to-date / current information/access"
 	/\bI\s+do(?:\s+not|n'?t)\s+have\b[^.!?]*\b(?:real[- ]time|live|up[- ]to[- ]date|current|latest)\b/i,
-	// recency-advice hedge: "for the latest/most recent/current ..., consult/check/refer/see ..."
-	// (telling the user to go look it up themselves — after we already looked it up for them)
-	/\bfor (?:the )?(?:latest|most recent|current|up[- ]to[- ]date)\b[^.!?]*\b(?:consult|check|refer|see|visit|look)\b/i,
+	// recency-advice hedge: "for the latest/most recent/current ..., consult/refer to/check
+	// recent research/sources/journals/..." — telling the user to go research it themselves AFTER we
+	// already searched. REQUIRES a generic research-target noun (not "see [n]") so it can never strip
+	// a legitimate cited-source pointer like "for the latest figures, see [2]".
+	/\bfor (?:the )?(?:latest|most recent|current|up[- ]to[- ]date)\b[^.!?]*\b(?:consult|refer to|check)\b[^.!?]*\b(?:research|sources?|journals?|literature|news|publications?|reports?|websites?|databases?|updates?)\b/i,
 ];
 
 const isHedgeSentence = (s: string): boolean => HEDGE_PATTERNS.some((re) => re.test(s));
