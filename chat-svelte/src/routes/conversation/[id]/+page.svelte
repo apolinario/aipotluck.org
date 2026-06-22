@@ -317,10 +317,27 @@
 			// carries its context) and when a caller supplied searchContext. Best-effort +
 			// abortable: a Stop or failure simply yields an ungrounded answer.
 			if (searchContext === undefined && !isRetry && prompt) {
+				// Recent prior turns for coreference rewriting: a follow-up like "what's the latest on
+				// it?" gets the "it" resolved server-side before searching, so the open web returns
+				// on-topic sources. Non-empty user/assistant turns, dropping the just-sent prompt (the
+				// last entry), most-recent last; the server caps + truncates further.
+				const priorTurns = messages
+					.filter(
+						(m) =>
+							(m.from === "user" || m.from === "assistant") && (m.content ?? "").trim().length > 0
+					)
+					.map((m) => ({
+						from: m.from as "user" | "assistant",
+						// Truncate per-turn so the request stays small (the server only needs the gist to
+						// resolve a pronoun); long assistant answers don't bloat the POST body.
+						content: (m.content ?? "").slice(0, 600),
+					}));
+				const history = priorTurns.slice(0, -1).slice(-4);
 				searchContext = await resolveSearchContext(prompt, {
 					strategy: searchStrategy,
 					base,
 					signal: messageUpdatesAbortController.signal,
+					history,
 					onPhase: (phase) => {
 						// Mirror the lookup on the live-stack map the instant search starts. The
 						// pending answer already shows a neutral loading spinner throughout (the same

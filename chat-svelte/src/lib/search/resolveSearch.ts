@@ -20,6 +20,14 @@ const CLASSIFY_TIMEOUT_MS = 4500;
 
 export type SearchPhase = "deciding" | "searching";
 
+/** Recent turns sent with a search so a follow-up query ("…about it") can be rewritten to a
+ *  standalone one server-side before searching. Lightweight client-side mirror of the server's
+ *  RewriteTurn (kept local so this client module doesn't import from $lib/server). */
+export interface SearchTurn {
+	from: "user" | "assistant";
+	content: string;
+}
+
 export interface ResolveSearchOptions {
 	strategy: SearchTriggerStrategy;
 	base: string;
@@ -27,6 +35,8 @@ export interface ResolveSearchOptions {
 	signal?: AbortSignal;
 	/** Phase callback so the caller can show a calm status on the pending answer. */
 	onPhase?: (phase: SearchPhase) => void;
+	/** Recent conversation turns for coreference rewriting of a follow-up query (best-effort). */
+	history?: SearchTurn[];
 }
 
 /** Model-driven decision: ask the server whether this turn needs open-web grounding. Under
@@ -91,12 +101,21 @@ export async function decideSearch(
  *  than blocking the turn. Returns undefined when nothing grounded the answer. */
 export async function runOpenSearch(
 	query: string,
-	opts: Pick<ResolveSearchOptions, "base" | "signal">
+	opts: Pick<ResolveSearchOptions, "base" | "signal" | "history">
 ): Promise<SearchContext | undefined> {
 	try {
-		const res = await fetch(`${opts.base}/api/search?q=${encodeURIComponent(query)}`, {
-			signal: opts.signal,
-		});
+		// With conversation history, POST so the server can rewrite a follow-up query ("…about it")
+		// to a standalone one before searching (history in the body, never the URL). Otherwise GET.
+		const res = opts.history?.length
+			? await fetch(`${opts.base}/api/search`, {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({ q: query, history: opts.history }),
+					signal: opts.signal,
+				})
+			: await fetch(`${opts.base}/api/search?q=${encodeURIComponent(query)}`, {
+					signal: opts.signal,
+				});
 		if (!res.ok) return undefined;
 		const result = (await res.json()) as SearchContext;
 		return result?.sources?.length ? result : undefined;
