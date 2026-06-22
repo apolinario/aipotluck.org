@@ -69,9 +69,9 @@ describe("parseChatRequest", () => {
 	it("throws 400 when the data field is missing", async () => {
 		const fd = new FormData();
 		const req = { formData: async () => fd } as unknown as Request;
-		await expect(parseChatRequest({ request: req, conv, locals: makeLocals() })).rejects.toMatchObject(
-			{ status: 400 }
-		);
+		await expect(
+			parseChatRequest({ request: req, conv, locals: makeLocals() })
+		).rejects.toMatchObject({ status: 400 });
 	});
 
 	it("attaches the per-turn MCP selection and timezone to locals", async () => {
@@ -96,17 +96,17 @@ describe("parseChatRequest", () => {
 		multimodal.enabled = false;
 		const file = new File(["aGVsbG8="], "base64;a.txt", { type: "text/plain" });
 		const req = makeRequest({ inputs: "hi" }, [file]);
-		await expect(parseChatRequest({ request: req, conv, locals: makeLocals() })).rejects.toMatchObject(
-			{ status: 415 }
-		);
+		await expect(
+			parseChatRequest({ request: req, conv, locals: makeLocals() })
+		).rejects.toMatchObject({ status: 415 });
 	});
 
 	it("throws 400 when the prompt exceeds the configured message-length limit", async () => {
 		usageLimitsMock.messageLength = 3;
 		const req = makeRequest({ inputs: "way too long" });
-		await expect(parseChatRequest({ request: req, conv, locals: makeLocals() })).rejects.toMatchObject(
-			{ status: 400 }
-		);
+		await expect(
+			parseChatRequest({ request: req, conv, locals: makeLocals() })
+		).rejects.toMatchObject({ status: 400 });
 	});
 
 	it("throws 413 when a base64 upload exceeds the file-size cap", async () => {
@@ -115,9 +115,9 @@ describe("parseChatRequest", () => {
 		// "aGVsbG8=" decodes to "hello" (5 bytes) > 4
 		const file = new File(["aGVsbG8="], "base64;a.txt", { type: "text/plain" });
 		const req = makeRequest({ inputs: "hi" }, [file]);
-		await expect(parseChatRequest({ request: req, conv, locals: makeLocals() })).rejects.toMatchObject(
-			{ status: 413 }
-		);
+		await expect(
+			parseChatRequest({ request: req, conv, locals: makeLocals() })
+		).rejects.toMatchObject({ status: 413 });
 	});
 
 	it("uploads base64 files and passes hash references through untouched", async () => {
