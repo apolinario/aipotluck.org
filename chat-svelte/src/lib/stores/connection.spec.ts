@@ -2,7 +2,9 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { get } from "svelte/store";
 import { deriveConnectionState, createConnectionStore } from "./connection";
 
-const base = { navigatorOnline: true, lastPingAgoMs: 0 as number | null };
+// `streaming: true` in the base: the staleness tests model a turn that IS actively streaming (the
+// only time heartbeats are expected). The idle case is covered explicitly below.
+const base = { navigatorOnline: true, lastPingAgoMs: 0 as number | null, streaming: true };
 
 describe("deriveConnectionState", () => {
 	it("is online when navigator is online and heartbeat is fresh", () => {
@@ -15,16 +17,39 @@ describe("deriveConnectionState", () => {
 		);
 	});
 
-	it("reconnecting when heartbeat is stale past the reconnect threshold", () => {
+	it("reconnecting when heartbeat is stale past the reconnect threshold (while streaming)", () => {
 		expect(deriveConnectionState({ ...base, lastPingAgoMs: 9000 })).toBe("reconnecting");
 	});
 
-	it("offline when heartbeat is stale past the offline threshold", () => {
+	it("offline when heartbeat is stale past the offline threshold (while streaming)", () => {
 		expect(deriveConnectionState({ ...base, lastPingAgoMs: 25000 })).toBe("offline");
 	});
 
+	// The regression: an idle connection emits no heartbeats by design, so its ping age climbs forever.
+	// Staleness must NOT be read while idle — otherwise a healthy connection flips to offline ~20s after
+	// each answer finishes (exactly what shipped before this gate).
+	it("idle (not streaming): stale heartbeat does NOT surface reconnecting or offline", () => {
+		expect(deriveConnectionState({ ...base, streaming: false, lastPingAgoMs: 9000 })).toBe(
+			"online"
+		);
+		expect(deriveConnectionState({ ...base, streaming: false, lastPingAgoMs: 60000 })).toBe(
+			"online"
+		);
+	});
+
+	it("idle still honors hard signals: navigator-offline and slow links surface even when not streaming", () => {
+		expect(
+			deriveConnectionState({ ...base, streaming: false, navigatorOnline: false, lastPingAgoMs: 0 })
+		).toBe("offline");
+		expect(
+			deriveConnectionState({ ...base, streaming: false, lastPingAgoMs: 60000, saveData: true })
+		).toBe("slow");
+	});
+
 	it("does NOT flash reconnecting before the first heartbeat (null age is healthy)", () => {
-		expect(deriveConnectionState({ navigatorOnline: true, lastPingAgoMs: null })).toBe("online");
+		expect(
+			deriveConnectionState({ navigatorOnline: true, lastPingAgoMs: null, streaming: true })
+		).toBe("online");
 	});
 
 	it("slow on save-data or 2g-class links when otherwise healthy", () => {
@@ -142,5 +167,27 @@ describe("createConnectionStore", () => {
 		vi.advanceTimersByTime(4000); // now > 8s stale; a poll tick recomputes
 		vi.advanceTimersByTime(1500); // debounce surfaces it
 		expect(get(state)).toBe("reconnecting");
+	});
+
+	// The shipped bug, as a store-level regression: a turn streams, then SETTLES, then the user reads
+	// for a minute. Pre-fix this flipped to "offline" ~20s in. With the stream-settled disarm, an idle
+	// healthy connection stays "online" no matter how long the silence runs.
+	it("after a stream settles, idle silence never surfaces reconnecting/offline", () => {
+		vi.useFakeTimers();
+		setupBrowser(true);
+		const { state, notePing, noteStreamSettled } = createConnectionStore({
+			debounceMs: 1500,
+			tickMs: 2000,
+			reconnectingAfterMs: 8000,
+			offlineAfterMs: 20000,
+		});
+		const seen: string[] = [];
+		state.subscribe((s) => seen.push(s));
+		notePing(); // a token arrives mid-stream
+		noteStreamSettled(); // the answer finishes
+		vi.advanceTimersByTime(60000); // user reads for a full minute of ping-silence
+		expect(get(state)).toBe("online");
+		expect(seen).not.toContain("reconnecting");
+		expect(seen).not.toContain("offline");
 	});
 });

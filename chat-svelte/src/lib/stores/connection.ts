@@ -18,6 +18,13 @@ export interface ConnectionInputs {
 	navigatorOnline: boolean;
 	/** ms since the last heartbeat ping, or null if we've never seen one yet. */
 	lastPingAgoMs: number | null;
+	/**
+	 * Whether a generation is actively streaming right now (i.e. we EXPECT heartbeats). The heartbeat
+	 * only emits during a stream — so when idle, ping silence is not evidence of trouble, it's the
+	 * normal state. Judging staleness while idle is exactly the bug that declared a healthy connection
+	 * "offline" ~20s after every answer finished. Staleness is read ONLY while this is true.
+	 */
+	streaming: boolean;
 	/** Network Information effectiveType, if available ("slow-2g"|"2g"|"3g"|"4g"). */
 	effectiveType?: string | null;
 	/** Network Information saveData flag, if available. */
@@ -34,17 +41,19 @@ export interface ConnectionThresholds {
 /**
  * Pure state derivation. Order matters: hard-offline first, then heartbeat staleness, then
  * link-quality. `lastPingAgoMs === null` (no heartbeat yet) is treated as healthy so a
- * fresh page doesn't flash "reconnecting" before the first ping arrives.
+ * fresh page doesn't flash "reconnecting" before the first ping arrives. Heartbeat staleness is
+ * read ONLY while `streaming` — idle ping-silence is the normal state, not a failure (judging it
+ * is what falsely flipped a healthy idle connection to "offline" after each answer completed).
  */
 export function deriveConnectionState(
 	input: ConnectionInputs,
 	thresholds: ConnectionThresholds = {}
 ): ConnectionState {
 	const { reconnectingAfterMs = 8000, offlineAfterMs = 20000 } = thresholds;
-	const { navigatorOnline, lastPingAgoMs, effectiveType, saveData } = input;
+	const { navigatorOnline, lastPingAgoMs, streaming, effectiveType, saveData } = input;
 
 	if (!navigatorOnline) return "offline";
-	if (lastPingAgoMs !== null) {
+	if (streaming && lastPingAgoMs !== null) {
 		if (lastPingAgoMs >= offlineAfterMs) return "offline";
 		if (lastPingAgoMs >= reconnectingAfterMs) return "reconnecting";
 	}
@@ -66,16 +75,32 @@ interface ConnectionStoreOptions extends ConnectionThresholds {
 export function createConnectionStore(opts: ConnectionStoreOptions = {}): {
 	state: Readable<ConnectionState>;
 	notePing: () => void;
+	noteStreamSettled: () => void;
 } {
 	const { tickMs = 2000, debounceMs = 1500, ...thresholds } = opts;
 
 	if (typeof window === "undefined") {
-		return { state: readable<ConnectionState>("online"), notePing: () => {} };
+		return {
+			state: readable<ConnectionState>("online"),
+			notePing: () => {},
+			noteStreamSettled: () => {},
+		};
 	}
 
 	let lastPing: number | null = null;
+	let streaming = false;
+	// A heartbeat both refreshes liveness AND marks us as actively streaming (heartbeats only emit
+	// mid-stream). notePing fires per inbound chunk.
 	const notePing = () => {
+		streaming = true;
 		lastPing = Date.now();
+	};
+	// The stream ended (cleanly, by user-stop, by navigation, or by error). Stop expecting heartbeats
+	// so idle ping-silence can't be read as a failure; clear the stale timestamp too. The caller
+	// surfaces any real mid-stream error itself, so dropping back to the coarse signal here is correct.
+	const noteStreamSettled = () => {
+		streaming = false;
+		lastPing = null;
 	};
 
 	const inputs = (): ConnectionInputs => {
@@ -84,6 +109,7 @@ export function createConnectionStore(opts: ConnectionStoreOptions = {}): {
 		return {
 			navigatorOnline: navigator.onLine,
 			lastPingAgoMs: lastPing === null ? null : Date.now() - lastPing,
+			streaming,
 			effectiveType: conn?.effectiveType ?? null,
 			saveData: conn?.saveData ?? null,
 		};
@@ -138,5 +164,5 @@ export function createConnectionStore(opts: ConnectionStoreOptions = {}): {
 		};
 	});
 
-	return { state, notePing };
+	return { state, notePing, noteStreamSettled };
 }

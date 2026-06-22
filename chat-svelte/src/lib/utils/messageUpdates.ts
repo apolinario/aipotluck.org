@@ -7,7 +7,7 @@ import {
 import type { StreamingMode } from "$lib/types/Settings";
 import type { SearchContext } from "$lib/types/Search";
 import { retryWithBackoff } from "./backoff";
-import { noteHeartbeat } from "$lib/stores/connectionState";
+import { noteHeartbeat, noteStreamSettled } from "$lib/stores/connectionState";
 
 type MessageUpdateRequestOptions = {
 	base: string;
@@ -251,22 +251,29 @@ async function* endpointStreamToIterator(
 	// ex) If the last response is => {"type": "stream", "token":
 	// It should be => {"type": "stream", "token": "Hello"} = prev_input_chunk + "Hello"}
 	let prevChunk = "";
-	while (!abortController.signal.aborted) {
-		const { done, value } = await reader.read();
-		if (done) {
-			abortController.abort();
-			break;
+	try {
+		while (!abortController.signal.aborted) {
+			const { done, value } = await reader.read();
+			if (done) {
+				abortController.abort();
+				break;
+			}
+			if (!value) continue;
+
+			// Every inbound chunk is proof the link is alive. Feed the shared connectivity store so a
+			// mid-stream stall surfaces as "reconnecting…" in the indicator without any further wiring;
+			// it's a cheap timestamp set and a no-op when the store is unmounted / on the server.
+			noteHeartbeat();
+
+			const { messageUpdates, remainingText } = parseMessageUpdates(prevChunk + value);
+			prevChunk = remainingText;
+			for (const messageUpdate of messageUpdates) yield messageUpdate;
 		}
-		if (!value) continue;
-
-		// Every inbound chunk is proof the link is alive. Feed the shared connectivity store so a
-		// mid-stream stall surfaces as "reconnecting…" in the indicator without any further wiring;
-		// it's a cheap timestamp set and a no-op when the store is unmounted / on the server.
-		noteHeartbeat();
-
-		const { messageUpdates, remainingText } = parseMessageUpdates(prevChunk + value);
-		prevChunk = remainingText;
-		for (const messageUpdate of messageUpdates) yield messageUpdate;
+	} finally {
+		// Stream settled (done, user-stop, navigation, or error) — disarm the heartbeat-staleness
+		// watchdog so the now-idle connection isn't judged on ping-silence it can't avoid. Runs on
+		// every exit path, including the consumer calling iterator.return() in smoothStreamUpdates.
+		noteStreamSettled();
 	}
 }
 

@@ -15,3 +15,9 @@ export const connectionState = store.state;
 /** Call on each liveness signal (SSE heartbeat / first stream token). Wired by the stream
  *  consumer later; until then the store runs on navigator.onLine + Network Info alone. */
 export const noteHeartbeat = store.notePing;
+
+/** Call when a generation stream ends (cleanly, stopped, navigated away, or errored). Disarms the
+ *  heartbeat-staleness watchdog so an idle connection — which emits no heartbeats by design — is
+ *  never mistaken for a dropped one. Without this, staleness climbed unbounded after each answer
+ *  and flipped a healthy connection to "reconnecting"/"offline" ~8–20s later. */
+export const noteStreamSettled = store.noteStreamSettled;
