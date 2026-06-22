@@ -6,6 +6,7 @@
 	import { DropdownMenu } from "bits-ui";
 	import IconPlus from "~icons/lucide/plus";
 	import IconGlobe from "~icons/lucide/globe";
+	import { webSearchAllowed } from "$lib/stores/webSearch";
 	import IconLoaderCircle from "~icons/lucide/loader-circle";
 	import LucideSparkles from "~icons/lucide/sparkles";
 	import CarbonImage from "~icons/carbon/image";
@@ -248,7 +249,9 @@
 	let showFileUpload = $derived(false && mimeTypes.length > 0);
 	// The tools row renders when there's anything to put in it — file upload or
 	// the web-search toggle.
-	let showToolsRow = $derived(showFileUpload || showWebSearch || !!modelLabel);
+	// The tools row always renders now — it carries the permanent Web-search on/off toggle (plus
+	// optional file-upload / dormant force-search control / model label).
+	let showToolsRow = $derived(true || showFileUpload || showWebSearch || !!modelLabel);
 
 	function toggleWebSearch() {
 		if (requireAuthUser()) return;
@@ -438,6 +441,27 @@
 					{/if}
 				</button>
 			{/if}
+
+			<!-- Web-search ON/OFF (Feature Lock: enabled by default, can be disabled). Default ON → the
+			     per-turn margin gate auto-decides; OFF → never search, answer from training only. Shared
+			     client preference ($lib/stores/webSearch), read by the send path to gate the search
+			     decision. Distinct from the dormant force-search control above (that's per-turn opt-IN). -->
+			<button
+				type="button"
+				onclick={() => webSearchAllowed.update((v) => !v)}
+				disabled={loading}
+				aria-pressed={$webSearchAllowed}
+				aria-label="Web search {$webSearchAllowed ? 'on, tap to turn off' : 'off, tap to turn on'}"
+				title={$webSearchAllowed
+					? "Web search is ON — I search open sources (Wikipedia · Marginalia · OpenAlex) when a question needs current info. Tap to answer from training only."
+					: "Web search is OFF — I answer from training only, so recent facts may be out of date. Tap to allow searching open sources."}
+				class="flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-xs transition-colors sm:h-7 {$webSearchAllowed
+					? 'border-[var(--ap-rule)] text-[var(--ap-ink-2)] hover:bg-[var(--ap-ink)]/5 hover:text-[var(--ap-ink)]'
+					: 'border-[var(--ap-rule)]/50 text-[var(--ap-ink-3)]/55'}"
+			>
+				<IconGlobe class="size-3.5 {$webSearchAllowed ? '' : 'opacity-50'}" />
+				<span>{$webSearchAllowed ? "Web search" : "Web search off"}</span>
+			</button>
 
 			<!-- In-composer served-model indicator (prod parity): friendly, non-interactive
 			     (one model for the alpha — no fake chooser), sparkle, same source as the badge. -->

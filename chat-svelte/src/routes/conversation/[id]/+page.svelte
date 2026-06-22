@@ -14,6 +14,8 @@
 	import type { SearchContext } from "$lib/types/Search";
 	import { searchProvenance, moderationMarker, ragProvenance } from "$lib/messageProvenance";
 	import { resolveSearchContext } from "$lib/search/resolveSearch";
+	import { webSearchAllowed } from "$lib/stores/webSearch";
+	import { get } from "svelte/store";
 	import { SEARCH_TRIGGER_STRATEGY } from "$lib/search/triggerStrategy";
 	import { WEBSEARCH_NODE } from "$lib/components/stack/reveal";
 	import { MessageUpdateStatus, MessageUpdateType } from "$lib/types/MessageUpdate";
@@ -316,7 +318,9 @@
 			// appeared when this ran in the composer pre-send. Skipped on retries (the turn already
 			// carries its context) and when a caller supplied searchContext. Best-effort +
 			// abortable: a Stop or failure simply yields an ungrounded answer.
-			if (searchContext === undefined && !isRetry && prompt) {
+			// Skip search entirely when the user turned web search OFF (the composer toggle); the turn
+			// answers from training only. Default is ON → the margin gate auto-decides as before.
+			if (searchContext === undefined && !isRetry && prompt && get(webSearchAllowed)) {
 				// Recent prior turns for coreference rewriting: a follow-up like "what's the latest on
 				// it?" gets the "it" resolved server-side before searching, so the open web returns
 				// on-topic sources. Use messagesPath (the LINEAR active thread) not messages (the full
